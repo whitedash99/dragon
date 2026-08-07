@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Dragon Studios — Enterprise Platform Monorepo
 
-## Getting Started
+Welcome to the **Dragon Studios** unified enterprise workspace, powered by **pnpm Workspaces**, **TurboRepo**, **Next.js**, and **Prisma ORM**.
 
-First, run the development server:
+## 🏗️ Architecture Overview
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+dragon-studios/
+├── apps/
+│   ├── website/          # Public Website & Gaming Portal (Next.js 16)
+│   └── admin/            # Enterprise Admin Panel (Next.js 15)
+├── packages/
+│   ├── shared-db/        # Single Source of Truth Prisma Client & Schemas
+│   ├── ui/               # Unified Design Tokens & Reusable UI Components
+│   ├── auth/             # Authentication & RBAC Utilities
+│   ├── config/           # Shared TypeScript & Tooling Configurations
+│   ├── email/            # Transactional Mailers & Template Engine
+│   ├── types/            # Platform-wide TypeScript Interfaces
+│   ├── validation/       # Shared Zod Validation Schemas
+│   └── utils/            # Core Helper Functions & Formatting Utilities
+├── docs/                 # Platform System Maps & Architectural Docs
+├── backups/              # Verified Database & Source Code Snapshots
+├── scripts/              # Monorepo Automation & Verification Workflows
+└── .github/              # GitHub Actions CI/CD Pipeline
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Quick Start
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Prerequisites
+- **Node.js**: v20+
+- **pnpm**: v9+ (or `npx pnpm`)
+- **PostgreSQL**: v15+
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Installation & Build
 
-## Learn More
+```bash
+# Install dependencies across all workspace packages & apps
+pnpm install
 
-To learn more about Next.js, take a look at the following resources:
+# Generate Prisma Client
+pnpm run prisma:generate
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Development Mode (Runs Website + Admin concurrently with TurboRepo)
+pnpm run dev
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Full Workspace Build
+pnpm run build
 
-## Deploy on Vercel
+# Typecheck & Lint
+pnpm run typecheck
+pnpm run lint
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📄 Platform Documentation Reports
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- 📘 [`MONOREPO_MIGRATION_REPORT.md`](./MONOREPO_MIGRATION_REPORT.md)
+- 📐 [`ARCHITECTURE_REPORT.md`](./ARCHITECTURE_REPORT.md)
+- 📦 [`DEPENDENCY_REPORT.md`](./DEPENDENCY_REPORT.md)
+- 🔗 [`IMPORT_FIX_REPORT.md`](./IMPORT_FIX_REPORT.md)
+- 🗄️ [`DATABASE_REPORT.md`](./DATABASE_REPORT.md)
+- 🚀 [`DEPLOYMENT_GUIDE.md`](./DEPLOYMENT_GUIDE.md)
+- ⏪ [`ROLLBACK_GUIDE.md`](./ROLLBACK_GUIDE.md)

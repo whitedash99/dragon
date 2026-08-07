@@ -1,0 +1,20 @@
+{
+  "name": "@dragon/shared-db",
+  "version": "1.0.0",
+  "description": "Shared Enterprise Prisma Database Package for Dragon Studios Platform",
+  "main": "index.ts",
+  "scripts": {
+    "generate": "prisma generate",
+    "validate": "prisma validate",
+    "db:push": "prisma db push",
+    "seed": "node src/seed.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "6.19.3"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.2",
+    "prisma": "6.19.3",
+    "typescript": "^5.0.0"
+  }
+}

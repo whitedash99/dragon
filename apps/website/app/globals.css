@@ -1,0 +1,117 @@
+@import "tailwindcss";
+@import "../styles/theme.css";
+@import "../styles/animations.css";
+@import "../styles/design-system.css";
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  background: #030304;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -12%, rgba(120, 18, 22, 0.22), transparent 68%),
+    radial-gradient(ellipse 45% 28% at 108% 40%, rgba(160, 72, 14, 0.07), transparent 70%),
+    radial-gradient(ellipse 40% 30% at -8% 60%, rgba(80, 12, 48, 0.06), transparent 70%),
+    #030304;
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* Hide default cursor when Dragon Studios custom cursor is active on fine pointer devices */
+html.dragon-cursor-active,
+html.dragon-cursor-active * {
+  cursor: none !important;
+}
+
+/* Cinematic film grain overlay */
+body::before {
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  opacity: 0.022;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+
+/* ── Gaming Typography — Rajdhani headings ── */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  line-height: 0.92;
+  text-wrap: balance;
+}
+
+h1, h2 {
+  letter-spacing: -0.045em;
+}
+
+h3 {
+  letter-spacing: -0.02em;
+}
+
+/* ── Interactive elements ── */
+a, button, input, select, textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 2px solid var(--color-gold-400);
+  outline-offset: 3px;
+}
+
+input, select, textarea {
+  color-scheme: dark;
+}
+
+::placeholder {
+  color: color-mix(in srgb, var(--color-muted-foreground) 75%, transparent);
+}
+
+::selection {
+  background: oklch(0.60 0.22 25 / 0.35);
+  color: white;
+}
+
+/* ── Scrollbar — ultra-minimal ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.08); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.16); }
+
+/* ── Reduced grain on mobile for performance ── */
+@media (max-width: 1023px) {
+  body::before {
+    opacity: 0.015;
+  }
+}
+
+/* ── Smooth underline animation for links ── */
+@utility link-underline {
+  position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: currentColor;
+    transition: width 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  &:hover::after {
+    width: 100%;
+  }
+}

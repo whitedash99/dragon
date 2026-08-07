@@ -1,0 +1,234 @@
+/* ═══════════════════════════════════════════════════════
+   DRAGON STUDIOS — MASTER DESIGN SYSTEM
+   Premium utility classes for world-class UI
+═══════════════════════════════════════════════════════ */
+
+/* ── Glass Surfaces ── */
+@utility glass-sm {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.012));
+  backdrop-filter: blur(12px) saturate(120%);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+@utility glass-md {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.015));
+  backdrop-filter: blur(20px) saturate(130%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 16px 48px rgba(0, 0, 0, 0.14);
+}
+
+@utility glass-lg {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.065), rgba(255, 255, 255, 0.02));
+  backdrop-filter: blur(24px) saturate(130%);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 20px 60px rgba(0, 0, 0, 0.18);
+}
+
+@utility glass-heavy {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.025));
+  backdrop-filter: blur(30px) saturate(135%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 24px 80px rgba(0, 0, 0, 0.22);
+}
+
+/* ── Glow Effects ── */
+@utility glow-primary {
+  box-shadow: 0 0 24px oklch(0.60 0.22 25 / 0.35), 0 0 64px oklch(0.60 0.22 25 / 0.12);
+}
+
+@utility glow-accent {
+  box-shadow: 0 0 24px oklch(0.65 0.18 50 / 0.35), 0 0 64px oklch(0.65 0.18 50 / 0.12);
+}
+
+@utility glow-cyan {
+  box-shadow: 0 0 24px oklch(0.70 0.10 200 / 0.35);
+}
+
+@utility glow-pink {
+  box-shadow: 0 0 24px oklch(0.60 0.20 350 / 0.35);
+}
+
+/* ── Text Effects ── */
+@utility text-glow-primary {
+  text-shadow: 0 0 14px oklch(0.60 0.22 25 / 0.45), 0 0 40px oklch(0.60 0.22 25 / 0.15);
+}
+
+@utility text-glow-accent {
+  text-shadow: 0 0 12px oklch(0.65 0.18 50 / 0.45);
+}
+
+@utility text-gradient {
+  background: linear-gradient(135deg, oklch(0.65 0.20 25), oklch(0.78 0.14 80));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+@utility text-gradient-cool {
+  background: linear-gradient(135deg, oklch(0.65 0.14 245), oklch(0.55 0.20 300));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* ── Film Grain / Noise Overlay ── */
+@utility noise-overlay {
+  position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: -50%;
+    pointer-events: none;
+    opacity: 0.06;
+    z-index: 3;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E");
+    animation: grain-drift 8s steps(10) infinite;
+  }
+}
+
+/* ── Cinematic Vignette ── */
+@utility vignette {
+  background: radial-gradient(circle at center, transparent 0%, rgba(3, 3, 4, 0.88) 100%);
+}
+
+/* ── Site Container ── */
+@utility container-site {
+  max-width: 1540px;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+  @media (min-width: 640px) {
+    padding-inline: 2rem;
+  }
+  @media (min-width: 768px) {
+    padding-inline: 2.5rem;
+  }
+  @media (min-width: 1024px) {
+    padding-inline: 3.5rem;
+  }
+}
+
+/* ── Cinematic Eyebrow — used for section labels ── */
+@utility cinematic-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: var(--color-gold-400);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+@utility cinematic-eyebrow {
+  &::before {
+    content: "";
+    width: 2.5rem;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, currentColor);
+  }
+}
+
+/* ── Cinematic Page Background ── */
+@utility cinematic-page {
+  position: relative;
+  isolation: isolate;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px) center / min(8vw, 160px) 100%,
+    radial-gradient(ellipse 52% 24% at 50% 0%, rgba(130, 24, 22, 0.08), transparent 75%);
+}
+
+@utility cinematic-page {
+  &::before {
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    pointer-events: none;
+    content: "";
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent) top / 100% 1px no-repeat;
+    mask-image: linear-gradient(to bottom, black, transparent 32rem);
+  }
+}
+
+/* ── Content Panel — elevated glass card ── */
+@utility content-panel {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 1.5rem;
+  background: linear-gradient(145deg, rgba(255,255,255,0.06), rgba(255,255,255,0.018));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 24px 72px rgba(0,0,0,0.2);
+}
+
+@utility content-panel {
+  &::before {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    content: "";
+    background: linear-gradient(120deg, rgba(255,255,255,0.06), transparent 24%);
+  }
+}
+
+/* ── Admin Surface ── */
+@utility admin-cinematic-surface {
+  background:
+    linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px) center / 96px 100%,
+    radial-gradient(ellipse 45% 28% at 72% 0%, rgba(150, 36, 28, 0.09), transparent 70%);
+}
+
+/* ── Frame Corners — decorative gold corners ── */
+@utility frame-corners {
+  position: relative;
+  isolation: isolate;
+}
+
+@utility frame-corners {
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.6;
+    background:
+      linear-gradient(var(--color-gold-500), var(--color-gold-500)) top left / 24px 1px no-repeat,
+      linear-gradient(var(--color-gold-500), var(--color-gold-500)) top left / 1px 24px no-repeat,
+      linear-gradient(var(--color-gold-500), var(--color-gold-500)) bottom right / 24px 1px no-repeat,
+      linear-gradient(var(--color-gold-500), var(--color-gold-500)) bottom right / 1px 24px no-repeat;
+  }
+}
+
+/* ── Section Divider ── */
+@utility section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.07) 25%, rgba(255, 255, 255, 0.07) 75%, transparent);
+}
+
+/* ── Shimmer Loading Effect ── */
+@utility shimmer-loading {
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.04) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* ── Hover Lift — premium hover state ── */
+@utility hover-lift {
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.4s ease;
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* ── Magnetic Card — subtle depth on hover ── */
+@utility magnetic-card {
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-color 0.4s ease;
+  &:hover {
+    transform: translateY(-2px) scale(1.005);
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+}

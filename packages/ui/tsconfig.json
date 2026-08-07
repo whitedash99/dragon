@@ -1,0 +1,7 @@
+{
+  "extends": "@dragon/config/tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx"
+  },
+  "include": ["index.ts", "src/**/*"]
+}

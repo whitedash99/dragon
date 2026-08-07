@@ -1,0 +1,55 @@
+name: Dragon Studios Platform Production CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, production ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate-and-build:
+    name: Validate, Typecheck & Build Platform
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: |
+          cd d:\dragon-shared-db && npm ci
+          cd d:\dragon && npm ci
+          cd d:\dragon-admin && npm ci
+
+      - name: Validate Master Prisma Schema
+        run: |
+          cd d:\dragon-shared-db
+          npx prisma validate
+
+      - name: Build Shared Database Package
+        run: |
+          cd d:\dragon-shared-db
+          npx prisma generate
+          npm run build
+
+      - name: Build Public Website
+        run: |
+          cd d:\dragon
+          npm run build
+        env:
+          DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+          NEXTAUTH_SECRET: ${{ secrets.PRODUCTION_NEXTAUTH_SECRET }}
+
+      - name: Build Admin Control Center
+        run: |
+          cd d:\dragon-admin
+          npm run build
+        env:
+          DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+          NEXTAUTH_SECRET: ${{ secrets.PRODUCTION_NEXTAUTH_SECRET }}

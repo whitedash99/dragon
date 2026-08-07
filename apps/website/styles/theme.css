@@ -1,0 +1,87 @@
+@theme {
+  /* ═══════════════════════════════════════════
+     DRAGON STUDIOS — MASTER DESIGN TOKENS
+     Cinematic dark theme with crimson + gold
+  ═══════════════════════════════════════════ */
+
+  /* Surface palette — deep, layered, cinematic */
+  --color-background: oklch(0.04 0.004 260);
+  --color-foreground: oklch(0.94 0.004 55);
+  --color-card: oklch(0.07 0.004 260);
+  --color-card-foreground: oklch(0.94 0.004 55);
+  --color-popover: oklch(0.07 0.004 260);
+  --color-popover-foreground: oklch(0.94 0.004 55);
+
+  /* Primary — dragon crimson */
+  --color-primary: oklch(0.60 0.22 25);
+  --color-primary-foreground: oklch(0.98 0 0);
+
+  /* Secondary — muted surface */
+  --color-secondary: oklch(0.10 0.008 260);
+  --color-secondary-foreground: oklch(0.88 0.008 260);
+
+  /* Muted — subdued text surfaces */
+  --color-muted: oklch(0.10 0.004 260);
+  --color-muted-foreground: oklch(0.48 0.008 260);
+
+  /* Accent — gold highlight */
+  --color-accent: oklch(0.65 0.18 50);
+  --color-accent-foreground: oklch(0.98 0 0);
+
+  /* Destructive — warning red */
+  --color-destructive: oklch(0.55 0.22 25);
+  --color-destructive-foreground: oklch(0.98 0 0);
+
+  /* Borders & inputs */
+  --color-border: oklch(0.14 0.004 260);
+  --color-input: oklch(0.12 0.004 260);
+  --color-ring: oklch(0.60 0.22 25);
+
+  /* ── Dragon Brand Palette ── */
+  --color-dragon-50: oklch(0.97 0.01 25);
+  --color-dragon-100: oklch(0.92 0.03 25);
+  --color-dragon-200: oklch(0.82 0.08 25);
+  --color-dragon-300: oklch(0.72 0.14 25);
+  --color-dragon-400: oklch(0.62 0.20 25);
+  --color-dragon-500: oklch(0.55 0.22 25);
+  --color-dragon-600: oklch(0.48 0.22 25);
+  --color-dragon-700: oklch(0.38 0.18 25);
+  --color-dragon-800: oklch(0.28 0.12 25);
+  --color-dragon-900: oklch(0.18 0.08 25);
+  --color-dragon-950: oklch(0.10 0.04 25);
+
+  /* ── Cinematic Accents ── */
+  --color-neon-blue: oklch(0.65 0.14 245);
+  --color-neon-purple: oklch(0.55 0.20 300);
+  --color-neon-pink: oklch(0.60 0.20 350);
+  --color-neon-cyan: oklch(0.70 0.10 200);
+
+  /* ── Gold — premium highlights ── */
+  --color-gold-400: oklch(0.78 0.14 80);
+  --color-gold-500: oklch(0.72 0.16 75);
+  --color-gold-600: oklch(0.65 0.16 70);
+
+  /* ── Ember — warm cinematic ── */
+  --color-ember-400: oklch(0.70 0.18 50);
+  --color-ember-500: oklch(0.62 0.20 45);
+  --color-ember-600: oklch(0.55 0.20 40);
+
+  /* ── Slate — neutral cool ── */
+  --color-slate-700: oklch(0.30 0.008 260);
+  --color-slate-800: oklch(0.20 0.006 260);
+  --color-slate-900: oklch(0.12 0.004 260);
+
+  /* ── Typography ── */
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, 'Cascadia Code', monospace;
+  --font-heading: var(--font-rajdhani), var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+
+  /* ── Border Radius ── */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --radius-3xl: 2rem;
+  --radius-full: 9999px;
+}

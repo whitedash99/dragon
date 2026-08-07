@@ -1,0 +1,283 @@
+Vercel CLI 58.7.1 (Node.js 26.4.0)
+> [debug] [2026-08-06T16:08:26.345Z] Agent/TTY/nonInteractive: isAgent=false agentName=none stdin.isTTY=true --non-interactive=false explicitFalse=false => nonInteractive=false
+> [debug] [2026-08-06T16:08:26.346Z] user supplied a possible target for deployment or an extension
+> [debug] [2026-08-06T16:08:26.434Z] failed to find extension command with name "vercel---prod"
+> [debug] [2026-08-06T16:08:26.552Z] Setting target to production
+> [debug] [2026-08-06T16:08:26.611Z] Spinner invoked (Retrieving project…) with a 1000ms delay
+> [debug] [2026-08-06T16:08:26.613Z] Valid access token, skipping token refresh.
+> [debug] [2026-08-06T16:08:26.642Z] #1 → GET https://api.vercel.com/teams/team_cTtCzGzNlfimTcBuyqB5PUIq?teamId=team_cTtCzGzNlfimTcBuyqB5PUIq
+> [debug] [2026-08-06T16:08:26.645Z] #2 → GET https://api.vercel.com/v9/projects/prj_N3fJKCTbDUtaIN3zxx2iqTJ2vaJg?teamId=team_cTtCzGzNlfimTcBuyqB5PUIq
+> [debug] [2026-08-06T16:08:28.520Z] #2 ← 200 : sfo1::vh9k2-1786032507277-40316504d5d1 [1.88s]
+> [debug] [2026-08-06T16:08:28.741Z] #1 ← 200 : sfo1::7wgqw-1786032507262-3bf016c8168f [2.10s]
+> [debug] [2026-08-06T16:08:29.120Z] Spinner invoked (Deploying dragons14/dragons) with a 0ms delay
+[client-debug] 2026-08-06T16:08:29.121Z Creating deployment...
+[client-debug] 2026-08-06T16:08:29.122Z Provided 'path' is a directory.
+[client-debug] 2026-08-06T16:08:29.127Z Found 26 rules in .vercelignore
+[client-debug] 2026-08-06T16:08:29.127Z Building file tree...
+[client-debug] 2026-08-06T16:08:29.203Z Found 590 files in the specified directory
+[client-debug] 2026-08-06T16:08:29.313Z Yielding a 'hashes-calculated' event with 491 hashes
+[client-debug] 2026-08-06T16:08:29.314Z Using provided API URL: https://api.vercel.com
+[client-debug] 2026-08-06T16:08:29.314Z Using provided user agent: vercel 58.7.1 node-v26.4.0 win32 (x64)
+[client-debug] 2026-08-06T16:08:29.314Z Setting platform version to harcoded value 2
+[client-debug] 2026-08-06T16:08:29.314Z Creating the deployment and starting upload...
+[client-debug] 2026-08-06T16:08:29.314Z Determining necessary files for upload...
+[client-debug] 2026-08-06T16:08:29.315Z Creating deployment
+[client-debug] 2026-08-06T16:08:29.319Z Sending deployment creation API request
+[client-debug] 2026-08-06T16:08:34.548Z Deployment response: {"error":{"code":"missing_files","message":"Missing files","missing":["3b62fd616ede791c9bc75b2f33b42f4ea18bef49","e856337b4c49861279685a1f41c6d46ba2bcb115"]}}
+[client-debug] 2026-08-06T16:08:34.548Z Error: Deployment request status is 400
+[client-debug] 2026-08-06T16:08:34.548Z 2 files are required to upload
+[client-debug] 2026-08-06T16:08:34.548Z Yielding a 'file-count' event
+> [debug] [2026-08-06T16:08:34.548Z] Total files 491, 2 changed
+> [debug] [2026-08-06T16:08:34.549Z] Spinner invoked (Uploading [--------------------] (0.0B/569.7KB)) with a 0ms delay
+[client-debug] 2026-08-06T16:08:34.549Z Building an upload list...
+[client-debug] 2026-08-06T16:08:34.550Z Starting upload
+[client-debug] 2026-08-06T16:08:34.551Z POST https://api.vercel.com/v2/files?teamId=team_cTtCzGzNlfimTcBuyqB5PUIq
+[client-debug] 2026-08-06T16:08:34.552Z POST https://api.vercel.com/v2/files?teamId=team_cTtCzGzNlfimTcBuyqB5PUIq
+> [debug] [2026-08-06T16:08:39.662Z] Spinner invoked (Uploading [=====---------------] (145.6KB/569.7KB)) with a 0ms delay
+> [debug] [2026-08-06T16:08:50.661Z] Spinner invoked (Uploading [==========----------] (289.6KB/569.7KB)) with a 0ms delay
+> [debug] [2026-08-06T16:09:06.908Z] Spinner invoked (Uploading [===============-----] (433.6KB/569.7KB)) with a 0ms delay
+> [debug] [2026-08-06T16:09:08.842Z] Spinner invoked (Uploading [====================] (569.7KB/569.7KB)) with a 0ms delay
+[client-debug] 2026-08-06T16:09:10.643Z DONE in 36092ms: POST https://api.vercel.com/v2/files?teamId=team_cTtCzGzNlfimTcBuyqB5PUIq
+[client-debug] 2026-08-06T16:09:10.644Z File 3b62fd616ede791c9bc75b2f33b42f4ea18bef49 (D:\dragon\apps\website\tsconfig.tsbuildinfo) uploaded
+[client-debug] 2026-08-06T16:09:10.644Z Yielding a 'file-uploaded' event
+> [debug] [2026-08-06T16:09:10.644Z] Uploaded: D:\dragon\apps\website\tsconfig.tsbuildinfo (568.1KB)
+[client-debug] 2026-08-06T16:09:11.333Z DONE in 36781ms: POST https://api.vercel.com/v2/files?teamId=team_cTtCzGzNlfimTcBuyqB5PUIq
+[client-debug] 2026-08-06T16:09:11.333Z File e856337b4c49861279685a1f41c6d46ba2bcb115 (D:\dragon\vercel-log.txt) uploaded
+[client-debug] 2026-08-06T16:09:11.333Z Yielding a 'file-uploaded' event
+> [debug] [2026-08-06T16:09:11.333Z] Uploaded: D:\dragon\vercel-log.txt (1.56KB)
+[client-debug] 2026-08-06T16:09:11.333Z All files uploaded
+[client-debug] 2026-08-06T16:09:11.333Z Yielding a 'all-files-uploaded' event
+[client-debug] 2026-08-06T16:09:11.333Z Starting deployment creation
+[client-debug] 2026-08-06T16:09:11.333Z Creating deployment
+[client-debug] 2026-08-06T16:09:11.337Z Sending deployment creation API request
+[client-debug] 2026-08-06T16:09:13.151Z Deployment response: {"alias":["dragons-dragons14.vercel.app","dragons-whitedash28-7369-dragons14.vercel.app"],"aliasAssigned":false,"automaticAliases":["dragons-dragons14.vercel.app","dragons-whitedash28-7369-dragons14.vercel.app"],"bootedAt":1786032551680,"buildingAt":1786032551680,"buildSkipped":false,"createdAt":1786032551680,"creator":{"uid":"bAjT4aMvr069siqpu180cxap","username":"whitedash28-7369"},"id":"dpl_ao1GJJMwfFPKKrCNGjGuz9qmMHFW","name":"dragons","meta":{"gitCommitAuthorName":"whitedash99","gitCommitAuthorEmail":"whitedash99@gmail.com","gitCommitMessage":"Initial commit from Create Next App","gitCommitRef":"main","gitCommitSha":"7298f70c72a2d4fc6114125f863429b1853028ab","gitDirty":"1","gitRootDirectory":"apps/website"},"originCacheRegion":"iad1","project":{"id":"prj_N3fJKCTbDUtaIN3zxx2iqTJ2vaJg","name":"dragons","framework":"nextjs"},"public":false,"readyState":"INITIALIZING","regions":["iad1"],"source":"cli","status":"INITIALIZING","target":"production","team":{"id":"team_cTtCzGzNlfimTcBuyqB5PUIq","name":"dragons","slug":"dragons14"},"type":"LAMBDAS","url":"dragons-803tiq7za-dragons14.vercel.app","version":2,"previewCommentsEnabled":true,"oidcTokenClaims":{"sub":"owner:dragons14:project:dragons:environment:production","iss":"https://oidc.vercel.com/dragons14","scope":"owner:dragons14:project:dragons:environment:production","aud":"https://vercel.com/dragons14","owner":"dragons14","owner_id":"team_cTtCzGzNlfimTcBuyqB5PUIq","project":"dragons","project_id":"prj_N3fJKCTbDUtaIN3zxx2iqTJ2vaJg","environment":"production","plan":"hobby"},"lambdas":[{"id":"bld_fd3vks6of","createdAt":1786032551354,"entrypoint":".","readyState":"READY","readyStateAt":1786032551354,"output":[]}],"aliasAssignedAt":null,"build":{"env":[]},"builds":[],"createdIn":"sfo1","env":[],"functions":null,"inspectorUrl":"https://vercel.com/dragons14/dragons/ao1GJJMwfFPKKrCNGjGuz9qmMHFW","isInConcurrentBuildsQueue":false,"isInSystemBuildsQueue":true,"ownerId":"team_cTtCzGzNlfimTcBuyqB5PUIq","plan":"hobby","projectId":"prj_N3fJKCTbDUtaIN3zxx2iqTJ2vaJg","resourceConfig":{"buildMachine":{"defaultPurchaseType":"standard","purchaseType":"standard","machineSelectionType":"fixed"}},"projectSettings":{"buildCommand":null,"devCommand":null,"framework":"nextjs","commandForIgnoringBuildStep":null,"installCommand":null,"outputDirectory":null,"speedInsights":{"id":"CCWG6OLZglFjVb1VU2L0sxIL5Xm","hasData":false},"webAnalytics":{"id":"Hd2NZUTDmD761oCpq9TsISVnO"},"nodeVersion":"24.x"},"routes":null,"config":{"version":1,"secureComputePrimaryRegion":null,"secureComputeFallbackRegion":null,"functionTimeout":300,"functionType":"fluid","functionMemoryType":"standard","isUsingActiveCPU":true,"resourceConfig":{"buildMachine":{"defaultPurchaseType":"standard","purchaseType":"standard","machineSelectionType":"fixed"},"buildQueue":{"configuration":"SKIP_NAMESPACE_QUEUE"}}},"attribution":{"commitMeta":{"name":"whitedash99","email":"whitedash99@gmail.com","isVerified":false}}}
+[client-debug] 2026-08-06T16:09:13.151Z Deployment created
+[client-debug] 2026-08-06T16:09:13.151Z Yielding a 'created' event
+  Inspect         https://vercel.com/dragons14/dragons/ao1GJJMwfFPKKrCNGjGuz9qmMHFW
+  Production      https://dragons-803tiq7za-dragons14.vercel.app
+https://dragons-803tiq7za-dragons14.vercel.app> [debug] [2026-08-06T16:09:13.153Z] Spinner invoked (Building…) with a 0ms delay
+> [debug] [2026-08-06T16:09:13.153Z] #3 → GET https://api.vercel.com/v3/now/deployments/dpl_ao1GJJMwfFPKKrCNGjGuz9qmMHFW/events?direction=forward&follow=1&format=lines&teamId=team_cTtCzGzNlfimTcBuyqB5PUIq
+[client-debug] 2026-08-06T16:09:13.154Z Waiting for deployment to be ready...
+[client-debug] 2026-08-06T16:09:13.154Z Waiting for builds and the deployment to complete...
+[client-debug] 2026-08-06T16:09:15.766Z Deployment state changed to BUILDING
+[client-debug] 2026-08-06T16:09:15.766Z Yielding a 'building' event
+> [debug] [2026-08-06T16:09:15.766Z] Spinner invoked (Building…) with a 0ms delay
+> [debug] [2026-08-06T16:09:16.420Z] #3 ← 200 : sfo1::2thsl-1786032552372-85753f5081f5 [3.27s]
+> [debug] [2026-08-06T16:09:16.422Z] Spinner invoked (Running build in Washington, D.C., USA (East) – iad1) with a 0ms delay
+> [debug] [2026-08-06T16:09:16.422Z] Spinner invoked (Build machine configuration: 2 cores, 8 GB) with a 0ms delay
+> [debug] [2026-08-06T16:09:16.422Z] Spinner invoked (Retrieving list of deployment files...) with a 0ms delay
+> [debug] [2026-08-06T16:09:16.422Z] Spinner invoked (Previous build caches not available.) with a 0ms delay
+> [debug] [2026-08-06T16:09:16.422Z] Spinner invoked (Downloading 590 deployment files...) with a 0ms delay
+> [debug] [2026-08-06T16:09:17.707Z] Spinner invoked (Running "vercel build") with a 0ms delay
+> [debug] [2026-08-06T16:09:17.707Z] Spinner invoked (Vercel CLI 58.1.0) with a 0ms delay
+> [debug] [2026-08-06T16:09:18.986Z] Spinner invoked (> Detected Turbo. Adjusting default settings...) with a 0ms delay
+> [debug] [2026-08-06T16:09:18.986Z] Spinner invoked (Detected `pnpm-lock.yaml` version 9 generated by pnpm@10.x with package.json#packageManager pnpm@9.15.0) with a 0ms delay
+> [debug] [2026-08-06T16:09:18.986Z] Spinner invoked (Running "install" command: `pnpm install`...) with a 0ms delay
+> [debug] [2026-08-06T16:09:21.406Z] Spinner invoked (Scope: all 11 workspace projects) with a 0ms delay
+> [debug] [2026-08-06T16:09:21.406Z] Spinner invoked (../..                                    | Progress: resolved 1, reused 0, downloaded 0, added 0) with a 0ms delay
+> [debug] [2026-08-06T16:09:21.406Z] Spinner invoked (../..                                    | +679 ++++++++++++++++++++++++++++++++) with a 0ms delay
+> [debug] [2026-08-06T16:09:22.664Z] Spinner invoked (../..                                    | Progress: resolved 679, reused 0, downloaded 12, added 0) with a 0ms delay
+> [debug] [2026-08-06T16:09:23.786Z] Spinner invoked (../..                                    | Progress: resolved 679, reused 0, downloaded 15, added 0) with a 0ms delay
+> [debug] [2026-08-06T16:09:23.786Z] Spinner invoked (../..                                    | Progress: resolved 679, reused 0, downloaded 29, added 14) with a 0ms delay
+> [debug] [2026-08-06T16:09:23.786Z] Spinner invoked (../..                                    | Progress: resolved 679, reused 0, downloaded 55, added 39) with a 0ms delay
+> [debug] [2026-08-06T16:09:26.351Z] Spinner invoked (../..                                    | Progress: resolved 679, reused 0, downloaded 62, added 48) with a 0ms delay
+> [debug] [2026-08-06T16:09:27.509Z] Spinner invoked (../..                                    | Progress: resolved 679, reused 0, downloaded 74, added 60) with a 0ms delay
+> [debug] [2026-08-06T16:09:28.752Z] Spinner invoked (../..                                    | Progress: resolved 679, reused 0, downloaded 78, added 62) with a 0ms delay
+> [debug] [2026-08-06T16:09:28.753Z] Spinner invoked (../..                                    | Progress: resolved 679, reused 0, downloaded 108, added 96) with a 0ms delay
+> [debug] [2026-08-06T16:09:29.877Z] Spinner invoked (../..                                    | Progress: resolved 679, reused 0, downloaded 111, added 96) with a 0ms delay
+> [debug] [2026-08-06T16:09:31.149Z] Spinner invoked (../..                                    | Progress: resolved 679, reused 0, downloaded 228, added 214) with a 0ms delay
+> [debug] [2026-08-06T16:09:32.334Z] Spinner invoked (../..                                    | Progress: resolved 679, reused 0, downloaded 357, added 344) with a 0ms delay
+> [debug] [2026-08-06T16:09:32.334Z] Spinner invoked (../..                                    | Progress: resolved 679, reused 0, downloaded 398, added 383) with a 0ms delay
+> [debug] [2026-08-06T16:09:34.900Z] Spinner invoked (../..                                    | Progress: resolved 679, reused 0, downloaded 412, added 396) with a 0ms delay
+> [debug] [2026-08-06T16:09:34.900Z] Spinner invoked (../..                                    | Progress: resolved 679, reused 0, downloaded 423, added 407) with a 0ms delay
+> [debug] [2026-08-06T16:09:36.270Z] Spinner invoked (../..                                    | Progress: resolved 679, reused 0, downloaded 460, added 448) with a 0ms delay
+> [debug] [2026-08-06T16:09:37.414Z] Spinner invoked (../..                                    | Progress: resolved 679, reused 0, downloaded 485, added 471) with a 0ms delay
+> [debug] [2026-08-06T16:09:38.670Z] Spinner invoked (../..                                    | Progress: resolved 679, reused 0, downloaded 486, added 471) with a 0ms delay
+> [debug] [2026-08-06T16:09:38.671Z] Spinner invoked (../..                                    | Progress: resolved 679, reused 0, downloaded 489, added 475) with a 0ms delay
+> [debug] [2026-08-06T16:09:39.836Z] Spinner invoked (../..                                    | Progress: resolved 679, reused 0, downloaded 501, added 485) with a 0ms delay
+> [debug] [2026-08-06T16:09:40.914Z] Spinner invoked (../..                                    | Progress: resolved 679, reused 0, downloaded 501, added 486) with a 0ms delay
+> [debug] [2026-08-06T16:09:43.310Z] Spinner invoked (../..                                    | Progress: resolved 679, reused 0, downloaded 504, added 488) with a 0ms delay
+> [debug] [2026-08-06T16:09:44.431Z] Spinner invoked (../..                                    | Progress: resolved 679, reused 0, downloaded 550, added 535) with a 0ms delay
+> [debug] [2026-08-06T16:09:45.710Z] Spinner invoked (../..                                    | Progress: resolved 679, reused 0, downloaded 561, added 550) with a 0ms delay
+> [debug] [2026-08-06T16:09:46.812Z] Spinner invoked (../..                                    | Progress: resolved 679, reused 0, downloaded 562, added 550) with a 0ms delay
+> [debug] [2026-08-06T16:09:48.096Z] Spinner invoked (../..                                    | Progress: resolved 679, reused 0, downloaded 565, added 550) with a 0ms delay
+> [debug] [2026-08-06T16:09:48.097Z] Spinner invoked (../..                                    | Progress: resolved 679, reused 0, downloaded 577, added 561) with a 0ms delay
+> [debug] [2026-08-06T16:09:49.165Z] Spinner invoked (../..                                    | Progress: resolved 679, reused 0, downloaded 577, added 562) with a 0ms delay
+> [debug] [2026-08-06T16:09:50.427Z] Spinner invoked (../..                                    | Progress: resolved 679, reused 0, downloaded 586, added 570) with a 0ms delay
+> [debug] [2026-08-06T16:09:51.792Z] Spinner invoked (../..                                    | Progress: resolved 679, reused 0, downloaded 596, added 581) with a 0ms delay
+> [debug] [2026-08-06T16:09:51.792Z] Spinner invoked (../..                                    | Progress: resolved 679, reused 0, downloaded 612, added 596) with a 0ms delay
+> [debug] [2026-08-06T16:09:51.792Z] Spinner invoked (../..                                    | Progress: resolved 679, reused 0, downloaded 640, added 627) with a 0ms delay
+> [debug] [2026-08-06T16:09:54.351Z] Spinner invoked (../..                                    | Progress: resolved 679, reused 0, downloaded 644, added 630) with a 0ms delay
+> [debug] [2026-08-06T16:09:54.351Z] Spinner invoked (../..                                    | Progress: resolved 679, reused 0, downloaded 656, added 640) with a 0ms delay
+> [debug] [2026-08-06T16:09:55.724Z] Spinner invoked (../..                                    | Progress: resolved 679, reused 0, downloaded 679, added 679, done) with a 0ms delay
+> [debug] [2026-08-06T16:09:55.724Z] Spinner invoked (.../node_modules/@prisma/engines postinstall$ node scripts/postinstall.js) with a 0ms delay
+> [debug] [2026-08-06T16:09:55.724Z] Spinner invoked (.../sharp@0.34.5/node_modules/sharp install$ node install/check.js || npm run build) with a 0ms delay
+> [debug] [2026-08-06T16:09:55.725Z] Spinner invoked (.../node_modules/unrs-resolver postinstall$ node postinstall.js) with a 0ms delay
+> [debug] [2026-08-06T16:09:55.725Z] Spinner invoked (.../node_modules/unrs-resolver postinstall: Done) with a 0ms delay
+> [debug] [2026-08-06T16:09:55.725Z] Spinner invoked (.../sharp@0.34.5/node_modules/sharp install: Done) with a 0ms delay
+> [debug] [2026-08-06T16:09:55.725Z] Spinner invoked (.../node_modules/@prisma/engines postinstall: Done) with a 0ms delay
+> [debug] [2026-08-06T16:09:55.725Z] Spinner invoked (.../node_modules/prisma preinstall$ node scripts/preinstall-entry.js) with a 0ms delay
+> [debug] [2026-08-06T16:09:55.725Z] Spinner invoked (.../node_modules/prisma preinstall: Done) with a 0ms delay
+> [debug] [2026-08-06T16:09:55.725Z] Spinner invoked (.../node_modules/@prisma/client postinstall$ node scripts/postinstall.js) with a 0ms delay
+> [debug] [2026-08-06T16:09:58.672Z] Spinner invoked (.../node_modules/@prisma/client postinstall: Environment variables loaded from .env) with a 0ms delay
+> [debug] [2026-08-06T16:09:58.673Z] Spinner invoked (.../node_modules/@prisma/client postinstall: prisma:warn We could not find your Prisma schema in the default locations (see: https://pris.ly/d/prisma-schema-location).) with a 0ms delay
+> [debug] [2026-08-06T16:09:58.673Z] Spinner invoked (.../node_modules/@prisma/client postinstall: If you have a Prisma schema file in a custom path, you will need to run) with a 0ms delay
+> [debug] [2026-08-06T16:09:58.673Z] Spinner invoked (.../node_modules/@prisma/client postinstall: `prisma generate --schema=./path/to/your/schema.prisma` to generate Prisma Client.) with a 0ms delay
+> [debug] [2026-08-06T16:09:58.673Z] Spinner invoked (.../node_modules/@prisma/client postinstall: If you do not have a Prisma schema file yet, you can ignore this message.) with a 0ms delay
+> [debug] [2026-08-06T16:09:58.673Z] Spinner invoked (.../node_modules/@prisma/client postinstall: Done) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.236Z] Spinner invoked (dependencies:) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.236Z] Spinner invoked (+ @auth/prisma-adapter 2.11.3) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.237Z] Spinner invoked (+ @base-ui/react 1.7.0) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.237Z] Spinner invoked (+ @dragon/auth 1.0.0 <- ../../packages/auth) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.237Z] Spinner invoked (+ @dragon/config 1.0.0 <- ../../packages/config) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.237Z] Spinner invoked (+ @dragon/email 1.0.0 <- ../../packages/email) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.237Z] Spinner invoked (+ @dragon/shared-db 1.0.0 <- ../../packages/shared-db) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.237Z] Spinner invoked (+ @dragon/types 1.0.0 <- ../../packages/types) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.237Z] Spinner invoked (+ @dragon/ui 1.0.0 <- ../../packages/ui) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.237Z] Spinner invoked (+ @dragon/utils 1.0.0 <- ../../packages/utils) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.237Z] Spinner invoked (+ @dragon/validation 1.0.0 <- ../../packages/validation) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.237Z] Spinner invoked (+ @hookform/resolvers 5.7.1) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.237Z] Spinner invoked (+ @prisma/client 6.19.3) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.237Z] Spinner invoked (+ @radix-ui/react-dialog 1.1.23) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.237Z] Spinner invoked (+ @radix-ui/react-navigation-menu 1.2.22) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.237Z] Spinner invoked (+ @radix-ui/react-slot 1.3.3) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.237Z] Spinner invoked (+ @react-three/drei 10.7.8) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.237Z] Spinner invoked (+ @react-three/fiber 9.7.0) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.237Z] Spinner invoked (+ @studio-freight/lenis 1.0.42) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.237Z] Spinner invoked (+ @tabler/icons-react 3.46.0) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.237Z] Spinner invoked (+ @tiptap/react 3.29.2) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.237Z] Spinner invoked (+ @tiptap/starter-kit 3.29.2) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.237Z] Spinner invoked (+ @types/pg 8.20.4) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.237Z] Spinner invoked (+ axios 1.19.0) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.237Z] Spinner invoked (+ bcryptjs 3.0.3) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.237Z] Spinner invoked (+ class-variance-authority 0.7.1) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.238Z] Spinner invoked (+ clsx 2.1.1) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.238Z] Spinner invoked (+ date-fns 4.4.0) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.238Z] Spinner invoked (+ framer-motion 12.43.0) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.238Z] Spinner invoked (+ geist 1.7.2) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.238Z] Spinner invoked (+ gsap 3.15.0) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.238Z] Spinner invoked (+ jose 6.2.8) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.238Z] Spinner invoked (+ lenis 1.3.26) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.238Z] Spinner invoked (+ lucide-react 0.468.0) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.238Z] Spinner invoked (+ next 16.3.0) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.238Z] Spinner invoked (+ next-auth 4.24.15) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.238Z] Spinner invoked (+ next-themes 0.4.6) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.238Z] Spinner invoked (+ nodemailer 7.0.13) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.238Z] Spinner invoked (+ pg 8.22.0) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.238Z] Spinner invoked (+ prisma 6.19.3) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.238Z] Spinner invoked (+ react 19.2.8) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.238Z] Spinner invoked (+ react-countup 6.5.3) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.238Z] Spinner invoked (+ react-dom 19.2.8) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.238Z] Spinner invoked (+ react-fast-marquee 1.6.5) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.238Z] Spinner invoked (+ react-hook-form 7.84.0) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.238Z] Spinner invoked (+ react-icons 5.7.0) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.238Z] Spinner invoked (+ react-intersection-observer 11.0.0) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.238Z] Spinner invoked (+ recharts 3.10.1) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.238Z] Spinner invoked (+ resend 6.18.1) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.238Z] Spinner invoked (+ sonner 2.0.7) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.239Z] Spinner invoked (+ tailwind-merge 3.6.0) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.239Z] Spinner invoked (+ three 0.185.1) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.239Z] Spinner invoked (+ zod 3.25.76) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.239Z] Spinner invoked (devDependencies:) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.239Z] Spinner invoked (+ @tailwindcss/postcss 4.3.3) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.392Z] Spinner invoked (+ @types/node 22.20.1) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.392Z] Spinner invoked (+ @types/nodemailer 8.0.1) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.392Z] Spinner invoked (+ @types/react 19.2.18) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.392Z] Spinner invoked (+ @types/react-dom 19.2.4) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.392Z] Spinner invoked (+ eslint 9.39.5) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.392Z] Spinner invoked (+ eslint-config-next 16.3.0) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.393Z] Spinner invoked (+ eslint-config-prettier 10.1.8) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.393Z] Spinner invoked (+ prettier 3.9.6) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.393Z] Spinner invoked (+ prettier-plugin-tailwindcss 0.8.1) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.393Z] Spinner invoked (+ tailwindcss 4.3.3) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.393Z] Spinner invoked (+ typescript 5.9.3) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.393Z] Spinner invoked (Done in 39.4s) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.393Z] Spinner invoked (Detected Next.js version: 16.3.0) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.393Z] Spinner invoked (Running "turbo run build") with a 0ms delay
+> [debug] [2026-08-06T16:10:01.393Z] Spinner invoked (• Packages in scope: @dragon/website) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.393Z] Spinner invoked (• Running build in 1 packages) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.393Z] Spinner invoked (• Remote caching enabled) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.393Z] Spinner invoked (@dragon/website:build: cache miss, executing e287961271ae0dda) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.393Z] Spinner invoked (@dragon/website:build:) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.393Z] Spinner invoked (@dragon/website:build: > @dragon/website@1.0.0 build /vercel/path0/apps/website) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.393Z] Spinner invoked (@dragon/website:build: > next build) with a 0ms delay
+> [debug] [2026-08-06T16:10:01.393Z] Spinner invoked (@dragon/website:build:) with a 0ms delay
+> [debug] [2026-08-06T16:10:02.558Z] Spinner invoked (@dragon/website:build: ▲ Next.js 16.3.0 (Turbopack)) with a 0ms delay
+> [debug] [2026-08-06T16:10:02.558Z] Spinner invoked (@dragon/website:build: - Environments: .env) with a 0ms delay
+> [debug] [2026-08-06T16:10:02.558Z] Spinner invoked (@dragon/website:build:   Applying modifyConfig from Vercel) with a 0ms delay
+> [debug] [2026-08-06T16:10:02.558Z] Spinner invoked (@dragon/website:build: ✓ Running next.config.ts took 149ms) with a 0ms delay
+> [debug] [2026-08-06T16:10:02.558Z] Spinner invoked (@dragon/website:build: Attention: Next.js now collects completely anonymous telemetry regarding usage.) with a 0ms delay
+> [debug] [2026-08-06T16:10:02.559Z] Spinner invoked (@dragon/website:build: This information is used to shape Next.js' roadmap and prioritize features.) with a 0ms delay
+> [debug] [2026-08-06T16:10:02.559Z] Spinner invoked (@dragon/website:build: You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:) with a 0ms delay
+> [debug] [2026-08-06T16:10:02.559Z] Spinner invoked (@dragon/website:build: https://nextjs.org/telemetry) with a 0ms delay
+> [debug] [2026-08-06T16:10:02.559Z] Spinner invoked (@dragon/website:build:) with a 0ms delay
+> [debug] [2026-08-06T16:10:02.559Z] Spinner invoked (@dragon/website:build:) with a 0ms delay
+> [debug] [2026-08-06T16:10:02.559Z] Spinner invoked (@dragon/website:build: ⚠ The "middleware" file convention is deprecated. Please use "proxy" instead.) with a 0ms delay
+> [debug] [2026-08-06T16:10:02.559Z] Spinner invoked (@dragon/website:build:) with a 0ms delay
+> [debug] [2026-08-06T16:10:02.559Z] Spinner invoked (@dragon/website:build:   To migrate automatically, run:) with a 0ms delay
+> [debug] [2026-08-06T16:10:02.559Z] Spinner invoked (@dragon/website:build:   npx @next/codemod@canary middleware-to-proxy .) with a 0ms delay
+> [debug] [2026-08-06T16:10:02.559Z] Spinner invoked (@dragon/website:build:) with a 0ms delay
+> [debug] [2026-08-06T16:10:02.559Z] Spinner invoked (@dragon/website:build:   Learn more: https://nextjs.org/docs/messages/middleware-to-proxy) with a 0ms delay
+> [debug] [2026-08-06T16:10:02.559Z] Spinner invoked (@dragon/website:build:   Creating an optimized production build ...) with a 0ms delay
+> [debug] [2026-08-06T16:10:15.289Z] Spinner invoked (@dragon/website:build: ✓ Compiled successfully in 12.5s) with a 0ms delay
+> [debug] [2026-08-06T16:10:15.289Z] Spinner invoked (@dragon/website:build:   Running TypeScript ...) with a 0ms delay
+> [debug] [2026-08-06T16:10:26.016Z] Spinner invoked (@dragon/website:build: app/api/admin/devhub/route.ts(11,28): error TS7006: Parameter 'g' implicitly has an 'any' type.) with a 0ms delay
+> [debug] [2026-08-06T16:10:26.016Z] Spinner invoked (@dragon/website:build: app/api/admin/media/route.ts(15,37): error TS7006: Parameter 'a' implicitly has an 'any' type.) with a 0ms delay
+> [debug] [2026-08-06T16:10:26.016Z] Spinner invoked (@dragon/website:build: app/api/admin/tickets/route.ts(20,39): error TS7006: Parameter 't' implicitly has an 'any' type.) with a 0ms delay
+> [debug] [2026-08-06T16:10:26.016Z] Spinner invoked (@dragon/website:build: app/api/admin/tickets/route.ts(21,45): error TS7006: Parameter 't' implicitly has an 'any' type.) with a 0ms delay
+> [debug] [2026-08-06T16:10:26.016Z] Spinner invoked (@dragon/website:build: app/api/admin/tickets/route.ts(22,43): error TS7006: Parameter 't' implicitly has an 'any' type.) with a 0ms delay
+> [debug] [2026-08-06T16:10:26.016Z] Spinner invoked (@dragon/website:build: app/api/admin/tickets/route.ts(23,43): error TS7006: Parameter 't' implicitly has an 'any' type.) with a 0ms delay
+> [debug] [2026-08-06T16:10:26.016Z] Spinner invoked (@dragon/website:build: app/api/admin/users/route.ts(20,38): error TS7006: Parameter 'u' implicitly has an 'any' type.) with a 0ms delay
+> [debug] [2026-08-06T16:10:26.016Z] Spinner invoked (@dragon/website:build: app/api/admin/users/route.ts(21,38): error TS7006: Parameter 'u' implicitly has an 'any' type.) with a 0ms delay
+> [debug] [2026-08-06T16:10:26.016Z] Spinner invoked (@dragon/website:build: app/api/admin/users/route.ts(22,39): error TS7006: Parameter 'u' implicitly has an 'any' type.) with a 0ms delay
+> [debug] [2026-08-06T16:10:26.016Z] Spinner invoked (@dragon/website:build: app/api/user/platform/route.ts(34,27): error TS7006: Parameter 'g' implicitly has an 'any' type.) with a 0ms delay
+> [debug] [2026-08-06T16:10:26.016Z] Spinner invoked (@dragon/website:build: app/api/user/platform/route.ts(34,30): error TS7006: Parameter 'idx' implicitly has an 'any' type.) with a 0ms delay
+> [debug] [2026-08-06T16:10:26.016Z] Spinner invoked (@dragon/website:build: app/news/page.tsx(19,34): error TS7006: Parameter 'a' implicitly has an 'any' type.) with a 0ms delay
+> [debug] [2026-08-06T16:10:26.016Z] Spinner invoked (@dragon/website:build: lib/cms.ts(130,39): error TS7006: Parameter 'b' implicitly has an 'any' type.) with a 0ms delay
+> [debug] [2026-08-06T16:10:26.016Z] Spinner invoked (@dragon/website:build: lib/cms.ts(136,22): error TS2339: Property 'id' does not exist on type '{}'.) with a 0ms delay
+> [debug] [2026-08-06T16:10:26.016Z] Spinner invoked (@dragon/website:build: lib/cms.ts(137,23): error TS2339: Property 'key' does not exist on type '{}'.) with a 0ms delay
+> [debug] [2026-08-06T16:10:26.016Z] Spinner invoked (@dragon/website:build: lib/cms.ts(138,28): error TS2339: Property 'category' does not exist on type '{}'.) with a 0ms delay
+> [debug] [2026-08-06T16:10:26.016Z] Spinner invoked (@dragon/website:build: lib/cms.ts(139,25): error TS2339: Property 'label' does not exist on type '{}'.) with a 0ms delay
+> [debug] [2026-08-06T16:10:26.016Z] Spinner invoked (@dragon/website:build: lib/cms.ts(140,24): error TS2339: Property 'type' does not exist on type '{}'.) with a 0ms delay
+> [debug] [2026-08-06T16:10:26.016Z] Spinner invoked (@dragon/website:build: lib/cms.ts(141,27): error TS2339: Property 'content' does not exist on type '{}'.) with a 0ms delay
+> [debug] [2026-08-06T16:10:26.016Z] Spinner invoked (@dragon/website:build: lib/cms.ts(142,32): error TS2339: Property 'draftContent' does not exist on type '{}'.) with a 0ms delay
+> [debug] [2026-08-06T16:10:26.017Z] Spinner invoked (@dragon/website:build: lib/cms.ts(142,55): error TS2339: Property 'content' does not exist on type '{}'.) with a 0ms delay
+> [debug] [2026-08-06T16:10:26.017Z] Spinner invoked (@dragon/website:build: lib/cms.ts(143,31): error TS2339: Property 'isPublished' does not exist on type '{}'.) with a 0ms delay
+> [debug] [2026-08-06T16:10:26.017Z] Spinner invoked (@dragon/website:build: lib/cms.ts(144,27): error TS2339: Property 'version' does not exist on type '{}'.) with a 0ms delay
+> [debug] [2026-08-06T16:10:26.017Z] Spinner invoked (@dragon/website:build: lib/cms.ts(145,29): error TS2339: Property 'updatedAt' does not exist on type '{}'.) with a 0ms delay
+> [debug] [2026-08-06T16:10:26.017Z] Spinner invoked (@dragon/website:build: Failed to type check.) with a 0ms delay
+> [debug] [2026-08-06T16:10:26.017Z] Spinner invoked (@dragon/website:build:) with a 0ms delay
+> [debug] [2026-08-06T16:10:26.017Z] Spinner invoked (@dragon/website:build:  ELIFECYCLE  Command failed with exit code 1.) with a 0ms delay
+> [debug] [2026-08-06T16:10:26.017Z] Spinner invoked (@dragon/website#build:  ERROR  command (/vercel/path0/apps/website) /pnpm10/node_modules/.bin/pnpm run build exited (1)) with a 0ms delay
+> [debug] [2026-08-06T16:10:26.017Z] Spinner invoked (Tasks:    0 successful, 1 total) with a 0ms delay
+> [debug] [2026-08-06T16:10:26.017Z] Spinner invoked (Cached:    0 cached, 1 total) with a 0ms delay
+> [debug] [2026-08-06T16:10:26.017Z] Spinner invoked (Time:    25.831s) with a 0ms delay
+> [debug] [2026-08-06T16:10:26.017Z] Spinner invoked (Summary:    /vercel/path0/.turbo/runs/3HY6OSMVcWCtJrFWM5KnZvZQaET.json) with a 0ms delay
+> [debug] [2026-08-06T16:10:26.017Z] Spinner invoked (Failed:    @dragon/website#build) with a 0ms delay
+> [debug] [2026-08-06T16:10:26.017Z] Spinner invoked (ERROR  run failed: command  exited (1)) with a 0ms delay
+> [debug] [2026-08-06T16:10:26.017Z] Spinner invoked (Error: Command "turbo run build" exited with 1) with a 0ms delay
+[client-debug] 2026-08-06T16:10:34.199Z Yielding a 'error' event
+> [debug] [2026-08-06T16:10:34.203Z] Error: Error: Command "turbo run build" exited with 1
+Error: Command "turbo run build" exited with 1
+    at Now.handleDeploymentError (file:///C:/Users/ASUS/AppData/Roaming/npm/node_modules/vercel/dist/chunks/chunk-UAVZOOOL.js:1632:12)
+    at processDeployment (file:///C:/Users/ASUS/AppData/Roaming/npm/node_modules/vercel/dist/chunks/chunk-UAVZOOOL.js:1401:33)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async Now.create (file:///C:/Users/ASUS/AppData/Roaming/npm/node_modules/vercel/dist/chunks/chunk-UAVZOOOL.js:1525:24)
+    at async createDeploy (file:///C:/Users/ASUS/AppData/Roaming/npm/node_modules/vercel/dist/commands/deploy/index.js:196:12)
+    at async handleDefaultDeploy (file:///C:/Users/ASUS/AppData/Roaming/npm/node_modules/vercel/dist/commands/deploy/index.js:1641:18)
+    at async _Span.trace (C:\Users\ASUS\AppData\Roaming\npm\node_modules\vercel\node_modules\@vercel\build-utils\dist\index.js:36295:14)
+    at async main (file:///C:/Users/ASUS/AppData/Roaming/npm/node_modules/vercel/dist/index.js:2315:18)
+> [debug] [2026-08-06T16:10:34.204Z] handling error: Error: Command "turbo run build" exited with 1
+    at Now.handleDeploymentError (file:///C:/Users/ASUS/AppData/Roaming/npm/node_modules/vercel/dist/chunks/chunk-UAVZOOOL.js:1632:12)
+    at processDeployment (file:///C:/Users/ASUS/AppData/Roaming/npm/node_modules/vercel/dist/chunks/chunk-UAVZOOOL.js:1401:33)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async Now.create (file:///C:/Users/ASUS/AppData/Roaming/npm/node_modules/vercel/dist/chunks/chunk-UAVZOOOL.js:1525:24)
+    at async createDeploy (file:///C:/Users/ASUS/AppData/Roaming/npm/node_modules/vercel/dist/commands/deploy/index.js:196:12)
+    at async handleDefaultDeploy (file:///C:/Users/ASUS/AppData/Roaming/npm/node_modules/vercel/dist/commands/deploy/index.js:1641:18)
+    at async _Span.trace (C:\Users\ASUS\AppData\Roaming\npm\node_modules\vercel\node_modules\@vercel\build-utils\dist\index.js:36295:14)
+    at async main (file:///C:/Users/ASUS/AppData/Roaming/npm/node_modules/vercel/dist/index.js:2315:18)
+Error: Command "turbo run build" exited with 1
+> [debug] [2026-08-06T16:10:34.714Z] Vercel CLI 58.7.1 (Node.js 26.4.0)
+
+> [debug] [2026-08-06T16:10:36.108Z] Telemetry event tracked
+> [debug] [2026-08-06T16:10:36.190Z] Telemetry subprocess exited with code 0
