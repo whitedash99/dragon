@@ -19,6 +19,7 @@ import {
   Sliders,
   ShieldAlert
 } from "lucide-react";
+import { DragonLogoIcon } from "@/components/ui/dragon-logo";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -182,8 +183,8 @@ export default function LoginPage() {
         
         {/* Dragon Studios Branding */}
         <div className="text-center space-y-3">
-          <div className="inline-flex size-16 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-blue-800 border border-blue-400/30 text-white font-black text-2xl shadow-[0_0_30px_rgba(59,130,246,0.4)]">
-            🐉
+          <div className="flex justify-center">
+            <DragonLogoIcon className="size-16" />
           </div>
           <div>
             <h1 className="text-2xl font-black tracking-tight text-white flex items-center justify-center gap-2">

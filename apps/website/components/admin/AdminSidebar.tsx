@@ -35,6 +35,7 @@ import {
   FileCheck
 } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { DragonLogoIcon } from "@/components/ui/dragon-logo";
 
 export function AdminSidebar() {
   const pathname = usePathname();
@@ -79,15 +80,13 @@ export function AdminSidebar() {
       <div>
         <div className="flex h-20 items-center justify-between border-b border-white/10 px-6">
           <Link href="/admin" className="flex items-center gap-3 group overflow-hidden">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#ff1e4b] to-purple-600 text-xs font-black text-white shadow-lg shadow-[#ff1e4b]/30 shrink-0">
-              D
-            </div>
+            <DragonLogoIcon size="sm" />
             {!collapsed && (
               <div>
                 <span className="text-sm font-black tracking-tight text-white uppercase block">
                   DRAGON OS
                 </span>
-                <span className="text-[9px] font-mono text-[#ff1e4b]">ENTERPRISE CRM</span>
+                <span className="text-[9px] font-mono text-cyan-400">ENTERPRISE CRM</span>
               </div>
             )}
           </Link>

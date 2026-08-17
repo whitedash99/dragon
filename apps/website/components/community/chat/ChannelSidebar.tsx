@@ -19,6 +19,7 @@ import {
   User as UserIcon
 } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { DragonLogoIcon } from "@/components/ui/dragon-logo";
 import { useSession, signIn } from "next-auth/react";
 
 export interface CommunityRoomItem {
@@ -86,9 +87,7 @@ export function ChannelSidebar({
       {/* ═══ Header Brand ═══ */}
       <div className="p-4 border-b border-blue-500/20 flex items-center justify-between">
         <div className="flex items-center gap-2.5 min-w-0">
-          <div className="size-8 rounded-xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-cyan-400 font-bold text-sm shadow-[0_0_12px_rgba(59,130,246,0.3)] shrink-0">
-            🐉
-          </div>
+          <DragonLogoIcon size="sm" />
           <div className="truncate">
             <h2 className="font-heading font-black text-xs uppercase tracking-wider text-white truncate">
               Dragon Insiders

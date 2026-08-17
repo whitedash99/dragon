@@ -7,6 +7,13 @@ import { ThemeProvider } from "@/providers/theme-provider";
 export const metadata: Metadata = {
   title: "Dragon Control OS | Executive Command Center",
   description: "Official internal administration dashboard for Dragon Studios.",
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "any" },
+    ],
+    shortcut: "/favicon.ico",
+  },
 };
 
 const themeScript = `

@@ -62,6 +62,14 @@ export const metadata: Metadata = {
     description: "Creating immersive worlds powered by Dragon Engine.",
     site: OFFICIAL_SOCIALS.x.handle,
   },
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "any" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: "/apple-icon.png",
+  },
 };
 
 export default function RootLayout({

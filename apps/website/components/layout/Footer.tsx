@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { OFFICIAL_SOCIALS } from "@/lib/site";
+import { DragonLogo } from "@/components/ui/dragon-logo";
 
 export default function Footer() {
   const [email, setEmail] = useState("");
@@ -153,15 +154,8 @@ export default function Footer() {
         <div className="grid gap-8 grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 pt-4 pb-12 border-b border-slate-800">
           {/* Column 1: Dragon Studios Brand */}
           <div className="col-span-2 space-y-4">
-            <Link href="/" className="group flex items-center gap-3">
-              <div className="flex flex-col leading-none">
-                <span className="font-heading text-xl font-black tracking-[0.06em] text-white uppercase">
-                  DRAGON<span className="text-blue-500">STUDIOS</span>
-                </span>
-                <span className="text-[9px] font-bold tracking-[0.28em] text-cyan-400/80 uppercase mt-0.5 font-mono">
-                  ENTERPRISE AAA GAME STUDIO
-                </span>
-              </div>
+            <Link href="/" className="group inline-flex items-center gap-3">
+              <DragonLogo textVariant="studios" subtitle="ENTERPRISE AAA GAME STUDIO" size="md" />
             </Link>
 
             <p className="text-xs text-slate-400 leading-relaxed max-w-xs font-sans">

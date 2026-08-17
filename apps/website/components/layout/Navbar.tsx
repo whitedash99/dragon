@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Menu, X, Volume2, VolumeX, MousePointer, Moon, Sun } from "lucide-react";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useAudio } from "@/providers/audio-provider";
+import { DragonLogo } from "@/components/ui/dragon-logo";
 
 export function Navbar() {
   const pathname = usePathname();
@@ -81,16 +82,7 @@ export function Navbar() {
       <div className="mx-auto flex h-16 max-w-[1540px] items-center justify-between px-5 sm:px-6 lg:h-20 lg:px-8">
         {/* ═══ Left: Logo ═══ */}
         <Link href="/" className="flex items-center gap-3 group shrink-0" onMouseEnter={playHover}>
-          <div className="flex items-center gap-2">
-            <div className="size-8 rounded-lg bg-blue-600/20 border border-blue-500/40 flex items-center justify-center text-cyan-400 font-bold text-sm shadow-[0_0_12px_rgba(59,130,246,0.5)]">
-              🐉
-            </div>
-            <div className="flex flex-col leading-none">
-              <span className="font-heading text-xl font-black tracking-[0.06em] text-white uppercase sm:text-2xl">
-                DRAGON<span className="text-blue-500">GAMING</span>
-              </span>
-            </div>
-          </div>
+          <DragonLogo textVariant="gaming" size="sm" />
         </Link>
 
         {/* ═══ Center: Navigation ═══ */}

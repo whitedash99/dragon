@@ -27,9 +27,12 @@ import {
   Globe2,
   Terminal as TerminalIcon,
   BookOpen,
-  MessagesSquare
+  MessagesSquare,
+  Cpu,
+  Layers
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+import { DragonLogoIcon } from "@/components/ui/dragon-logo";
 
 interface NavItem {
   label: string;
@@ -112,9 +115,7 @@ export function Sidebar() {
       <div className="space-y-6">
         {/* Colorful Brand Header */}
         <div className="flex items-center gap-3 px-2 py-1.5 border-b border-blue-500/20 pb-4">
-          <div className="size-10 rounded-2xl bg-gradient-to-br from-pink-500 via-purple-600 to-cyan-500 text-white flex items-center justify-center font-bold text-lg shrink-0 shadow-lg shadow-purple-500/20 dragon-logo-breathing">
-            🐉
-          </div>
+          <DragonLogoIcon className="size-10" />
           {!collapsed && (
             <div className="min-w-0">
               <div className="font-black text-sm text-white tracking-tight truncate flex items-center gap-1.5">
