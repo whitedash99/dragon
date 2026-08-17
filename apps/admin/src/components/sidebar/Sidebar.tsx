@@ -9,12 +9,11 @@ import {
   Sparkles, 
   LifeBuoy, 
   Users, 
-  Key,
-  ShieldCheck,
-  Activity,
+  Key, 
+  ShieldCheck, 
+  Activity, 
   Settings, 
   ExternalLink,
-  LogOut,
   ChevronLeft,
   ChevronRight,
   Fingerprint,
@@ -22,13 +21,10 @@ import {
   Gamepad2,
   FolderKanban,
   BarChart3,
-  Bot,
   Smartphone,
   CheckSquare,
   Plug,
   Globe2,
-  Gauge,
-  Database,
   Terminal as TerminalIcon,
   BookOpen,
   MessagesSquare
@@ -87,7 +83,7 @@ const NAV_GROUPS: NavGroup[] = [
       { label: "Integrations", href: "/integrations", icon: Plug },
       { label: "Custom Domains", href: "/domains", icon: Globe2 },
       { label: "Settings", href: "/settings", icon: Settings },
-      { label: "Public Website ↗", href: "http://localhost:3000", icon: Globe, isExternal: true },
+      { label: "Public Website ↗", href: "https://dragongamingstudios.vercel.app", icon: Globe, isExternal: true },
     ],
   },
 ];
@@ -99,14 +95,14 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "shrink-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-r border-slate-200 dark:border-slate-800 flex flex-col justify-between p-4 min-h-screen font-sans select-none z-30 transition-all duration-300 relative shadow-lg",
+        "shrink-0 bg-[#07111F]/95 backdrop-blur-xl border-r border-blue-500/20 flex flex-col justify-between p-4 min-h-screen font-sans select-none z-30 transition-all duration-300 relative shadow-2xl",
         collapsed ? "w-20" : "w-64"
       )}
     >
       {/* Collapse Toggle Button */}
       <button
         onClick={() => setCollapsed((prev) => !prev)}
-        className="absolute -right-3.5 top-7 size-7 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-md flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors z-40"
+        className="absolute -right-3.5 top-7 size-7 rounded-full bg-[#0B132B] border border-blue-500/40 shadow-lg flex items-center justify-center text-cyan-400 hover:text-white transition-colors z-40"
         title={collapsed ? "Expand Sidebar" : "Collapse Sidebar"}
       >
         {collapsed ? <ChevronRight className="size-4" /> : <ChevronLeft className="size-4" />}
@@ -115,13 +111,13 @@ export function Sidebar() {
       {/* Brand & Grouped Navigation */}
       <div className="space-y-6">
         {/* Colorful Brand Header */}
-        <div className="flex items-center gap-3 px-2 py-1.5 border-b border-slate-100 dark:border-slate-800 pb-4">
+        <div className="flex items-center gap-3 px-2 py-1.5 border-b border-blue-500/20 pb-4">
           <div className="size-10 rounded-2xl bg-gradient-to-br from-pink-500 via-purple-600 to-cyan-500 text-white flex items-center justify-center font-bold text-lg shrink-0 shadow-lg shadow-purple-500/20 dragon-logo-breathing">
             🐉
           </div>
           {!collapsed && (
             <div className="min-w-0">
-              <div className="font-black text-sm text-slate-100 tracking-tight truncate flex items-center gap-1.5">
+              <div className="font-black text-sm text-white tracking-tight truncate flex items-center gap-1.5">
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-cyan-400 to-sky-300">Dragon OS</span>
                 <span className="text-[9px] font-mono px-1.5 py-0.5 bg-blue-600/20 text-cyan-300 rounded-md border border-blue-500/30 font-bold">
                   PRO
@@ -137,7 +133,7 @@ export function Sidebar() {
           {NAV_GROUPS.map((group) => (
             <div key={group.title} className="space-y-1.5">
               {!collapsed && (
-                <div className="px-3 text-[10px] font-mono tracking-wider text-slate-500 font-bold uppercase">
+                <div className="px-3 text-[10px] font-mono tracking-wider text-slate-400 font-bold uppercase">
                   {group.title}
                 </div>
               )}
@@ -156,7 +152,7 @@ export function Sidebar() {
                         target="_blank"
                         rel="noreferrer"
                         className={cn(
-                          "flex items-center rounded-xl px-3 py-2 text-slate-400 hover:text-white hover:bg-slate-800/80 transition-all text-xs font-medium group",
+                          "flex items-center rounded-xl px-3 py-2 text-slate-400 hover:text-white hover:bg-blue-950/40 transition-all text-xs font-medium group",
                           collapsed ? "justify-center" : "justify-between"
                         )}
                         title={collapsed ? item.label : undefined}
@@ -179,7 +175,7 @@ export function Sidebar() {
                         collapsed ? "justify-center" : "justify-between",
                         isActive
                           ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-bold shadow-md shadow-blue-500/30"
-                          : "text-slate-400 hover:text-white hover:bg-blue-950/30"
+                          : "text-slate-400 hover:text-white hover:bg-blue-950/40"
                       )}
                       title={collapsed ? item.label : undefined}
                     >
@@ -187,7 +183,7 @@ export function Sidebar() {
                         <Icon
                           className={cn(
                             "size-4 transition-all group-hover:scale-110",
-                            isActive ? "text-white" : "text-slate-500 group-hover:text-cyan-400"
+                            isActive ? "text-white" : "text-slate-400 group-hover:text-cyan-400"
                           )}
                         />
                         {!collapsed && <span>{item.label}</span>}
@@ -207,23 +203,23 @@ export function Sidebar() {
       </div>
 
       {/* Colorful Identity Card & Status */}
-      <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-2">
+      <div className="pt-4 border-t border-blue-500/20 space-y-2">
         <div
           className={cn(
-            "rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800/80 dark:to-slate-900/80 border border-slate-200 dark:border-slate-700/80 p-2.5 flex items-center gap-3 shadow-xs",
+            "rounded-2xl bg-[#0B132B] border border-blue-500/25 p-2.5 flex items-center gap-3 shadow-md",
             collapsed && "justify-center"
           )}
         >
-          <div className="size-8 rounded-xl bg-gradient-to-br from-pink-500 to-purple-600 text-white font-black flex items-center justify-center text-xs shrink-0 shadow-md">
+          <div className="size-8 rounded-xl bg-gradient-to-br from-blue-600 to-cyan-500 text-white font-black flex items-center justify-center text-xs shrink-0 shadow-sm">
             EO
           </div>
           {!collapsed && (
             <div className="min-w-0 flex-1">
-              <div className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate flex items-center gap-1">
+              <div className="text-xs font-bold text-white truncate flex items-center gap-1">
                 <span>Executive Owner</span>
-                <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
               </div>
-              <div className="text-[10px] text-purple-600 dark:text-purple-400 font-mono font-bold">PROTECTED ROOT</div>
+              <div className="text-[10px] text-cyan-400 font-mono font-bold">PROTECTED ROOT</div>
             </div>
           )}
         </div>
