@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
       orderBy: { createdAt: "desc" },
     });
 
-    const filtered = assets.filter((a) => {
+    const filtered = assets.filter((a: any) => {
       const matchesSearch = !q || a.name.toLowerCase().includes(q.toLowerCase()) || a.type.toLowerCase().includes(q.toLowerCase());
       const matchesType = typeFilter === "All" || (
         typeFilter === "Images" ? ["PNG", "JPG", "JPEG", "WEBP", "SVG", "AVIF", "GIF"].includes(a.type.toUpperCase()) :
@@ -25,8 +25,9 @@ export async function GET(req: NextRequest) {
     });
 
     return NextResponse.json({ success: true, assets: filtered });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message, assets: [] }, { status: 500 });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    return NextResponse.json({ success: false, error: message, assets: [] }, { status: 500 });
   }
 }
 
@@ -56,7 +57,8 @@ export async function DELETE(req: NextRequest) {
     }).catch(() => {});
 
     return NextResponse.json({ success: true, message: "Asset deleted successfully." });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }

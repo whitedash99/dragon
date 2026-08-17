@@ -3,15 +3,11 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { Navbar } from "@/components/navbar/Navbar";
-import { LifeBuoy, Clock } from "lucide-react";
-import { CRMMetricsHeader } from "@/components/crm/CRMMetricsHeader";
-import { CRMFilterBar } from "@/components/crm/CRMFilterBar";
+import { Search, RefreshCw } from "lucide-react";
 import { CRMTicketTimeline } from "@/components/crm/CRMTicketTimeline";
 import { CRMCustomerSidebar } from "@/components/crm/CRMCustomerSidebar";
 import { CRMTicketComposer } from "@/components/crm/CRMTicketComposer";
-import { SkeletonList } from "@/components/ui/skeleton";
-import { EmptyState } from "@/components/ui/empty-state";
-import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils/cn";
 
 interface MessageItem {
   id: string;
@@ -47,13 +43,6 @@ interface TicketItem {
 
 export default function CRMPage() {
   const [tickets, setTickets] = useState<TicketItem[]>([]);
-  const [telemetry, setTelemetry] = useState({
-    totalTickets: 0,
-    openTickets: 0,
-    urgentTickets: 0,
-    resolvedTickets: 0,
-    avgResponseSla: "< 4 Hours",
-  });
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
@@ -69,8 +58,6 @@ export default function CRMPage() {
       const data = await res.json();
       if (data.success && Array.isArray(data.tickets)) {
         setTickets(data.tickets);
-        if (data.telemetry) setTelemetry(data.telemetry);
-
         if (data.tickets.length > 0) {
           const current = selectedTicket
             ? data.tickets.find((t: TicketItem) => t.ticketId === selectedTicket.ticketId) || data.tickets[0]
@@ -87,11 +74,7 @@ export default function CRMPage() {
   }, [statusFilter, searchQuery, selectedTicket]);
 
   useEffect(() => {
-    let isMounted = true;
-    Promise.resolve().then(() => {
-      if (isMounted) fetchTickets();
-    });
-    return () => { isMounted = false; };
+    fetchTickets();
   }, [fetchTickets]);
 
   const handleSendReply = async (replyText: string) => {
@@ -147,7 +130,7 @@ export default function CRMPage() {
     }
   };
 
-  const handleUpdateStatus = async (newStatus: string) => {
+  const handleStatusChange = async (newStatus: string) => {
     if (!selectedTicket) return;
     try {
       await fetch("/api/crm/tickets", {
@@ -159,13 +142,14 @@ export default function CRMPage() {
           status: newStatus,
         }),
       });
+      setSelectedTicket({ ...selectedTicket, status: newStatus });
       fetchTickets();
     } catch (e) {
-      console.error("Update status error", e);
+      console.error("Status update error", e);
     }
   };
 
-  const handleUpdatePriority = async (newPriority: string) => {
+  const handlePriorityChange = async (newPriority: string) => {
     if (!selectedTicket) return;
     try {
       await fetch("/api/crm/tickets", {
@@ -177,160 +161,136 @@ export default function CRMPage() {
           priority: newPriority,
         }),
       });
+      setSelectedTicket({ ...selectedTicket, priority: newPriority });
       fetchTickets();
     } catch (e) {
-      console.error("Update priority error", e);
+      console.error("Priority update error", e);
     }
   };
 
   return (
-    <div className="flex min-h-screen bg-slate-950 text-slate-100 font-sans">
+    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans select-none overflow-hidden">
       <Sidebar />
 
       <div className="flex-1 flex flex-col min-w-0">
         <Navbar />
 
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6">
-          {/* Header Bar */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <Badge variant="purple" size="sm">Enterprise CRM Support Desk</Badge>
-                <span className="text-xs text-slate-500 font-mono">v2.4 SLA Active</span>
-              </div>
-              <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
-                <LifeBuoy className="w-6 h-6 text-purple-400" /> Customer Support Center
-              </h1>
-            </div>
-          </div>
-
-          {/* Telemetry Metrics */}
-          <CRMMetricsHeader telemetry={telemetry} />
-
-          {/* Search & Filter Bar */}
-          <CRMFilterBar
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            statusFilter={statusFilter}
-            setStatusFilter={setStatusFilter}
-            onRefresh={fetchTickets}
-            loading={loading}
-          />
-
-          {/* Main Grid View */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            {/* Ticket List Drawer */}
-            <div className="lg:col-span-4 bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-4 space-y-3">
-              <div className="flex items-center justify-between px-2 pb-2 border-b border-white/5">
-                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                  Ticket Inbox ({tickets.length})
-                </span>
-                <span className="text-[10px] text-purple-400 font-mono">Live Sync</span>
-              </div>
-
-              {loading ? (
-                <SkeletonList count={4} />
-              ) : tickets.length === 0 ? (
-                <EmptyState
-                  title="No Tickets Found"
-                  description="No customer inquiries match your current filter or search criteria."
-                />
-              ) : (
-                <div className="space-y-2 max-h-[680px] overflow-y-auto pr-1">
-                  {tickets.map((t) => {
-                    const isSelected = selectedTicket?.ticketId === t.ticketId;
-                    return (
-                      <div
-                        key={t.id}
-                        onClick={() => setSelectedTicket(t)}
-                        className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
-                          isSelected
-                            ? "bg-purple-950/40 border-purple-500/50 shadow-md shadow-purple-950/40"
-                            : "bg-slate-950/40 border-white/5 hover:border-white/15 hover:bg-slate-900/40"
-                        }`}
-                      >
-                        <div className="flex items-center justify-between mb-1.5">
-                          <span className="text-xs font-bold text-white font-mono">{t.ticketId}</span>
-                          <Badge
-                            variant={
-                              t.status === "NEW" ? "purple" : t.status === "IN_PROGRESS" ? "cyan" : "success"
-                            }
-                            size="sm"
-                          >
-                            {t.status}
-                          </Badge>
-                        </div>
-                        <div className="text-xs font-semibold text-slate-200 line-clamp-1 mb-1">
-                          {t.subject}
-                        </div>
-                        <div className="flex items-center justify-between text-[10px] text-slate-400">
-                          <span>{t.customerName}</span>
-                          <span className="flex items-center gap-1 font-mono">
-                            <Clock className="w-3 h-3" />
-                            {new Date(t.createdAt).toLocaleDateString()}
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+        <main className="flex-1 flex overflow-hidden">
+          {/* LEFT INBOX DRAWER (320px) */}
+          <aside className="w-80 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col shrink-0 p-4 space-y-4 shadow-xs">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                Support Queue ({tickets.length})
+              </span>
+              <button onClick={fetchTickets} className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors">
+                <RefreshCw className={cn("size-3.5", loading && "animate-spin")} />
+              </button>
             </div>
 
-            {/* Ticket Workspace Details */}
-            {selectedTicket ? (
-              <div className="lg:col-span-8 space-y-6">
-                <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
-                  {/* Timeline & Reply Panel */}
-                  <div className="xl:col-span-7 space-y-6">
-                    {/* Ticket Title Banner */}
-                    <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-5 shadow-lg">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Badge variant="purple" size="sm">{selectedTicket.category || "General"}</Badge>
-                        <Badge
-                          variant={selectedTicket.priority === "URGENT" ? "danger" : "default"}
-                          size="sm"
-                        >
-                          {selectedTicket.priority} Priority
-                        </Badge>
-                      </div>
-                      <h2 className="text-lg font-bold text-white mb-1">{selectedTicket.subject}</h2>
-                      <div className="text-xs text-slate-400 font-mono">
-                        Ticket ID: {selectedTicket.ticketId} • Logged via Public Web Portal
-                      </div>
+            {/* Filter Bar */}
+            <div className="flex items-center gap-1.5">
+              {["All", "NEW", "IN_PROGRESS", "RESOLVED"].map((st) => (
+                <button
+                  key={st}
+                  onClick={() => setStatusFilter(st)}
+                  className={cn(
+                    "px-2.5 py-1 rounded-lg text-xs font-medium transition-all",
+                    statusFilter === st
+                      ? "bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-semibold shadow-xs"
+                      : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800"
+                  )}
+                >
+                  {st}
+                </button>
+              ))}
+            </div>
+
+            {/* Ticket List */}
+            <div className="flex-1 overflow-y-auto space-y-2 pr-1">
+              {tickets.map((t) => {
+                const isSelected = selectedTicket?.ticketId === t.ticketId;
+                return (
+                  <button
+                    key={t.id}
+                    onClick={() => setSelectedTicket(t)}
+                    className={cn(
+                      "w-full text-left p-3.5 rounded-xl border transition-all space-y-1.5",
+                      isSelected
+                        ? "bg-slate-900 dark:bg-slate-100 border-slate-900 dark:border-slate-100 text-white dark:text-slate-900 shadow-xs"
+                        : "bg-slate-50/70 dark:bg-slate-800/40 border-slate-200/80 dark:border-slate-700/80 text-slate-700 dark:text-slate-300 hover:bg-slate-100/80 dark:hover:bg-slate-800"
+                    )}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className={cn("text-xs font-mono font-bold", isSelected ? "text-white dark:text-slate-900" : "text-slate-900 dark:text-slate-100")}>{t.ticketId}</span>
+                      <span className={cn(
+                        "text-[10px] font-mono uppercase px-2 py-0.5 rounded-full border",
+                        isSelected
+                          ? "bg-emerald-800 dark:bg-emerald-200 text-emerald-100 dark:text-emerald-900 border-emerald-700 dark:border-emerald-300"
+                          : "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800"
+                      )}>
+                        {t.status}
+                      </span>
                     </div>
+                    <div className={cn("text-xs font-semibold truncate", isSelected ? "text-white dark:text-slate-900" : "text-slate-900 dark:text-slate-100")}>{t.subject}</div>
+                    <div className={cn("flex items-center justify-between text-[11px]", isSelected ? "text-slate-300 dark:text-slate-600" : "text-slate-500 dark:text-slate-400")}>
+                      <span>{t.customerName}</span>
+                      <span>{new Date(t.createdAt).toLocaleDateString()}</span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </aside>
 
-                    {/* Threaded Timeline */}
-                    <CRMTicketTimeline ticket={selectedTicket} />
-
-                    {/* Response Composer */}
-                    <CRMTicketComposer
-                      onSendReply={handleSendReply}
-                      onAddNote={handleSaveInternalNote}
-                      sending={sending}
-                      dispatchedSuccess={dispatchedSuccess}
-                    />
+          {/* MAIN TICKET WORKSPACE & CUSTOMER DETAILS PANEL */}
+          <section className="flex-1 flex min-w-0 bg-slate-50 dark:bg-slate-950 overflow-hidden">
+            {selectedTicket ? (
+              <div className="flex-1 flex overflow-hidden">
+                {/* Center Conversation Stream */}
+                <div className="flex-1 overflow-y-auto p-8 space-y-6">
+                  {/* Ticket Banner */}
+                  <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 space-y-2 shadow-xs">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-semibold uppercase bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-full text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-mono">
+                        {selectedTicket.category}
+                      </span>
+                      <span className="text-xs font-semibold uppercase bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 px-2.5 py-1 rounded-full border border-rose-200 dark:border-rose-800 font-mono">
+                        {selectedTicket.priority} Priority
+                      </span>
+                    </div>
+                    <h1 className="text-2xl font-extrabold text-slate-900 dark:text-slate-100">{selectedTicket.subject}</h1>
+                    <div className="text-xs text-slate-500 dark:text-slate-400 font-mono">
+                      Customer: {selectedTicket.customerName} ({selectedTicket.customerEmail}) • Ticket ID: {selectedTicket.ticketId}
+                    </div>
                   </div>
 
-                  {/* Customer Metadata Drawer */}
-                  <div className="xl:col-span-5">
-                    <CRMCustomerSidebar
-                      ticket={selectedTicket}
-                      onStatusChange={handleUpdateStatus}
-                      onPriorityChange={handleUpdatePriority}
-                    />
-                  </div>
+                  {/* Timeline */}
+                  <CRMTicketTimeline ticket={selectedTicket} />
+
+                  {/* Response Composer */}
+                  <CRMTicketComposer
+                    onSendReply={handleSendReply}
+                    onAddNote={handleSaveInternalNote}
+                    sending={sending}
+                    dispatchedSuccess={dispatchedSuccess}
+                  />
+                </div>
+
+                {/* Right Context Inspector Panel (320px) */}
+                <div className="w-80 border-l border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/50 p-6 overflow-y-auto shrink-0 hidden xl:block">
+                  <CRMCustomerSidebar
+                    ticket={selectedTicket}
+                    onStatusChange={handleStatusChange}
+                    onPriorityChange={handlePriorityChange}
+                  />
                 </div>
               </div>
             ) : (
-              <div className="lg:col-span-8">
-                <EmptyState
-                  title="Select a Ticket"
-                  description="Choose a customer inquiry from the left drawer to inspect timeline history and compose replies."
-                />
+              <div className="flex-1 flex items-center justify-center text-slate-400 dark:text-slate-500 text-sm font-sans">
+                Select a ticket from the left queue to view details and compose replies.
               </div>
             )}
-          </div>
+          </section>
         </main>
       </div>
     </div>

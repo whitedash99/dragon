@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
+import { getAuthenticatedUser } from "@/lib/auth/auth";
+import { can } from "@dragon/auth";
 
 export async function GET() {
   try {
@@ -36,6 +38,14 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
+    const auth = await getAuthenticatedUser();
+    if (!auth) {
+      return NextResponse.json({ success: false, error: "Authentication required." }, { status: 401 });
+    }
+    if (!can(auth.user, "settings.manage") && !can(auth.user, "security.manage")) {
+      return NextResponse.json({ success: false, error: "Access Denied: Requires settings.manage permission." }, { status: 403 });
+    }
+
     const body = await req.json();
     const { action } = body;
 
@@ -43,11 +53,13 @@ export async function POST(req: NextRequest) {
     if (action === "flush_cache") {
       await prisma.auditLog.create({
         data: {
+          userId: auth.user.id,
+          userEmail: auth.user.email,
           action: "FLUSH_SERVER_CACHE",
-          userEmail: "Cloud Architect",
+          resource: "PERFORMANCE",
           details: "Cleared server-side cache records and optimized memory buffers.",
         },
-      });
+      }).catch((e) => console.warn("AuditLog warning:", e));
 
       return NextResponse.json({ success: true, message: "Server-side cache flushed successfully." });
     }
@@ -56,11 +68,13 @@ export async function POST(req: NextRequest) {
     if (action === "optimize_db") {
       await prisma.auditLog.create({
         data: {
+          userId: auth.user.id,
+          userEmail: auth.user.email,
           action: "OPTIMIZE_POSTGRESQL_INDEXES",
-          userEmail: "Cloud Architect",
+          resource: "PERFORMANCE",
           details: "Executed VACUUM ANALYZE and query optimizer indexing.",
         },
-      });
+      }).catch((e) => console.warn("AuditLog warning:", e));
 
       return NextResponse.json({ success: true, message: "PostgreSQL query indexes optimized." });
     }

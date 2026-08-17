@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
+import { getAuthenticatedUser } from "@/lib/auth/auth";
+import { can } from "@dragon/auth";
 
 export async function GET() {
   try {
@@ -43,6 +45,14 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
+    const auth = await getAuthenticatedUser();
+    if (!auth) {
+      return NextResponse.json({ success: false, error: "Authentication required." }, { status: 401 });
+    }
+    if (!can(auth.user, "settings.manage")) {
+      return NextResponse.json({ success: false, error: "Access Denied: Requires settings.manage permission." }, { status: 403 });
+    }
+
     const body = await req.json();
     const { action, name, category, triggerType, actionType, workflowId } = body;
 
@@ -60,11 +70,13 @@ export async function POST(req: NextRequest) {
 
       await prisma.auditLog.create({
         data: {
+          userId: auth.user.id,
+          userEmail: auth.user.email,
           action: "CREATE_AUTOMATION_WORKFLOW",
-          userEmail: "Workflow Lead",
+          resource: "AUTOMATION",
           details: `Created automation workflow: ${name}`,
         },
-      });
+      }).catch((e) => console.warn("AuditLog warning:", e));
 
       return NextResponse.json({ success: true, workflow: wf });
     }
@@ -84,9 +96,19 @@ export async function POST(req: NextRequest) {
           workflow: workflowId,
           event: "MANUAL_WORKFLOW_EXECUTION",
           status: "SUCCESS",
-          details: "Workflow executed via Enterprise Automation Engine.",
+          details: `Workflow executed by ${auth.user.email} via Enterprise Automation Engine.`,
         },
       });
+
+      await prisma.auditLog.create({
+        data: {
+          userId: auth.user.id,
+          userEmail: auth.user.email,
+          action: "EXECUTE_WORKFLOW",
+          resource: "AUTOMATION",
+          details: `Manually executed workflow ${workflowId}`,
+        },
+      }).catch((e) => console.warn("AuditLog warning:", e));
 
       return NextResponse.json({ success: true, execution: exec });
     }

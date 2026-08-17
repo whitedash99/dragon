@@ -142,8 +142,9 @@ export async function GET(req: NextRequest) {
       message: "Email ownership verified successfully. Permanent verified status granted.",
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
     console.error("Verification API Error:", error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }

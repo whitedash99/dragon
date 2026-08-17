@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
+import { sendContactReplyEmail } from "@dragon/email";
+import { getAuthenticatedUser } from "@/lib/auth/auth";
+import { can } from "@dragon/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -28,19 +31,18 @@ export async function GET(req: NextRequest) {
       orderBy: { createdAt: "desc" },
     });
 
-    // Also fetch public messages from TicketMessage table (where ticketId = publicTicket.ticketId)
-    const publicMessages = await prisma.$queryRaw<Array<{ id: string; ticketId: string; sender: string; senderName: string; message: string; createdAt: Date }>>`
-      SELECT id, "ticketId", sender, "senderName", message, "createdAt"
-      SELECT_MESSAGES FROM "TicketMessage" ORDER BY "createdAt" ASC
-    `.catch(async () => {
-      try {
-        return await prisma.$queryRaw<Array<{ id: string; ticketId: string; sender: string; senderName: string; message: string; createdAt: Date }>>`
-          SELECT id, "ticketId", sender, "senderName", message, "createdAt" FROM "TicketMessage" ORDER BY "createdAt" ASC
-        `;
-      } catch {
-        return [];
-      }
-    });
+    // Fetch messages from TicketMessage table
+    const publicMessages = await prisma.ticketMessage.findMany({
+      orderBy: { createdAt: "asc" },
+      select: {
+        id: true,
+        ticketId: true,
+        sender: true,
+        senderName: true,
+        message: true,
+        createdAt: true,
+      },
+    }).catch(() => []);
 
     // Map public tickets into normalized Ticket format
     const normalizedPublic = publicTickets.map((pt) => {
@@ -175,8 +177,17 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
+    const auth = await getAuthenticatedUser();
+    if (!auth) {
+      return NextResponse.json({ success: false, error: "Authentication required." }, { status: 401 });
+    }
+    if (!can(auth.user, "crm.manage") && !can(auth.user, "support.manage")) {
+      return NextResponse.json({ success: false, error: "Access Denied: Requires crm.manage permission." }, { status: 403 });
+    }
+
     const body = await req.json();
-    const { action, ticketId, customerName, customerEmail, category, subject, description, priority, status, message, adminName, assignedAgent, internalNote } = body;
+    const { action, ticketId, customerName, customerEmail, category, subject, description, priority, status, message, assignedAgent, internalNote } = body;
+    const agentName = auth.user.name || auth.user.email;
 
     // 1. Create Inbound Ticket
     if (action === "create_ticket" || (!action && customerEmail && subject)) {
@@ -208,11 +219,13 @@ export async function POST(req: NextRequest) {
 
       await prisma.auditLog.create({
         data: {
+          userId: auth.user.id,
+          userEmail: auth.user.email,
           action: "CREATE_SUPPORT_TICKET",
-          userEmail: customerEmail,
+          resource: "CRM",
           details: `Ticket Created: ${ticket.ticketId} (${ticket.subject})`,
         },
-      });
+      }).catch((e) => console.warn("AuditLog warning:", e));
 
       return NextResponse.json({ success: true, ticket });
     }
@@ -232,50 +245,97 @@ export async function POST(req: NextRequest) {
     // 2. Admin Reply Dispatch
     if (action === "send_reply" || message) {
       const replyContent = message || "Thank you for contacting Dragon Studios Support.";
-      const sender = adminName || "Dragon Support Agent";
+      const sender = agentName;
 
       if (publicTicket) {
-        // Insert reply into TicketMessage table for public ticket
-        const msgId = `msg_${Date.now()}`;
-        await prisma.$executeRaw`
-          INSERT INTO "TicketMessage" (id, "ticketId", sender, "senderName", message, "createdAt")
-          VALUES (${msgId}, ${publicTicket.ticketId}, 'AGENT', ${sender}, ${replyContent}, NOW())
-        `.catch(async () => {
-          // Fallback if schema matches senderType
-          try {
-            await prisma.$executeRaw`
-              INSERT INTO "TicketMessage" (id, "ticketId", "senderType", "senderName", message, "createdAt")
-              VALUES (${msgId}, ${publicTicket.id}, 'AGENT', ${sender}, ${replyContent}, NOW())
-            `;
-          } catch (e) {
-            console.error("Message insert error:", e);
-          }
+        // Look up the mirror Ticket record (TicketActivity FK references Ticket.id)
+        const mirrorTicket = await prisma.ticket.findUnique({ where: { ticketId } });
+
+        // Insert into TicketReply table
+        await prisma.ticketReply.create({
+          data: {
+            contactTicketId: publicTicket.id,
+            senderType: "AGENT",
+            senderName: sender,
+            senderEmail: "support@dragonstudios.com",
+            message: replyContent,
+          },
         });
+
+        // Insert reply into TicketMessage table for backward compatibility
+        const msgId = `msg_${Date.now()}`;
+        if (mirrorTicket) {
+          await prisma.ticketMessage.create({
+            data: {
+              id: msgId,
+              ticketId: mirrorTicket.id,
+              senderType: "AGENT",
+              senderName: sender,
+              senderEmail: "support@dragonstudios.com",
+              message: replyContent,
+            },
+          }).catch((e) => console.error("Message insert error:", e));
+        }
 
         const updatedTicket = await prisma.contactTicket.update({
           where: { ticketId },
           data: {
-            status: status || "INVESTIGATING",
+            status: status || "WAITING_FOR_CUSTOMER",
             replied: true,
             updatedAt: new Date(),
           },
         });
 
+        // Also sync status to the mirror Ticket
+        if (mirrorTicket) {
+          await prisma.ticket.update({
+            where: { ticketId },
+            data: {
+              status: status || "WAITING_FOR_CUSTOMER",
+              lastReplyAt: new Date(),
+            },
+          }).catch(() => {});
+        }
+
+        // Create Activity Log using mirror Ticket.id (satisfies FK constraint)
+        if (mirrorTicket) {
+          await prisma.ticketActivity.create({
+            data: {
+              ticketId: mirrorTicket.id,
+              action: "AGENT_REPLIED",
+              details: `Agent ${sender} replied to Ticket ${ticketId}`,
+              performer: sender,
+            },
+          });
+        }
+
+        // Dispatch Email via Resend
+        const dispatchRes = await sendContactReplyEmail({
+          contactId: publicTicket.id,
+          toEmail: publicTicket.email,
+          subject: `RE: [${publicTicket.ticketId}] ${publicTicket.subject}`,
+          message: replyContent,
+        }).catch(() => ({ success: false, messageId: undefined }));
+
         await prisma.emailLog.create({
           data: {
             recipient: publicTicket.email,
             subject: `RE: [${publicTicket.ticketId}] ${publicTicket.subject}`,
-            status: "DISPATCHED",
+            status: dispatchRes.success ? "DISPATCHED" : "FAILED",
+            providerResponse: dispatchRes.messageId || "Resend Dispatch",
+            template: "SUPPORT_REPLY",
           },
         });
 
         await prisma.auditLog.create({
           data: {
+            userId: auth.user.id,
+            userEmail: auth.user.email,
             action: "DISPATCH_SUPPORT_REPLY",
-            userEmail: publicTicket.email,
+            resource: "CRM",
             details: `Agent ${sender} replied to Ticket ${ticketId}`,
           },
-        });
+        }).catch((e) => console.warn("AuditLog warning:", e));
 
         return NextResponse.json({ success: true, ticket: updatedTicket });
       }
@@ -291,30 +351,61 @@ export async function POST(req: NextRequest) {
           },
         });
 
+        await prisma.ticketReply.create({
+          data: {
+            ticketId: adminTicket.id,
+            senderType: "AGENT",
+            senderName: sender,
+            senderEmail: "support@dragonstudios.com",
+            message: replyContent,
+          },
+        });
+
         const updatedTicket = await prisma.ticket.update({
           where: { ticketId },
           data: {
-            status: status || "INVESTIGATING",
+            status: status || "WAITING_FOR_CUSTOMER",
             lastReplyAt: new Date(),
           },
         });
+
+        await prisma.ticketActivity.create({
+          data: {
+            ticketId: adminTicket.id,
+            action: "AGENT_REPLIED",
+            details: `Agent ${sender} replied to Ticket ${ticketId}`,
+            performer: sender,
+          },
+        });
+
+        // Dispatch Email via Resend
+        const dispatchRes = await sendContactReplyEmail({
+          contactId: adminTicket.id,
+          toEmail: adminTicket.customerEmail,
+          subject: `RE: [${adminTicket.ticketId}] ${adminTicket.subject}`,
+          message: replyContent,
+        }).catch(() => ({ success: false, messageId: undefined }));
 
         await prisma.emailLog.create({
           data: {
             ticketId: adminTicket.id,
             recipient: adminTicket.customerEmail,
             subject: `RE: [${adminTicket.ticketId}] ${adminTicket.subject}`,
-            status: "DISPATCHED",
+            status: dispatchRes.success ? "DISPATCHED" : "FAILED",
+            providerResponse: dispatchRes.messageId || "Resend Dispatch",
+            template: "SUPPORT_REPLY",
           },
         });
 
         await prisma.auditLog.create({
           data: {
+            userId: auth.user.id,
+            userEmail: auth.user.email,
             action: "DISPATCH_SUPPORT_REPLY",
-            userEmail: adminTicket.customerEmail,
+            resource: "CRM",
             details: `Agent ${sender} replied to Ticket ${ticketId}`,
           },
-        });
+        }).catch((e) => console.warn("AuditLog warning:", e));
 
         return NextResponse.json({ success: true, ticket: updatedTicket, message: msg });
       }
@@ -323,23 +414,63 @@ export async function POST(req: NextRequest) {
     // 3. Update Status / Priority / Agent Assignment
     if (action === "update_ticket") {
       if (publicTicket) {
+        // Look up the mirror Ticket record (TicketActivity FK references Ticket.id)
+        const mirrorTicket = await prisma.ticket.findUnique({ where: { ticketId } });
+
         const updated = await prisma.contactTicket.update({
           where: { ticketId },
           data: {
             status: status || undefined,
             priority: priority || undefined,
             assignedStaff: assignedAgent || undefined,
-            internalNotes: internalNote ? `${publicTicket.internalNotes ? publicTicket.internalNotes + "\n" : ""}[${adminName || "Admin"}]: ${internalNote}` : undefined,
+            internalNotes: internalNote ? `${publicTicket.internalNotes ? publicTicket.internalNotes + "\n" : ""}[${agentName}]: ${internalNote}` : undefined,
           },
         });
 
+        // Sync updates to the mirror Ticket
+        if (mirrorTicket) {
+          await prisma.ticket.update({
+            where: { ticketId },
+            data: {
+              status: status || undefined,
+              priority: priority || undefined,
+              assignedAgent: assignedAgent || undefined,
+            },
+          }).catch(() => {});
+        }
+
+        if (assignedAgent && assignedAgent !== publicTicket.assignedStaff) {
+          await prisma.ticketAssignment.create({
+            data: {
+              ticketId: mirrorTicket?.id || publicTicket.id,
+              assignedTo: assignedAgent,
+              assignedBy: agentName,
+              note: internalNote || "Assigned via CRM Desk",
+            },
+          });
+        }
+
+        // Create Activity Log using mirror Ticket.id (satisfies FK constraint)
+        if (mirrorTicket) {
+          await prisma.ticketActivity.create({
+            data: {
+              ticketId: mirrorTicket.id,
+              action: "TICKET_UPDATED",
+              details: `Status=${status || publicTicket.status}, Priority=${priority || publicTicket.priority}, Agent=${assignedAgent || publicTicket.assignedStaff}`,
+              performer: agentName,
+            },
+          });
+        }
+
         await prisma.auditLog.create({
           data: {
+            userId: auth.user.id,
+            userEmail: auth.user.email,
             action: "UPDATE_SUPPORT_TICKET",
-            userEmail: publicTicket.email,
+            resource: "CRM",
             details: `Ticket ${ticketId} updated: Status=${status || publicTicket.status}, Priority=${priority || publicTicket.priority}`,
           },
-        });
+        }).catch((e) => console.warn("AuditLog warning:", e));
 
         return NextResponse.json({ success: true, ticket: updated });
       }
@@ -354,26 +485,87 @@ export async function POST(req: NextRequest) {
           },
         });
 
+        if (assignedAgent && assignedAgent !== adminTicket.assignedAgent) {
+          await prisma.ticketAssignment.create({
+            data: {
+              ticketId: adminTicket.id,
+              assignedTo: assignedAgent,
+              assignedBy: agentName,
+              note: internalNote || "Assigned via CRM Desk",
+            },
+          });
+        }
+
         if (internalNote) {
           await prisma.internalNote.create({
             data: {
               ticketId: adminTicket.id,
-              author: adminName || "Admin",
+              author: agentName,
               note: internalNote,
             },
           });
         }
 
-        await prisma.auditLog.create({
+        await prisma.ticketActivity.create({
           data: {
-            action: "UPDATE_SUPPORT_TICKET",
-            userEmail: adminTicket.customerEmail,
-            details: `Ticket ${ticketId} updated: Status=${status || adminTicket.status}, Priority=${priority || adminTicket.priority}`,
+            ticketId: adminTicket.id,
+            action: "TICKET_UPDATED",
+            details: `Status=${status || adminTicket.status}, Priority=${priority || adminTicket.priority}, Agent=${assignedAgent || adminTicket.assignedAgent}`,
+            performer: agentName,
           },
         });
 
+        await prisma.auditLog.create({
+          data: {
+            userId: auth.user.id,
+            userEmail: auth.user.email,
+            action: "UPDATE_SUPPORT_TICKET",
+            resource: "CRM",
+            details: `Ticket ${ticketId} updated: Status=${status || adminTicket.status}, Priority=${priority || adminTicket.priority}`,
+          },
+        }).catch((e) => console.warn("AuditLog warning:", e));
+
         return NextResponse.json({ success: true, ticket: updated });
       }
+    }
+
+    // 4. Bulk Operations
+    if (action === "bulk_update" && Array.isArray(body.ticketIds)) {
+      const { ticketIds, bulkStatus, bulkPriority, bulkAgent, bulkDelete } = body;
+
+      if (bulkDelete) {
+        await prisma.contactTicket.deleteMany({ where: { ticketId: { in: ticketIds } } });
+        await prisma.ticket.deleteMany({ where: { ticketId: { in: ticketIds } } });
+        return NextResponse.json({ success: true, message: `Bulk deleted ${ticketIds.length} tickets` });
+      }
+
+      const updateData: Record<string, unknown> = {};
+      if (bulkStatus) updateData.status = bulkStatus;
+      if (bulkPriority) updateData.priority = bulkPriority;
+      if (bulkAgent) {
+        updateData.assignedStaff = bulkAgent;
+        updateData.assignedAgent = bulkAgent;
+      }
+
+      await prisma.contactTicket.updateMany({
+        where: { ticketId: { in: ticketIds } },
+        data: {
+          status: bulkStatus || undefined,
+          priority: bulkPriority || undefined,
+          assignedStaff: bulkAgent || undefined,
+        },
+      });
+
+      await prisma.ticket.updateMany({
+        where: { ticketId: { in: ticketIds } },
+        data: {
+          status: bulkStatus || undefined,
+          priority: bulkPriority || undefined,
+          assignedAgent: bulkAgent || undefined,
+        },
+      });
+
+      return NextResponse.json({ success: true, message: `Bulk updated ${ticketIds.length} tickets` });
     }
 
     return NextResponse.json({ success: false, error: "Invalid action" }, { status: 400 });

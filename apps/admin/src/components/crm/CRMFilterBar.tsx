@@ -19,7 +19,18 @@ export function CRMFilterBar({
   onRefresh,
   loading,
 }: CRMFilterBarProps) {
-  const statuses = ["All", "NEW", "IN_PROGRESS", "RESOLVED", "CLOSED"];
+  const statuses = [
+    "All",
+    "OPEN",
+    "PENDING",
+    "ASSIGNED",
+    "IN_PROGRESS",
+    "WAITING_FOR_CUSTOMER",
+    "RESOLVED",
+    "CLOSED",
+    "SPAM",
+    "ARCHIVED",
+  ];
 
   return (
     <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 bg-slate-900/60 backdrop-blur-xl border border-white/10 p-4 rounded-2xl mb-6">

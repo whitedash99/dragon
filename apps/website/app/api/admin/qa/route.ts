@@ -29,8 +29,9 @@ export async function GET() {
     };
 
     return NextResponse.json({ success: true, qa: qaData });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }
 
@@ -62,7 +63,8 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ success: true, message: "QA action processed." });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }

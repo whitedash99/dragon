@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
+import { getAuthenticatedUser } from "@/lib/auth/auth";
+import { can } from "@dragon/auth";
 
 export async function GET() {
   try {
@@ -46,6 +48,14 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
+    const auth = await getAuthenticatedUser();
+    if (!auth) {
+      return NextResponse.json({ success: false, error: "Authentication required." }, { status: 401 });
+    }
+    if (!can(auth.user, "settings.manage")) {
+      return NextResponse.json({ success: false, error: "Access Denied: Requires settings.manage permission." }, { status: 403 });
+    }
+
     const body = await req.json();
     const { action } = body;
 
@@ -64,11 +74,13 @@ export async function POST(req: NextRequest) {
 
       await prisma.auditLog.create({
         data: {
+          userId: auth.user.id,
+          userEmail: auth.user.email,
           action: "TRIGGER_AUTOMATED_QA_SUITE",
-          userEmail: "Lead DevOps",
+          resource: "DEVELOPER",
           details: "Automated QA Test Suite executed. 100% Pass Rate.",
         },
-      });
+      }).catch((e) => console.warn("AuditLog warning:", e));
 
       return NextResponse.json({ success: true, message: "QA Test Suite executed cleanly." });
     }

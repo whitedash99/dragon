@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
         totalAchievements: 100,
         globalRank: "#142",
       },
-      library: games.map((g, idx) => ({
+      library: games.map((g: any, idx: number) => ({
         id: g.id,
         title: g.title,
         slug: g.slug,
@@ -56,7 +56,8 @@ export async function GET(req: NextRequest) {
     };
 
     return NextResponse.json({ success: true, platform: platformData });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }

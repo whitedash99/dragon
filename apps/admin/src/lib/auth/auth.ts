@@ -13,6 +13,9 @@ export async function comparePassword(password: string, hash?: string | null): P
 }
 
 export async function createAdminSession(userId: string, ipAddress?: string, userAgent?: string) {
+  // Invalidate any existing sessions for this user to enforce session fixation protection & rotation
+  await prisma.session.deleteMany({ where: { userId } }).catch(() => {});
+
   const sessionToken = `session_${Math.random().toString(36).substring(2, 18)}_${Date.now()}`;
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
 
@@ -26,14 +29,18 @@ export async function createAdminSession(userId: string, ipAddress?: string, use
     },
   });
 
-  const cookieStore = await cookies();
-  cookieStore.set("dragon_admin_session", sessionToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    expires: expiresAt,
-  });
+  try {
+    const cookieStore = await cookies();
+    cookieStore.set("dragon_admin_session", sessionToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      expires: expiresAt,
+    });
+  } catch (e: unknown) {
+    console.warn("Cookie set warning:", e);
+  }
 
   return session;
 }
@@ -50,6 +57,11 @@ export async function getAuthenticatedUser() {
   });
 
   if (!session || session.expiresAt < new Date()) {
+    return null;
+  }
+
+  // Ensure active status and not deleted
+  if (!session.user.isActive || session.user.isDeleted || session.user.status === "DISABLED" || session.user.status === "DEACTIVATED") {
     return null;
   }
 
@@ -78,8 +90,45 @@ export async function destroyAdminSession() {
   });
 }
 
+/**
+ * Enforces recent authentication (Step-Up Auth) within maxAgeMs (default 15 minutes) for sensitive operations.
+ */
+export function verifyRecentReauthentication(session: { createdAt: Date }, maxAgeMs = 15 * 60 * 1000): boolean {
+  if (!session || !session.createdAt) return false;
+  const age = Date.now() - new Date(session.createdAt).getTime();
+  return age <= maxAgeMs;
+}
+
+/**
+ * Centralized audit logging helper for security events.
+ */
+export async function recordAuditEvent(
+  userId?: string | null,
+  userEmail?: string | null,
+  action: string = "UNKNOWN_ACTION",
+  resource?: string,
+  details?: string,
+  ipAddress?: string
+) {
+  try {
+    return await prisma.auditLog.create({
+      data: {
+        userId,
+        userEmail: userEmail || "System",
+        action,
+        resource: resource || "SYSTEM",
+        details: details || "Security event logged",
+        ipAddress: ipAddress || "127.0.0.1",
+      },
+    });
+  } catch (e) {
+    console.warn("Record audit event warning:", e);
+    return null;
+  }
+}
+
 export function checkRolePermission(userRole: string, resource: string): boolean {
-  if (userRole === "OWNER" || userRole === "SUPER_ADMIN") return true;
+  if (userRole === "OWNER" || userRole === "SUPER_ADMIN" || userRole === "FOUNDER" || userRole === "CO_FOUNDER") return true;
 
   if (userRole === "SUPPORT") {
     return resource === "crm" || resource === "knowledge" || resource === "notifications";

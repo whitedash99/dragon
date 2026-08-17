@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
+import { getAuthenticatedUser } from "@/lib/auth/auth";
+import { can } from "@dragon/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -42,8 +44,16 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
+    const auth = await getAuthenticatedUser();
+    if (!auth) {
+      return NextResponse.json({ success: false, error: "Authentication required." }, { status: 401 });
+    }
+    if (!can(auth.user, "cms.edit")) {
+      return NextResponse.json({ success: false, error: "Access Denied: Requires cms.edit permission." }, { status: 403 });
+    }
+
     const body = await req.json();
-    const { title, slug, category, status, author, content } = body;
+    const { title, slug, category, status, content } = body;
 
     if (!title || !slug) {
       return NextResponse.json({ success: false, error: "Title and slug are required" }, { status: 400 });
@@ -57,7 +67,7 @@ export async function POST(req: NextRequest) {
         slug: safeSlug,
         category: category || "General",
         status: status || "PUBLISHED",
-        author: author || "Dragon CMS Team",
+        author: auth.user.email,
       },
     });
 
@@ -82,11 +92,13 @@ export async function POST(req: NextRequest) {
 
     await prisma.auditLog.create({
       data: {
+        userId: auth.user.id,
+        userEmail: auth.user.email,
         action: "CREATE_CMS_PAGE",
-        userEmail: author || "Admin",
+        resource: "CMS",
         details: `Created Page: ${page.title} (${page.slug})`,
       },
-    });
+    }).catch((e) => console.warn("AuditLog warning:", e));
 
     return NextResponse.json({ success: true, page });
   } catch (error: unknown) {
@@ -97,6 +109,14 @@ export async function POST(req: NextRequest) {
 
 export async function PUT(req: NextRequest) {
   try {
+    const auth = await getAuthenticatedUser();
+    if (!auth) {
+      return NextResponse.json({ success: false, error: "Authentication required." }, { status: 401 });
+    }
+    if (!can(auth.user, "cms.edit")) {
+      return NextResponse.json({ success: false, error: "Access Denied: Requires cms.edit permission." }, { status: 403 });
+    }
+
     const body = await req.json();
     const { id, title, status, category } = body;
 
@@ -115,11 +135,13 @@ export async function PUT(req: NextRequest) {
 
     await prisma.auditLog.create({
       data: {
+        userId: auth.user.id,
+        userEmail: auth.user.email,
         action: "UPDATE_CMS_PAGE",
-        userEmail: "Admin",
+        resource: "CMS",
         details: `Updated Page: ${updated.title} -> Status: ${updated.status}`,
       },
-    });
+    }).catch((e) => console.warn("AuditLog warning:", e));
 
     return NextResponse.json({ success: true, page: updated });
   } catch (error: unknown) {
@@ -130,6 +152,14 @@ export async function PUT(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   try {
+    const auth = await getAuthenticatedUser();
+    if (!auth) {
+      return NextResponse.json({ success: false, error: "Authentication required." }, { status: 401 });
+    }
+    if (!can(auth.user, "cms.edit")) {
+      return NextResponse.json({ success: false, error: "Access Denied: Requires cms.edit permission." }, { status: 403 });
+    }
+
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
 
@@ -143,11 +173,13 @@ export async function DELETE(req: NextRequest) {
 
       await prisma.auditLog.create({
         data: {
+          userId: auth.user.id,
+          userEmail: auth.user.email,
           action: "DELETE_CMS_PAGE",
-          userEmail: "Admin",
+          resource: "CMS",
           details: `Deleted Page: ${page.title} (${page.slug})`,
         },
-      });
+      }).catch((e) => console.warn("AuditLog warning:", e));
     }
 
     return NextResponse.json({ success: true, message: "Page deleted successfully." });

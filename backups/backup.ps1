@@ -21,8 +21,8 @@ $schemaFile = Join-Path $snapshotsDir "schema_snapshot_$timestamp.prisma"
 Write-Host "Executing Master Backup for Dragon Studios at $timestamp..." -ForegroundColor Cyan
 
 # 1. Database Dump
-$env:PGPASSWORD = "123456654321"
-pg_dump -U postgres -h localhost -p 5432 -d dragon_db --clean --if-exists -f $dbFile
+$dbUrl = if ($env:DATABASE_URL) { $env:DATABASE_URL } else { "postgresql://neondb_owner:npg_PLneOSAEjJ36@ep-still-brook-az2n4i12.c-3.ap-southeast-1.aws.neon.tech/neondb?sslmode=require" }
+pg_dump --dbname=$dbUrl --clean --if-exists -f $dbFile
 
 if (Test-Path $dbFile) {
   $size = (Get-Item $dbFile).Length

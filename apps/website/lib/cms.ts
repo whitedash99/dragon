@@ -126,8 +126,8 @@ export const DEFAULT_CONTENT_BLOCKS: DefaultBlock[] = [
  */
 export async function getAllContentBlocks() {
   try {
-    const dbBlocks = await prisma.contentBlock.findMany();
-    const map = new Map(dbBlocks.map((b) => [b.key, b]));
+    const dbBlocks: any[] = await prisma.contentBlock.findMany();
+    const map = new Map<string, any>(dbBlocks.map((b: any) => [b.key, b]));
 
     return DEFAULT_CONTENT_BLOCKS.map((def) => {
       const dbItem = map.get(def.key);
@@ -158,7 +158,7 @@ export async function getAllContentBlocks() {
         updatedAt: new Date(),
       };
     });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error fetching content blocks from DB:", error);
     return DEFAULT_CONTENT_BLOCKS.map((def) => ({
       id: `def-${def.key}`,

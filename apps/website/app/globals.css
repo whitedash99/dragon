@@ -12,17 +12,17 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  background: #030304;
+  background: #030712;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
   background:
-    radial-gradient(ellipse 80% 50% at 50% -12%, rgba(120, 18, 22, 0.22), transparent 68%),
-    radial-gradient(ellipse 45% 28% at 108% 40%, rgba(160, 72, 14, 0.07), transparent 70%),
-    radial-gradient(ellipse 40% 30% at -8% 60%, rgba(80, 12, 48, 0.06), transparent 70%),
-    #030304;
+    radial-gradient(ellipse 80% 50% at 50% -12%, rgba(37, 99, 235, 0.18), transparent 68%),
+    radial-gradient(ellipse 45% 28% at 108% 40%, rgba(6, 182, 212, 0.08), transparent 70%),
+    radial-gradient(ellipse 40% 30% at -8% 60%, rgba(30, 58, 138, 0.08), transparent 70%),
+    #030712;
   color: var(--color-foreground);
   font-family: var(--font-sans);
   line-height: 1.6;
@@ -42,7 +42,7 @@ body::before {
   inset: 0;
   pointer-events: none;
   content: "";
-  opacity: 0.022;
+  opacity: 0.02;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   mix-blend-mode: overlay;
 }
@@ -68,7 +68,7 @@ a, button, input, select, textarea {
 }
 
 a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
-  outline: 2px solid var(--color-gold-400);
+  outline: 2px solid #38bdf8;
   outline-offset: 3px;
 }
 
@@ -77,19 +77,19 @@ input, select, textarea {
 }
 
 ::placeholder {
-  color: color-mix(in srgb, var(--color-muted-foreground) 75%, transparent);
+  color: rgba(148, 163, 184, 0.6);
 }
 
 ::selection {
-  background: oklch(0.60 0.22 25 / 0.35);
-  color: white;
+  background: rgba(37, 99, 235, 0.4);
+  color: #ffffff;
 }
 
 /* ── Scrollbar — ultra-minimal ── */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.08); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.16); }
+::-webkit-scrollbar-thumb { background: rgba(59, 130, 246, 0.2); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(59, 130, 246, 0.4); }
 
 /* ── Reduced grain on mobile for performance ── */
 @media (max-width: 1023px) {

@@ -43,13 +43,38 @@ export default function CareersPage() {
     return matchesDept && matchesLoc;
   });
 
-  const handleApplySubmit = (e: React.FormEvent) => {
+  const handleApplySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!applicantName.trim() || !applicantEmail.trim() || !portfolioUrl.trim()) return;
+
     setFormLoading(true);
-    setTimeout(() => {
+    try {
+      const res = await fetch("/api/careers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          jobId: applyModalJob?.id,
+          jobTitle: applyModalJob?.title || "Core Software Engineer",
+          department: applyModalJob?.department || "Engineering",
+          applicantName: applicantName.trim(),
+          applicantEmail: applicantEmail.trim(),
+          portfolioUrl: portfolioUrl.trim(),
+          note: applicantNote.trim(),
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setFormSubmitted(true);
+      } else {
+        alert(data.error || "Failed to submit application.");
+      }
+    } catch (err) {
+      console.error("Submit application error", err);
+      alert("Application submission failed.");
+    } finally {
       setFormLoading(false);
-      setFormSubmitted(true);
-    }, 800);
+    }
   };
 
   const closeModal = () => {

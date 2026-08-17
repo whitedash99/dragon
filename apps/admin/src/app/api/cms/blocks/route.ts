@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { revalidatePath, revalidateTag } from "next/cache";
 import { prisma } from "@/lib/database/prisma";
+import { getAuthenticatedUser } from "@/lib/auth/auth";
+import { can } from "@dragon/auth";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -34,24 +35,36 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const { key, category, label, type, content, isPublished, updatedBy } = body;
-
-    if (!key || !content) {
-      return NextResponse.json({ success: false, error: "Key and content are required" }, { status: 400 });
+    const auth = await getAuthenticatedUser();
+    if (!auth) {
+      return NextResponse.json({ success: false, error: "Authentication required." }, { status: 401 });
     }
+    if (!can(auth.user, "cms.edit")) {
+      return NextResponse.json({ success: false, error: "Access Denied: Requires cms.edit permission." }, { status: 403 });
+    }
+
+    const body = await req.json();
+    const { key, category, label, type, content, draftContent, isPublished } = body;
+
+    if (!key) {
+      return NextResponse.json({ success: false, error: "Key is required" }, { status: 400 });
+    }
+
+    const safeContent = content !== undefined ? content : draftContent !== undefined ? draftContent : "";
+    const safeDraftContent = draftContent !== undefined ? draftContent : safeContent;
+    const author = auth.user.email;
 
     const existing = await prisma.contentBlock.findUnique({ where: { key } });
 
-    if (existing) {
+    if (existing && existing.content !== safeContent) {
       await prisma.contentRevision.create({
         data: {
           blockKey: key,
           version: existing.version,
           content: existing.content,
-          changedBy: updatedBy || "Admin",
+          changedBy: author,
         },
-      });
+      }).catch((e) => console.warn("Revision creation warning:", e));
     }
 
     const nextVersion = existing ? existing.version + 1 : 1;
@@ -59,43 +72,40 @@ export async function POST(req: NextRequest) {
     const block = await prisma.contentBlock.upsert({
       where: { key },
       update: {
-        content: isPublished !== false ? content : existing?.content || content,
-        draftContent: content,
+        content: isPublished !== false ? safeContent : existing?.content || safeContent,
+        draftContent: safeDraftContent,
         isPublished: isPublished ?? true,
         version: nextVersion,
-        updatedBy: updatedBy || "Admin",
+        updatedBy: author,
+        updatedAt: new Date(),
       },
       create: {
         key,
         category: category || "General",
         label: label || key,
         type: type || "text",
-        content,
-        draftContent: content,
+        content: safeContent,
+        draftContent: safeDraftContent,
         isPublished: isPublished ?? true,
         version: nextVersion,
-        updatedBy: updatedBy || "Admin",
+        updatedBy: author,
       },
     });
 
     await prisma.auditLog.create({
       data: {
+        userId: auth.user.id,
+        userEmail: auth.user.email,
         action: "COMMIT_CMS_BLOCK",
-        userEmail: updatedBy || "Admin",
-        details: `Saved CMS Block [${key}] -> Version ${nextVersion}`,
+        details: `Saved CMS Block [${key}] -> Version ${nextVersion} by ${auth.user.email}`,
       },
-    });
-
-    // On-Demand Revalidation & Cache Invalidation Across Public Routes
-    try {
-      revalidatePath("/", "layout");
-      revalidateTag("cms-blocks");
-    } catch (e) {
-      console.warn("Revalidation warning:", e);
-    }
+    }).catch((e) => console.warn("AuditLog warning:", e));
 
     return NextResponse.json({ success: true, block }, {
-      headers: { "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0" },
+      headers: {
+        "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+        "Access-Control-Allow-Origin": "*",
+      },
     });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";

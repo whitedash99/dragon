@@ -5,203 +5,228 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { 
   LayoutDashboard, 
-  FileCode2, 
+  Globe, 
+  Sparkles, 
   LifeBuoy, 
-  Gamepad2, 
-  FolderGit2, 
   Users, 
-  BarChart3, 
-  Bot, 
-  ShieldCheck, 
+  Key,
+  ShieldCheck,
+  Activity,
   Settings, 
-  Bell,
-  Terminal,
-  Zap,
-  Cloud,
-  GitFork,
-  BookOpen,
-  Code2,
-  Megaphone,
+  ExternalLink,
   LogOut,
+  ChevronLeft,
   ChevronRight,
-  ChevronDown,
-  Sparkles
+  Fingerprint,
+  Lock,
+  Gamepad2,
+  FolderKanban,
+  BarChart3,
+  Bot,
+  Smartphone,
+  CheckSquare,
+  Plug,
+  Globe2,
+  Gauge,
+  Database,
+  Terminal as TerminalIcon,
+  BookOpen,
+  MessagesSquare
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
-import { Badge } from "@/components/ui/badge";
+
+interface NavItem {
+  label: string;
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+  badge?: string;
+  badgeColor?: string;
+  isExternal?: boolean;
+}
 
 interface NavGroup {
-  groupName: string;
-  items: {
-    label: string;
-    href: string;
-    icon: React.ElementType;
-    badge?: string;
-    badgeVariant?: "purple" | "cyan" | "success" | "danger" | "default";
-  }[];
+  title: string;
+  items: NavItem[];
 }
 
 const NAV_GROUPS: NavGroup[] = [
   {
-    groupName: "CORE PLATFORM",
+    title: "OVERVIEW",
     items: [
-      { label: "Executive Dashboard", href: "/dashboard", icon: LayoutDashboard },
-      { label: "Website Experience CMS", href: "/cms", icon: FileCode2, badge: "Studio", badgeVariant: "purple" },
-      { label: "Support & CRM Desk", href: "/crm", icon: LifeBuoy, badge: "SLA Live", badgeVariant: "success" },
-      { label: "Game Catalog Manager", href: "/games", icon: Gamepad2 },
-      { label: "Digital Asset Manager (DAM)", href: "/media", icon: FolderGit2 },
-      { label: "Users & Roles (IAM)", href: "/users", icon: Users },
+      { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard, badgeColor: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" },
+      { label: "Website Analytics", href: "/analytics", icon: BarChart3, badge: "REALTIME", badgeColor: "bg-cyan-500/10 text-cyan-400 border-cyan-500/20" },
+      { label: "Owner Data Control", href: "/data-control", icon: Lock, badge: "ROOT", badgeColor: "bg-purple-500/10 text-purple-400 border-purple-500/20" },
     ],
   },
   {
-    groupName: "DATA & INTELLIGENCE",
+    title: "WORKSPACE",
     items: [
-      { label: "Analytics & Telemetry BI", href: "/analytics", icon: BarChart3 },
-      { label: "AI Cognitive Assistant", href: "/ai", icon: Bot, badge: "Gemini AI", badgeVariant: "cyan" },
-      { label: "Knowledge Base AI", href: "/knowledge", icon: BookOpen },
-      { label: "Marketing & Growth Engine", href: "/marketing", icon: Megaphone },
+      { label: "Community Hub", href: "/community", icon: MessagesSquare, badge: "CHAT", badgeColor: "bg-cyan-500/10 text-cyan-400 border-cyan-500/20" },
+      { label: "Team Workforce", href: "/users", icon: Users },
+      { label: "Recruitment Portal", href: "/team-key-portal", icon: Key, badge: "DIP", badgeColor: "bg-amber-500/10 text-amber-400 border-amber-500/20" },
+      { label: "Support Desk", href: "/crm", icon: LifeBuoy },
+      { label: "Studio CMS", href: "/cms", icon: FolderKanban, badge: "LIVE", badgeColor: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" },
+      { label: "AAA Games", href: "/games", icon: Gamepad2, badge: "3 TITLES", badgeColor: "bg-pink-500/10 text-pink-400 border-pink-500/20" },
     ],
   },
   {
-    groupName: "OPERATIONS & DEVTOOLKIT",
+    title: "SECURITY & AUDIT",
     items: [
-      { label: "API Platform & Webhooks", href: "/api-platform", icon: Code2 },
-      { label: "Automation Workflows", href: "/automation", icon: GitFork },
-      { label: "Security & Audit Vault", href: "/security", icon: ShieldCheck },
-      { label: "Developer Toolkit", href: "/developer", icon: Terminal },
-      { label: "Performance & Scaling", href: "/performance", icon: Zap },
-      { label: "Cloud Infrastructure", href: "/deployments", icon: Cloud },
-      { label: "Notifications Center", href: "/notifications", icon: Bell },
-      { label: "System Settings", href: "/settings", icon: Settings },
+      { label: "Security Posture", href: "/security", icon: ShieldCheck, badge: "98%", badgeColor: "bg-purple-500/10 text-purple-400 border-purple-500/20" },
+      { label: "Audit Center", href: "/audit", icon: Activity },
+      { label: "Passkeys & MFA", href: "/security/mfa", icon: Fingerprint },
+      { label: "Devices", href: "/devices", icon: Smartphone },
+      { label: "Access Reviews", href: "/access/reviews", icon: CheckSquare },
+    ],
+  },
+  {
+    title: "SYSTEM",
+    items: [
+      { label: "Command Terminal", href: "/terminal", icon: TerminalIcon, badge: "CLI", badgeColor: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" },
+      { label: "Command Library", href: "/terminal/library", icon: BookOpen, badge: "DOCS", badgeColor: "bg-cyan-500/10 text-cyan-400 border-cyan-500/20" },
+      { label: "Integrations", href: "/integrations", icon: Plug },
+      { label: "Custom Domains", href: "/domains", icon: Globe2 },
+      { label: "Settings", href: "/settings", icon: Settings },
+      { label: "Public Website ↗", href: "http://localhost:3000", icon: Globe, isExternal: true },
     ],
   },
 ];
 
 export function Sidebar() {
   const pathname = usePathname();
-  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
-
-  const toggleGroup = (groupName: string) => {
-    setCollapsedGroups((prev) => ({
-      ...prev,
-      [groupName]: !prev[groupName],
-    }));
-  };
+  const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <aside className="w-[360px] shrink-0 bg-slate-950 border-r border-white/10 flex flex-col justify-between p-5 min-h-screen font-sans select-none z-30 shadow-2xl">
-      {/* Top Header & Navigation */}
+    <aside
+      className={cn(
+        "shrink-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-r border-slate-200 dark:border-slate-800 flex flex-col justify-between p-4 min-h-screen font-sans select-none z-30 transition-all duration-300 relative shadow-lg",
+        collapsed ? "w-20" : "w-64"
+      )}
+    >
+      {/* Collapse Toggle Button */}
+      <button
+        onClick={() => setCollapsed((prev) => !prev)}
+        className="absolute -right-3.5 top-7 size-7 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-md flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors z-40"
+        title={collapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+      >
+        {collapsed ? <ChevronRight className="size-4" /> : <ChevronLeft className="size-4" />}
+      </button>
+
+      {/* Brand & Grouped Navigation */}
       <div className="space-y-6">
-        {/* Brand Logo Header */}
-        <div className="flex items-center gap-3.5 px-3 py-3 border-b border-white/10 pb-5">
-          <div className="size-12 rounded-2xl bg-gradient-to-br from-purple-600 via-pink-600 to-rose-600 flex items-center justify-center font-black text-white text-2xl shadow-xl shadow-purple-900/50 border border-white/20 shrink-0">
-            <Sparkles className="w-6 h-6" />
+        {/* Colorful Brand Header */}
+        <div className="flex items-center gap-3 px-2 py-1.5 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div className="size-10 rounded-2xl bg-gradient-to-br from-pink-500 via-purple-600 to-cyan-500 text-white flex items-center justify-center font-bold text-lg shrink-0 shadow-lg shadow-purple-500/20 dragon-logo-breathing">
+            🐉
           </div>
-          <div className="min-w-0">
-            <div className="flex items-center gap-2">
-              <span className="text-base font-black uppercase text-white tracking-tight truncate font-heading">
-                DRAGON STUDIOS
-              </span>
+          {!collapsed && (
+            <div className="min-w-0">
+              <div className="font-black text-sm text-slate-100 tracking-tight truncate flex items-center gap-1.5">
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-cyan-400 to-sky-300">Dragon OS</span>
+                <span className="text-[9px] font-mono px-1.5 py-0.5 bg-blue-600/20 text-cyan-300 rounded-md border border-blue-500/30 font-bold">
+                  PRO
+                </span>
+              </div>
+              <div className="text-[10px] text-slate-400 font-mono tracking-wide">Enterprise v2.0</div>
             </div>
-            <div className="flex items-center gap-1.5 mt-0.5">
-              <Badge variant="purple" size="sm">ENTERPRISE OS</Badge>
-              <span className="text-[10px] text-slate-400 font-mono">v4.8</span>
-            </div>
-          </div>
+          )}
         </div>
 
         {/* Grouped Navigation */}
-        <div className="space-y-6 overflow-y-auto max-h-[calc(100vh-250px)] pr-1">
-          {NAV_GROUPS.map((group) => {
-            const isCollapsed = collapsedGroups[group.groupName];
-            return (
-              <div key={group.groupName} className="space-y-2">
-                {/* Group Header */}
-                <button
-                  onClick={() => toggleGroup(group.groupName)}
-                  className="w-full flex items-center justify-between px-3 py-1.5 text-slate-400 hover:text-white transition-colors group text-[11px] font-bold uppercase tracking-wider font-mono"
-                >
-                  <span>{group.groupName}</span>
-                  {isCollapsed ? (
-                    <ChevronRight className="w-3.5 h-3.5 text-slate-500 group-hover:text-white" />
-                  ) : (
-                    <ChevronDown className="w-3.5 h-3.5 text-slate-500 group-hover:text-white" />
-                  )}
-                </button>
+        <nav className="space-y-5">
+          {NAV_GROUPS.map((group) => (
+            <div key={group.title} className="space-y-1.5">
+              {!collapsed && (
+                <div className="px-3 text-[10px] font-mono tracking-wider text-slate-500 font-bold uppercase">
+                  {group.title}
+                </div>
+              )}
+              <div className="space-y-0.5">
+                {group.items.map((item) => {
+                  const Icon = item.icon;
+                  const isActive =
+                    !item.isExternal &&
+                    (pathname === item.href || (item.href !== "/dashboard" && pathname?.startsWith(item.href)));
 
-                {/* Group Navigation Items */}
-                {!isCollapsed && (
-                  <nav className="space-y-1.5">
-                    {group.items.map((item) => {
-                      const Icon = item.icon;
-                      const isActive =
-                        pathname === item.href ||
-                        (item.href !== "/dashboard" && pathname?.startsWith(item.href));
+                  if (item.isExternal) {
+                    return (
+                      <a
+                        key={item.href}
+                        href={item.href}
+                        target="_blank"
+                        rel="noreferrer"
+                        className={cn(
+                          "flex items-center rounded-xl px-3 py-2 text-slate-400 hover:text-white hover:bg-slate-800/80 transition-all text-xs font-medium group",
+                          collapsed ? "justify-center" : "justify-between"
+                        )}
+                        title={collapsed ? item.label : undefined}
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <Icon className="size-4 text-cyan-400 group-hover:scale-110 transition-transform" />
+                          {!collapsed && <span>{item.label}</span>}
+                        </div>
+                        {!collapsed && <ExternalLink className="size-3 text-slate-500" />}
+                      </a>
+                    );
+                  }
 
-                      return (
-                        <Link
-                          key={item.href}
-                          href={item.href}
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={cn(
+                        "flex items-center rounded-2xl px-3 py-2.5 transition-all text-xs font-medium group relative shadow-xs",
+                        collapsed ? "justify-center" : "justify-between",
+                        isActive
+                          ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-bold shadow-md shadow-blue-500/30"
+                          : "text-slate-400 hover:text-white hover:bg-blue-950/30"
+                      )}
+                      title={collapsed ? item.label : undefined}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <Icon
                           className={cn(
-                            "flex items-center justify-between rounded-xl px-4 py-3.5 transition-all duration-200 group border text-[15px] font-medium min-h-[56px]",
-                            isActive
-                              ? "bg-purple-600/20 text-white border-purple-500/50 shadow-lg shadow-purple-950/40 font-semibold"
-                              : "bg-slate-900/30 text-slate-300 border-transparent hover:bg-slate-900/80 hover:text-white hover:border-white/10"
+                            "size-4 transition-all group-hover:scale-110",
+                            isActive ? "text-white" : "text-slate-500 group-hover:text-cyan-400"
                           )}
-                        >
-                          <div className="flex items-center gap-3.5 truncate">
-                            <Icon
-                              className={cn(
-                                "size-[22px] shrink-0 transition-colors",
-                                isActive
-                                  ? "text-purple-400"
-                                  : "text-slate-400 group-hover:text-purple-300"
-                              )}
-                            />
-                            <span className="truncate tracking-tight">{item.label}</span>
-                          </div>
-
-                          <div className="flex items-center gap-2 shrink-0">
-                            {item.badge && (
-                              <Badge variant={item.badgeVariant || "purple"} size="sm">
-                                {item.badge}
-                              </Badge>
-                            )}
-                            {isActive && <ChevronRight className="size-4 text-purple-400" />}
-                          </div>
-                        </Link>
-                      );
-                    })}
-                  </nav>
-                )}
+                        />
+                        {!collapsed && <span>{item.label}</span>}
+                      </div>
+                      {!collapsed && item.badge && (
+                        <span className={cn("text-[9px] font-mono px-2 py-0.5 rounded-full border font-bold uppercase", item.badgeColor || "bg-cyan-500/10 text-cyan-400 border-cyan-500/20")}>
+                          {item.badge}
+                        </span>
+                      )}
+                    </Link>
+                  );
+                })}
               </div>
-            );
-          })}
-        </div>
+            </div>
+          ))}
+        </nav>
       </div>
 
-      {/* User Profile & Sign Out Footer */}
-      <div className="pt-4 border-t border-white/10 space-y-3">
-        <div className="rounded-xl bg-slate-900/80 border border-white/10 p-3 flex items-center gap-3">
-          <div className="size-10 rounded-xl bg-purple-600/20 text-purple-300 border border-purple-500/30 flex items-center justify-center font-bold text-sm shrink-0">
-            SA
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-bold text-white truncate">Super Admin</span>
-              <span className="size-2 rounded-full bg-emerald-400 animate-pulse" title="Online" />
-            </div>
-            <span className="text-xs text-slate-400 block truncate font-mono">admin@dragonstudios.com</span>
-          </div>
-        </div>
-
-        <Link
-          href="/login"
-          className="flex items-center justify-center gap-2 w-full rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 py-2.5 text-xs font-bold uppercase tracking-wider transition-all"
+      {/* Colorful Identity Card & Status */}
+      <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-2">
+        <div
+          className={cn(
+            "rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800/80 dark:to-slate-900/80 border border-slate-200 dark:border-slate-700/80 p-2.5 flex items-center gap-3 shadow-xs",
+            collapsed && "justify-center"
+          )}
         >
-          <LogOut className="size-4" />
-          <span>SIGN OUT OS</span>
-        </Link>
+          <div className="size-8 rounded-xl bg-gradient-to-br from-pink-500 to-purple-600 text-white font-black flex items-center justify-center text-xs shrink-0 shadow-md">
+            EO
+          </div>
+          {!collapsed && (
+            <div className="min-w-0 flex-1">
+              <div className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate flex items-center gap-1">
+                <span>Executive Owner</span>
+                <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+              </div>
+              <div className="text-[10px] text-purple-600 dark:text-purple-400 font-mono font-bold">PROTECTED ROOT</div>
+            </div>
+          )}
+        </div>
       </div>
     </aside>
   );

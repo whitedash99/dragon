@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getToken } from "next-auth/jwt";
 
-export function proxy(req: NextRequest) {
+const PROTECTED_WEBSITE_ROUTES = ["/dashboard", "/profile", "/account", "/settings"];
+
+export async function proxy(req: NextRequest) {
   const url = req.nextUrl;
   const hostname = req.headers.get("host") || "";
   const pathname = url.pathname;
 
-  // Determine if request is hitting the Admin Domain (e.g. admin.dragonstudios.com or admin.localhost:3000)
   const isAdminDomain = hostname.startsWith("admin.") || hostname.includes("admin.localhost");
   const isAdminPath = pathname.startsWith("/admin");
   const isApiPath = pathname.startsWith("/api");
@@ -16,26 +18,42 @@ export function proxy(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // 1. Domain-based routing: Rewrites admin.dragonstudios.com root requests to /admin
+  // 1. Check Protected User Routes in Website
+  const isProtectedRoute = PROTECTED_WEBSITE_ROUTES.some(
+    (route) => pathname === route || pathname.startsWith(`${route}/`)
+  );
+
+  if (isProtectedRoute) {
+    const token = await getToken({
+      req,
+      secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || "dragon-studios-super-secret-auth-key-2026",
+    });
+    const sessionToken = req.cookies.get("dragon_session")?.value || req.cookies.get("dragon_auth_token")?.value;
+
+    if (!token && !sessionToken) {
+      const loginUrl = new URL("/login", req.url);
+      loginUrl.searchParams.set("callbackUrl", req.url);
+      return NextResponse.redirect(loginUrl);
+    }
+  }
+
+  // 2. Domain-based routing: Rewrites admin.dragonstudios.com root requests to /admin
   if (isAdminDomain && !isAdminPath && !isApiPath && !isAuthPath) {
     url.pathname = `/admin${pathname === "/" ? "" : pathname}`;
     return NextResponse.rewrite(url);
   }
 
-  // 2. Security Guard for Admin routes
+  // 3. Security Guard for Admin routes
   if (isAdminDomain || isAdminPath) {
     const sessionToken = req.cookies.get("dragon_session")?.value || req.cookies.get("dragon_auth_token")?.value;
-
-    // Allow public access to /login or /auth pages if trying to log into Admin
     if (!sessionToken && !isAuthPath && !isApiPath) {
-      // In production/development, redirect unauthenticated admin visitors to /login
       const loginUrl = new URL("/login", req.url);
       loginUrl.searchParams.set("redirect", pathname);
       return NextResponse.redirect(loginUrl);
     }
   }
 
-  // 3. Construct Security Response Headers
+  // 4. Construct Security Response Headers
   const response = NextResponse.next();
   response.headers.set(
     "Content-Security-Policy",
@@ -50,9 +68,6 @@ export function proxy(req: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except static files, _next, favicon.ico
-     */
     "/((?!_next/static|_next/image|favicon.ico|uploads).*)",
   ],
 };

@@ -8,7 +8,7 @@ export async function GET() {
     });
 
     const devHubData = {
-      projects: games.map((g) => ({
+      projects: games.map((g: any) => ({
         id: g.id,
         title: g.title,
         slug: g.slug,
@@ -40,8 +40,9 @@ export async function GET() {
     };
 
     return NextResponse.json({ success: true, devhub: devHubData });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }
 
@@ -73,7 +74,8 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ success: true, message: "DevHub action processed." });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }

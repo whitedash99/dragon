@@ -7,8 +7,9 @@ export async function GET() {
       orderBy: { createdAt: "desc" },
     });
     return NextResponse.json({ success: true, careers });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message, careers: [] }, { status: 500 });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    return NextResponse.json({ success: false, error: message, careers: [] }, { status: 500 });
   }
 }
 
@@ -37,8 +38,9 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ success: true, career });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 400 });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    return NextResponse.json({ success: false, error: message }, { status: 400 });
   }
 }
 
@@ -72,8 +74,9 @@ export async function PUT(request: Request) {
     });
 
     return NextResponse.json({ success: true, career });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 400 });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    return NextResponse.json({ success: false, error: message }, { status: 400 });
   }
 }
 
@@ -94,7 +97,8 @@ export async function DELETE(request: Request) {
     });
 
     return NextResponse.json({ success: true });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 400 });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    return NextResponse.json({ success: false, error: message }, { status: 400 });
   }
 }

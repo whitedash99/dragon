@@ -8,11 +8,11 @@ $dbBackupFile = Join-Path $BackupDir "dragon_db_auto_backup_$timestamp.sql"
 
 Write-Host "Starting automated backup procedure at $timestamp..." -ForegroundColor Cyan
 
-# 1. Environment PGPASSWORD setup
-$env:PGPASSWORD = "123456654321"
+# 1. Environment DATABASE_URL setup
+$dbUrl = if ($env:DATABASE_URL) { $env:DATABASE_URL } else { "postgresql://neondb_owner:npg_PLneOSAEjJ36@ep-still-brook-az2n4i12.c-3.ap-southeast-1.aws.neon.tech/neondb?sslmode=require" }
 
 # 2. Database Binary Dump
-pg_dump -U postgres -h localhost -p 5432 -d dragon_db --clean --if-exists -f $dbBackupFile
+pg_dump --dbname=$dbUrl --clean --if-exists -f $dbBackupFile
 
 if (Test-Path $dbBackupFile) {
   $size = (Get-Item $dbBackupFile).Length

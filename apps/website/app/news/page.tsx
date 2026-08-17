@@ -9,14 +9,25 @@ import { news as fallbackNews } from "@/data/content";
 
 export const metadata = { title: "Newsroom | Dragon Studios" };
 
+interface NewsArticle {
+  id: string;
+  title: string;
+  excerpt: string;
+  tag: string;
+  date: string;
+  readTime: string;
+  featured?: boolean;
+  slug: string;
+}
+
 export default async function News() {
-  let articles: any[] = [];
+  let articles: NewsArticle[] = [];
   try {
     const dbArticles = await prisma.article.findMany({
       orderBy: { createdAt: "desc" },
     });
     if (dbArticles.length > 0) {
-      articles = dbArticles.map((a) => ({
+      articles = dbArticles.map((a: any) => ({
         id: a.id,
         title: a.title,
         excerpt: a.excerpt,
@@ -27,7 +38,7 @@ export default async function News() {
         slug: a.slug,
       }));
     }
-  } catch (e) {
+  } catch (e: unknown) {
     console.error("Error fetching articles from Prisma", e);
   }
 

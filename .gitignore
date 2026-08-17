@@ -4,9 +4,9 @@ node_modules/
 .vercel/
 coverage/
 dist/
-.env.local
-.env.development.local
-.env.test.local
-*.log
-.vercel
 .env*
+*.log
+*.log.txt
+build-log.txt
+dragon-admin/
+scripts/

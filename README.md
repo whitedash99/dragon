@@ -53,10 +53,10 @@ pnpm run lint
 
 ## 📄 Platform Documentation Reports
 
-- 📘 [`MONOREPO_MIGRATION_REPORT.md`](./MONOREPO_MIGRATION_REPORT.md)
-- 📐 [`ARCHITECTURE_REPORT.md`](./ARCHITECTURE_REPORT.md)
-- 📦 [`DEPENDENCY_REPORT.md`](./DEPENDENCY_REPORT.md)
-- 🔗 [`IMPORT_FIX_REPORT.md`](./IMPORT_FIX_REPORT.md)
-- 🗄️ [`DATABASE_REPORT.md`](./DATABASE_REPORT.md)
-- 🚀 [`DEPLOYMENT_GUIDE.md`](./DEPLOYMENT_GUIDE.md)
-- ⏪ [`ROLLBACK_GUIDE.md`](./ROLLBACK_GUIDE.md)
+- 📘 [`MONOREPO_MIGRATION_REPORT.md`](./docs/reports/MONOREPO_MIGRATION_REPORT.md)
+- 📐 [`ARCHITECTURE_REPORT.md`](./docs/architecture/ARCHITECTURE_REPORT.md)
+- 📦 [`DEPENDENCY_REPORT.md`](./docs/reports/DEPENDENCY_REPORT.md)
+- 🔗 [`IMPORT_FIX_REPORT.md`](./docs/reports/IMPORT_FIX_REPORT.md)
+- 🗄️ [`DATABASE_REPORT.md`](./docs/database/DATABASE_REPORT.md)
+- 🚀 [`DEPLOYMENT_GUIDE.md`](./docs/deployment/DEPLOYMENT_GUIDE.md)
+- ⏪ [`ROLLBACK_GUIDE.md`](./docs/deployment/ROLLBACK_GUIDE.md)

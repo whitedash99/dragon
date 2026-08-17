@@ -17,10 +17,10 @@ export async function GET() {
 
     // Compute analytics summary
     const totalCount = tickets.length;
-    const openCount = tickets.filter((t) => t.status === "OPEN" || t.status === "NEW").length;
-    const inProgressCount = tickets.filter((t) => t.status === "IN_PROGRESS" || t.status === "ASSIGNED").length;
-    const resolvedCount = tickets.filter((t) => t.status === "RESOLVED" || t.status === "CLOSED").length;
-    const criticalCount = tickets.filter((t) => t.priority === "CRITICAL" || t.priority === "HIGH").length;
+    const openCount = tickets.filter((t: any) => t.status === "OPEN" || t.status === "NEW").length;
+    const inProgressCount = tickets.filter((t: any) => t.status === "IN_PROGRESS" || t.status === "ASSIGNED").length;
+    const resolvedCount = tickets.filter((t: any) => t.status === "RESOLVED" || t.status === "CLOSED").length;
+    const criticalCount = tickets.filter((t: any) => t.priority === "CRITICAL" || t.priority === "HIGH").length;
 
     return NextResponse.json({
       success: true,
@@ -33,8 +33,9 @@ export async function GET() {
         criticalCount,
       },
     });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }
 
@@ -147,8 +148,9 @@ export async function POST(req: NextRequest) {
       ticket: updatedTicket,
       replyMessage: adminMsg,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
     console.error("Admin Ticket Action API Error:", error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }

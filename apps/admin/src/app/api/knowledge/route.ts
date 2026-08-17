@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
 import { generateGeminiText } from "@/lib/ai/gemini";
+import { getAuthenticatedUser } from "@/lib/auth/auth";
+import { can } from "@dragon/auth";
 
 export async function GET() {
   try {
@@ -45,6 +47,11 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
+    const auth = await getAuthenticatedUser();
+    if (!auth) {
+      return NextResponse.json({ success: false, error: "Authentication required." }, { status: 401 });
+    }
+
     const body = await req.json();
     const { action, question, title, category, content } = body;
 
@@ -73,7 +80,7 @@ export async function POST(req: NextRequest) {
         data: {
           query: question,
           resolved: matchingArticles.length > 0,
-          userEmail: "Customer Player",
+          userEmail: auth.user.email,
         },
       });
 
@@ -86,6 +93,10 @@ export async function POST(req: NextRequest) {
 
     // 2. Create Knowledge Base Article
     if (action === "create_article" && title && content) {
+      if (!can(auth.user, "cms.edit") && !can(auth.user, "crm.manage")) {
+        return NextResponse.json({ success: false, error: "Access Denied: Requires cms.edit permission." }, { status: 403 });
+      }
+
       const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, "-");
       const article = await prisma.knowledgeArticle.create({
         data: {
@@ -94,17 +105,19 @@ export async function POST(req: NextRequest) {
           category: category || "General Questions",
           content,
           status: "PUBLISHED",
-          author: "Dragon Support Team",
+          author: auth.user.email,
         },
       });
 
       await prisma.auditLog.create({
         data: {
+          userId: auth.user.id,
+          userEmail: auth.user.email,
           action: "CREATE_KNOWLEDGE_ARTICLE",
-          userEmail: "Support Lead",
+          resource: "KNOWLEDGE_BASE",
           details: `Created Knowledge Base Article: ${title}`,
         },
-      });
+      }).catch((e) => console.warn("AuditLog warning:", e));
 
       return NextResponse.json({ success: true, article });
     }

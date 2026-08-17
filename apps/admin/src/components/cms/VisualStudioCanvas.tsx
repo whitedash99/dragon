@@ -212,11 +212,11 @@ export function VisualStudioCanvas({
   return (
     <div
       ref={containerRef}
-      className="flex-1 bg-slate-950 p-4 flex flex-col items-center justify-start overflow-auto relative min-h-[700px] select-none"
+      className="flex-1 bg-slate-100/90 p-4 flex flex-col items-center justify-start overflow-auto relative min-h-[700px] select-none"
     >
       {/* Top Rulers Line */}
       {showRulers && (
-        <div className="w-full h-5 bg-slate-900/90 border-b border-white/10 flex items-center justify-between px-4 text-[9px] font-mono text-slate-500 mb-2">
+        <div className="w-full h-5 bg-white border-b border-slate-200 flex items-center justify-between px-4 text-[9px] font-mono text-slate-500 mb-2 rounded-lg shadow-xs">
           <span>0px</span>
           <span>375px</span>
           <span>768px</span>
@@ -227,11 +227,11 @@ export function VisualStudioCanvas({
       )}
 
       {/* Canvas Meta Header */}
-      <div className="w-full flex items-center justify-between mb-2 text-xs text-slate-400">
+      <div className="w-full flex items-center justify-between mb-2 text-xs text-slate-500">
         <div className="flex items-center gap-2">
           <Badge variant="cyan" size="sm">Figma & Webflow Visual Canvas</Badge>
           <span className="font-mono text-[11px] text-slate-500">{targetUrl}</span>
-          <span className="text-[10px] font-mono text-purple-400 font-semibold">
+          <span className="text-[10px] font-mono text-slate-900 font-semibold">
             ({canvasWidth}px × {canvasHeight}px)
           </span>
         </div>
@@ -243,15 +243,15 @@ export function VisualStudioCanvas({
               type="number"
               value={canvasWidth}
               onChange={(e) => setCanvasWidth(Math.max(320, parseInt(e.target.value || "320", 10)))}
-              className="w-16 px-1.5 py-0.5 bg-slate-900 border border-white/10 rounded font-mono text-xs text-purple-300 focus:outline-none focus:border-purple-500 text-center"
+              className="w-16 px-1.5 py-0.5 bg-white border border-slate-200 rounded font-mono text-xs text-slate-900 focus:outline-none focus:border-slate-400 text-center"
               title="Canvas Width (px)"
             />
-            <span className="text-slate-600">×</span>
+            <span className="text-slate-400">×</span>
             <input
               type="number"
               value={canvasHeight}
               onChange={(e) => setCanvasHeight(Math.max(400, parseInt(e.target.value || "400", 10)))}
-              className="w-16 px-1.5 py-0.5 bg-slate-900 border border-white/10 rounded font-mono text-xs text-purple-300 focus:outline-none focus:border-purple-500 text-center"
+              className="w-16 px-1.5 py-0.5 bg-white border border-slate-200 rounded font-mono text-xs text-slate-900 focus:outline-none focus:border-slate-400 text-center"
               title="Canvas Height (px)"
             />
           </div>
@@ -262,7 +262,7 @@ export function VisualStudioCanvas({
               type="text"
               value={port}
               onChange={(e) => setPort(e.target.value)}
-              className="w-14 px-2 py-0.5 bg-slate-900 border border-white/10 rounded font-mono text-xs text-purple-300 focus:outline-none focus:border-purple-500"
+              className="w-14 px-2 py-0.5 bg-white border border-slate-200 rounded font-mono text-xs text-slate-900 focus:outline-none focus:border-slate-400"
             />
           </div>
 
@@ -270,7 +270,7 @@ export function VisualStudioCanvas({
             href={targetUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1 text-purple-400 hover:text-purple-300 transition-colors font-semibold text-xs"
+            className="flex items-center gap-1 text-slate-900 hover:text-slate-700 transition-colors font-semibold text-xs"
           >
             Open Live Site <ExternalLink className="w-3.5 h-3.5" />
           </a>

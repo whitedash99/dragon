@@ -50,13 +50,13 @@ export function VisualStudioLeftSidebar({
   ];
 
   return (
-    <div className="w-80 bg-slate-900/95 backdrop-blur-2xl border-r border-white/10 flex flex-col h-full shrink-0 select-none text-xs">
+    <div className="w-80 bg-white border-r border-slate-200 flex flex-col h-full shrink-0 select-none text-xs text-slate-900">
       {/* Top Sidebar Tab Controls */}
-      <div className="flex items-center justify-around border-b border-white/10 p-2 bg-slate-950/60">
+      <div className="flex items-center justify-around border-b border-slate-100 p-2 bg-slate-50">
         <button
           onClick={() => setTab("tree")}
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-            tab === "tree" ? "bg-purple-600 text-white" : "text-slate-400 hover:text-white"
+            tab === "tree" ? "bg-slate-900 text-white shadow-xs" : "text-slate-500 hover:text-slate-900"
           }`}
           title="Website Structure Tree"
         >
@@ -66,7 +66,7 @@ export function VisualStudioLeftSidebar({
         <button
           onClick={() => setTab("library")}
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-            tab === "library" ? "bg-purple-600 text-white" : "text-slate-400 hover:text-white"
+            tab === "library" ? "bg-slate-900 text-white shadow-xs" : "text-slate-500 hover:text-slate-900"
           }`}
           title="Drag and Drop Component Library"
         >
@@ -76,7 +76,7 @@ export function VisualStudioLeftSidebar({
         <button
           onClick={() => setTab("tokens")}
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-            tab === "tokens" ? "bg-purple-600 text-white" : "text-slate-400 hover:text-white"
+            tab === "tokens" ? "bg-slate-900 text-white shadow-xs" : "text-slate-500 hover:text-slate-900"
           }`}
           title="Global Design Tokens"
         >
@@ -86,7 +86,7 @@ export function VisualStudioLeftSidebar({
         <button
           onClick={() => setTab("media")}
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-            tab === "media" ? "bg-purple-600 text-white" : "text-slate-400 hover:text-white"
+            tab === "media" ? "bg-slate-900 text-white shadow-xs" : "text-slate-500 hover:text-slate-900"
           }`}
           title="Digital Assets Manager (DAM)"
         >
@@ -106,8 +106,8 @@ export function VisualStudioLeftSidebar({
                   onClick={() => setSelectedCategory(cat)}
                   className={`px-2 py-0.5 rounded-md text-[11px] font-medium transition-all ${
                     selectedCategory === cat
-                      ? "bg-purple-600 text-white font-semibold"
-                      : "bg-slate-950/60 border border-white/10 text-slate-400 hover:text-white"
+                      ? "bg-slate-900 text-white font-semibold shadow-xs"
+                      : "bg-slate-50 border border-slate-200 text-slate-600 hover:text-slate-900"
                   }`}
                 >
                   {cat}
@@ -116,7 +116,7 @@ export function VisualStudioLeftSidebar({
             </div>
 
             {/* Tree Structure Nodes */}
-            <div className="space-y-1.5">
+            <div className="space-y-1.5 font-mono">
               {blocks.map((b) => {
                 const isSelected = selectedBlock?.key === b.key;
                 return (
@@ -125,21 +125,21 @@ export function VisualStudioLeftSidebar({
                     onClick={() => onSelectBlock(b)}
                     className={`p-2.5 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${
                       isSelected
-                        ? "bg-purple-600/20 border-purple-500/60 text-white shadow-lg shadow-purple-950/40"
-                        : "bg-slate-955 border-white/5 text-slate-300 hover:border-white/20"
+                        ? "bg-slate-900 border-slate-900 text-white shadow-xs"
+                        : "bg-slate-50 border-slate-200 text-slate-800 hover:bg-slate-100"
                     }`}
                   >
                     <div className="flex items-center gap-2 overflow-hidden">
-                      <GripVertical className="w-3.5 h-3.5 text-slate-500 shrink-0 cursor-grab" />
+                      <GripVertical className="w-3.5 h-3.5 opacity-50 shrink-0 cursor-grab" />
                       <div className="truncate">
-                        <div className="font-semibold text-xs truncate">{b.label || b.key}</div>
-                        <div className="text-[10px] font-mono text-slate-400 truncate">{b.key}</div>
+                        <div className="font-bold text-xs truncate">{b.label || b.key}</div>
+                        <div className="text-[10px] opacity-75 truncate">{b.key}</div>
                       </div>
                     </div>
 
-                    <Badge variant={b.isPublished ? "purple" : "outline"} size="sm">
+                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${b.isPublished ? (isSelected ? "bg-emerald-800 text-emerald-100 border-emerald-700" : "bg-emerald-50 text-emerald-800 border-emerald-200") : (isSelected ? "bg-slate-800 text-slate-300 border-slate-700" : "bg-slate-200 text-slate-700 border-slate-300")}`}>
                       {b.isPublished ? "Live" : "Draft"}
-                    </Badge>
+                    </span>
                   </div>
                 );
               })}
@@ -148,49 +148,49 @@ export function VisualStudioLeftSidebar({
         )}
 
         {tab === "library" && (
-          <div className="space-y-3">
-            <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">
+          <div className="space-y-3 font-mono">
+            <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">
               Drag & Drop Components
             </div>
             {componentLibrary.map((comp) => (
               <div
                 key={comp.type}
-                className="p-3 bg-slate-955 border border-white/10 rounded-xl hover:border-purple-500/50 cursor-grab transition-all space-y-1"
+                className="p-3 bg-slate-50 border border-slate-200 rounded-xl hover:border-slate-400 cursor-grab transition-all space-y-1"
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-white text-xs">{comp.title}</span>
+                  <span className="font-bold text-slate-900 text-xs">{comp.title}</span>
                   <Badge variant="cyan" size="sm">{comp.category}</Badge>
                 </div>
-                <p className="text-[11px] text-slate-400 leading-snug">{comp.desc}</p>
+                <p className="text-[11px] text-slate-500 leading-snug font-sans">{comp.desc}</p>
               </div>
             ))}
           </div>
         )}
 
         {tab === "tokens" && (
-          <div className="space-y-4">
-            <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+          <div className="space-y-4 font-mono">
+            <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">
               Global Brand Tokens
             </div>
 
             {/* Colors */}
             <div className="space-y-2">
-              <span className="text-[10px] font-semibold text-slate-400 block">Primary Palette</span>
+              <span className="text-[10px] font-bold text-slate-500 block uppercase">Primary Palette</span>
               <div className="grid grid-cols-4 gap-2">
-                <div className="h-9 rounded-lg bg-purple-600 border border-white/10 flex items-center justify-center text-[9px] font-mono text-white">#9333ea</div>
-                <div className="h-9 rounded-lg bg-pink-500 border border-white/10 flex items-center justify-center text-[9px] font-mono text-white">#ec4899</div>
-                <div className="h-9 rounded-lg bg-cyan-400 border border-white/10 flex items-center justify-center text-[9px] font-mono text-slate-950 font-bold">#22d3ee</div>
-                <div className="h-9 rounded-lg bg-rose-500 border border-white/10 flex items-center justify-center text-[9px] font-mono text-white">#f43f5e</div>
+                <div className="h-9 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center text-[9px] font-mono text-white font-bold">#0f172a</div>
+                <div className="h-9 rounded-lg bg-slate-700 border border-slate-600 flex items-center justify-center text-[9px] font-mono text-white font-bold">#334155</div>
+                <div className="h-9 rounded-lg bg-sky-600 border border-sky-500 flex items-center justify-center text-[9px] font-mono text-white font-bold">#0284c7</div>
+                <div className="h-9 rounded-lg bg-emerald-600 border border-emerald-500 flex items-center justify-center text-[9px] font-mono text-white font-bold">#059669</div>
               </div>
             </div>
 
             {/* Typography Tokens */}
             <div className="space-y-2">
-              <span className="text-[10px] font-semibold text-slate-400 block">Typography Tokens</span>
-              <div className="p-3 bg-slate-955 border border-white/10 rounded-xl space-y-1.5 font-mono text-[11px]">
-                <div className="text-purple-300">--font-sans: &quot;Geist Sans&quot;</div>
-                <div className="text-pink-300">--font-header: &quot;Rajdhani&quot;</div>
-                <div className="text-cyan-300">--font-mono: &quot;Geist Mono&quot;</div>
+              <span className="text-[10px] font-bold text-slate-500 block uppercase">Typography Tokens</span>
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1.5 font-mono text-[11px]">
+                <div className="text-slate-900 font-semibold">--font-sans: &quot;Geist Sans&quot;</div>
+                <div className="text-slate-700">--font-header: &quot;Rajdhani&quot;</div>
+                <div className="text-sky-700 font-semibold">--font-mono: &quot;Geist Mono&quot;</div>
               </div>
             </div>
           </div>

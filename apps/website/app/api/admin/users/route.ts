@@ -17,9 +17,9 @@ export async function GET() {
     });
 
     const totalUsers = users.length;
-    const adminCount = users.filter((u) => u.role === "ADMIN" || u.role === "SUPER_ADMIN" || u.role === "OWNER").length;
-    const staffCount = users.filter((u) => u.role !== "USER" && u.role !== "PLAYER").length;
-    const playerCount = users.filter((u) => u.role === "USER" || u.role === "PLAYER").length;
+    const adminCount = users.filter((u: any) => u.role === "ADMIN" || u.role === "SUPER_ADMIN" || u.role === "OWNER").length;
+    const staffCount = users.filter((u: any) => u.role !== "USER" && u.role !== "PLAYER").length;
+    const playerCount = users.filter((u: any) => u.role === "USER" || u.role === "PLAYER").length;
 
     return NextResponse.json({
       success: true,
@@ -31,8 +31,9 @@ export async function GET() {
         playerCount,
       },
     });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }
 
@@ -71,8 +72,9 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({ success: true, message: "User created successfully", user });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }
 
@@ -101,8 +103,9 @@ export async function PUT(request: Request) {
     });
 
     return NextResponse.json({ success: true, user });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 400 });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    return NextResponse.json({ success: false, error: message }, { status: 400 });
   }
 }
 
@@ -126,7 +129,8 @@ export async function DELETE(request: Request) {
     }
 
     return NextResponse.json({ success: true, message: "User permanently deleted." });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 400 });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    return NextResponse.json({ success: false, error: message }, { status: 400 });
   }
 }

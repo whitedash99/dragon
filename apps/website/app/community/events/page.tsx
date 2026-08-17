@@ -1,125 +1,152 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { 
   Trophy, 
-  Clock, 
-  Users, 
-  DollarSign, 
-  Tv, 
   Calendar, 
-  Check, 
-  X, 
-  Sparkles 
+  MapPin, 
+  Users, 
+  Sparkles, 
+  Clock, 
+  CheckCircle2, 
+  ArrowUpRight 
 } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { SceneBackground } from "@/components/background/SceneBackground";
 import { CommunityNav } from "@/components/community/CommunityNav";
-import { communityEvents, CommunityEvent } from "@/data/communityData";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/cn";
+
+const COMMUNITY_EVENTS = [
+  {
+    id: "ev-1",
+    title: "Embers of Valyria: Global Archon Invitational 2026",
+    game: "Embers of Valyria",
+    type: "ESPORTS TOURNAMENT",
+    date: "August 28, 2026 • 18:00 UTC",
+    prize: "$100,000 GTD",
+    location: "Twitch / YouTube Gaming / Online",
+    participants: 1240,
+    maxParticipants: 2048,
+    description: "32-bracket double elimination 1v1 melee tournament with live developer casting and physical dragon trophies.",
+    status: "REGISTRATION OPEN",
+  },
+  {
+    id: "ev-2",
+    title: "Dragon Engine v5.5 Developer Architecture Q&A",
+    game: "Dragon Engine",
+    type: "DEV DISPATCH",
+    date: "September 5, 2026 • 20:00 UTC",
+    prize: "Engine Early Access Key",
+    location: "#announcements & Discord Stage",
+    participants: 4820,
+    maxParticipants: 10000,
+    description: "Live interactive deep-dive with Lead Netcode Engineers on deterministic physics and GPU memory streaming.",
+    status: "REGISTRATION OPEN",
+  },
+  {
+    id: "ev-3",
+    title: "Neon Drift: Overdrive Track Modding Contest",
+    game: "Neon Drift",
+    type: "CREATOR JAM",
+    date: "September 15, 2026 • All Week",
+    prize: "$25,000 + Studio Feature",
+    location: "Studio Mod Portal",
+    participants: 610,
+    maxParticipants: 1000,
+    description: "Build the most electrifying futuristic synthwave track using our in-game voxel terrain tools.",
+    status: "COMING SOON",
+  },
+];
 
 export default function CommunityEventsPage() {
-  const [events, setEvents] = useState<CommunityEvent[]>(communityEvents);
-  const [registeredIds, setRegisteredIds] = useState<string[]>([]);
+  const [registeredEvents, setRegisteredEvents] = useState<{ [id: string]: boolean }>({});
 
   const handleRegister = (id: string) => {
-    if (!registeredIds.includes(id)) {
-      setRegisteredIds([...registeredIds, id]);
-    }
+    setRegisteredEvents((prev) => ({ ...prev, [id]: true }));
   };
 
   return (
     <SceneBackground gradient noise orbs vignette>
       <Navbar />
-      <CommunityNav />
 
-      <main className="cinematic-page relative min-h-screen overflow-x-hidden pb-32 pt-12">
-        <section className="container-site relative z-10">
-          <div className="mb-10">
-            <span className="text-xs font-bold uppercase tracking-widest text-dragon-400">
-              Dragon Esports & Dev Streams
+      <main className="cinematic-page relative min-h-screen overflow-x-hidden pb-32 pt-20 lg:pt-24">
+        <CommunityNav />
+
+        <section className="container-site relative z-10 my-8">
+          <div className="mb-10 text-center max-w-2xl mx-auto">
+            <span className="text-xs font-bold uppercase tracking-widest text-cyan-400 font-mono">
+              Tournaments & Live Streams
             </span>
-            <h1 className="text-4xl font-black uppercase text-white tracking-tight sm:text-5xl">
-              Tournament & Events Center
+            <h1 className="text-3xl sm:text-4xl font-heading font-black text-white uppercase tracking-tight mt-1">
+              Community Events & Esports
             </h1>
+            <p className="text-xs text-slate-400 mt-2">
+              Compete in official studio tournaments, register for developer Q&As, and win exclusive prizes.
+            </p>
           </div>
 
-          {/* Events Grid */}
-          <div className="grid gap-8 lg:grid-cols-2">
-            {events.map((evt) => {
-              const isRegistered = registeredIds.includes(evt.id);
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {COMMUNITY_EVENTS.map((event) => {
+              const isRegistered = registeredEvents[event.id];
 
               return (
                 <div
-                  key={evt.id}
-                  className="rounded-3xl glass-heavy p-8 border border-white/15 flex flex-col justify-between relative overflow-hidden group hover:border-white/30 transition-all"
+                  key={event.id}
+                  className="rounded-3xl bg-[#07111F]/80 backdrop-blur-xl p-6 border border-blue-500/20 hover:border-cyan-400/50 transition-all flex flex-col justify-between space-y-6 shadow-xl shadow-black/50 group"
                 >
-                  <div 
-                    aria-hidden="true" 
-                    className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-neon-purple via-dragon-400 to-neon-cyan" 
-                  />
-
-                  <div>
-                    <div className="flex items-center justify-between gap-2 mb-4">
-                      <span className="rounded-full bg-dragon-500/20 px-3 py-1 text-[10px] font-bold text-dragon-300 border border-dragon-500/30 uppercase tracking-widest">
-                        {evt.type}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-mono font-bold px-2.5 py-1 rounded-full bg-blue-600/20 text-cyan-300 border border-blue-500/30 uppercase">
+                        {event.type}
                       </span>
-                      <span className="text-xs font-mono font-bold text-emerald-400 flex items-center gap-1">
-                        <Clock className="size-3.5" />
-                        <span>{evt.countdownText}</span>
-                      </span>
+                      <span className="text-xs font-mono font-bold text-amber-400">{event.prize}</span>
                     </div>
 
-                    <h2 className="text-2xl font-black text-white group-hover:text-dragon-200 transition-colors">
-                      {evt.title}
-                    </h2>
-                    <p className="mt-2 text-xs text-muted-foreground leading-relaxed">{evt.description}</p>
+                    <div>
+                      <h3 className="text-lg font-bold text-white group-hover:text-cyan-300 transition-colors">
+                        {event.title}
+                      </h3>
+                      <p className="text-xs text-slate-400 font-sans mt-2 leading-relaxed">
+                        {event.description}
+                      </p>
+                    </div>
 
-                    <div className="mt-6 grid grid-cols-2 gap-4 text-xs font-mono pt-4 border-t border-white/10">
-                      <div>
-                        <span className="block text-[10px] text-muted-foreground uppercase">EVENT DATE</span>
-                        <strong className="text-white">{evt.date}</strong>
+                    <div className="space-y-2 text-xs font-mono text-slate-300 border-t border-slate-800 pt-3">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="size-3.5 text-cyan-400" />
+                        <span>{event.date}</span>
                       </div>
-                      <div>
-                        <span className="block text-[10px] text-muted-foreground uppercase">ATTENDEES / PLAYERS</span>
-                        <strong className="text-white">{evt.registeredPlayers}</strong>
+                      <div className="flex items-center gap-2">
+                        <MapPin className="size-3.5 text-blue-400" />
+                        <span>{event.location}</span>
                       </div>
-                      {evt.prizePool && (
-                        <div>
-                          <span className="block text-[10px] text-muted-foreground uppercase">PRIZE GUARANTEE</span>
-                          <strong className="text-emerald-400 font-bold">{evt.prizePool}</strong>
-                        </div>
-                      )}
+                      <div className="flex items-center gap-2">
+                        <Users className="size-3.5 text-emerald-400" />
+                        <span>
+                          {event.participants + (isRegistered ? 1 : 0)} / {event.maxParticipants} Registered
+                        </span>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="mt-8 pt-4 border-t border-white/10 flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">
-                      {isRegistered ? "Pass Dispatched to Launcher" : "Free Player Entry"}
-                    </span>
-
-                    <Button
-                      onClick={() => handleRegister(evt.id)}
-                      variant={isRegistered ? "glass" : "glow"}
-                      size="sm"
-                      className="rounded-full gap-2 text-xs"
-                    >
-                      {isRegistered ? (
-                        <>
-                          <Check className="size-3.5 text-emerald-400" />
-                          <span>Registered</span>
-                        </>
-                      ) : (
-                        <>
-                          <Trophy className="size-3.5" />
-                          <span>RSVP & Register</span>
-                        </>
-                      )}
-                    </Button>
-                  </div>
+                  <Button
+                    onClick={() => handleRegister(event.id)}
+                    variant={isRegistered ? "glass" : "glow"}
+                    className="w-full rounded-2xl text-xs font-bold gap-2"
+                  >
+                    {isRegistered ? (
+                      <>
+                        <CheckCircle2 className="size-4 text-emerald-400" />
+                        <span>Registered & Confirmed</span>
+                      </>
+                    ) : (
+                      <>
+                        <Trophy className="size-4" />
+                        <span>Register for Event</span>
+                      </>
+                    )}
+                  </Button>
                 </div>
               );
             })}

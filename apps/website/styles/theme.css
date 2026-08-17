@@ -1,75 +1,74 @@
 @theme {
   /* ═══════════════════════════════════════════
      DRAGON STUDIOS — MASTER DESIGN TOKENS
-     Cinematic dark theme with crimson + gold
+     Deep Obsidian Black & Electric Blue / Cyan
   ═══════════════════════════════════════════ */
 
-  /* Surface palette — deep, layered, cinematic */
-  --color-background: oklch(0.04 0.004 260);
-  --color-foreground: oklch(0.94 0.004 55);
-  --color-card: oklch(0.07 0.004 260);
-  --color-card-foreground: oklch(0.94 0.004 55);
-  --color-popover: oklch(0.07 0.004 260);
-  --color-popover-foreground: oklch(0.94 0.004 55);
+  /* Surface palette — deep obsidian, midnight navy, cyber glass */
+  --color-background: #030712;
+  --color-foreground: #f8fafc;
+  --color-card: #080e1e;
+  --color-card-foreground: #f8fafc;
+  --color-popover: #0a1124;
+  --color-popover-foreground: #f8fafc;
 
-  /* Primary — dragon crimson */
-  --color-primary: oklch(0.60 0.22 25);
-  --color-primary-foreground: oklch(0.98 0 0);
+  /* Primary — Electric Radiant Blue */
+  --color-primary: #2563eb;
+  --color-primary-foreground: #ffffff;
 
-  /* Secondary — muted surface */
-  --color-secondary: oklch(0.10 0.008 260);
-  --color-secondary-foreground: oklch(0.88 0.008 260);
+  /* Secondary — Deep Cyber Surface */
+  --color-secondary: #0f172a;
+  --color-secondary-foreground: #94a3b8;
 
-  /* Muted — subdued text surfaces */
-  --color-muted: oklch(0.10 0.004 260);
-  --color-muted-foreground: oklch(0.48 0.008 260);
+  /* Muted — Subdued text surfaces */
+  --color-muted: #111827;
+  --color-muted-foreground: #64748b;
 
-  /* Accent — gold highlight */
-  --color-accent: oklch(0.65 0.18 50);
-  --color-accent-foreground: oklch(0.98 0 0);
+  /* Accent — Luminous Cyan Sky */
+  --color-accent: #06b6d4;
+  --color-accent-foreground: #ffffff;
 
-  /* Destructive — warning red */
-  --color-destructive: oklch(0.55 0.22 25);
-  --color-destructive-foreground: oklch(0.98 0 0);
+  /* Destructive — Warning Red (kept functional for error states) */
+  --color-destructive: #ef4444;
+  --color-destructive-foreground: #ffffff;
 
   /* Borders & inputs */
-  --color-border: oklch(0.14 0.004 260);
-  --color-input: oklch(0.12 0.004 260);
-  --color-ring: oklch(0.60 0.22 25);
+  --color-border: #1e293b;
+  --color-input: #0f172a;
+  --color-ring: #3b82f6;
 
-  /* ── Dragon Brand Palette ── */
-  --color-dragon-50: oklch(0.97 0.01 25);
-  --color-dragon-100: oklch(0.92 0.03 25);
-  --color-dragon-200: oklch(0.82 0.08 25);
-  --color-dragon-300: oklch(0.72 0.14 25);
-  --color-dragon-400: oklch(0.62 0.20 25);
-  --color-dragon-500: oklch(0.55 0.22 25);
-  --color-dragon-600: oklch(0.48 0.22 25);
-  --color-dragon-700: oklch(0.38 0.18 25);
-  --color-dragon-800: oklch(0.28 0.12 25);
-  --color-dragon-900: oklch(0.18 0.08 25);
-  --color-dragon-950: oklch(0.10 0.04 25);
+  /* ── Dragon Brand Palette (Electric & Cyber Blue Scale) ── */
+  --color-dragon-50: #eff6ff;
+  --color-dragon-100: #dbeafe;
+  --color-dragon-200: #bfdbfe;
+  --color-dragon-300: #93c5fd;
+  --color-dragon-400: #60a5fa;
+  --color-dragon-500: #3b82f6;
+  --color-dragon-600: #2563eb;
+  --color-dragon-700: #1d4ed8;
+  --color-dragon-800: #1e40af;
+  --color-dragon-900: #1e3a8a;
+  --color-dragon-950: #0a1128;
 
-  /* ── Cinematic Accents ── */
-  --color-neon-blue: oklch(0.65 0.14 245);
-  --color-neon-purple: oklch(0.55 0.20 300);
-  --color-neon-pink: oklch(0.60 0.20 350);
-  --color-neon-cyan: oklch(0.70 0.10 200);
+  /* ── Luminous Accents ── */
+  --color-neon-blue: #38bdf8;
+  --color-neon-purple: #818cf8;
+  --color-neon-pink: #38bdf8;
+  --color-neon-cyan: #22d3ee;
 
-  /* ── Gold — premium highlights ── */
-  --color-gold-400: oklch(0.78 0.14 80);
-  --color-gold-500: oklch(0.72 0.16 75);
-  --color-gold-600: oklch(0.65 0.16 70);
+  /* ── Cyber Highlights (replacing gold/ember with radiant cyan & ice blue) ── */
+  --color-gold-400: #38bdf8;
+  --color-gold-500: #0ea5e9;
+  --color-gold-600: #0284c7;
 
-  /* ── Ember — warm cinematic ── */
-  --color-ember-400: oklch(0.70 0.18 50);
-  --color-ember-500: oklch(0.62 0.20 45);
-  --color-ember-600: oklch(0.55 0.20 40);
+  --color-ember-400: #60a5fa;
+  --color-ember-500: #3b82f6;
+  --color-ember-600: #2563eb;
 
-  /* ── Slate — neutral cool ── */
-  --color-slate-700: oklch(0.30 0.008 260);
-  --color-slate-800: oklch(0.20 0.006 260);
-  --color-slate-900: oklch(0.12 0.004 260);
+  /* ── Slate — neutral deep obsidian ── */
+  --color-slate-700: #334155;
+  --color-slate-800: #1e293b;
+  --color-slate-900: #0f172a;
 
   /* ── Typography ── */
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;

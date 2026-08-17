@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { motion, useSpring, useMotionValue } from "framer-motion";
-import { MousePointer, Magnet, Sparkles, X } from "lucide-react";
 import { cn } from "@/lib/cn";
 
 export type CursorMode = "default" | "pointer" | "text" | "card" | "loading" | "hidden";
@@ -11,15 +10,16 @@ export function CustomCursor() {
   const [mounted, setMounted] = useState(false);
   const [enabled, setEnabled] = useState(true);
   const [magneticEnabled, setMagneticEnabled] = useState(true);
-  const [showWidget, setShowWidget] = useState(false);
   const [mode, setMode] = useState<CursorMode>("default");
   const [isClicking, setIsClicking] = useState(false);
+  const [isMagneticHover, setIsMagneticHover] = useState(false);
   const [cursorText, setCursorText] = useState("");
 
   const mouseX = useMotionValue(-100);
   const mouseY = useMotionValue(-100);
 
-  const springConfig = { damping: 25, stiffness: 400, mass: 0.3 };
+  // Smooth spring physics for magnetic reticle
+  const springConfig = { damping: 24, stiffness: 400, mass: 0.25 };
   const ringX = useSpring(mouseX, springConfig);
   const ringY = useSpring(mouseY, springConfig);
 
@@ -37,6 +37,18 @@ export function CustomCursor() {
     }
   }, []);
 
+  // Dynamically toggle default Windows native OS cursor visibility
+  useEffect(() => {
+    if (enabled && mode !== "hidden") {
+      document.documentElement.classList.add("dragon-cursor-active");
+    } else {
+      document.documentElement.classList.remove("dragon-cursor-active");
+    }
+    return () => {
+      document.documentElement.classList.remove("dragon-cursor-active");
+    };
+  }, [enabled, mode]);
+
   useEffect(() => {
     let active = true;
 
@@ -46,10 +58,13 @@ export function CustomCursor() {
       syncSettings();
 
       const isTouch =
-        window.matchMedia("(pointer: coarse)").matches ||
-        "ontouchstart" in window ||
-        navigator.maxTouchPoints > 0;
-      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        typeof window !== "undefined" &&
+        (window.matchMedia("(pointer: coarse)").matches ||
+          "ontouchstart" in window ||
+          navigator.maxTouchPoints > 0);
+      const reducedMotion =
+        typeof window !== "undefined" &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
       if (isTouch || reducedMotion) {
         setEnabled(false);
@@ -63,10 +78,11 @@ export function CustomCursor() {
       const target = e.target as HTMLElement | null;
       if (!target) return;
 
-      // Magnetic Attraction Effect
+      // Magnetic Attraction Physics & Snap
+      let magHovered = false;
       if (magneticEnabled) {
         const magneticEl = target.closest(
-          "[data-magnetic='true'], button, a, .magnetic-target"
+          "[data-magnetic='true'], button, a, .magnetic-target, [role='button']"
         ) as HTMLElement | null;
 
         if (magneticEl) {
@@ -75,12 +91,14 @@ export function CustomCursor() {
           const centerY = rect.top + rect.height / 2;
           const dist = Math.hypot(e.clientX - centerX, e.clientY - centerY);
 
-          if (dist < 70) {
-            targetX = centerX + (e.clientX - centerX) * 0.35;
-            targetY = centerY + (e.clientY - centerY) * 0.35;
+          if (dist < 85) {
+            magHovered = true;
+            targetX = centerX + (e.clientX - centerX) * 0.3;
+            targetY = centerY + (e.clientY - centerY) * 0.3;
           }
         }
       }
+      setIsMagneticHover(magHovered);
 
       mouseX.set(targetX);
       mouseY.set(targetY);
@@ -173,106 +191,41 @@ export function CustomCursor() {
     };
   }, [mouseX, mouseY, magneticEnabled, syncSettings]);
 
-  const toggleCursor = () => {
-    const nextVal = !enabled;
-    setEnabled(nextVal);
-    localStorage.setItem("dragon_cursor_enabled", String(nextVal));
-    window.dispatchEvent(new Event("dragon_cursor_setting_change"));
-  };
-
-  const toggleMagnet = () => {
-    const nextVal = !magneticEnabled;
-    setMagneticEnabled(nextVal);
-    localStorage.setItem("dragon_magnet_enabled", String(nextVal));
-    window.dispatchEvent(new Event("dragon_cursor_setting_change"));
-  };
-
   if (!mounted) return null;
 
   return (
     <>
-      {/* Floating Cursor Control Widget Trigger */}
-      <div className="fixed bottom-5 right-5 z-[99990]">
-        <button
-          onClick={() => setShowWidget(!showWidget)}
-          title="Custom Cursor & Magnetic Effect Settings"
-          className="flex h-10 w-10 items-center justify-center rounded-2xl bg-black/80 border border-white/20 text-white shadow-2xl backdrop-blur-md hover:bg-[#ff1e4b] hover:border-[#ff1e4b] transition-all"
-        >
-          <MousePointer className="size-4" />
-        </button>
-
-        {/* Control Panel Popover */}
-        {showWidget && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            className="absolute bottom-12 right-0 w-64 rounded-2xl bg-[#0a0a0c]/95 p-4 border border-white/20 shadow-2xl backdrop-blur-xl text-white font-mono text-xs space-y-3"
-          >
-            <div className="flex items-center justify-between border-b border-white/10 pb-2">
-              <span className="font-bold uppercase text-[#ff1e4b] flex items-center gap-1.5">
-                <Sparkles className="size-3.5" />
-                <span>CURSOR & MAGNET</span>
-              </span>
-              <button onClick={() => setShowWidget(false)} className="text-muted-foreground hover:text-white">
-                <X className="size-4" />
-              </button>
-            </div>
-
-            {/* Custom Cursor Toggle */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <MousePointer className="size-4 text-sky-400" />
-                <span>Custom Cursor</span>
-              </div>
-              <button
-                onClick={toggleCursor}
-                className={cn(
-                  "px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase transition-colors border",
-                  enabled ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40" : "bg-white/5 text-muted-foreground border-white/10"
-                )}
-              >
-                {enabled ? "ON" : "OFF"}
-              </button>
-            </div>
-
-            {/* Magnetic Effect Toggle */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Magnet className="size-4 text-purple-400" />
-                <span>Magnetic Pull</span>
-              </div>
-              <button
-                onClick={toggleMagnet}
-                className={cn(
-                  "px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase transition-colors border",
-                  magneticEnabled ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40" : "bg-white/5 text-muted-foreground border-white/10"
-                )}
-              >
-                {magneticEnabled ? "ON" : "OFF"}
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </div>
-
-      {/* Render Custom Cursor graphics only if enabled & not hidden */}
+      {/* Custom Cursor graphic in Obsidian & Electric Neon Blue */}
       {enabled && mode !== "hidden" && (
         <div
           aria-hidden="true"
           className="pointer-events-none fixed inset-0 z-[99999] overflow-hidden select-none"
         >
-          {/* Precision Core Dot */}
+          {/* 1. Subtle Electric Blue Aura Lighting */}
           <motion.div
             className={cn(
-              "fixed top-0 left-0 -translate-x-1/2 -translate-y-1/2 rounded-full transition-all duration-200 ease-out",
+              "fixed top-0 left-0 -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none transition-all duration-300 ease-out",
+              isMagneticHover ? "h-16 w-16 opacity-90" : "h-10 w-10 opacity-60"
+            )}
+            style={{
+              x: ringX,
+              y: ringY,
+              background: "radial-gradient(circle, rgba(56,189,248,0.3) 0%, rgba(37,99,235,0.15) 55%, transparent 75%)",
+              filter: "blur(5px)",
+            }}
+          />
+
+          {/* 2. Precision Electric Core Dot */}
+          <motion.div
+            className={cn(
+              "fixed top-0 left-0 -translate-x-1/2 -translate-y-1/2 rounded-full transition-all duration-100 ease-out z-10",
               mode === "text"
-                ? "h-5 w-0.5 bg-gradient-to-b from-[#ff1e4b] via-white to-[#ff1e4b]"
+                ? "h-5 w-0.5 bg-cyan-400"
                 : isClicking
-                ? "h-1.5 w-1.5 bg-amber-400"
+                ? "h-2 w-2 bg-cyan-300 shadow-[0_0_12px_rgba(56,189,248,1)] scale-125"
                 : mode === "pointer"
-                ? "h-2 w-2 bg-white"
-                : "h-2 w-2 bg-[#ff1e4b]",
-              "shadow-[0_0_10px_rgba(255,30,75,0.8)]"
+                ? "h-2 w-2 bg-white shadow-[0_0_10px_rgba(255,255,255,1)]"
+                : "h-2 w-2 bg-cyan-400 shadow-[0_0_10px_rgba(56,189,248,0.8)]"
             )}
             style={{
               x: mouseX,
@@ -280,19 +233,17 @@ export function CustomCursor() {
             }}
           />
 
-          {/* Outer Reticle & Magnetic Ring Follower */}
+          {/* 3. Outer Electric Reticle */}
           {mode !== "text" && (
             <motion.div
               className={cn(
-                "fixed top-0 left-0 -translate-x-1/2 -translate-y-1/2 rounded-full border transition-all duration-300 ease-out flex items-center justify-center text-[0.6rem] font-bold font-mono tracking-widest text-white backdrop-blur-[1px]",
-                mode === "pointer"
-                  ? "h-12 w-12 border-[#ff1e4b]/80 bg-[#ff1e4b]/10 scale-110 shadow-[0_0_24px_rgba(255,30,75,0.4)]"
-                  : mode === "card"
-                  ? "h-16 w-16 border-amber-400/60 bg-black/40 rounded-xl shadow-[0_0_30px_rgba(251,191,36,0.3)]"
-                  : mode === "loading"
-                  ? "h-12 w-12 border-dashed border-[#ff1e4b] bg-black/40 animate-spin"
-                  : "h-8 w-8 border-white/20 bg-transparent",
-                isClicking && "scale-90 border-amber-400 bg-amber-400/10"
+                "fixed top-0 left-0 -translate-x-1/2 -translate-y-1/2 rounded-full border transition-all duration-200 ease-out flex items-center justify-center text-[0.6rem] font-bold font-mono tracking-widest text-cyan-300 backdrop-blur-[1px]",
+                isMagneticHover
+                  ? "h-12 w-12 border-cyan-400 bg-blue-600/20 shadow-[0_0_25px_rgba(56,189,248,0.5)] scale-110"
+                  : mode === "pointer"
+                  ? "h-10 w-10 border-cyan-400/80 bg-blue-600/10 scale-105 shadow-[0_0_20px_rgba(56,189,248,0.4)]"
+                  : "h-8 w-8 border-cyan-400/30 bg-blue-950/20",
+                isClicking && "scale-90 border-cyan-300"
               )}
               style={{
                 x: ringX,
@@ -303,7 +254,7 @@ export function CustomCursor() {
                 <motion.span
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="px-1 text-center font-mono text-[0.55rem] tracking-wider text-amber-300 font-bold uppercase drop-shadow"
+                  className="px-1 py-0.5 text-center font-mono text-[0.5rem] tracking-wider text-cyan-200 font-extrabold uppercase rounded bg-[#07111F]/90 border border-blue-500/30"
                 >
                   {cursorText}
                 </motion.span>

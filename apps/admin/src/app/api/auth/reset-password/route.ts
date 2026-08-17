@@ -1,14 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
 import { hashPassword } from "@/lib/auth/auth";
+import { validateMilitaryPasswordPolicy } from "@dragon/auth";
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { email, newPassword } = body;
+    const { email, newPassword, token } = body;
 
-    if (!email || !newPassword) {
-      return NextResponse.json({ success: false, error: "Email and new password are required." }, { status: 400 });
+    if (!email || !newPassword || !token) {
+      return NextResponse.json({ success: false, error: "Email, new password, and valid reset token are required." }, { status: 400 });
+    }
+
+    if (!token.startsWith("DRG-RST-")) {
+      return NextResponse.json({ success: false, error: "Invalid or expired password reset token." }, { status: 400 });
+    }
+
+    const passCheck = validateMilitaryPasswordPolicy(newPassword);
+    if (!passCheck.valid) {
+      return NextResponse.json({ success: false, error: passCheck.error || "Password policy validation failed." }, { status: 400 });
     }
 
     const user = await prisma.user.findUnique({

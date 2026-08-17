@@ -4,7 +4,9 @@
   "description": "Shared Enterprise Prisma Database Package for Dragon Studios Platform",
   "main": "index.ts",
   "scripts": {
+    "build": "prisma generate",
     "generate": "prisma generate",
+    "prisma:generate": "prisma generate",
     "validate": "prisma validate",
     "db:push": "prisma db push",
     "seed": "node src/seed.ts"

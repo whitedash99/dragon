@@ -51,7 +51,8 @@ export async function POST(req: NextRequest) {
         url: publicUrl,
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
     console.error("Attachment Upload Error:", error);
     return NextResponse.json({ error: "Failed to process file upload." }, { status: 500 });
   }

@@ -3,31 +3,65 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
-  id            String       @id @default(cuid())
-  name          String?
-  email         String       @unique
-  password      String?
-  role          String       @default("ADMINISTRATOR")
-  department    String?      @default("Engineering")
-  status        String       @default("ACTIVE")
-  avatar        String?
-  mfaEnabled    Boolean      @default(false)
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  auditLogs     AuditLog[]
-  assets        MediaAsset[]
-  sessions      Session[]
+  id                     String                  @id @default(cuid())
+  name                   String?
+  email                  String                  @unique
+  password               String?
+  role                   String                  @default("USER")
+  department             String?                 @default("Engineering")
+  status                 String                  @default("ACTIVE")
+  avatar                 String?
+  employeeId             String?                 @unique
+  securityScore          Int                     @default(95)
+  dragonKeyPrefix        String?
+  dragonKeyHash          String?
+  mfaEnabled             Boolean                 @default(false)
+  mfaSecret              String?
+  mfaRecoveryCodes       String?                 @default("[]")
+  mfaVerified            Boolean                 @default(false)
+  isProtected            Boolean                 @default(false)
+  permissions            String?                 @default("[]")
+  provider               String?                 @default("google")
+  providerAccountId      String?
+  lastLogin              DateTime?               @default(now())
+  loginCount             Int                     @default(0)
+  isActive               Boolean                 @default(true)
+  isDeleted              Boolean                 @default(false)
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+  emailVerified          DateTime?
+  image                  String?
+  accounts               Account[]
+  auditLogs              AuditLog[]
+  assets                 MediaAsset[]
+  sessions               Session[]
+  profile                UserProfile?
+  devices                UserDevice[]
+  dualApprovalsCreated   DualApproval[]          @relation("DualApprovalRequester")
+  dualApprovalsConfirmed DualApprovalConfirmed[]
+
+  // Community relations
+  chatMessages           ChatMessage[]
+  chatReactions          ChatReaction[]
+  forumThreads           ForumThread[]
+  forumPosts             ForumPost[]
+  reportsMade            CommunityReport[]       @relation("ReportReporter")
+  reportsReceived        CommunityReport[]       @relation("ReportTargetUser")
+  moderatorActions       CommunityModerationAction[] @relation("ModeratorActions")
+  userActionsReceived    CommunityModerationAction[] @relation("TargetedUserActions")
+  communityBan           CommunityBan?
+  communityMutes         CommunityMute[]
+  bookmarks              CommunityBookmark[]
 
   @@index([email])
   @@index([role])
+  @@index([providerAccountId])
 }
 
 model Role {
@@ -492,16 +526,27 @@ model TeamMember {
 }
 
 model EmailLog {
-  id           String   @id @default(cuid())
-  ticketId     String?
-  recipient    String
-  subject      String
-  status       String   @default("DISPATCHED")
-  errorMessage String?
-  createdAt    DateTime @default(now())
-  ticket       Ticket?  @relation(fields: [ticketId], references: [id])
+  id               String    @id @default(cuid())
+  ticketId         String?
+  type             String    @default("NOTIFICATION")
+  template         String    @default("GENERAL")
+  recipient        String
+  subject          String
+  status           String    @default("DISPATCHED")
+  providerResponse String?
+  providerId       String?
+  errorMessage     String?
+  sentAt           DateTime? @default(now())
+  openedAt         DateTime?
+  clickedAt        DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @default(now()) @updatedAt
+  ticket           Ticket?   @relation(fields: [ticketId], references: [id])
 
   @@index([recipient])
+  @@index([status])
+  @@index([type])
+  @@index([template])
 }
 
 model AIConversation {
@@ -1446,6 +1491,7 @@ model Game {
   heroImage       String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+  communityRooms  CommunityRoom[]
 
   @@index([slug])
   @@index([status])
@@ -1466,5 +1512,451 @@ model Article {
 
   @@index([slug])
   @@index([featured])
+}
+
+model SupportCategory {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  icon        String?  @default("HelpCircle")
+  order       Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([slug])
+  @@index([active])
+}
+
+model TicketAssignment {
+  id         String   @id @default(cuid())
+  ticketId   String
+  assignedTo String
+  assignedBy String   @default("System")
+  note       String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([ticketId])
+  @@index([assignedTo])
+}
+
+model TicketReply {
+  id              String   @id @default(cuid())
+  ticketId        String?
+  contactTicketId String?
+  senderType      String   @default("CUSTOMER")
+  senderName      String
+  senderEmail     String?
+  message         String
+  attachments     String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([ticketId])
+  @@index([contactTicketId])
+  @@index([senderType])
+}
+
+model AdminNotification {
+  id        String   @id @default(cuid())
+  title     String
+  message   String
+  type      String   @default("TICKET_CREATED")
+  ticketId  String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([read])
+  @@index([ticketId])
+  @@index([type])
+}
+
+model UserProfile {
+  id                   String   @id @default(cuid())
+  userId               String   @unique
+  phone                String?
+  company              String?
+  bio                  String?
+  country              String?  @default("United States")
+  timezone             String?  @default("UTC")
+  language             String?  @default("en-US")
+  theme                String?  @default("dark")
+  notificationSettings String?  @default("{}")
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UserDevice {
+  id          String   @id @default(cuid())
+  userId      String
+  deviceId    String   @unique
+  browser     String?
+  os          String?
+  ipAddress   String?
+  country     String?
+  timezone    String?
+  fingerprint String?
+  trusted     Boolean  @default(true)
+  lastUsedAt  DateTime @default(now())
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([deviceId])
+}
+
+model DualApproval {
+  id            String                  @id @default(cuid())
+  action        String
+  resource      String?
+  payload       String?
+  status        String                  @default("PENDING")
+  requestedById String
+  requestedBy   User                    @relation("DualApprovalRequester", fields: [requestedById], references: [id], onDelete: Cascade)
+  confirmations DualApprovalConfirmed[]
+  createdAt     DateTime                @default(now())
+  expiresAt     DateTime
+
+  @@index([status])
+  @@index([requestedById])
+}
+
+model DualApprovalConfirmed {
+  id             String       @id @default(cuid())
+  dualApprovalId String
+  confirmedById  String
+  confirmedAt    DateTime     @default(now())
+  dualApproval   DualApproval @relation(fields: [dualApprovalId], references: [id], onDelete: Cascade)
+  confirmedBy    User         @relation(fields: [confirmedById], references: [id], onDelete: Cascade)
+
+  @@unique([dualApprovalId, confirmedById])
+}
+
+model SystemSecurityState {
+  id           String   @id @default("SYSTEM_SECURITY_SINGLETON")
+  lockdownMode Boolean  @default(false)
+  readOnlyMode Boolean  @default(false)
+  updatedById  String?
+  updatedAt    DateTime @updatedAt
+}
+
+model SecretVault {
+  id           String              @id @default(cuid())
+  name         String              @unique
+  category     String
+  keyName      String
+  maskedValue  String
+  isConfigured Boolean             @default(true)
+  lastRotated  DateTime            @default(now())
+  createdById  String
+  updatedAt    DateTime            @updatedAt
+  rotations    SecretRotationLog[]
+
+  @@index([category])
+}
+
+model SecretRotationLog {
+  id          String      @id @default(cuid())
+  secretId    String
+  rotatedBy   String
+  reason      String?
+  createdAt   DateTime    @default(now())
+  secretVault SecretVault @relation(fields: [secretId], references: [id], onDelete: Cascade)
+
+  @@index([secretId])
+}
+model TeamInvitation {
+  id          String   @id @default(cuid())
+  email       String
+  name        String?
+  role        String   @default("DEVELOPER")
+  department  String?  @default("Engineering")
+  permissions String?  @default("[]")
+  tokenHash   String   @unique
+  status      String   @default("PENDING") // PENDING, ACCEPTED, REVOKED, EXPIRED
+  createdBy   String
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([email])
+  @@index([tokenHash])
+  @@index([status])
+}
+
+model TeamApplication {
+  id                String    @id @default(cuid())
+  applicationNumber String?   @unique
+  jobId             String?
+  jobTitle          String
+  department        String    @default("Engineering")
+  applicantName     String
+  applicantEmail    String
+  phone             String?
+  country           String?   @default("Global / Remote")
+  portfolioUrl      String
+  linkedinUrl       String?
+  primarySkill      String?   @default("Core C++ / Engine Architecture")
+  experience        String?   @default("Senior / 5+ Years")
+  whyJoin           String?
+  relevantProjects  String?
+  resumeUrl         String?
+  note              String?
+  status            String    @default("PENDING") // PENDING, UNDER_REVIEW, MORE_INFORMATION, APPROVED, REJECTED, WITHDRAWN
+  ownerNotes        String?
+  reviewedBy        String?
+  reviewedAt        DateTime?
+  invitationId      String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([applicantEmail])
+  @@index([status])
+  @@index([applicationNumber])
+}
+
+model PasskeyCredential {
+  id           String   @id @default(cuid())
+  userId       String
+  credentialId String   @unique
+  publicKey    String
+  counter      BigInt   @default(0)
+  deviceType   String?
+  backedUp     Boolean  @default(false)
+  transports   String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model RecoveryMethod {
+  id         String    @id @default(cuid())
+  userId     String
+  type       String    @default("RECOVERY_CODES")
+  secretHash String
+  usedAt     DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([userId])
+}
+
+model TrustedDevice {
+  id          String   @id @default(cuid())
+  userId      String
+  fingerprint String   @unique
+  deviceName  String?
+  ipAddress   String?
+  lastUsedAt  DateTime @default(now())
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+}
+
+// ══════════════════════════════════════════════════════════════════
+// 🐉 DRAGON STUDIOS COMMUNITY & REAL-TIME CHAT MODELS
+// ══════════════════════════════════════════════════════════════════
+
+model CommunityRoom {
+  id          String        @id @default(cuid())
+  name        String
+  slug        String        @unique
+  description String?
+  category    String        @default("COMMUNITY") // INFORMATION, COMMUNITY, GAMES, OFF_TOPIC
+  type        String        @default("TEXT") // TEXT, ANNOUNCEMENT, GAME_LOUNGE, VOICE
+  gameId      String?
+  isPublic    Boolean       @default(true)
+  isArchived  Boolean       @default(false)
+  order       Int           @default(0)
+  icon        String?       @default("Hash")
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  messages    ChatMessage[]
+  game        Game?         @relation(fields: [gameId], references: [id], onDelete: SetNull)
+
+  @@index([slug])
+  @@index([category])
+  @@index([gameId])
+}
+
+model ChatMessage {
+  id          String            @id @default(cuid())
+  roomId      String
+  userId      String
+  content     String
+  attachments String?           @default("[]")
+  replyToId   String?
+  isPinned    Boolean           @default(false)
+  isEdited    Boolean           @default(false)
+  deletedAt   DateTime?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  room        CommunityRoom     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  replyTo     ChatMessage?      @relation("MessageReplies", fields: [replyToId], references: [id], onDelete: SetNull)
+  replies     ChatMessage[]     @relation("MessageReplies")
+  reactions   ChatReaction[]
+  reports     CommunityReport[]
+
+  @@index([roomId])
+  @@index([userId])
+  @@index([createdAt])
+  @@index([replyToId])
+}
+
+model ChatReaction {
+  id        String      @id @default(cuid())
+  messageId String
+  userId    String
+  emoji     String
+  createdAt DateTime    @default(now())
+  message   ChatMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([messageId, userId, emoji])
+  @@index([messageId])
+  @@index([userId])
+}
+
+model ForumCategory {
+  id          String        @id @default(cuid())
+  name        String        @unique
+  slug        String        @unique
+  description String
+  icon        String        @default("MessageSquare")
+  color       String        @default("#38bdf8")
+  order       Int           @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  threads     ForumThread[]
+
+  @@index([slug])
+}
+
+model ForumThread {
+  id          String              @id @default(cuid())
+  categoryId  String
+  authorId    String
+  title       String
+  slug        String              @unique
+  content     String
+  tags        String              @default("[]")
+  isPinned    Boolean             @default(false)
+  isLocked    Boolean             @default(false)
+  viewsCount  Int                 @default(0)
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  category    ForumCategory       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  author      User                @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  posts       ForumPost[]
+  bookmarks   CommunityBookmark[]
+  reports     CommunityReport[]
+
+  @@index([categoryId])
+  @@index([authorId])
+  @@index([slug])
+  @@index([createdAt])
+}
+
+model ForumPost {
+  id         String            @id @default(cuid())
+  threadId   String
+  authorId   String
+  content    String
+  isSolution Boolean           @default(false)
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+  thread     ForumThread       @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  author     User              @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  reports    CommunityReport[]
+
+  @@index([threadId])
+  @@index([authorId])
+  @@index([createdAt])
+}
+
+model CommunityReport {
+  id             String       @id @default(cuid())
+  reporterId     String
+  reportedUserId String?
+  targetType     String       // MESSAGE, THREAD, POST, USER
+  messageId      String?
+  threadId       String?
+  postId         String?
+  reason         String       // SPAM, HARASSMENT, INAPPROPRIATE, SCAM, IMPERSONATION, OTHER
+  details        String?
+  status         String       @default("PENDING") // PENDING, REVIEWED, DISMISSED, ACTIONED
+  resolvedById   String?
+  resolutionNote String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  reporter       User         @relation("ReportReporter", fields: [reporterId], references: [id], onDelete: Cascade)
+  reportedUser   User?        @relation("ReportTargetUser", fields: [reportedUserId], references: [id], onDelete: SetNull)
+  message        ChatMessage? @relation(fields: [messageId], references: [id], onDelete: SetNull)
+  thread         ForumThread? @relation(fields: [threadId], references: [id], onDelete: SetNull)
+  post           ForumPost?   @relation(fields: [postId], references: [id], onDelete: SetNull)
+
+  @@index([reporterId])
+  @@index([reportedUserId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model CommunityModerationAction {
+  id              String    @id @default(cuid())
+  moderatorId     String
+  targetUserId    String
+  action          String    // WARN, MUTE, KICK, BAN, UNBAN, UNMUTE, DELETE_CONTENT
+  reason          String
+  durationMinutes Int?
+  expiresAt       DateTime?
+  createdAt       DateTime  @default(now())
+  moderator       User      @relation("ModeratorActions", fields: [moderatorId], references: [id], onDelete: Cascade)
+  targetUser      User      @relation("TargetedUserActions", fields: [targetUserId], references: [id], onDelete: Cascade)
+
+  @@index([moderatorId])
+  @@index([targetUserId])
+  @@index([createdAt])
+}
+
+model CommunityBan {
+  id         String    @id @default(cuid())
+  userId     String    @unique
+  reason     String
+  bannedById String
+  expiresAt  DateTime?
+  createdAt  DateTime  @default(now())
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model CommunityMute {
+  id        String    @id @default(cuid())
+  userId    String    @unique
+  roomId    String?
+  reason    String
+  mutedById String
+  expiresAt DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model CommunityBookmark {
+  id        String       @id @default(cuid())
+  userId    String
+  threadId  String?
+  createdAt DateTime     @default(now())
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  thread    ForumThread? @relation(fields: [threadId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, threadId])
+  @@index([userId])
 }
 

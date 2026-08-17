@@ -6,27 +6,52 @@ const prisma = new PrismaClient();
 async function main() {
   console.log("🌱 Seeding Dragon Platform shared PostgreSQL database...");
 
-  // 1. Seed Owner Account
-  const ownerEmail = "owner@dragonstudios.com";
-  const ownerHash = await bcrypt.hash("DragonOwner#2026", 10);
-
-  const owner = await prisma.user.upsert({
-    where: { email: ownerEmail },
-    update: {
-      password: ownerHash,
-      role: "OWNER",
-      status: "ACTIVE",
+  // 1. Seed Owner Accounts
+  const ownerList = [
+    {
+      email: "whitedash99@gmail.com",
+      name: "Dragon Platform Owner (WhiteDash)",
+      password: "DragonFounder#2026!",
     },
-    create: {
-      email: ownerEmail,
-      password: ownerHash,
+    {
+      email: "dragongamingstudio1212@gmail.com",
+      name: "Dragon Gaming Studio Owner",
+      password: "DragonFounder#2026!",
+    },
+    {
+      email: "owner@dragonstudios.com",
       name: "Dragon Platform Owner",
-      role: "OWNER",
-      department: "Executive Leadership",
-      status: "ACTIVE",
+      password: "DragonOwner#2026",
     },
-  });
-  console.log(`✓ Owner account ready: ${owner.email}`);
+  ];
+
+  for (const o of ownerList) {
+    const ownerHash = await bcrypt.hash(o.password, 10);
+    const owner = await prisma.user.upsert({
+      where: { email: o.email },
+      update: {
+        password: ownerHash,
+        role: "OWNER",
+        status: "ACTIVE",
+        isActive: true,
+        isProtected: true,
+        securityScore: 100,
+        permissions: JSON.stringify(["*"]),
+      },
+      create: {
+        email: o.email,
+        password: ownerHash,
+        name: o.name,
+        role: "OWNER",
+        department: "Executive Leadership",
+        status: "ACTIVE",
+        isActive: true,
+        isProtected: true,
+        permissions: JSON.stringify(["*"]),
+      },
+    });
+    console.log(`✓ Owner account ready: ${owner.email}`);
+  }
 
   // 2. Seed Admin Account
   const adminEmail = "admin@dragonstudios.com";

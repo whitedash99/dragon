@@ -10,13 +10,15 @@ export interface TicketEmailParams {
   subject: string;
   message: string;
   priority: string;
-  clientIp?: string;
-  clientCountry?: string;
-  browser?: string;
-  status?: string;
-  slaTarget?: string;
-  queueName?: string;
+  clientIp?: string | null;
+  clientCountry?: string | null;
+  browser?: string | null;
+  os?: string | null;
+  status?: string | null;
+  slaTarget?: string | null;
+  queueName?: string | null;
   attachments?: string[];
+  trackingUrl?: string | null;
   createdAt?: string | Date;
 }
 

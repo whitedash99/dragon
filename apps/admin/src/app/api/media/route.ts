@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
+import { getAuthenticatedUser } from "@/lib/auth/auth";
+import { can } from "@dragon/auth";
 
 export async function GET(req: NextRequest) {
   try {
@@ -43,6 +45,14 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
+    const auth = await getAuthenticatedUser();
+    if (!auth) {
+      return NextResponse.json({ success: false, error: "Authentication required." }, { status: 401 });
+    }
+    if (!can(auth.user, "media.manage") && !can(auth.user, "cms.edit")) {
+      return NextResponse.json({ success: false, error: "Access Denied: Requires media.manage permission." }, { status: 403 });
+    }
+
     const body = await req.json();
     const { name, size, type, category, url, altText, dimensions } = body;
 
@@ -64,11 +74,13 @@ export async function POST(req: NextRequest) {
 
     await prisma.auditLog.create({
       data: {
+        userId: auth.user.id,
+        userEmail: auth.user.email,
         action: "CREATE_MEDIA_ASSET",
-        userEmail: "Admin",
+        resource: "MEDIA",
         details: `Saved Media Asset: ${asset.name} (${asset.size})`,
       },
-    });
+    }).catch((e) => console.warn("AuditLog warning:", e));
 
     return NextResponse.json({ success: true, asset });
   } catch (error: unknown) {
@@ -79,6 +91,14 @@ export async function POST(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   try {
+    const auth = await getAuthenticatedUser();
+    if (!auth) {
+      return NextResponse.json({ success: false, error: "Authentication required." }, { status: 401 });
+    }
+    if (!can(auth.user, "media.manage") && !can(auth.user, "cms.edit")) {
+      return NextResponse.json({ success: false, error: "Access Denied: Requires media.manage permission." }, { status: 403 });
+    }
+
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
 
@@ -92,11 +112,13 @@ export async function DELETE(req: NextRequest) {
 
       await prisma.auditLog.create({
         data: {
+          userId: auth.user.id,
+          userEmail: auth.user.email,
           action: "DELETE_MEDIA_ASSET",
-          userEmail: "Admin",
+          resource: "MEDIA",
           details: `Deleted Media Asset: ${asset.name}`,
         },
-      });
+      }).catch((e) => console.warn("AuditLog warning:", e));
     }
 
     return NextResponse.json({ success: true, message: "Asset deleted successfully." });

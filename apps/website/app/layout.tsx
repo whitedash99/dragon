@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Rajdhani } from "next/font/google";
 import "./globals.css";
+import { SessionProvider } from "@/providers/session-provider";
 import { AudioProvider } from "@/providers/audio-provider";
 import { AiProvider } from "@/providers/ai-provider";
 import { SmoothScrollProvider } from "@/providers/smooth-scroll-provider";
@@ -12,6 +13,7 @@ import { AiAssistant } from "@/components/ai/AiAssistant";
 import { CommandPalette } from "@/components/navigation/CommandPalette";
 import { OFFICIAL_SOCIALS } from "@/lib/site";
 import { CMSLiveSync } from "@/components/shared/CMSLiveSync";
+import { WebsiteAnalyticsTracker } from "@/components/shared/WebsiteAnalyticsTracker";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -72,19 +74,22 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${rajdhani.variable} antialiased bg-background text-foreground selection:bg-dragon-500/30 selection:text-white`}
       >
-        <AudioProvider>
-          <AiProvider>
-            <SmoothScrollProvider>
-              <Preloader />
-              <CustomCursor />
-              <ScrollProgress />
-              <CommandPalette />
-              <AiAssistant />
-              <CMSLiveSync />
-              {children}
-            </SmoothScrollProvider>
-          </AiProvider>
-        </AudioProvider>
+        <SessionProvider>
+          <AudioProvider>
+            <AiProvider>
+              <SmoothScrollProvider>
+                <Preloader />
+                <CustomCursor />
+                <ScrollProgress />
+                <CommandPalette />
+                <AiAssistant />
+                <CMSLiveSync />
+                <WebsiteAnalyticsTracker />
+                {children}
+              </SmoothScrollProvider>
+            </AiProvider>
+          </AudioProvider>
+        </SessionProvider>
       </body>
     </html>
   );

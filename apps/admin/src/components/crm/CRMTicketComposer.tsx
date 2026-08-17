@@ -31,15 +31,15 @@ export function CRMTicketComposer({
   };
 
   return (
-    <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-5 shadow-xl">
-      <div className="flex items-center gap-2 border-b border-white/5 pb-3 mb-4">
+    <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs font-sans text-xs text-slate-900">
+      <div className="flex items-center gap-2 border-b border-slate-100 pb-3 mb-4 font-mono">
         <button
           type="button"
           onClick={() => setActiveTab("reply")}
-          className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
+          className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all ${
             activeTab === "reply"
-              ? "bg-purple-600 text-white"
-              : "bg-transparent text-slate-400 hover:text-white"
+              ? "bg-slate-900 text-white shadow-xs"
+              : "bg-slate-50 text-slate-600 hover:text-slate-900 hover:bg-slate-100"
           }`}
         >
           <Send className="w-3.5 h-3.5" /> Send Customer Reply
@@ -47,10 +47,10 @@ export function CRMTicketComposer({
         <button
           type="button"
           onClick={() => setActiveTab("note")}
-          className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
+          className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all ${
             activeTab === "note"
-              ? "bg-amber-600 text-white"
-              : "bg-transparent text-slate-400 hover:text-white"
+              ? "bg-amber-100 text-amber-900 border border-amber-200 shadow-xs"
+              : "bg-slate-50 text-slate-600 hover:text-slate-900 hover:bg-slate-100"
           }`}
         >
           <StickyNote className="w-3.5 h-3.5" /> Add Staff Internal Note
@@ -67,12 +67,12 @@ export function CRMTicketComposer({
               ? "Type your response to the customer..."
               : "Add an internal staff note (visible to agents only)..."
           }
-          className="w-full p-3.5 bg-slate-950/60 border border-white/10 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-purple-500/50 transition-colors resize-none"
+          className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-slate-400 transition-colors resize-none"
         />
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between font-mono">
           {dispatchedSuccess ? (
-            <span className="text-xs text-emerald-400 font-semibold flex items-center gap-1">
+            <span className="text-xs text-emerald-700 font-bold flex items-center gap-1">
               <CheckCircle2 className="w-4 h-4" /> Message saved to database!
             </span>
           ) : (
@@ -84,10 +84,10 @@ export function CRMTicketComposer({
           <Button
             type="submit"
             disabled={sending || !text.trim()}
-            className={`text-xs px-4 py-2 ${
+            className={`text-xs px-5 py-2 font-bold shadow-xs ${
               activeTab === "reply"
-                ? "bg-purple-600 hover:bg-purple-500 text-white"
-                : "bg-amber-600 hover:bg-amber-500 text-white"
+                ? "bg-slate-900 hover:bg-slate-800 text-white"
+                : "bg-amber-900 hover:bg-amber-800 text-white"
             }`}
           >
             {sending ? "Processing..." : activeTab === "reply" ? "Send Reply" : "Save Note"}

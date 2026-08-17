@@ -82,8 +82,9 @@ export async function POST(req: NextRequest) {
       message: "Email address updated. Verification email dispatched to your new inbox.",
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
     console.error("Email update API error:", error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }

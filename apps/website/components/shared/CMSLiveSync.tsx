@@ -1,19 +1,34 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { cmsSaveService } from "@/lib/cms/cmsSaveService";
 
 export function CMSLiveSync() {
   const hoverOverlayRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     // 0. EDITOR MODE DETECTION GUARD
-    // Only enable visual editing tools if loaded inside Admin Iframe or with ?editor=true
     const isEditorMode =
       typeof window !== "undefined" &&
       (window.self !== window.top || window.location.search.includes("editor=true"));
 
     if (!isEditorMode) {
       return;
+    }
+
+    // Dynamic style injection for empty text placeholders
+    if (!document.getElementById("dragon-cms-placeholder-styles")) {
+      const styleEl = document.createElement("style");
+      styleEl.id = "dragon-cms-placeholder-styles";
+      styleEl.innerHTML = `
+        [data-cms-empty="true"]::before {
+          content: attr(data-placeholder);
+          color: rgba(255, 255, 255, 0.4) !important;
+          font-style: italic !important;
+          pointer-events: none !important;
+        }
+      `;
+      document.head.appendChild(styleEl);
     }
 
     // Floating hover outline overlay box (Editor Mode Only)
@@ -48,6 +63,7 @@ export function CMSLiveSync() {
 
     let activeEditableElement: HTMLElement | null = null;
     let originalTextBeforeEdit: string = "";
+    let autoSaveTimeout: NodeJS.Timeout | null = null;
 
     // 1. Hover Listener (Blue Hover Outline + Tooltip)
     const handleMouseMove = (e: MouseEvent) => {
@@ -135,6 +151,12 @@ export function CMSLiveSync() {
       target.style.outlineOffset = "2px";
       target.style.borderRadius = "4px";
       target.style.caretColor = "#38bdf8";
+      target.style.minWidth = "4ch";
+      target.style.minHeight = "1.2em";
+
+      const currentPlaceholder = target.getAttribute("data-placeholder") || "Start typing...";
+      target.setAttribute("data-placeholder", currentPlaceholder);
+      target.setAttribute("data-cms-empty", target.innerText.trim().length === 0 ? "true" : "false");
 
       overlay.style.display = "none";
 
@@ -144,25 +166,39 @@ export function CMSLiveSync() {
       // Notify parent frame of element selection
       selectElement(target);
 
-      // Live typing listener
+      // Live typing listener + Debounced Autosave
       const handleInput = () => {
         const newText = target.innerText;
         const currentKey = target.getAttribute("data-cms-key") || "hero.title";
-        window.parent.postMessage(
-          {
-            type: "DRAGON_CMS_TEXT_TYPING",
+        const isNowEmpty = newText.trim().length === 0;
+        target.setAttribute("data-cms-empty", isNowEmpty ? "true" : "false");
+
+        // Broadcast real-time typing state to Admin frame & cross-tab
+        cmsSaveService.broadcastUpdate(currentKey, newText, "typing");
+
+        // Debounced Autosave (800ms)
+        if (autoSaveTimeout) clearTimeout(autoSaveTimeout);
+        autoSaveTimeout = setTimeout(() => {
+          cmsSaveService.saveBlock({
             key: currentKey,
             content: newText,
-          },
-          "*"
-        );
+          });
+        }, 800);
       };
 
       // Comprehensive Rich Text & Navigation Keyboard Shortcuts
       const handleKeyDown = (keyEvent: KeyboardEvent) => {
         const isCmdOrCtrl = keyEvent.metaKey || keyEvent.ctrlKey;
 
-        if (isCmdOrCtrl && keyEvent.key.toLowerCase() === "b") {
+        if (isCmdOrCtrl && keyEvent.key.toLowerCase() === "s") {
+          keyEvent.preventDefault();
+          if (autoSaveTimeout) clearTimeout(autoSaveTimeout);
+          const currentKey = target.getAttribute("data-cms-key") || "hero.title";
+          cmsSaveService.saveBlock({
+            key: currentKey,
+            content: target.innerText,
+          });
+        } else if (isCmdOrCtrl && keyEvent.key.toLowerCase() === "b") {
           keyEvent.preventDefault();
           document.execCommand("bold");
           handleInput();
@@ -182,10 +218,6 @@ export function CMSLiveSync() {
             document.execCommand("undo");
           }
           handleInput();
-        } else if (isCmdOrCtrl && keyEvent.key.toLowerCase() === "y") {
-          keyEvent.preventDefault();
-          document.execCommand("redo");
-          handleInput();
         } else if (keyEvent.key === "Enter") {
           const isHeading = /^H[1-6]$/i.test(target.tagName);
           if (isHeading && !keyEvent.shiftKey) {
@@ -195,6 +227,7 @@ export function CMSLiveSync() {
         } else if (keyEvent.key === "Escape") {
           keyEvent.preventDefault();
           target.innerText = originalTextBeforeEdit;
+          target.setAttribute("data-cms-empty", originalTextBeforeEdit.trim().length === 0 ? "true" : "false");
           target.blur();
         }
       };
@@ -210,17 +243,14 @@ export function CMSLiveSync() {
         target.removeEventListener("keydown", handleKeyDown);
         target.removeEventListener("blur", handleBlur);
 
+        if (autoSaveTimeout) clearTimeout(autoSaveTimeout);
         const finalContent = target.innerText;
         const currentKey = target.getAttribute("data-cms-key") || "hero.title";
 
-        window.parent.postMessage(
-          {
-            type: "DRAGON_CMS_SAVE_BLOCK",
-            key: currentKey,
-            content: finalContent,
-          },
-          "*"
-        );
+        cmsSaveService.saveBlock({
+          key: currentKey,
+          content: finalContent,
+        });
 
         activeEditableElement = null;
       };
@@ -242,23 +272,23 @@ export function CMSLiveSync() {
       const target = e.target as HTMLElement;
       if (!target) return;
 
-      const text = target.innerText?.trim();
-      if (text && text.length > 0 && text.length < 500) {
+      const text = target.innerText;
+      if (text !== undefined && text !== null && text.length < 500) {
         enableElementEditing(target);
       }
     };
 
-    // 3. Message Listener from Parent Frame (Real-time sync)
+    // 3. Message Listener from Parent Frame & BroadcastChannel (Real-time sync)
     const handleMessage = (event: MessageEvent) => {
       const { type, key, content, command, value } = event.data || {};
 
-      if (type === "DRAGON_CMS_TEXT_UPDATE" && content !== undefined) {
+      if ((type === "DRAGON_CMS_TEXT_UPDATE" || type === "DRAGON_CMS_REALTIME_SYNC") && content !== undefined) {
         const elements = document.querySelectorAll(`[data-cms-key="${key}"]`);
         if (elements.length > 0) {
           elements.forEach((el) => {
-            // CRITICAL: Skip activeEditableElement so caret position is NEVER reset while typing!
             if (el !== activeEditableElement) {
               (el as HTMLElement).innerText = content;
+              (el as HTMLElement).setAttribute("data-cms-empty", String(content).trim().length === 0 ? "true" : "false");
             }
           });
         }
@@ -276,14 +306,9 @@ export function CMSLiveSync() {
         else if (command === "redo") document.execCommand("redo");
 
         const newText = activeEditableElement.innerText;
-        window.parent.postMessage(
-          {
-            type: "DRAGON_CMS_TEXT_TYPING",
-            key: activeEditableElement.getAttribute("data-cms-key") || "hero.title",
-            content: newText,
-          },
-          "*"
-        );
+        const currentKey = activeEditableElement.getAttribute("data-cms-key") || "hero.title";
+
+        cmsSaveService.broadcastUpdate(currentKey, newText, "typing");
       }
     };
 
@@ -292,11 +317,19 @@ export function CMSLiveSync() {
     document.addEventListener("dblclick", handleDblClick);
     window.addEventListener("message", handleMessage);
 
+    const channel = cmsSaveService.getBroadcastChannel();
+    if (channel) {
+      channel.addEventListener("message", handleMessage);
+    }
+
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("click", handleClick);
       document.removeEventListener("dblclick", handleDblClick);
       window.removeEventListener("message", handleMessage);
+      if (channel) {
+        channel.removeEventListener("message", handleMessage);
+      }
       if (overlay.parentNode) {
         overlay.parentNode.removeChild(overlay);
       }
@@ -305,4 +338,3 @@ export function CMSLiveSync() {
 
   return null;
 }
-

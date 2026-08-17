@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
+import { getAuthenticatedUser } from "@/lib/auth/auth";
+import { can } from "@dragon/auth";
 
 export async function GET() {
   try {
@@ -48,6 +50,14 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
+    const auth = await getAuthenticatedUser();
+    if (!auth) {
+      return NextResponse.json({ success: false, error: "Authentication required." }, { status: 401 });
+    }
+    if (!can(auth.user, "settings.manage")) {
+      return NextResponse.json({ success: false, error: "Access Denied: Requires settings.manage permission." }, { status: 403 });
+    }
+
     const body = await req.json();
     const { action, key, enabled, companyName } = body;
 
@@ -65,11 +75,13 @@ export async function POST(req: NextRequest) {
 
       await prisma.auditLog.create({
         data: {
+          userId: auth.user.id,
+          userEmail: auth.user.email,
           action: "UPDATE_FEATURE_FLAG",
-          userEmail: "Super Admin",
+          resource: "SETTINGS",
           details: `Feature Flag '${key}' set to: ${enabled}`,
         },
-      });
+      }).catch((e) => console.warn("AuditLog warning:", e));
 
       return NextResponse.json({ success: true, flag });
     }
@@ -78,11 +90,13 @@ export async function POST(req: NextRequest) {
     if (companyName) {
       await prisma.auditLog.create({
         data: {
+          userId: auth.user.id,
+          userEmail: auth.user.email,
           action: "UPDATE_SYSTEM_SETTINGS",
-          userEmail: "Super Admin",
+          resource: "SETTINGS",
           details: `Updated System Configurations: ${companyName}`,
         },
-      });
+      }).catch((e) => console.warn("AuditLog warning:", e));
       return NextResponse.json({ success: true, message: "System settings saved successfully." });
     }
 

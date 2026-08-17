@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
+import { getAuthenticatedUser } from "@/lib/auth/auth";
+import { can } from "@dragon/auth";
 
 export async function GET(req: NextRequest) {
   try {
@@ -51,6 +53,15 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
+    const auth = await getAuthenticatedUser();
+    if (!auth) {
+      return NextResponse.json({ success: false, error: "Authentication required." }, { status: 401 });
+    }
+
+    if (!can(auth.user, "games.manage") && !can(auth.user, "cms.edit")) {
+      return NextResponse.json({ success: false, error: "Access Denied: Requires games.manage permission." }, { status: 403 });
+    }
+
     const body = await req.json();
     const { id, name, slug, genre, status, releaseDate, platforms, description, isPublished } = body;
 
@@ -85,11 +96,13 @@ export async function POST(req: NextRequest) {
 
     await prisma.auditLog.create({
       data: {
+        userId: auth.user.id,
+        userEmail: auth.user.email,
         action: id ? "UPDATE_GAME" : "CREATE_GAME",
-        userEmail: "Admin",
-        details: `Saved Game Title: ${game.name} (${game.slug})`,
+        resource: "GAMES_CATALOG",
+        details: `Saved Game Title: ${game.name} (${game.slug}) by ${auth.user.email}`,
       },
-    });
+    }).catch((e) => console.warn("AuditLog warning:", e));
 
     return NextResponse.json({ success: true, game });
   } catch (error: unknown) {
@@ -100,6 +113,15 @@ export async function POST(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   try {
+    const auth = await getAuthenticatedUser();
+    if (!auth) {
+      return NextResponse.json({ success: false, error: "Authentication required." }, { status: 401 });
+    }
+
+    if (!can(auth.user, "games.manage") && !can(auth.user, "cms.edit")) {
+      return NextResponse.json({ success: false, error: "Access Denied: Requires games.manage permission." }, { status: 403 });
+    }
+
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
 
@@ -113,11 +135,13 @@ export async function DELETE(req: NextRequest) {
 
       await prisma.auditLog.create({
         data: {
+          userId: auth.user.id,
+          userEmail: auth.user.email,
           action: "DELETE_GAME",
-          userEmail: "Admin",
-          details: `Deleted Game: ${game.name} (${game.slug})`,
+          resource: "GAMES_CATALOG",
+          details: `Deleted Game: ${game.name} (${game.slug}) by ${auth.user.email}`,
         },
-      });
+      }).catch((e) => console.warn("AuditLog warning:", e));
     }
 
     return NextResponse.json({ success: true, message: "Game title deleted successfully." });

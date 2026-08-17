@@ -7,8 +7,9 @@ export async function GET() {
   try {
     const blocks = await getAllContentBlocks();
     return NextResponse.json({ success: true, blocks });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }
 
@@ -128,9 +129,11 @@ export async function POST(req: Request) {
         where: { key },
         data: {
           content: newContent,
-          draftContent: newContent,
+          draftContent: draftContent || newContent,
           isPublished: true,
           version: existing.content !== newContent ? existing.version + 1 : existing.version,
+          updatedBy: body.updatedBy || "Admin",
+          updatedAt: new Date(),
         },
       });
     } else {
@@ -141,17 +144,19 @@ export async function POST(req: Request) {
           label: blockLabel,
           type: blockType,
           content: newContent,
-          draftContent: newContent,
+          draftContent: draftContent || newContent,
           isPublished: true,
           version: 1,
+          updatedBy: body.updatedBy || "Admin",
         },
       });
     }
 
     const blocks = await getAllContentBlocks();
     return NextResponse.json({ success: true, message: "Content updated and published", block: updatedBlock, blocks });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
     console.error("Error updating CMS content:", error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }

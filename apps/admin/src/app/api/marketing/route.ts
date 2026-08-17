@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
 import { generateGeminiText } from "@/lib/ai/gemini";
+import { getAuthenticatedUser } from "@/lib/auth/auth";
+import { can } from "@dragon/auth";
 
 export async function GET() {
   try {
@@ -55,6 +57,14 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
+    const auth = await getAuthenticatedUser();
+    if (!auth) {
+      return NextResponse.json({ success: false, error: "Authentication required." }, { status: 401 });
+    }
+    if (!can(auth.user, "settings.manage") && !can(auth.user, "cms.edit")) {
+      return NextResponse.json({ success: false, error: "Access Denied: Requires settings.manage permission." }, { status: 403 });
+    }
+
     const body = await req.json();
     const { action, name, type, audience, topic, targetAudience, code, discount } = body;
 
@@ -72,11 +82,13 @@ export async function POST(req: NextRequest) {
 
       await prisma.auditLog.create({
         data: {
+          userId: auth.user.id,
+          userEmail: auth.user.email,
           action: "CREATE_MARKETING_CAMPAIGN",
-          userEmail: "Marketing Lead",
+          resource: "MARKETING",
           details: `Created Campaign: ${name}`,
         },
-      });
+      }).catch((e) => console.warn("AuditLog warning:", e));
 
       return NextResponse.json({ success: true, campaign });
     }
@@ -100,6 +112,16 @@ export async function POST(req: NextRequest) {
           status: "ACTIVE",
         },
       });
+
+      await prisma.auditLog.create({
+        data: {
+          userId: auth.user.id,
+          userEmail: auth.user.email,
+          action: "CREATE_PROMOTION",
+          resource: "MARKETING",
+          details: `Created Promotion Code: ${code.toUpperCase()} (${discount || "25% OFF"})`,
+        },
+      }).catch((e) => console.warn("AuditLog warning:", e));
 
       return NextResponse.json({ success: true, promotion: promo });
     }

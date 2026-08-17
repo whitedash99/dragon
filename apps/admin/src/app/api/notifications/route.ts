@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
+import { getAuthenticatedUser } from "@/lib/auth/auth";
+import { can } from "@dragon/auth";
 
 export async function GET() {
   try {
@@ -34,6 +36,11 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
+    const auth = await getAuthenticatedUser();
+    if (!auth) {
+      return NextResponse.json({ success: false, error: "Authentication required." }, { status: 401 });
+    }
+
     const body = await req.json();
     const { action, id, title, message, type, recipient, channel } = body;
 
@@ -55,8 +62,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true });
     }
 
-    // 3. Dispatch New Notification
+    // 3. Dispatch New Notification (requires elevated permissions)
     if (title && message) {
+      if (!can(auth.user, "settings.manage") && !can(auth.user, "crm.manage")) {
+        return NextResponse.json({ success: false, error: "Access Denied: Requires settings.manage permission." }, { status: 403 });
+      }
+
       const notif = await prisma.notification.create({
         data: {
           title,
@@ -74,6 +85,16 @@ export async function POST(req: NextRequest) {
           status: "DELIVERED",
         },
       });
+
+      await prisma.auditLog.create({
+        data: {
+          userId: auth.user.id,
+          userEmail: auth.user.email,
+          action: "DISPATCH_NOTIFICATION",
+          resource: "NOTIFICATIONS",
+          details: `Dispatched notification: ${title}`,
+        },
+      }).catch((e) => console.warn("AuditLog warning:", e));
 
       return NextResponse.json({ success: true, notification: notif });
     }

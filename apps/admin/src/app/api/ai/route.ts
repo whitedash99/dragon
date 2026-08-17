@@ -1,10 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateGeminiText, analyzeTicketWithAi, generateSeoWithAi } from "@/lib/ai/gemini";
 import { prisma } from "@/lib/database/prisma";
+import { getAuthenticatedUser } from "@/lib/auth/auth";
 
 export async function POST(req: NextRequest) {
   const startTime = Date.now();
   try {
+    const auth = await getAuthenticatedUser();
+    if (!auth) {
+      return NextResponse.json({ success: false, error: "Authentication required." }, { status: 401 });
+    }
+
     const body = await req.json();
     const { action, prompt, text, targetLanguage, ticketData } = body;
 
@@ -12,7 +18,7 @@ export async function POST(req: NextRequest) {
     if (action === "analyze_ticket") {
       if (ticketData) {
         const analysis = await analyzeTicketWithAi(ticketData);
-        await recordUsage("crm_summary", startTime);
+        await recordUsage("crm_summary", startTime, auth.user.email);
         return NextResponse.json({ success: true, analysis });
       }
       return NextResponse.json({ success: false, error: "ticketData is required for ticket analysis" }, { status: 400 });
@@ -22,7 +28,7 @@ export async function POST(req: NextRequest) {
     if (action === "generate_seo") {
       const topic = prompt || text || "Dragon Studios AAA Gaming";
       const seo = await generateSeoWithAi(topic);
-      await recordUsage("seo", startTime);
+      await recordUsage("seo", startTime, auth.user.email);
       return NextResponse.json({ success: true, seo });
     }
 
@@ -31,7 +37,7 @@ export async function POST(req: NextRequest) {
       const lang = targetLanguage || "Japanese";
       const translationPrompt = `Translate the following gaming content into natural ${lang}:\n\n"${text || prompt}"`;
       const translatedText = await generateGeminiText({ prompt: translationPrompt });
-      await recordUsage("translate", startTime);
+      await recordUsage("translate", startTime, auth.user.email);
       return NextResponse.json({ success: true, translatedText });
     }
 
@@ -39,13 +45,13 @@ export async function POST(req: NextRequest) {
     if (action === "generate_content") {
       const contentPrompt = `Write a professional AAA game studio announcement about: "${prompt || text}". Format with Markdown headers and bullet points.`;
       const generatedContent = await generateGeminiText({ prompt: contentPrompt });
-      await recordUsage("content", startTime);
+      await recordUsage("content", startTime, auth.user.email);
       return NextResponse.json({ success: true, generatedContent });
     }
 
     // 5. Studio AI Chat Completion
     const completion = await generateGeminiText({ prompt: prompt || text || "Dragon Studios AI status check" });
-    await recordUsage("chat", startTime);
+    await recordUsage("chat", startTime, auth.user.email);
 
     return NextResponse.json({ success: true, completion });
   } catch (error: unknown) {
@@ -54,7 +60,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-async function recordUsage(feature: string, startTime: number) {
+async function recordUsage(feature: string, startTime: number, userEmail: string) {
   const elapsed = (Date.now() - startTime) / 1000;
   try {
     await prisma.aIUsage.create({
@@ -64,17 +70,17 @@ async function recordUsage(feature: string, startTime: number) {
         tokens: 350,
         responseTime: elapsed,
         status: "SUCCESS",
-        userEmail: "Admin",
+        userEmail,
       },
     });
 
     await prisma.auditLog.create({
       data: {
         action: "EXECUTE_AI_FEATURE",
-        userEmail: "Admin",
+        userEmail,
         details: `Executed AI feature [${feature}] in ${elapsed.toFixed(2)}s`,
       },
-    });
+    }).catch((e) => console.warn("AuditLog warning:", e));
   } catch (e) {
     console.error("Error recording AI usage", e);
   }

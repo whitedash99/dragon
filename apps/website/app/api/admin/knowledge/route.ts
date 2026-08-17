@@ -25,8 +25,9 @@ export async function GET(req: NextRequest) {
     });
 
     return NextResponse.json({ success: true, knowledge: filtered, articles });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }
 
@@ -57,7 +58,8 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({ success: true, doc: newDoc });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 400 });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    return NextResponse.json({ success: false, error: message }, { status: 400 });
   }
 }

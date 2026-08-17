@@ -9,10 +9,9 @@ import {
   Globe, 
   RefreshCw, 
   MessageSquare, 
-  Zap, 
-  FileText 
+  FileText,
+  Send
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/cn";
 
 type ToolMode = "chat" | "content" | "seo" | "translate" | "ticket";
@@ -20,15 +19,19 @@ type ToolMode = "chat" | "content" | "seo" | "translate" | "ticket";
 export default function AIPage() {
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
-  const [response, setResponse] = useState<string | null>(null);
+  const [chatHistory, setChatHistory] = useState<Array<{ role: "user" | "assistant"; text: string }>>([
+    { role: "assistant", text: "Welcome to Dragon AI Center. Powered by Google Gemini AI. How can I assist you?" }
+  ]);
   const [toolMode, setToolMode] = useState<ToolMode>("chat");
 
   const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!prompt.trim()) return;
+    if (!prompt.trim() || loading) return;
 
+    const userMsg = prompt.trim();
+    setPrompt("");
+    setChatHistory((prev) => [...prev, { role: "user", text: userMsg }]);
     setLoading(true);
-    setResponse(null);
 
     try {
       let action = "completion";
@@ -42,187 +45,140 @@ export default function AIPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           action,
-          prompt: prompt.trim(),
-          text: prompt.trim(),
+          prompt: userMsg,
+          text: userMsg,
           targetLanguage: "Japanese",
-          ticketData: toolMode === "ticket" ? {
-            ticketId: "DRG-2026-000001",
-            customerName: "Alex Vance",
-            customerEmail: "alex@dragonstudios.com",
-            category: "Technical Support",
-            subject: "Embers of Valyria pre-order query",
-            description: prompt.trim(),
-          } : undefined,
         }),
       });
 
       const data = await res.json();
+      let aiText = "Error generating response from Gemini API.";
+
       if (data.success) {
-        if (data.generatedContent) {
-          setResponse(data.generatedContent);
-        } else if (data.seo) {
-          setResponse(`TITLE:\n${data.seo.title}\n\nDESCRIPTION:\n${data.seo.description}\n\nKEYWORDS:\n${data.seo.keywords}`);
-        } else if (data.translatedText) {
-          setResponse(data.translatedText);
-        } else if (data.analysis) {
-          setResponse(data.analysis);
-        } else {
-          setResponse(data.completion);
-        }
+        if (data.generatedContent) aiText = data.generatedContent;
+        else if (data.seo) aiText = `Title: ${data.seo.title}\nDescription: ${data.seo.description}\nKeywords: ${data.seo.keywords}`;
+        else if (data.translatedText) aiText = data.translatedText;
+        else if (data.analysis) aiText = data.analysis;
+        else if (data.completion) aiText = data.completion;
       }
+
+      setChatHistory((prev) => [...prev, { role: "assistant", text: aiText }]);
     } catch (err) {
-      console.error("AI Generation error", err);
-      setResponse("Error communicating with Google Gemini AI engine.");
+      console.error("AI error", err);
+      setChatHistory((prev) => [...prev, { role: "assistant", text: "Error connecting to Gemini API service." }]);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="flex min-h-screen bg-[#050508]">
+    <div className="flex min-h-screen bg-slate-50 text-slate-900 font-sans select-none overflow-hidden">
       <Sidebar />
 
       <div className="flex-1 flex flex-col min-w-0">
         <Navbar />
 
-        <main className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-8 font-mono text-xs">
-          {/* Header Bar */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <span className="text-xs font-bold uppercase tracking-widest text-[#ff1e4b]">
-                ENTERPRISE COGNITIVE ENGINE
-              </span>
-              <h1 className="text-3xl font-black uppercase text-white tracking-tight sm:text-4xl mt-0.5 font-heading">
-                AI CENTER & GEMINI INTELLIGENCE
-              </h1>
+        {/* WORKSPACE LAYOUT */}
+        <main className="flex-1 flex overflow-hidden font-sans">
+          {/* LEFT PANEL — Mode Selector */}
+          <aside className="w-64 bg-white border-r border-slate-200 flex flex-col shrink-0 p-4 space-y-4 font-mono">
+            <div className="text-xs font-mono font-bold text-slate-500 uppercase tracking-wider">
+              AI Module Mode
             </div>
 
-            <div className="flex items-center gap-2">
-              <span className="rounded-full bg-emerald-500/20 px-3 py-1 text-xs text-emerald-400 border border-emerald-500/30 font-bold">
-                GEMINI 2.5 CONNECTED
-              </span>
-            </div>
-          </div>
-
-          {/* Metric Telemetry Strip */}
-          <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-2xl glass-card p-4 border border-white/10 space-y-1">
-              <span className="text-muted-foreground uppercase text-[10px] font-bold block">MODEL LATENCY</span>
-              <span className="text-lg font-black text-emerald-400 block">ONLINE (&lt; 0.3s)</span>
-            </div>
-            <div className="rounded-2xl glass-card p-4 border border-white/10 space-y-1">
-              <span className="text-muted-foreground uppercase text-[10px] font-bold block">TOKENS PROCESSED</span>
-              <span className="text-lg font-black text-white block">142,500 TOKENS</span>
-            </div>
-            <div className="rounded-2xl glass-card p-4 border border-white/10 space-y-1">
-              <span className="text-muted-foreground uppercase text-[10px] font-bold block">SUGGESTED REPLIES</span>
-              <span className="text-lg font-black text-[#ff1e4b] block">100% ACTIVE</span>
-            </div>
-            <div className="rounded-2xl glass-card p-4 border border-white/10 space-y-1">
-              <span className="text-muted-foreground uppercase text-[10px] font-bold block">SECURITY & PRIVACY</span>
-              <span className="text-lg font-black text-sky-400 block">SERVER-SIDE API</span>
-            </div>
-          </div>
-
-          {/* Main AI Workspace Grid */}
-          <div className="grid gap-6 lg:grid-cols-12">
-            {/* Left Controls & Tool Mode Selector */}
-            <div className="lg:col-span-4 rounded-3xl glass-panel p-6 border border-white/15 space-y-6">
-              <span className="text-xs font-bold uppercase text-white block">SELECT AI MODULE MODE</span>
-
-              <div className="space-y-2">
-                {[
-                  { id: "chat" as ToolMode, label: "Studio AI Chatbot", icon: Bot, desc: "Query dragon engine specs or studio knowledge" },
-                  { id: "content" as ToolMode, label: "Content & Blog Generator", icon: FileText, desc: "Generate announcements, patch notes & blogs" },
-                  { id: "ticket" as ToolMode, label: "Ticket Sentiment Analyzer", icon: MessageSquare, desc: "Analyze sentiment, urgency & draft suggested reply" },
-                  { id: "seo" as ToolMode, label: "SEO Metadata Generator", icon: Sparkles, desc: "Generate title, meta description & JSON-LD keywords" },
-                  { id: "translate" as ToolMode, label: "Multilingual Translation", icon: Globe, desc: "Translate text to Japanese, Spanish, or German" },
-                ].map((item) => {
-                  const Icon = item.icon;
-                  const isSelected = toolMode === item.id;
-                  return (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => setToolMode(item.id)}
-                      className={cn(
-                        "w-full flex flex-col gap-1 rounded-2xl p-4 text-left border transition-all",
-                        isSelected
-                          ? "bg-[#ff1e4b]/20 text-white border-[#ff1e4b] shadow-lg shadow-[#ff1e4b]/30"
-                          : "bg-white/5 text-muted-foreground border-white/5 hover:border-white/20 hover:text-white"
-                      )}
-                    >
-                      <div className="flex items-center gap-2">
-                        <Icon className={cn("size-4", isSelected ? "text-[#ff1e4b]" : "text-muted-foreground")} />
-                        <span className="text-xs font-bold uppercase tracking-wider">{item.label}</span>
-                      </div>
-                      <span className="text-[10px] text-muted-foreground font-sans">{item.desc}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Right Prompt & Output Console */}
-            <div className="lg:col-span-8 rounded-3xl glass-panel p-6 sm:p-8 border border-white/15 space-y-6">
-              <form onSubmit={handleGenerate} className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <label className="block text-xs font-bold uppercase text-white">
-                    AI PROMPT & CONTEXT INPUT
-                  </label>
-                  <span className="text-[10px] text-muted-foreground">MODE: {toolMode.toUpperCase()}</span>
-                </div>
-
-                <textarea
-                  rows={5}
-                  value={prompt}
-                  onChange={(e) => setPrompt(e.target.value)}
-                  placeholder={
-                    toolMode === "content"
-                      ? "Enter announcement topic (e.g., Embers of Valyria pre-alpha playtest announcement)..."
-                      : toolMode === "seo"
-                      ? "Enter page topic for SEO generation..."
-                      : toolMode === "ticket"
-                      ? "Paste customer message to analyze urgency and generate reply..."
-                      : "Ask Studio AI Assistant..."
-                  }
-                  className="w-full rounded-2xl bg-black/60 p-4 text-xs font-mono text-white placeholder:text-muted-foreground border border-white/10 focus:outline-none focus:border-[#ff1e4b] resize-y"
-                />
-
-                <div className="flex justify-end">
-                  <Button
-                    type="submit"
-                    disabled={loading || !prompt.trim()}
-                    variant="solidRed"
-                    size="md"
-                    className="gap-2 text-xs"
-                  >
-                    {loading ? (
-                      <>
-                        <RefreshCw className="size-4 animate-spin" />
-                        <span>PROCESSING AI PIPELINE...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Zap className="size-4" />
-                        <span>EXECUTE GEMINI AI</span>
-                      </>
+            <div className="space-y-1">
+              {[
+                { id: "chat" as ToolMode, label: "Studio Assistant", icon: Bot },
+                { id: "content" as ToolMode, label: "Content Generator", icon: FileText },
+                { id: "ticket" as ToolMode, label: "Ticket Sentiment", icon: MessageSquare },
+                { id: "seo" as ToolMode, label: "SEO Generator", icon: Sparkles },
+                { id: "translate" as ToolMode, label: "Translation Engine", icon: Globe },
+              ].map((tmpl) => {
+                const Icon = tmpl.icon;
+                const isSelected = toolMode === tmpl.id;
+                return (
+                  <button
+                    key={tmpl.id}
+                    onClick={() => setToolMode(tmpl.id)}
+                    className={cn(
+                      "w-full text-left p-3 rounded-xl border text-xs transition-all space-y-1 font-bold",
+                      isSelected ? "bg-slate-900 text-white border-slate-900 shadow-xs" : "bg-slate-50 border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100"
                     )}
-                  </Button>
-                </div>
-              </form>
+                  >
+                    <div className="flex items-center gap-2">
+                      <Icon className="size-3.5" />
+                      <span>{tmpl.label}</span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </aside>
 
-              {/* AI Output Result Console */}
-              {response && (
-                <div className="space-y-2 pt-4 border-t border-white/10">
-                  <span className="text-xs font-bold text-emerald-400 uppercase block">AI GENERATION OUTPUT</span>
-                  <div className="rounded-2xl bg-black/80 p-5 border border-white/15 text-xs text-white leading-relaxed whitespace-pre-wrap">
-                    {response}
+          {/* CENTER CHAT CANVAS */}
+          <section className="flex-1 flex flex-col min-w-0 bg-slate-50 relative">
+            <div className="flex-1 overflow-y-auto p-8 space-y-6 max-w-4xl mx-auto w-full">
+              {chatHistory.map((msg, idx) => (
+                <div
+                  key={idx}
+                  className={cn(
+                    "flex gap-4",
+                    msg.role === "user" ? "justify-end" : "justify-start"
+                  )}
+                >
+                  {msg.role === "assistant" && (
+                    <div className="size-8 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
+                      AI
+                    </div>
+                  )}
+
+                  <div
+                    className={cn(
+                      "p-4 rounded-2xl text-xs leading-relaxed border font-sans shadow-xs",
+                      msg.role === "user"
+                        ? "bg-slate-900 border-slate-900 text-white font-medium max-w-xl"
+                        : "bg-white border-slate-200 text-slate-900 max-w-2xl font-sans"
+                    )}
+                  >
+                    <div className="whitespace-pre-wrap">{msg.text}</div>
                   </div>
+                </div>
+              ))}
+
+              {loading && (
+                <div className="flex gap-3 items-center text-slate-500 text-xs font-mono">
+                  <RefreshCw className="size-3.5 animate-spin text-slate-700" />
+                  <span>Gemini AI processing...</span>
                 </div>
               )}
             </div>
-          </div>
+
+            {/* Input Console */}
+            <form onSubmit={handleGenerate} className="p-6 border-t border-slate-200 bg-white max-w-4xl mx-auto w-full font-sans">
+              <div className="relative">
+                <textarea
+                  rows={3}
+                  value={prompt}
+                  onChange={(e) => setPrompt(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      handleGenerate(e);
+                    }
+                  }}
+                  placeholder="Ask Gemini AI or input text..."
+                  className="w-full rounded-2xl bg-slate-50 p-4 pr-12 text-xs text-slate-900 placeholder:text-slate-400 border border-slate-200 focus:outline-none focus:border-slate-400 resize-none font-sans"
+                />
+                <button
+                  type="submit"
+                  disabled={loading || !prompt.trim()}
+                  className="absolute right-3 bottom-3.5 p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white disabled:opacity-30 transition-all shadow-xs"
+                >
+                  <Send className="size-4" />
+                </button>
+              </div>
+            </form>
+          </section>
         </main>
       </div>
     </div>

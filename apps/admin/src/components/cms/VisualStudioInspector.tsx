@@ -52,10 +52,10 @@ export function VisualStudioInspector({
 
   if (!selectedBlock) {
     return (
-      <div className="w-80 bg-slate-900/95 backdrop-blur-2xl border-l border-white/10 p-5 text-center text-slate-400 text-xs flex flex-col items-center justify-center space-y-2 shrink-0 select-none">
-        <Sliders className="w-8 h-8 text-purple-400 opacity-40 mb-1" />
-        <p className="font-semibold text-white">Visual Inspector Studio</p>
-        <p className="text-slate-400">Select any section or block element to edit text, typography, colors, and motion.</p>
+      <div className="w-80 bg-white border-l border-slate-200 p-5 text-center text-slate-500 text-xs flex flex-col items-center justify-center space-y-2 shrink-0 select-none">
+        <Sliders className="w-8 h-8 text-slate-400 opacity-60 mb-1" />
+        <p className="font-bold text-slate-900">Visual Inspector Studio</p>
+        <p className="text-slate-500">Select any section or block element to edit text, typography, colors, and motion.</p>
       </div>
     );
   }
@@ -75,13 +75,13 @@ export function VisualStudioInspector({
   ];
 
   return (
-    <div className="w-80 bg-slate-900/95 backdrop-blur-2xl border-l border-white/10 flex flex-col h-full shrink-0 select-none text-xs">
+    <div className="w-80 bg-white border-l border-slate-200 flex flex-col h-full shrink-0 select-none text-xs text-slate-900">
       {/* Top Inspector Tab Bar */}
-      <div className="flex items-center justify-around border-b border-white/10 p-2 bg-slate-950/60">
+      <div className="flex items-center justify-around border-b border-slate-100 p-2 bg-slate-50">
         <button
           onClick={() => setTab("content")}
           className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-            tab === "content" ? "bg-purple-600 text-white" : "text-slate-400 hover:text-white"
+            tab === "content" ? "bg-slate-900 text-white shadow-xs" : "text-slate-500 hover:text-slate-900"
           }`}
           title="Text & Markdown Content"
         >
@@ -91,7 +91,7 @@ export function VisualStudioInspector({
         <button
           onClick={() => setTab("style")}
           className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-            tab === "style" ? "bg-purple-600 text-white" : "text-slate-400 hover:text-white"
+            tab === "style" ? "bg-slate-900 text-white shadow-xs" : "text-slate-500 hover:text-slate-900"
           }`}
           title="Figma Typography & Colors"
         >

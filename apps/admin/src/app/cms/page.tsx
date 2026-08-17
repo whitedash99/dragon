@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import { motion } from "framer-motion";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { Navbar } from "@/components/navbar/Navbar";
 import { History, X, Minimize2, ExternalLink } from "lucide-react";
@@ -137,8 +138,10 @@ export default function ResizableFigmaStudioPage() {
     setIsPublished(b.isPublished);
   };
 
-  const handleSaveBlock = async (shouldRefreshCanvas = false) => {
+  const handleSaveBlock = async (shouldRefreshCanvas = false, overrideContent?: string) => {
     if (!selectedBlock) return;
+    const contentToSave = overrideContent !== undefined ? overrideContent : editContent;
+
     setSaving(true);
     try {
       const res = await fetch("/api/cms/blocks", {
@@ -149,17 +152,41 @@ export default function ResizableFigmaStudioPage() {
           category: selectedBlock.category,
           label: selectedBlock.label,
           type: selectedBlock.type,
-          content: editContent,
+          content: contentToSave,
+          draftContent: contentToSave,
           isPublished,
           updatedBy: "Dragon Studio Admin",
         }),
       });
 
       const data = await res.json();
-      if (data.success) {
+      if (data.success && data.block) {
         setSavedSuccess(true);
         setTimeout(() => setSavedSuccess(false), 2500);
-        fetchBlocks();
+
+        // Update local block state immediately
+        setBlocks((prev) =>
+          prev.map((b) => (b.key === data.block.key ? { ...b, ...data.block } : b))
+        );
+        setSelectedBlock((prev) => (prev ? { ...prev, ...data.block } : null));
+
+        // Real-time broadcast to website iframe and cross-tab
+        if (typeof window !== "undefined") {
+          const payload = {
+            type: "DRAGON_CMS_REALTIME_SYNC",
+            key: data.block.key,
+            content: data.block.content,
+            status: "saved",
+            timestamp: Date.now(),
+          };
+          window.postMessage(payload, "*");
+          try {
+            const bc = new BroadcastChannel("dragon_cms_live_sync");
+            bc.postMessage(payload);
+            bc.close();
+          } catch {}
+        }
+
         if (shouldRefreshCanvas) {
           setRefreshKey((prev) => prev + 1);
         }
@@ -230,10 +257,10 @@ export default function ResizableFigmaStudioPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-slate-950 text-slate-100 font-sans overflow-hidden">
+    <div className="flex min-h-screen bg-slate-50 text-slate-900 font-sans overflow-hidden">
       {/* Fullscreen Portal Mode Overlay */}
       {isFullscreen ? (
-        <div className="fixed inset-0 z-50 bg-slate-950 flex flex-col w-screen h-screen">
+        <div className="fixed inset-0 z-50 bg-slate-900 flex flex-col w-screen h-screen">
           {/* Top Fullscreen Control Bar */}
           <div className="bg-slate-900/90 border-b border-white/10 px-6 py-2.5 flex items-center justify-between z-30">
             <div className="flex items-center gap-3">
@@ -278,7 +305,7 @@ export default function ResizableFigmaStudioPage() {
               }}
               onSaveBlockContent={(newContent) => {
                 setEditContent(newContent);
-                handleSaveBlock(false);
+                handleSaveBlock(false, newContent);
               }}
               onSelectBlockFromCanvas={(key, text) => {
                 const found = blocks.find((b) => b.key === key);
@@ -413,7 +440,7 @@ export default function ResizableFigmaStudioPage() {
                     }}
                     onSaveBlockContent={(newContent) => {
                       setEditContent(newContent);
-                      handleSaveBlock(false);
+                      handleSaveBlock(false, newContent);
                     }}
                     onSelectBlockFromCanvas={(key, text) => {
                       const found = blocks.find((b) => b.key === key);

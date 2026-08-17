@@ -16,6 +16,7 @@ import {
   Lock 
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ThemeSwitcher } from "@/components/theme/ThemeSwitcher";
 import { cn } from "@/lib/utils/cn";
 
 interface FeatureFlagItem {
@@ -123,40 +124,40 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#050508]">
+    <div className="flex min-h-screen bg-slate-50 text-slate-900 font-sans select-none">
       <Sidebar />
 
       <div className="flex-1 flex flex-col min-w-0">
         <Navbar />
 
-        <main className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-8 font-mono text-xs">
+        <main className="flex-1 overflow-y-auto p-8 max-w-7xl mx-auto w-full space-y-8 font-sans text-xs">
           {/* Header Bar */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 border-b border-slate-200 pb-6">
             <div>
-              <span className="text-xs font-bold uppercase tracking-widest text-[#ff1e4b]">
+              <div className="text-xs font-mono font-bold text-slate-500 uppercase tracking-wider mb-1">
                 SYSTEM CONTROL PANEL
-              </span>
-              <h1 className="text-3xl font-black uppercase text-white tracking-tight sm:text-4xl mt-0.5 font-heading">
-                SETTINGS & INTEGRATIONS
+              </div>
+              <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
+                Settings & System Integrations
               </h1>
             </div>
 
             <div className="flex items-center gap-3">
-              <Button onClick={fetchSettings} variant="outline" size="sm" className="rounded-xl text-xs gap-2">
-                <RefreshCw className="size-3.5 text-[#ff1e4b]" />
-                <span>REFRESH CONFIGURATIONS</span>
+              <Button onClick={fetchSettings} variant="outline" size="sm" className="rounded-xl text-xs gap-2 border-slate-200 bg-white text-slate-700 hover:bg-slate-50 shadow-xs">
+                <RefreshCw className="size-3.5 text-slate-500" />
+                <span>Refresh Config</span>
               </Button>
             </div>
           </div>
 
           {saveSuccess && (
-            <div className="p-4 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold flex items-center gap-2">
-              <CheckCircle2 className="size-4" /> SYSTEM CONFIGURATIONS SAVED & PERSISTED TO POSTGRESQL
+            <div className="p-4 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 font-semibold flex items-center gap-2">
+              <CheckCircle2 className="size-4 text-emerald-600" /> Configurations saved & persisted to Neon PostgreSQL.
             </div>
           )}
 
           {/* Configuration Category Tabs */}
-          <div className="flex items-center gap-2 overflow-x-auto border-b border-white/10 pb-3">
+          <div className="flex items-center gap-2 overflow-x-auto border-b border-slate-200 pb-3">
             {[
               { id: "general" as const, label: "General & Studio", icon: Globe },
               { id: "email" as const, label: "Email & SMTP", icon: Mail },
@@ -171,10 +172,10 @@ export default function SettingsPage() {
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={cn(
-                    "rounded-xl px-4 py-2 text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all border shrink-0",
+                    "rounded-xl px-4 py-2 text-xs font-semibold uppercase tracking-wider flex items-center gap-2 transition-all border shrink-0 font-mono",
                     isSelected
-                      ? "bg-[#ff1e4b] text-white border-[#ff1e4b] shadow-lg shadow-[#ff1e4b]/20"
-                      : "bg-white/5 text-muted-foreground border-white/5 hover:text-white"
+                      ? "bg-slate-900 text-white border-slate-900 shadow-xs"
+                      : "bg-white text-slate-600 border-slate-200 hover:text-slate-900 hover:bg-slate-50"
                   )}
                 >
                   <Icon className="size-3.5" />
@@ -186,68 +187,92 @@ export default function SettingsPage() {
 
           {/* Settings Form Grid */}
           <div className="grid gap-6 lg:grid-cols-12">
-            <div className="lg:col-span-7 rounded-3xl glass-panel p-6 sm:p-8 border border-white/15 space-y-6">
-              <span className="text-xs font-bold uppercase text-white flex items-center gap-2 border-b border-white/10 pb-3">
-                <Settings className="size-4 text-[#ff1e4b]" />
-                <span>CORE SYSTEM CONFIGURATION SPECIFICATION</span>
-              </span>
+            <div className="lg:col-span-7 rounded-2xl bg-white p-6 sm:p-8 border border-slate-200 shadow-xs space-y-6">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <span className="text-xs font-bold uppercase text-slate-900 flex items-center gap-2 font-mono">
+                  <Settings className="size-4 text-slate-600" />
+                  <span>Core Platform Specifications</span>
+                </span>
+                <div className="flex items-center gap-1.5 text-[11px] font-mono">
+                  {saving ? (
+                    <span className="text-amber-700 flex items-center gap-1 font-semibold">
+                      <RefreshCw className="size-3 animate-spin" /> Saving...
+                    </span>
+                  ) : saveSuccess ? (
+                    <span className="text-emerald-700 font-semibold flex items-center gap-1">
+                      <Check className="size-3" /> Saved ✓
+                    </span>
+                  ) : (
+                    <span className="text-slate-400">Saved to DB</span>
+                  )}
+                </div>
+              </div>
+
+              {/* Appearance & Theme Governance Card */}
+              <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 flex items-center justify-between gap-4 font-mono">
+                <div>
+                  <div className="font-bold text-slate-900 dark:text-slate-100 text-xs">Admin OS Theme Preference</div>
+                  <div className="text-[11px] text-slate-500 dark:text-slate-400 font-sans mt-0.5">Switch between Light, Dark, or System automatic theme adaptation.</div>
+                </div>
+                <ThemeSwitcher />
+              </div>
 
               <form onSubmit={handleSaveSettings} className="space-y-4">
                 <div className="space-y-1">
-                  <label className="block text-[10px] font-bold uppercase text-muted-foreground">COMPANY IDENTITY</label>
+                  <label className="block text-[11px] font-bold uppercase text-slate-500 font-mono">Company Identity</label>
                   <input
                     type="text"
                     required
                     value={formCompany}
                     onChange={(e) => setFormCompany(e.target.value)}
-                    className="w-full rounded-xl bg-black/60 px-3 py-2 text-xs text-white border border-white/10 focus:outline-none focus:border-[#ff1e4b]"
+                    className="w-full rounded-xl bg-slate-50 px-3.5 py-2 text-xs text-slate-900 border border-slate-200 focus:outline-none focus:border-slate-400"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <label className="block text-[10px] font-bold uppercase text-muted-foreground">SYSTEM TIMEZONE</label>
+                    <label className="block text-[11px] font-bold uppercase text-slate-500 font-mono">System Timezone</label>
                     <input
                       type="text"
                       value={formTimezone}
                       onChange={(e) => setFormTimezone(e.target.value)}
-                      className="w-full rounded-xl bg-black/60 px-3 py-2 text-xs text-white border border-white/10 focus:outline-none focus:border-[#ff1e4b]"
+                      className="w-full rounded-xl bg-slate-50 px-3.5 py-2 text-xs text-slate-900 border border-slate-200 focus:outline-none focus:border-slate-400"
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="block text-[10px] font-bold uppercase text-muted-foreground">AI DEFAULT MODEL</label>
+                    <label className="block text-[11px] font-bold uppercase text-slate-500 font-mono">AI Default Model</label>
                     <input
                       type="text"
                       value={formAiModel}
                       onChange={(e) => setFormAiModel(e.target.value)}
-                      className="w-full rounded-xl bg-black/60 px-3 py-2 text-xs text-white border border-white/10 focus:outline-none focus:border-[#ff1e4b]"
+                      className="w-full rounded-xl bg-slate-50 px-3.5 py-2 text-xs text-slate-900 border border-slate-200 focus:outline-none focus:border-slate-400"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <label className="block text-[10px] font-bold uppercase text-muted-foreground">SMTP HOST</label>
+                    <label className="block text-[11px] font-bold uppercase text-slate-500 font-mono">SMTP Host</label>
                     <input
                       type="text"
                       value={formSmtpHost}
                       onChange={(e) => setFormSmtpHost(e.target.value)}
-                      className="w-full rounded-xl bg-black/60 px-3 py-2 text-xs text-white border border-white/10 focus:outline-none focus:border-[#ff1e4b]"
+                      className="w-full rounded-xl bg-slate-50 px-3.5 py-2 text-xs text-slate-900 border border-slate-200 focus:outline-none focus:border-slate-400"
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="block text-[10px] font-bold uppercase text-muted-foreground">DEFAULT SENDER EMAIL</label>
+                    <label className="block text-[11px] font-bold uppercase text-slate-500 font-mono">Default Sender Email</label>
                     <input
                       type="email"
                       value={formSenderEmail}
                       onChange={(e) => setFormSenderEmail(e.target.value)}
-                      className="w-full rounded-xl bg-black/60 px-3 py-2 text-xs text-white border border-white/10 focus:outline-none focus:border-[#ff1e4b]"
+                      className="w-full rounded-xl bg-slate-50 px-3.5 py-2 text-xs text-slate-900 border border-slate-200 focus:outline-none focus:border-slate-400"
                     />
                   </div>
                 </div>
 
                 <div className="pt-2 flex justify-end">
-                  <Button type="submit" disabled={saving} variant="solidRed" size="md" className="gap-2">
+                  <Button type="submit" disabled={saving} variant="solidRed" size="md" className="gap-2 bg-slate-900 text-white hover:bg-slate-800 border-none shadow-xs rounded-xl">
                     {saving ? <RefreshCw className="size-4 animate-spin" /> : <Check className="size-4" />}
                     <span>SAVE CONFIGURATION MATRIX</span>
                   </Button>
@@ -256,31 +281,31 @@ export default function SettingsPage() {
             </div>
 
             {/* Integrations & Feature Flags Panel */}
-            <div className="lg:col-span-5 space-y-6">
+            <div className="lg:col-span-5 space-y-6 font-sans">
               {/* Feature Flags Panel */}
-              <div className="rounded-3xl glass-panel p-6 border border-white/15 space-y-4">
-                <span className="text-xs font-bold uppercase text-white flex items-center gap-2 border-b border-white/10 pb-3">
-                  <Sliders className="size-4 text-emerald-400" />
-                  <span>STUDIO FEATURE FLAGS</span>
+              <div className="rounded-2xl bg-white p-6 border border-slate-200 shadow-xs space-y-4">
+                <span className="text-xs font-bold uppercase text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-3 font-mono">
+                  <Sliders className="size-4 text-emerald-600" />
+                  <span>Studio Feature Flags</span>
                 </span>
 
                 <div className="space-y-3">
                   {loading ? (
-                    <div className="py-6 text-center text-muted-foreground text-xs">
+                    <div className="py-6 text-center text-slate-400 text-xs font-mono">
                       Loading feature flags...
                     </div>
                   ) : (
                     featureFlags.map((flag) => (
-                      <div key={flag.id} className="p-3 rounded-2xl bg-black/40 border border-white/10 flex items-center justify-between gap-3">
+                      <div key={flag.id} className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-3">
                         <div className="space-y-0.5">
-                          <strong className="text-white text-xs block font-sans">{flag.name}</strong>
-                          <p className="text-[10px] text-muted-foreground">{flag.description}</p>
+                          <strong className="text-slate-900 text-xs block font-semibold">{flag.name}</strong>
+                          <p className="text-[11px] text-slate-500">{flag.description}</p>
                         </div>
                         <button
                           onClick={() => handleToggleFlag(flag.key, flag.enabled)}
                           className={cn(
-                            "rounded-full px-3 py-1 text-[10px] font-bold uppercase transition-colors shrink-0 border",
-                            flag.enabled ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/40" : "bg-white/5 text-muted-foreground border-white/10"
+                            "rounded-full px-3 py-1 text-[10px] font-mono font-bold uppercase transition-colors shrink-0 border",
+                            flag.enabled ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-slate-100 text-slate-500 border-slate-200"
                           )}
                         >
                           {flag.enabled ? "ENABLED" : "DISABLED"}
@@ -292,18 +317,18 @@ export default function SettingsPage() {
               </div>
 
               {/* Integrations Status */}
-              <div className="rounded-3xl glass-panel p-6 border border-white/15 space-y-4">
-                <span className="text-xs font-bold uppercase text-white flex items-center gap-2 border-b border-white/10 pb-3">
-                  <Lock className="size-4 text-sky-400" />
-                  <span>CONNECTED ENTERPRISE SERVICES</span>
+              <div className="rounded-2xl bg-white p-6 border border-slate-200 shadow-xs space-y-4">
+                <span className="text-xs font-bold uppercase text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-3 font-mono">
+                  <Lock className="size-4 text-sky-600" />
+                  <span>Connected Services</span>
                 </span>
 
-                <div className="space-y-2">
+                <div className="space-y-2 font-mono">
                   {integrations.map((integ) => (
-                    <div key={integ.id} className="p-3 rounded-xl bg-black/40 border border-white/10 flex items-center justify-between text-xs">
-                      <span className="font-bold text-white">{integ.name}</span>
-                      <span className="text-[10px] text-emerald-400 font-bold uppercase flex items-center gap-1">
-                        <CheckCircle2 className="size-3" /> {integ.status}
+                    <div key={integ.id} className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between text-xs">
+                      <span className="font-semibold text-slate-900">{integ.name}</span>
+                      <span className="text-[10px] text-emerald-700 font-bold uppercase flex items-center gap-1 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                        <CheckCircle2 className="size-3 text-emerald-600" /> {integ.status}
                       </span>
                     </div>
                   ))}
