@@ -14,7 +14,6 @@ import {
   Heart, 
   ShieldCheck, 
   Cpu, 
-  Award,
   ChevronRight
 } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
@@ -104,7 +103,7 @@ export default function CareersPage() {
             </h1>
 
             <p className="mt-6 max-w-2xl text-lg text-muted-foreground leading-relaxed sm:text-xl">
-              We&apos;re looking for curious, autonomous engineers, artists, and designers who want to craft world-class AAA games without industrial crunch.
+              We&apos;re looking for curious, autonomous engineers, artists, and designers who want to craft world-class 3D and 2D games without industrial crunch.
             </p>
           </div>
         </section>

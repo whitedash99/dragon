@@ -1,7 +1,7 @@
 {
   "name": "Dragon Studios Gaming Platform",
   "short_name": "Dragon Studios",
-  "description": "Premier AAA Game Development Studio & Interactive Ecosystem powered by Dragon Engine 5.",
+  "description": "Independent 3D & 2D Game Development Studio powered by Dragon Engine.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#040814",

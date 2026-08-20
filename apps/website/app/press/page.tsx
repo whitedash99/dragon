@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Download, Mail, ArrowLeft, Sparkles, Check, Send } from "lucide-react";
+import { Download, Mail, ArrowLeft, Sparkles, Check, Send, ShieldCheck } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { SceneBackground } from "@/components/background/SceneBackground";
@@ -25,84 +25,94 @@ export default function PressPage() {
         <div className="container-site relative z-10 max-w-4xl mx-auto">
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-muted-foreground hover:text-white transition-colors mb-8"
+            className="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-cyan-400 hover:text-white transition-colors mb-8"
           >
             <ArrowLeft className="size-3.5" />
             <span>Back to Home</span>
           </Link>
 
-          <div className="rounded-3xl glass-heavy p-8 sm:p-12 border border-white/15 shadow-2xl space-y-8">
+          <div className="rounded-3xl bg-[#040D24]/90 border border-cyan-500/35 p-8 sm:p-12 shadow-2xl space-y-8 backdrop-blur-xl">
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-dragon-500/20 bg-dragon-500/10 px-3.5 py-1 text-xs font-semibold uppercase tracking-widest text-dragon-400 mb-4">
-                <Sparkles className="size-3.5" />
-                <span>Media & Press Relations</span>
+              <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-4 py-1.5 text-xs font-mono font-bold uppercase tracking-widest text-cyan-300 shadow-[0_0_20px_rgba(0,240,255,0.3)] mb-4">
+                <Sparkles className="size-3.5 text-cyan-400 animate-pulse" />
+                <span>OFFICIAL MEDIA & PRESS KIT</span>
               </div>
 
-              <h1 className="text-4xl font-black uppercase text-white tracking-tight sm:text-5xl">
-                Press & Media Kit
+              <h1 className="text-4xl font-black uppercase text-white tracking-tight sm:text-5xl font-heading">
+                DRAGON STUDIOS MEDIA KIT
               </h1>
 
-              <p className="mt-4 text-base text-muted-foreground leading-relaxed">
-                Download official high-resolution logos, game key art, engine screenshots, and press releases for Dragon Studios.
+              <p className="mt-4 text-base text-slate-300 leading-relaxed font-sans">
+                Official vector logos, brand assets, game screenshots, and developer dispatches for Dragon Studios.
               </p>
             </div>
 
             {/* Asset Downloads Grid */}
-            <div className="grid gap-4 sm:grid-cols-2 pt-6 border-t border-white/10">
-              <div className="rounded-2xl glass-md p-6 border border-white/10">
-                <h3 className="text-base font-bold text-white mb-1">Dragon Studios Master Brand Kit</h3>
-                <p className="text-xs text-muted-foreground mb-4">Vector SVG logos, typography rules, brand guidelines (45 MB)</p>
-                <Button variant="glow" size="sm" className="rounded-full text-xs gap-2">
+            <div className="grid gap-4 sm:grid-cols-2 pt-6 border-t border-cyan-500/20">
+              <div className="rounded-2xl bg-[#020718] p-6 border border-cyan-500/25 space-y-4">
+                <h3 className="text-base font-bold text-white uppercase font-heading">Dragon Studios Vector Logos</h3>
+                <p className="text-xs text-slate-400">Official SVG vector crests, horizontal logos, and color palettes.</p>
+                <Link
+                  href="/icon.svg"
+                  target="_blank"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-black font-heading font-black text-xs uppercase tracking-wider"
+                >
                   <Download className="size-3.5" />
-                  <span>Download Brand Kit</span>
-                </Button>
+                  <span>Download SVG Crest</span>
+                </Link>
               </div>
 
-              <div className="rounded-2xl glass-md p-6 border border-white/10">
-                <h3 className="text-base font-bold text-white mb-1">Games 4K Key Art & Screenshots</h3>
-                <p className="text-xs text-muted-foreground mb-4">High-res 4K renders for Embers of Valyria & Neon Drift (120 MB)</p>
-                <Button variant="glass" size="sm" className="rounded-full text-xs gap-2 border-white/20">
+              <div className="rounded-2xl bg-[#020718] p-6 border border-cyan-500/25 space-y-4">
+                <h3 className="text-base font-bold text-white uppercase font-heading">Game Artwork & Stills</h3>
+                <p className="text-xs text-slate-400">Key artwork for Dragon Slayer 3D, Cyber Drift 3D, and Shadow Ninja 2D.</p>
+                <Link
+                  href="/games"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#05112E] border border-cyan-500/40 text-cyan-300 font-heading font-black text-xs uppercase tracking-wider hover:text-white hover:bg-cyan-500/20"
+                >
                   <Download className="size-3.5" />
-                  <span>Download Key Art</span>
-                </Button>
+                  <span>View Game Hub</span>
+                </Link>
               </div>
             </div>
 
             {/* Press Inquiry Form */}
-            <div className="pt-6 border-t border-white/10">
-              <h2 className="text-xl font-bold uppercase text-white mb-2">Media & Press Inquiries</h2>
-              <p className="text-xs text-muted-foreground mb-6">Contact our PR team for interview requests and review keys.</p>
+            <div className="pt-6 border-t border-cyan-500/20">
+              <h2 className="text-xl font-bold uppercase text-white mb-2 font-heading">Official Media Inquiries</h2>
+              <p className="text-xs text-slate-400 mb-6">Contact Dragon Studios directly for interviews, content creator access, or early preview builds.</p>
 
               {submitted ? (
                 <div className="rounded-2xl bg-emerald-500/20 p-4 text-emerald-400 text-xs font-semibold border border-emerald-500/30">
-                  ✓ Press inquiry received! Our PR team will respond within 24 hours.
+                  ✓ Inquiry received! We will reach out to you shortly.
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <input
                       type="text"
                       required
-                      placeholder="Your Name / Outlet"
-                      className="w-full rounded-xl bg-black/40 px-4 py-3 text-xs text-white border border-white/10 focus:outline-none"
+                      placeholder="Your Name / Organization"
+                      className="w-full rounded-xl bg-black/50 px-4 py-3 text-xs text-white border border-cyan-500/30 focus:outline-none focus:border-cyan-400"
                     />
                     <input
                       type="email"
                       required
-                      placeholder="press@outlet.com"
-                      className="w-full rounded-xl bg-black/40 px-4 py-3 text-xs text-white border border-white/10 focus:outline-none"
+                      placeholder="contact@yourchannel.com"
+                      className="w-full rounded-xl bg-black/50 px-4 py-3 text-xs text-white border border-cyan-500/30 focus:outline-none focus:border-cyan-400"
                     />
                   </div>
                   <textarea
                     rows={3}
                     required
-                    placeholder="Inquiry details or interview request..."
-                    className="w-full rounded-xl bg-black/40 px-4 py-3 text-xs text-white border border-white/10 focus:outline-none"
+                    placeholder="Describe your inquiry or content creator request..."
+                    className="w-full rounded-xl bg-black/50 px-4 py-3 text-xs text-white border border-cyan-500/30 focus:outline-none focus:border-cyan-400"
                   />
-                  <Button type="submit" variant="glow" size="sm" className="rounded-full gap-2 text-xs">
+                  <button
+                    type="submit"
+                    className="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-black font-heading font-black text-xs uppercase tracking-wider flex items-center gap-2 hover:scale-105 transition-all cursor-pointer"
+                  >
                     <Send className="size-3.5" />
-                    <span>Send Press Inquiry</span>
-                  </Button>
+                    <span>Send Inquiry</span>
+                  </button>
                 </form>
               )}
             </div>

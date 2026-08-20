@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import Ably from "ably";
 import { useSession } from "next-auth/react";
 
 export interface ChatAuthor {
@@ -137,8 +136,8 @@ export function useRealtimeChat(roomId: string, roomSlug: string) {
     { clientId: "st-5", userId: "st-5", name: "ShadowSniper99", role: "INSIDER", status: "ONLINE" },
   ]);
 
-  const ablyRef = useRef<Ably.Realtime | null>(null);
-  const channelRef = useRef<Ably.RealtimeChannel | null>(null);
+  const ablyRef = useRef<any>(null);
+  const channelRef = useRef<any>(null);
   const typingTimerRef = useRef<{ [key: string]: NodeJS.Timeout }>({});
   const lastTypingSentRef = useRef<number>(0);
 
@@ -181,8 +180,12 @@ export function useRealtimeChat(roomId: string, roomSlug: string) {
           return;
         }
 
+        // Dynamically import Ably to avoid webpack parse errors with its bundled JS
+        const AblyModule = await import("ably");
+        const AblyRealtime = AblyModule.default?.Realtime || AblyModule.Realtime;
+
         // Initialize Ably client with Token Auth
-        const ably = new Ably.Realtime({
+        const ably = new AblyRealtime({
           authUrl: "/api/community/realtime/token",
           autoConnect: true,
         });

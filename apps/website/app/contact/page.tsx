@@ -28,6 +28,9 @@ import {
   Newspaper,
   UserCheck,
   MessageCircle,
+  Copy,
+  Check,
+  Inbox,
 } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -35,7 +38,7 @@ import { SceneBackground } from "@/components/background/SceneBackground";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
 import { OFFICIAL_SOCIALS } from "@/lib/site";
-import { useAudio } from "@/providers/audio-provider";
+import { WhatsAppIcon, ThreadsIcon } from "@/components/ui/social-icons";
 import { 
   fadeUp, 
   slideInLeft, 
@@ -76,7 +79,9 @@ const CATEGORIES = [
 ];
 
 export default function ContactPage() {
-  const { playClick, playSuccess, playError } = useAudio();
+  const playClick = () => {};
+  const playSuccess = () => {};
+  const playError = () => {};
 
   // Form State
   const [name, setName] = useState("");
@@ -98,6 +103,7 @@ export default function ContactPage() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [formLoading, setFormLoading] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
+  const [copiedTicketId, setCopiedTicketId] = useState(false);
 
   // Success State
   const [createdTicket, setCreatedTicket] = useState<{
@@ -181,6 +187,12 @@ export default function ContactPage() {
     setAttachments((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const handleCopyTicket = (ticketId: string) => {
+    navigator.clipboard.writeText(ticketId);
+    setCopiedTicketId(true);
+    setTimeout(() => setCopiedTicketId(false), 2000);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setApiError(null);
@@ -241,7 +253,7 @@ export default function ContactPage() {
       <Navbar />
 
       <main className="cinematic-page relative min-h-screen overflow-x-hidden pb-24 pt-28">
-        {/* Sliding Hero Header */}
+        {/* Hero Header System */}
         <motion.section 
           initial="hidden"
           animate="visible"
@@ -250,68 +262,68 @@ export default function ContactPage() {
         >
           <motion.div 
             variants={scaleIn}
-            className="inline-flex items-center gap-2.5 rounded-full border border-[#ff1e4b]/30 bg-[#ff1e4b]/10 px-4 py-1.5 backdrop-blur-md"
+            className="inline-flex items-center gap-2.5 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-4 py-1.5 backdrop-blur-md shadow-[0_0_20px_rgba(0,240,255,0.2)]"
           >
-            <ShieldCheck className="size-4 text-[#ff1e4b]" />
-            <span className="text-xs font-mono font-bold uppercase tracking-[0.2em] text-[#ff1e4b]">
+            <ShieldCheck className="size-4 text-cyan-400" />
+            <span className="text-xs font-mono font-bold uppercase tracking-[0.2em] text-cyan-300">
               DRAGON STUDIOS SUPPORT GATEWAY
             </span>
           </motion.div>
 
           <motion.h1 
             variants={slideInLeft}
-            className="text-4xl font-black uppercase tracking-tight sm:text-6xl lg:text-7xl text-white leading-[0.9] font-heading"
+            className="text-4xl font-black uppercase tracking-tight sm:text-6xl lg:text-7xl text-white leading-[0.9] font-heading drop-shadow-[0_4px_30px_rgba(0,0,0,0.9)]"
           >
-            SUPPORT & <span className="text-[#ff1e4b]">COMMUNICATION</span>
+            SUPPORT & <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500">COMMUNICATION</span>
           </motion.h1>
 
           <motion.p 
             variants={slideInRight}
-            className="text-xs sm:text-base text-muted-foreground leading-relaxed max-w-xl mx-auto font-sans"
+            className="text-xs sm:text-base text-slate-300 leading-relaxed max-w-xl mx-auto font-sans"
           >
-            Direct enterprise ticket channel to Dragon Studios operations. Submissions generate an immediate ticket reference and route directly to our command team.
+            Direct enterprise ticket channel to Dragon Studios operations. Submissions generate an immediate ticket reference, dispatch email notifications, and route live to our command team.
           </motion.p>
         </motion.section>
 
-        {/* Sliding Main Content Section */}
+        {/* Main Content Section */}
         <section className="container-site relative z-10 max-w-4xl mx-auto">
           <motion.div 
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: "easeOut" }}
-            className="rounded-3xl glass-heavy p-8 sm:p-12 border border-white/15 shadow-2xl space-y-8 relative overflow-hidden"
+            className="rounded-3xl bg-[#040A18]/90 backdrop-blur-2xl p-8 sm:p-12 border border-cyan-500/30 shadow-[0_0_50px_rgba(0,0,0,0.8)] space-y-8 relative overflow-hidden"
           >
             {/* Top Corner Glow */}
             <div 
               aria-hidden="true" 
-              className="pointer-events-none absolute -top-24 -right-24 h-48 w-48 rounded-full bg-[#ff1e4b]/15 blur-3xl" 
+              className="pointer-events-none absolute -top-24 -right-24 h-48 w-48 rounded-full bg-cyan-500/20 blur-3xl" 
             />
 
             {/* Header Strip */}
             <div className="flex items-center justify-between border-b border-white/10 pb-6">
               <div>
-                <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-[#ff1e4b] block">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-cyan-400 block">
                   ENTERPRISE SUPPORT DESK
                 </span>
                 <h2 className="text-xl sm:text-2xl font-black uppercase text-white mt-0.5 tracking-tight font-heading">
                   CREATE SUPPORT TICKET
                 </h2>
               </div>
-              <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground bg-black/40 px-3.5 py-1.5 rounded-xl border border-white/10">
-                <Lock className="size-3.5 text-[#ff1e4b]" />
+              <div className="flex items-center gap-2 text-xs font-mono text-cyan-300 bg-[#020612] px-3.5 py-1.5 rounded-xl border border-cyan-500/30 shadow-inner">
+                <Lock className="size-3.5 text-cyan-400" />
                 <span>DIRECT DISPATCH</span>
               </div>
             </div>
 
-            {/* ═══ SUCCESS SCREEN WITH SLIDING ANIMATION ═══ */}
+            {/* ═══ SUCCESS SCREEN WITH CYBERPUNK BLUE-BLACK STYLING ═══ */}
             {createdTicket ? (
               <motion.div
                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ duration: 0.5, type: "spring" }}
-                className="py-12 text-center space-y-6"
+                className="py-10 text-center space-y-6"
               >
-                <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 shadow-[0_0_30px_rgba(52,211,153,0.2)]">
+                <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-cyan-500/15 border-2 border-cyan-400 text-cyan-400 shadow-[0_0_40px_rgba(0,240,255,0.3)]">
                   <CheckCircle2 className="size-12 animate-pulse" />
                 </div>
 
@@ -319,24 +331,41 @@ export default function ContactPage() {
                   <h3 className="text-3xl font-black uppercase text-white tracking-tight sm:text-4xl font-heading">
                     SUPPORT REQUEST RECEIVED
                   </h3>
-                  <p className="text-xs sm:text-sm text-muted-foreground max-w-md mx-auto font-sans">
-                    Your request has been saved to the Dragon Studios PostgreSQL CRM database. Our staff will review your submission shortly.
+                  <p className="text-xs sm:text-sm text-slate-300 max-w-md mx-auto font-sans">
+                    Your request has been securely registered in the Dragon Studios CRM system and sent to your email address and admin command desk.
                   </p>
                 </div>
 
-                {/* Ticket ID Box */}
+                {/* Ticket Reference Box */}
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="inline-flex flex-col items-center gap-1 rounded-2xl bg-black/60 p-6 border border-white/15 shadow-xl max-w-md w-full font-mono"
+                  className="mx-auto rounded-3xl bg-[#020614] p-6 sm:p-8 border-2 border-cyan-500/40 shadow-[0_0_30px_rgba(0,240,255,0.15)] max-w-md w-full font-mono space-y-3 relative overflow-hidden"
                 >
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">TICKET REFERENCE NUMBER</span>
-                  <span className="text-2xl font-black tracking-wider text-[#ff1e4b] font-heading">{createdTicket.ticketId}</span>
-                  <span className="text-[11px] text-emerald-400 font-bold mt-1">ESTIMATED SLA: {createdTicket.estimatedResponse}</span>
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                    TICKET REFERENCE NUMBER
+                  </div>
+                  
+                  <div className="flex items-center justify-center gap-3">
+                    <span className="text-2xl sm:text-3xl font-black tracking-wider text-cyan-400 font-heading drop-shadow-[0_0_15px_rgba(0,240,255,0.6)]">
+                      {createdTicket.ticketId}
+                    </span>
+                    <button
+                      onClick={() => handleCopyTicket(createdTicket.ticketId)}
+                      className="p-2 rounded-xl bg-cyan-500/20 border border-cyan-400/50 text-cyan-300 hover:text-white transition-all cursor-pointer"
+                      title="Copy Ticket ID"
+                    >
+                      {copiedTicketId ? <Check className="size-4 text-emerald-400" /> : <Copy className="size-4" />}
+                    </button>
+                  </div>
+
+                  <div className="text-[11px] text-emerald-400 font-bold tracking-wider uppercase border-t border-white/10 pt-3">
+                    ESTIMATED SLA: {createdTicket.estimatedResponse}
+                  </div>
                 </motion.div>
 
-                {/* Action Buttons */}
+                {/* Action Buttons System */}
                 <div className="pt-6 flex flex-wrap items-center justify-center gap-4">
                   <Button
                     onClick={() => {
@@ -345,26 +374,32 @@ export default function ContactPage() {
                     }}
                     variant="outline"
                     size="lg"
-                    className="rounded-xl text-xs font-mono font-bold"
+                    className="rounded-2xl border-cyan-500/30 text-xs font-mono font-bold text-slate-300 hover:text-white hover:border-cyan-400 bg-[#020612]"
                   >
                     SUBMIT ANOTHER REQUEST
                   </Button>
 
-                  <Button
-                    variant="solidRed"
-                    size="lg"
-                    className="rounded-xl text-xs font-mono font-bold gap-2"
-                    asChild
+                  <Link
+                    href="/dashboard?tab=notifications"
+                    onClick={playClick}
+                    className="px-6 py-3 rounded-2xl bg-cyan-500/20 border border-cyan-400 text-cyan-300 hover:text-white font-mono font-bold text-xs uppercase flex items-center gap-2 transition-all shadow-lg"
                   >
-                    <Link href={`/support/${createdTicket.ticketId}?token=${createdTicket.trackingToken}`} onClick={playClick}>
-                      <span>TRACK TICKET STATUS</span>
-                      <ExternalLink className="size-4" />
-                    </Link>
-                  </Button>
+                    <Inbox className="size-4" />
+                    <span>MY DASHBOARD INBOX</span>
+                  </Link>
+
+                  <Link
+                    href={`/support/${createdTicket.ticketId}?token=${createdTicket.trackingToken}`}
+                    onClick={playClick}
+                    className="px-6 py-3 rounded-2xl bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-500 text-black font-mono font-black text-xs uppercase flex items-center gap-2 transition-all shadow-xl shadow-cyan-500/30 hover:scale-105"
+                  >
+                    <span>TRACK TICKET STATUS</span>
+                    <ExternalLink className="size-4" />
+                  </Link>
                 </div>
               </motion.div>
             ) : (
-              /* ═══ SUPPORT TICKET FORM WITH SLIDING STAGGER ═══ */
+              /* ═══ SUPPORT TICKET FORM ═══ */
               <form onSubmit={handleSubmit} noValidate className="space-y-8">
                 {/* API Error Notification */}
                 <AnimatePresence>
@@ -392,7 +427,7 @@ export default function ContactPage() {
                   className="space-y-3"
                 >
                   <label className="block text-xs font-mono font-bold uppercase tracking-wider text-white">
-                    1. Select Ticket Category <span className="text-[#ff1e4b]">*</span>
+                    1. Select Ticket Category <span className="text-cyan-400">*</span>
                   </label>
                   <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                     {CATEGORIES.map((cat) => {
@@ -410,24 +445,24 @@ export default function ContactPage() {
                             setCategory(cat.id);
                           }}
                           className={cn(
-                            "flex flex-col gap-1.5 rounded-2xl p-4 text-left border transition-all relative overflow-hidden",
+                            "flex flex-col gap-1.5 rounded-2xl p-4 text-left border transition-all relative overflow-hidden cursor-pointer",
                             isSelected
-                              ? "bg-[#ff1e4b]/20 text-white border-[#ff1e4b] shadow-lg shadow-[#ff1e4b]/30"
-                              : "bg-black/40 text-muted-foreground border-white/10 hover:border-white/25 hover:text-white"
+                              ? "bg-gradient-to-r from-blue-600/30 via-cyan-500/20 to-blue-500/30 text-white border-cyan-400 shadow-[0_0_20px_rgba(0,240,255,0.3)]"
+                              : "bg-[#020612] text-slate-300 border-white/10 hover:border-cyan-500/40 hover:text-white"
                           )}
                         >
                           <div className="flex items-center gap-2">
-                            <IconComp className={cn("size-4 shrink-0", isSelected ? "text-[#ff1e4b]" : "text-muted-foreground")} />
+                            <IconComp className={cn("size-4 shrink-0", isSelected ? "text-cyan-400" : "text-slate-400")} />
                             <span className="text-xs font-bold uppercase tracking-wider font-mono">{cat.label}</span>
                           </div>
-                          <span className="text-[10px] text-muted-foreground leading-snug font-sans">{cat.desc}</span>
+                          <span className="text-[10px] text-slate-400 leading-snug font-sans">{cat.desc}</span>
                         </motion.button>
                       );
                     })}
                   </div>
                 </motion.div>
 
-                {/* 2. Personal Information with Slide Effects */}
+                {/* 2. Personal Information Fields */}
                 <motion.div 
                   initial="hidden"
                   whileInView="visible"
@@ -440,10 +475,10 @@ export default function ContactPage() {
                       htmlFor="name-input"
                       className={cn(
                         "block text-xs font-mono font-bold uppercase tracking-wider mb-2 transition-colors",
-                        focusedField === "name" ? "text-[#ff1e4b]" : "text-white"
+                        focusedField === "name" ? "text-cyan-400" : "text-white"
                       )}
                     >
-                      Your Full Name <span className="text-[#ff1e4b]">*</span>
+                      Your Full Name <span className="text-cyan-400">*</span>
                     </label>
                     <input
                       id="name-input"
@@ -454,8 +489,8 @@ export default function ContactPage() {
                       onChange={(e) => setName(e.target.value)}
                       placeholder="e.g. Alex Mercer"
                       className={cn(
-                        "w-full rounded-xl bg-black/60 px-4 py-3.5 text-xs text-white placeholder:text-muted-foreground border focus:outline-none focus:border-[#ff1e4b] font-mono transition-all shadow-inner",
-                        errors.name ? "border-red-500" : "border-white/10"
+                        "w-full rounded-2xl bg-[#020612] px-4 py-3.5 text-xs text-white placeholder:text-slate-500 border focus:outline-none focus:border-cyan-400 font-mono transition-all shadow-inner",
+                        errors.name ? "border-red-500" : "border-cyan-500/30"
                       )}
                     />
                     {errors.name && <p className="mt-1 text-[11px] text-red-400 font-mono">{errors.name}</p>}
@@ -466,10 +501,10 @@ export default function ContactPage() {
                       htmlFor="email-input"
                       className={cn(
                         "block text-xs font-mono font-bold uppercase tracking-wider mb-2 transition-colors",
-                        focusedField === "email" ? "text-[#ff1e4b]" : "text-white"
+                        focusedField === "email" ? "text-cyan-400" : "text-white"
                       )}
                     >
-                      Your Email Address <span className="text-[#ff1e4b]">*</span>
+                      Your Email Address <span className="text-cyan-400">*</span>
                     </label>
                     <input
                       id="email-input"
@@ -480,8 +515,8 @@ export default function ContactPage() {
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="alex@domain.com"
                       className={cn(
-                        "w-full rounded-xl bg-black/60 px-4 py-3.5 text-xs text-white placeholder:text-muted-foreground border focus:outline-none focus:border-[#ff1e4b] font-mono transition-all shadow-inner",
-                        errors.email ? "border-red-500" : "border-white/10"
+                        "w-full rounded-2xl bg-[#020612] px-4 py-3.5 text-xs text-white placeholder:text-slate-500 border focus:outline-none focus:border-cyan-400 font-mono transition-all shadow-inner",
+                        errors.email ? "border-red-500" : "border-cyan-500/30"
                       )}
                     />
                     {errors.email && <p className="mt-1 text-[11px] text-red-400 font-mono">{errors.email}</p>}
@@ -498,10 +533,10 @@ export default function ContactPage() {
                     htmlFor="subject-input"
                     className={cn(
                       "block text-xs font-mono font-bold uppercase tracking-wider mb-2 transition-colors",
-                      focusedField === "subject" ? "text-[#ff1e4b]" : "text-white"
+                      focusedField === "subject" ? "text-cyan-400" : "text-white"
                     )}
                   >
-                    Subject Line <span className="text-[#ff1e4b]">*</span>
+                    Subject Line <span className="text-cyan-400">*</span>
                   </label>
                   <input
                     id="subject-input"
@@ -512,8 +547,8 @@ export default function ContactPage() {
                     onChange={(e) => setSubject(e.target.value)}
                     placeholder="Brief summary of your inquiry..."
                     className={cn(
-                      "w-full rounded-xl bg-black/60 px-4 py-3.5 text-xs text-white placeholder:text-muted-foreground border focus:outline-none focus:border-[#ff1e4b] font-mono transition-all shadow-inner",
-                      errors.subject ? "border-red-500" : "border-white/10"
+                      "w-full rounded-2xl bg-[#020612] px-4 py-3.5 text-xs text-white placeholder:text-slate-500 border focus:outline-none focus:border-cyan-400 font-mono transition-all shadow-inner",
+                      errors.subject ? "border-red-500" : "border-cyan-500/30"
                     )}
                   />
                   {errors.subject && <p className="mt-1 text-[11px] text-red-400 font-mono">{errors.subject}</p>}
@@ -530,12 +565,12 @@ export default function ContactPage() {
                       htmlFor="message-input"
                       className={cn(
                         "block text-xs font-mono font-bold uppercase tracking-wider transition-colors",
-                        focusedField === "message" ? "text-[#ff1e4b]" : "text-white"
+                        focusedField === "message" ? "text-cyan-400" : "text-white"
                       )}
                     >
-                      Detailed Description <span className="text-[#ff1e4b]">*</span>
+                      Detailed Description <span className="text-cyan-400">*</span>
                     </label>
-                    <span className="text-[10px] font-mono text-muted-foreground">{message.length} / 5000 chars</span>
+                    <span className="text-[10px] font-mono text-slate-400">{message.length} / 5000 chars</span>
                   </div>
                   <textarea
                     id="message-input"
@@ -546,8 +581,8 @@ export default function ContactPage() {
                     onChange={(e) => setMessage(e.target.value)}
                     placeholder="Please include full reproduction steps, error codes, system specs, or details..."
                     className={cn(
-                      "w-full rounded-xl bg-black/60 p-4 text-xs text-white placeholder:text-muted-foreground border focus:outline-none focus:border-[#ff1e4b] font-mono resize-y transition-all shadow-inner",
-                      errors.message ? "border-red-500" : "border-white/10"
+                      "w-full rounded-2xl bg-[#020612] p-4 text-xs text-white placeholder:text-slate-500 border focus:outline-none focus:border-cyan-400 font-mono resize-y transition-all shadow-inner",
+                      errors.message ? "border-red-500" : "border-cyan-500/30"
                     )}
                   />
                   {errors.message && <p className="mt-1 text-[11px] text-red-400 font-mono">{errors.message}</p>}
@@ -561,7 +596,7 @@ export default function ContactPage() {
                   className="space-y-3"
                 >
                   <label className="block text-xs font-mono font-bold uppercase tracking-wider text-white">
-                    5. Attachments <span className="text-muted-foreground font-normal">(Optional, Max 25MB: PNG, JPEG, ZIP, PDF, DOCX, TXT)</span>
+                    5. Attachments <span className="text-slate-400 font-normal">(Optional, Max 25MB: PNG, JPEG, ZIP, PDF, DOCX, TXT)</span>
                   </label>
 
                   <div className="flex flex-col sm:flex-row items-center gap-4">
@@ -578,12 +613,12 @@ export default function ContactPage() {
                       onClick={() => fileInputRef.current?.click()}
                       variant="outline"
                       size="sm"
-                      className="rounded-xl gap-2 text-xs shrink-0 w-full sm:w-auto font-mono"
+                      className="rounded-2xl border-cyan-500/30 text-cyan-300 hover:border-cyan-400 bg-[#020612] gap-2 text-xs shrink-0 w-full sm:w-auto font-mono cursor-pointer"
                     >
-                      {uploading ? <Loader2 className="size-4 animate-spin text-[#ff1e4b]" /> : <UploadCloud className="size-4 text-[#ff1e4b]" />}
+                      {uploading ? <Loader2 className="size-4 animate-spin text-cyan-400" /> : <UploadCloud className="size-4 text-cyan-400" />}
                       <span>{uploading ? "UPLOADING..." : "UPLOAD FILE"}</span>
                     </Button>
-                    <span className="text-[11px] text-muted-foreground font-mono">Drag & drop or click to attach crash logs or screenshots.</span>
+                    <span className="text-[11px] text-slate-400 font-mono">Drag & drop or click to attach crash logs or screenshots.</span>
                   </div>
 
                   {uploadError && (
@@ -595,14 +630,14 @@ export default function ContactPage() {
                       {attachments.map((file, idx) => (
                         <div
                           key={idx}
-                          className="flex items-center gap-2 rounded-xl bg-black/40 px-3 py-1.5 border border-white/15 text-xs font-mono text-white"
+                          className="flex items-center gap-2 rounded-xl bg-black/60 px-3 py-1.5 border border-cyan-500/30 text-xs font-mono text-white"
                         >
-                          <Paperclip className="size-3.5 text-[#ff1e4b]" />
+                          <Paperclip className="size-3.5 text-cyan-400" />
                           <span>{file.name} ({file.size})</span>
                           <button
                             type="button"
                             onClick={() => removeAttachment(idx)}
-                            className="text-muted-foreground hover:text-red-400 ml-1"
+                            className="text-slate-400 hover:text-red-400 ml-1"
                           >
                             <XIcon className="size-3.5" />
                           </button>
@@ -620,16 +655,16 @@ export default function ContactPage() {
                   className="space-y-3 pt-4 border-t border-white/10"
                 >
                   <div>
-                    <label className="flex items-center gap-3 cursor-pointer text-xs text-muted-foreground select-none font-sans">
+                    <label className="flex items-center gap-3 cursor-pointer text-xs text-slate-300 select-none font-sans">
                       <input
                         type="checkbox"
                         checked={privacyAgree}
                         onChange={(e) => setPrivacyAgree(e.target.checked)}
-                        className="size-4 rounded bg-black/60 border-white/20 text-[#ff1e4b] focus:ring-[#ff1e4b]"
+                        className="size-4 rounded bg-[#020612] border-cyan-500/30 text-cyan-400 focus:ring-cyan-400"
                       />
                       <span>
                         I agree to the{" "}
-                        <Link href="/privacy" className="text-white underline hover:text-[#ff1e4b]">
+                        <Link href="/privacy" className="text-cyan-400 underline hover:text-cyan-300">
                           Privacy Policy
                         </Link>
                       </span>
@@ -638,16 +673,16 @@ export default function ContactPage() {
                   </div>
 
                   <div>
-                    <label className="flex items-center gap-3 cursor-pointer text-xs text-muted-foreground select-none font-sans">
+                    <label className="flex items-center gap-3 cursor-pointer text-xs text-slate-300 select-none font-sans">
                       <input
                         type="checkbox"
                         checked={termsAgree}
                         onChange={(e) => setTermsAgree(e.target.checked)}
-                        className="size-4 rounded bg-black/60 border-white/20 text-[#ff1e4b] focus:ring-[#ff1e4b]"
+                        className="size-4 rounded bg-[#020612] border-cyan-500/30 text-cyan-400 focus:ring-cyan-400"
                       />
                       <span>
                         I agree to the{" "}
-                        <Link href="/terms" className="text-white underline hover:text-[#ff1e4b]">
+                        <Link href="/terms" className="text-cyan-400 underline hover:text-cyan-300">
                           Terms of Service
                         </Link>
                       </span>
@@ -656,49 +691,47 @@ export default function ContactPage() {
                   </div>
                 </motion.div>
 
-                {/* Submit Button with Hover Slide */}
+                {/* Submit Button */}
                 <motion.div 
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.99 }}
                   className="pt-4"
                 >
-                  <Button
+                  <button
                     type="submit"
                     disabled={formLoading}
-                    variant="solidRed"
-                    size="xl"
-                    className="w-full rounded-xl gap-3 text-sm font-black uppercase tracking-[0.16em] font-mono shadow-xl shadow-[#ff1e4b]/20"
+                    className="w-full py-4 rounded-2xl bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-500 text-black font-mono font-black text-sm uppercase tracking-[0.16em] flex items-center justify-center gap-3 shadow-xl shadow-cyan-500/30 hover:shadow-cyan-400/50 transition-all cursor-pointer"
                   >
                     {formLoading ? (
                       <>
-                        <Loader2 className="size-5 animate-spin" />
+                        <Loader2 className="size-5 animate-spin fill-black" />
                         <span>CREATING TICKET...</span>
                       </>
                     ) : (
                       <>
-                        <Send className="size-5" />
+                        <Send className="size-5 fill-black" />
                         <span>SUBMIT SUPPORT TICKET</span>
                       </>
                     )}
-                  </Button>
+                  </button>
                 </motion.div>
               </form>
             )}
           </motion.div>
         </section>
 
-        {/* Real Official Networks Bar */}
+        {/* Official Networks Bar */}
         <section className="container-site relative z-10 pt-16 max-w-4xl mx-auto">
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="rounded-3xl glass-heavy p-8 border border-white/15 space-y-6"
+            className="rounded-3xl bg-[#040A18]/90 backdrop-blur-2xl p-8 border border-cyan-500/30 space-y-6 shadow-xl"
           >
             <div className="flex items-center justify-between">
               <div>
-                <span className="text-xs font-mono font-bold uppercase tracking-[0.2em] text-[#ff1e4b] block">
+                <span className="text-xs font-mono font-bold uppercase tracking-[0.2em] text-cyan-400 block">
                   OFFICIAL NETWORKS
                 </span>
                 <h3 className="text-lg font-black uppercase text-white tracking-tight mt-0.5 font-heading">
@@ -707,7 +740,33 @@ export default function ContactPage() {
               </div>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 font-mono">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 font-mono">
+              <a
+                href={OFFICIAL_SOCIALS.whatsapp.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-emerald-500/40 hover:bg-emerald-500/10 transition-all text-xs group"
+              >
+                <div className="flex items-center gap-3">
+                  <WhatsAppIcon className="size-4 text-emerald-400" />
+                  <span className="font-bold text-white">WhatsApp Channel</span>
+                </div>
+                <ArrowUpRight className="size-3.5 text-slate-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              </a>
+
+              <a
+                href={OFFICIAL_SOCIALS.threads.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-cyan-500/40 hover:bg-cyan-500/10 transition-all text-xs group"
+              >
+                <div className="flex items-center gap-3">
+                  <ThreadsIcon className="size-4 text-cyan-400" />
+                  <span className="font-bold text-white">Threads Feed</span>
+                </div>
+                <ArrowUpRight className="size-3.5 text-slate-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              </a>
+
               <a
                 href={OFFICIAL_SOCIALS.instagram.href}
                 target="_blank"
@@ -718,7 +777,7 @@ export default function ContactPage() {
                   <Instagram className="size-4 text-pink-400" />
                   <span className="font-bold text-white">Instagram</span>
                 </div>
-                <ArrowUpRight className="size-3.5 text-muted-foreground group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                <ArrowUpRight className="size-3.5 text-slate-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
               </a>
 
               <a
@@ -731,7 +790,7 @@ export default function ContactPage() {
                   <Youtube className="size-4 text-red-400" />
                   <span className="font-bold text-white">YouTube</span>
                 </div>
-                <ArrowUpRight className="size-3.5 text-muted-foreground group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                <ArrowUpRight className="size-3.5 text-slate-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
               </a>
 
               <a
@@ -744,7 +803,7 @@ export default function ContactPage() {
                   <Twitter className="size-4 text-sky-400" />
                   <span className="font-bold text-white">X (Twitter)</span>
                 </div>
-                <ArrowUpRight className="size-3.5 text-muted-foreground group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                <ArrowUpRight className="size-3.5 text-slate-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
               </a>
 
               <a
@@ -757,7 +816,7 @@ export default function ContactPage() {
                   <MessageSquare className="size-4 text-orange-400" />
                   <span className="font-bold text-white">Reddit Hub</span>
                 </div>
-                <ArrowUpRight className="size-3.5 text-muted-foreground group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                <ArrowUpRight className="size-3.5 text-slate-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
               </a>
             </div>
           </motion.div>

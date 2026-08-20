@@ -2,19 +2,18 @@
 
 import React, { useEffect } from "react";
 import Lenis from "lenis";
+import { isEditorEnvironment } from "@/lib/cms/editorSafety";
 
 export function SmoothScrollProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Disable Lenis inside Editor Mode / Admin iframe to allow natural vertical canvas scrolling
-    const isEditorMode =
-      typeof window !== "undefined" &&
-      (window.self !== window.top || window.location.search.includes("editor=true"));
-
-    if (isEditorMode) return;
+    if (isEditorEnvironment()) return;
 
     // Check if user prefers reduced motion
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReducedMotion) return;
+    try {
+      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (prefersReducedMotion) return;
+    } catch {}
 
     const lenis = new Lenis({
       duration: 1.2,

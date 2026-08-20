@@ -317,6 +317,17 @@ export async function POST(req: NextRequest) {
           message: replyContent,
         }).catch(() => ({ success: false, messageId: undefined }));
 
+        // Create In-App Notification for User Dashboard
+        await prisma.notification.create({
+          data: {
+            title: `Support Reply Received: ${publicTicket.ticketId}`,
+            message: `${sender}: ${replyContent}`,
+            type: "SUPPORT_REPLY",
+            recipient: publicTicket.email.toLowerCase().trim(),
+            channel: "IN_APP",
+          },
+        }).catch((e) => console.warn("User Notification creation warning:", e));
+
         await prisma.emailLog.create({
           data: {
             recipient: publicTicket.email,

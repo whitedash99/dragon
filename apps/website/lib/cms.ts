@@ -82,7 +82,7 @@ export const DEFAULT_CONTENT_BLOCKS: DefaultBlock[] = [
   // ═══ CAREERS ═══
   { key: "careers.eyebrow", category: "Careers", label: "Careers Page Eyebrow", type: "text", content: "Join The Dragon Collective" },
   { key: "careers.title", category: "Careers", label: "Careers Page Title", type: "text", content: "Build The Unbuilt" },
-  { key: "careers.lead", category: "Careers", label: "Careers Lead Text", type: "textarea", content: "We're looking for curious, autonomous engineers, artists, and designers who want to craft world-class AAA games without industrial crunch." },
+  { key: "careers.lead", category: "Careers", label: "Careers Lead Text", type: "textarea", content: "We're looking for curious, autonomous engineers, artists, and designers who want to craft world-class 3D and 2D games without industrial crunch." },
 
   // ═══ CONTACT ═══
   { key: "contact.eyebrow", category: "Contact", label: "Contact Page Eyebrow", type: "text", content: "Direct Dispatch Line" },
@@ -110,9 +110,9 @@ export const DEFAULT_CONTENT_BLOCKS: DefaultBlock[] = [
   { key: "footer.copyright", category: "Footer", label: "Footer Copyright Text", type: "text", content: "Dragon Studios Inc. All rights reserved." },
 
   // ═══ SEO ═══
-  { key: "seo.default_title", category: "SEO Metadata", label: "Default Page Title", type: "text", content: "Dragon Studios | AAA Game Development Studio" },
-  { key: "seo.description", category: "SEO Metadata", label: "Meta Description", type: "textarea", content: "Dragon Studios - Premier AAA Game Development Studio creating immersive worlds powered by Dragon Engine." },
-  { key: "seo.keywords", category: "SEO Metadata", label: "Meta Keywords", type: "text", content: "Dragon Studios, Game Studio, AAA Games, Dragon Engine, Embers of Valyria" },
+  { key: "seo.default_title", category: "SEO Metadata", label: "Default Page Title", type: "text", content: "Dragon Studios | 3D & 2D Game Development Studio" },
+  { key: "seo.description", category: "SEO Metadata", label: "Meta Description", type: "textarea", content: "Dragon Studios - Independent Game Development Studio creating immersive worlds powered by Dragon Engine." },
+  { key: "seo.keywords", category: "SEO Metadata", label: "Meta Keywords", type: "text", content: "Dragon Studios, Game Studio, 3D Games, 2D Games, Dragon Engine, Embers of Valyria" },
 
   // ═══ COMPANY INFORMATION ═══
   { key: "company.name", category: "Company Information", label: "Company Legal Name", type: "text", content: "Dragon Studios Inc." },

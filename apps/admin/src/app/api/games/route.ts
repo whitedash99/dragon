@@ -3,6 +3,8 @@ import { prisma } from "@/lib/database/prisma";
 import { getAuthenticatedUser } from "@/lib/auth/auth";
 import { can } from "@dragon/auth";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
@@ -20,7 +22,26 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    const filtered = games.filter((g) => {
+    const parsedGames = games.map((g) => {
+      let customData: any = {};
+      try {
+        if (g.features && g.features.startsWith("{")) {
+          customData = JSON.parse(g.features);
+        }
+      } catch {}
+
+      return {
+        ...g,
+        dimension: customData.dimension || "3D",
+        engineVersion: customData.engineVersion || (customData.dimension === "2D" ? "Dragon 2D Engine" : "Dragon 3D Engine"),
+        pcExeUrl: customData.pcExeUrl || "",
+        pcFileSize: customData.pcFileSize || "500 MB",
+        mobileApkUrl: customData.mobileApkUrl || "",
+        mobileFileSize: customData.mobileFileSize || "120 MB",
+      };
+    });
+
+    const filtered = parsedGames.filter((g) => {
       const matchesSearch = !q || (
         g.name.toLowerCase().includes(q.toLowerCase()) ||
         g.genre.toLowerCase().includes(q.toLowerCase()) ||
@@ -30,10 +51,10 @@ export async function GET(req: NextRequest) {
       return matchesSearch && matchesStatus;
     });
 
-    const totalGames = games.length;
-    const publishedGames = games.filter((g) => g.isPublished).length;
-    const inDevelopment = games.filter((g) => g.status === "In Development" || g.status === "Development").length;
-    const upcoming = games.filter((g) => g.status === "Coming Soon" || g.status === "Pre Production").length;
+    const totalGames = parsedGames.length;
+    const publishedGames = parsedGames.filter((g) => g.isPublished).length;
+    const games3dCount = parsedGames.filter((g) => g.dimension === "3D").length;
+    const games2dCount = parsedGames.filter((g) => g.dimension === "2D").length;
 
     return NextResponse.json({
       success: true,
@@ -41,8 +62,8 @@ export async function GET(req: NextRequest) {
       telemetry: {
         totalGames,
         publishedGames,
-        inDevelopment,
-        upcoming,
+        games3dCount,
+        games2dCount,
       },
     });
   } catch (error: unknown) {
@@ -63,7 +84,26 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { id, name, slug, genre, status, releaseDate, platforms, description, isPublished } = body;
+    const { 
+      id, 
+      name, 
+      slug, 
+      genre, 
+      status, 
+      releaseDate, 
+      platforms, 
+      description, 
+      dimension,
+      engineVersion,
+      pcExeUrl,
+      pcFileSize,
+      mobileApkUrl,
+      mobileFileSize,
+      bannerUrl,
+      logoUrl,
+      requirements,
+      isPublished 
+    } = body;
 
     if (!name) {
       return NextResponse.json({ success: false, error: "Game name is required" }, { status: 400 });
@@ -71,25 +111,50 @@ export async function POST(req: NextRequest) {
 
     const safeSlug = (slug || name).toLowerCase().replace(/[^a-z0-9]+/g, "-");
 
+    const customFeaturesJson = JSON.stringify({
+      dimension: dimension || "3D",
+      engineVersion: engineVersion || (dimension === "2D" ? "Dragon 2D Engine" : "Dragon 3D Engine"),
+      pcExeUrl: pcExeUrl || "",
+      pcFileSize: pcFileSize || "500 MB",
+      mobileApkUrl: mobileApkUrl || "",
+      mobileFileSize: mobileFileSize || "120 MB",
+    });
+
+    const engineName = dimension === "2D" ? "Dragon 2D Engine" : "Dragon 3D Engine";
+
     const game = await prisma.gameContent.upsert({
       where: { slug: safeSlug },
       update: {
         name,
-        genre: genre || "Action RPG",
-        status: status || "In Development",
-        releaseDate: releaseDate || "TBA 2027",
-        platforms: platforms || "PC, PS5, Xbox Series X",
-        description: description || "An epic AAA experience forged by Dragon Studios.",
+        genre: genre || "3D Action RPG",
+        status: status || "Live Released",
+        releaseDate: releaseDate || "2026",
+        developer: "Dragon Studios",
+        publisher: "Dragon Interactive",
+        engine: engineName,
+        platforms: platforms || "PC (.exe), Android (.apk)",
+        description: description || "Original game created by Dragon Studios.",
+        bannerUrl: bannerUrl || null,
+        logoUrl: logoUrl || null,
+        features: customFeaturesJson,
+        requirements: requirements || "PC: Windows 10/11 64-bit, 8GB RAM, GTX 1060+ | Mobile: Android 10+, 4GB RAM",
         isPublished: isPublished ?? true,
       },
       create: {
         name,
         slug: safeSlug,
-        genre: genre || "Action RPG",
-        status: status || "In Development",
-        releaseDate: releaseDate || "TBA 2027",
-        platforms: platforms || "PC, PS5, Xbox Series X",
-        description: description || "An epic AAA experience forged by Dragon Studios.",
+        genre: genre || "3D Action RPG",
+        status: status || "Live Released",
+        releaseDate: releaseDate || "2026",
+        developer: "Dragon Studios",
+        publisher: "Dragon Interactive",
+        engine: engineName,
+        platforms: platforms || "PC (.exe), Android (.apk)",
+        description: description || "Original game created by Dragon Studios.",
+        bannerUrl: bannerUrl || null,
+        logoUrl: logoUrl || null,
+        features: customFeaturesJson,
+        requirements: requirements || "PC: Windows 10/11 64-bit, 8GB RAM, GTX 1060+ | Mobile: Android 10+, 4GB RAM",
         isPublished: isPublished ?? true,
       },
     });
@@ -98,9 +163,9 @@ export async function POST(req: NextRequest) {
       data: {
         userId: auth.user.id,
         userEmail: auth.user.email,
-        action: id ? "UPDATE_GAME" : "CREATE_GAME",
+        action: id ? "UPDATE_GAME" : "INSERT_GAME",
         resource: "GAMES_CATALOG",
-        details: `Saved Game Title: ${game.name} (${game.slug}) by ${auth.user.email}`,
+        details: `Inserted Game into Website: ${game.name} (${dimension || "3D"}) with PC .exe & Mobile .apk by ${auth.user.email}`,
       },
     }).catch((e) => console.warn("AuditLog warning:", e));
 

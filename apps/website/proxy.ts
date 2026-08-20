@@ -18,6 +18,11 @@ export async function proxy(req: NextRequest) {
     return NextResponse.next();
   }
 
+  // 0. Redirect dragoncontrol.vercel.app root to /crm
+  if (hostname.includes("dragoncontrol.vercel.app") && pathname === "/") {
+    return NextResponse.redirect(new URL("/crm", req.url));
+  }
+
   // 1. Check Protected User Routes in Website
   const isProtectedRoute = PROTECTED_WEBSITE_ROUTES.some(
     (route) => pathname === route || pathname.startsWith(`${route}/`)
@@ -57,7 +62,7 @@ export async function proxy(req: NextRequest) {
   const response = NextResponse.next();
   response.headers.set(
     "Content-Security-Policy",
-    "frame-ancestors 'self' http://localhost:* http://127.0.0.1:* https://*.dragonstudios.com"
+    "frame-ancestors 'self' https://dragoncontrol.vercel.app https://*.vercel.app https://*.dragonstudios.com http://localhost:* http://127.0.0.1:*"
   );
   response.headers.set("X-Content-Type-Options", "nosniff");
   response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");

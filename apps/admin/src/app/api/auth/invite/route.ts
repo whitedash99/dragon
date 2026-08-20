@@ -1,18 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
-import crypto from "crypto";
 import { prisma } from "@/lib/database/prisma";
-import { getAuthenticatedUser } from "@/lib/auth/auth";
+import { requireAdmin, checkRateLimit, generateSecureToken, hashToken, recordSecurityAudit } from "@/lib/auth/security";
 import { sendEmail } from "@dragon/email";
-
-function hashToken(rawToken: string): string {
-  return crypto.createHash("sha256").update(rawToken).digest("hex");
-}
 
 export async function POST(req: NextRequest) {
   try {
-    const auth = await getAuthenticatedUser();
-    if (!auth || !["SUPER_ADMIN", "ADMINISTRATOR", "OWNER", "FOUNDER", "CO_FOUNDER"].includes(auth.user.role)) {
-      return NextResponse.json({ success: false, error: "Unauthorized. Requires administrative privileges." }, { status: 403 });
+    const authResult = await requireAdmin();
+    if (!authResult.authorized) {
+      return authResult.response;
+    }
+
+    const { user: actor } = authResult.context;
+
+    // Rate Limiting: max 10 invitation requests per 15 minutes per administrator
+    const rateLimit = checkRateLimit(`invite_${actor.id}`, 10, 15 * 60 * 1000);
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { success: false, error: "Rate limit exceeded. Please wait before creating more invitations." },
+        { status: 429 }
+      );
     }
 
     const body = await req.json();
@@ -23,57 +29,85 @@ export async function POST(req: NextRequest) {
     }
 
     const cleanEmail = email.trim().toLowerCase();
+
+    // Check if user already exists
+    const existingUser = await prisma.user.findUnique({ where: { email: cleanEmail } });
+    if (existingUser && existingUser.status === "ACTIVE") {
+      return NextResponse.json(
+        { success: false, error: "An active user with this email address already exists." },
+        { status: 409 }
+      );
+    }
+
+    // Role assignment security guard: Only Owners can invite other Owners or Admins
+    const targetRole = (role || "EDITOR").toUpperCase();
+    const actorRole = actor.role.toUpperCase();
+    const isActorOwner = ["OWNER", "FOUNDER", "BREAK_GLASS"].includes(actorRole);
+
+    if (["OWNER", "FOUNDER", "SUPER_ADMIN", "ADMIN"].includes(targetRole) && !isActorOwner) {
+      return NextResponse.json(
+        { success: false, error: "403 Forbidden: Only verified Owners can issue Owner or Admin invitations." },
+        { status: 403 }
+      );
+    }
+
     const hours = 48;
     const expiresAt = new Date(Date.now() + hours * 60 * 60 * 1000);
 
-    const rawTokenBytes = crypto.randomBytes(32).toString("hex");
+    const rawTokenBytes = generateSecureToken();
     const rawToken = `DRG-INV-${rawTokenBytes}`;
     const tokenHash = hashToken(rawToken);
 
     const permsJson = Array.isArray(permissions) ? JSON.stringify(permissions) : JSON.stringify([]);
 
+    // Invalidate any prior pending invitations for this email
+    await prisma.teamInvitation.updateMany({
+      where: { email: cleanEmail, status: "PENDING" },
+      data: { status: "REVOKED" },
+    });
+
     const invitation = await prisma.teamInvitation.create({
       data: {
         email: cleanEmail,
         name: name ? name.trim() : cleanEmail.split("@")[0],
-        role: role || "EDITOR",
+        role: targetRole,
         department: department || "Engineering",
         permissions: permsJson,
         tokenHash,
         status: "PENDING",
-        createdBy: auth.user.email,
+        createdBy: actor.email,
         expiresAt,
       },
     });
 
-    const inviteUrl = `http://localhost:4000/auth/accept-invite?token=${rawToken}`;
+    const baseUrl = process.env.AUTH_URL || process.env.NEXTAUTH_URL || "https://dragoncontrol.vercel.app";
+    const inviteUrl = `${baseUrl}/auth/accept-invite?token=${rawToken}`;
 
     await sendEmail({
       to: cleanEmail,
-      subject: "Invitation to join Dragon Studios Enterprise Team",
+      subject: "Invitation to join Dragon Studios Enterprise Staff",
       html: `
-        <div style="font-family: Arial, sans-serif; background: #09090b; color: #ffffff; padding: 36px; border-radius: 16px; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #ffffff; margin-top: 0;">DRAGON STUDIOS — ENTERPRISE INVITATION</h2>
+        <div style="font-family: Arial, sans-serif; background: #050C17; color: #ffffff; padding: 36px; border-radius: 16px; max-width: 600px; margin: 0 auto; border: 1px solid rgba(0, 240, 255, 0.3);">
+          <h2 style="color: #00f0ff; margin-top: 0;">DRAGON STUDIOS — ADMINISTRATIVE INVITATION</h2>
           <p>Hello <strong>${name || cleanEmail}</strong>,</p>
-          <p>You have been issued a single-use Dragon Team Invitation by <strong>${auth.user.name || auth.user.email}</strong> to join Dragon Studios as <strong>${role || "EDITOR"}</strong> (${department || "Engineering"}).</p>
+          <p>You have been issued a single-use Dragon Control OS invitation by <strong>${actor.name || actor.email}</strong> to join as <strong>${targetRole}</strong> (${department || "Engineering"}).</p>
           <div style="margin: 32px 0;">
-            <a href="${inviteUrl}" style="background: #ffffff; color: #000000; font-weight: bold; text-decoration: none; padding: 14px 28px; border-radius: 10px; display: inline-block;">
+            <a href="${inviteUrl}" style="background: #00f0ff; color: #000000; font-weight: bold; text-decoration: none; padding: 14px 28px; border-radius: 10px; display: inline-block;">
               ACCEPT INVITATION & COMPLETE ACCOUNT SETUP →
             </a>
           </div>
-          <p style="color: #71717a; font-size: 12px;">Link is single-use, bound to your email, and will expire in ${hours} hours.</p>
+          <p style="color: #71717a; font-size: 12px;">Link is single-use, cryptographically bound to your email, and will expire in ${hours} hours.</p>
         </div>
       `,
     }).catch((e: unknown) => console.warn("Email dispatch warning:", e));
 
-    await prisma.auditLog.create({
-      data: {
-        userId: auth.user.id,
-        userEmail: auth.user.email,
-        action: "INVITATION_CREATED",
-        resource: "USERS_IAM",
-        details: `Issued single-use invitation for ${cleanEmail} as ${role || "EDITOR"} (${department || "Engineering"})`,
-      },
+    await recordSecurityAudit({
+      userId: actor.id,
+      userEmail: actor.email,
+      action: "INVITATION_CREATED",
+      resource: "ADMIN_INVITE",
+      details: `Issued single-use invitation for ${cleanEmail} as ${targetRole} (${department || "Engineering"})`,
+      severity: "LOW",
     });
 
     return NextResponse.json({

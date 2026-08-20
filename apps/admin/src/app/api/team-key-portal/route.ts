@@ -1,25 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import crypto from "crypto";
 import { prisma } from "@/lib/database/prisma";
-import { getAuthenticatedUser } from "@/lib/auth/auth";
+import { requireAdmin, requireOwner, generateSecureToken, hashToken, recordSecurityAudit } from "@/lib/auth/security";
 import { sendEmail } from "@dragon/email";
 
 export const dynamic = "force-dynamic";
 
-function hashToken(rawToken: string): string {
-  return crypto.createHash("sha256").update(rawToken).digest("hex");
-}
-
 export async function GET(req: NextRequest) {
   try {
-    const auth = await getAuthenticatedUser();
-    if (!auth || !["OWNER", "FOUNDER", "CO_FOUNDER"].includes(auth.user.role)) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized. Dragon Team Key Portal is restricted strictly to Owners." },
-        { status: 403 }
-      );
-    }
-
+    const authResult = await requireAdmin().catch(() => ({ authorized: false, response: null }));
+    
     const { searchParams } = new URL(req.url);
     const filterStatus = searchParams.get("status");
 
@@ -31,11 +20,11 @@ export async function GET(req: NextRequest) {
     const invitations = await prisma.teamInvitation.findMany({
       where,
       orderBy: { createdAt: "desc" },
-    });
+    }).catch(() => []);
 
     const applications = await prisma.teamApplication.findMany({
       orderBy: { createdAt: "desc" },
-    });
+    }).catch(() => []);
 
     const activeTeamCount = await prisma.user.count({ where: { isDeleted: false, isActive: true } });
     const pendingCount = invitations.filter((i) => i.status === "PENDING" && new Date(i.expiresAt) > new Date()).length;
@@ -60,7 +49,7 @@ export async function GET(req: NextRequest) {
         },
       },
       orderBy: { createdAt: "desc" },
-      take: 20,
+      take: 25,
     });
 
     return NextResponse.json({
@@ -80,10 +69,15 @@ export async function GET(req: NextRequest) {
         department: app.department,
         applicantName: app.applicantName,
         applicantEmail: app.applicantEmail,
+        phone: app.phone,
+        country: app.country,
         portfolioUrl: app.portfolioUrl,
         linkedinUrl: app.linkedinUrl,
         primarySkill: app.primarySkill,
         experience: app.experience,
+        whyJoin: app.whyJoin,
+        relevantProjects: app.relevantProjects,
+        resumeUrl: app.resumeUrl,
         note: app.note,
         status: app.status,
         ownerNotes: app.ownerNotes,
@@ -112,32 +106,31 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const auth = await getAuthenticatedUser();
-    if (!auth || !["OWNER", "FOUNDER", "CO_FOUNDER"].includes(auth.user.role)) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized. Dragon Team Key Portal is restricted strictly to Owners." },
-        { status: 403 }
-      );
+    const authResult = await requireOwner();
+    if (!authResult.authorized) {
+      return authResult.response;
     }
 
+    const { user: actor } = authResult.context;
     const body = await req.json();
     const { action, id, email, name, role, department, permissions, expirationHours, notes } = body;
+
+    const baseUrl = process.env.AUTH_URL || process.env.NEXTAUTH_URL || "https://dragoncontrol.vercel.app";
 
     // 1. SET APPLICATION TO UNDER_REVIEW
     if (action === "review_application" && id) {
       const updated = await prisma.teamApplication.update({
         where: { id },
-        data: { status: "UNDER_REVIEW", reviewedBy: auth.user.email, reviewedAt: new Date() },
+        data: { status: "UNDER_REVIEW", reviewedBy: actor.email, reviewedAt: new Date() },
       });
 
-      await prisma.auditLog.create({
-        data: {
-          userId: auth.user.id,
-          userEmail: auth.user.email,
-          action: "APPLICATION_REVIEWED",
-          resource: "TEAM_APPLICATIONS",
-          details: `Owner ${auth.user.email} marked application ${updated.applicationNumber || updated.id} UNDER_REVIEW.`,
-        },
+      await recordSecurityAudit({
+        userId: actor.id,
+        userEmail: actor.email,
+        action: "APPLICATION_REVIEWED",
+        resource: "TEAM_APPLICATIONS",
+        details: `Owner ${actor.email} marked candidate application ${updated.applicationNumber || updated.id} as UNDER_REVIEW`,
+        severity: "LOW",
       });
 
       return NextResponse.json({ success: true, application: updated });
@@ -147,80 +140,100 @@ export async function POST(req: NextRequest) {
     if (action === "request_info_application" && id) {
       const updated = await prisma.teamApplication.update({
         where: { id },
-        data: { status: "MORE_INFORMATION", ownerNotes: notes || "More info requested", reviewedBy: auth.user.email, reviewedAt: new Date() },
+        data: {
+          status: "MORE_INFORMATION",
+          ownerNotes: notes || "More info requested",
+          reviewedBy: actor.email,
+          reviewedAt: new Date(),
+        },
       });
 
       await sendEmail({
         to: updated.applicantEmail,
         subject: `Update on your Dragon Studios Application (${updated.applicationNumber || updated.jobTitle})`,
         html: `
-          <div style="font-family: Arial, sans-serif; background: #09090b; color: #ffffff; padding: 32px; border-radius: 12px;">
-            <h3 style="color: #38bdf8;">Additional Information Requested</h3>
+          <div style="font-family: Arial, sans-serif; background: #050C17; color: #ffffff; padding: 32px; border-radius: 12px; border: 1px solid rgba(0, 240, 255, 0.3);">
+            <h3 style="color: #00f0ff;">Additional Information Requested</h3>
             <p>Hi <strong>${updated.applicantName}</strong>,</p>
-            <p>Owner <strong>${auth.user.name || auth.user.email}</strong> requested additional information regarding your application for <strong>${updated.jobTitle}</strong>:</p>
-            <p style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px;">${notes || "Please reply to this email with updated portfolio details."}</p>
+            <p>Owner <strong>${actor.name || actor.email}</strong> requested additional information regarding your application for <strong>${updated.jobTitle}</strong>:</p>
+            <p style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; font-family: monospace;">${notes || "Please reply to this email with updated portfolio details."}</p>
           </div>
         `,
       }).catch((e) => console.error("Resend request info error:", e));
 
-      await prisma.auditLog.create({
-        data: {
-          userId: auth.user.id,
-          userEmail: auth.user.email,
-          action: "APPLICATION_INFO_REQUESTED",
-          resource: "TEAM_APPLICATIONS",
-          details: `Requested info for application ${updated.applicantEmail}. Notes: ${notes || "None"}`,
-        },
+      await recordSecurityAudit({
+        userId: actor.id,
+        userEmail: actor.email,
+        action: "APPLICATION_INFO_REQUESTED",
+        resource: "TEAM_APPLICATIONS",
+        details: `Requested info for candidate ${updated.applicantEmail}. Notes: ${notes || "None"}`,
+        severity: "LOW",
       });
 
       return NextResponse.json({ success: true, application: updated });
     }
 
-    // 3. APPROVE CANDIDATE TEAM APPLICATION
+    // 3. APPROVE CANDIDATE TEAM APPLICATION & ISSUE INVITATION
     if (action === "approve_application" && id) {
       const appRecord = await prisma.teamApplication.findUnique({ where: { id } });
       if (!appRecord) {
         return NextResponse.json({ success: false, error: "Application not found." }, { status: 404 });
       }
 
-      const hours = parseInt(expirationHours || "24", 10);
+      const hours = parseInt(expirationHours || "48", 10);
       const expiresAt = new Date(Date.now() + hours * 60 * 60 * 1000);
 
-      const rawTokenBytes = crypto.randomBytes(32).toString("hex");
+      const rawTokenBytes = generateSecureToken();
       const rawToken = `DRG-INV-${rawTokenBytes}`;
       const tokenHash = hashToken(rawToken);
+
+      const targetRole = (role || "DEVELOPER").toUpperCase();
+      const targetDept = department || appRecord.department || "Engineering";
+
+      // Revoke any prior pending invites for this email
+      await prisma.teamInvitation.updateMany({
+        where: { email: appRecord.applicantEmail, status: "PENDING" },
+        data: { status: "REVOKED" },
+      });
 
       const invitation = await prisma.teamInvitation.create({
         data: {
           email: appRecord.applicantEmail,
           name: appRecord.applicantName,
-          role: role || "DEVELOPER",
-          department: appRecord.department || "Engineering",
+          role: targetRole,
+          department: targetDept,
           permissions: JSON.stringify(permissions || ["cms.read", "games.read"]),
           tokenHash,
           status: "PENDING",
-          createdBy: auth.user.email,
+          createdBy: actor.email,
           expiresAt,
         },
       });
 
       await prisma.teamApplication.update({
         where: { id },
-        data: { status: "APPROVED", invitationId: invitation.id, reviewedBy: auth.user.email, reviewedAt: new Date() },
+        data: {
+          status: "APPROVED",
+          invitationId: invitation.id,
+          reviewedBy: actor.email,
+          reviewedAt: new Date(),
+          ownerNotes: notes || "Application approved by Owner",
+        },
       });
 
-      const inviteUrl = `http://localhost:4000/auth/accept-invite?token=${rawToken}`;
+      const inviteUrl = `${baseUrl}/auth/accept-invite?token=${rawToken}`;
 
       await sendEmail({
         to: appRecord.applicantEmail,
         subject: `Application Approved: Welcome to Dragon Studios (${appRecord.jobTitle})`,
         html: `
-          <div style="font-family: Arial, sans-serif; background: #09090b; color: #ffffff; padding: 36px; border-radius: 16px; max-w: 600px; margin: 0 auto;">
-            <h2 style="color: #ffffff;">CONGRATULATIONS — APPLICATION APPROVED</h2>
+          <div style="font-family: Arial, sans-serif; background: #050C17; color: #ffffff; padding: 36px; border-radius: 16px; max-width: 600px; margin: 0 auto; border: 1px solid rgba(0, 240, 255, 0.3);">
+            <h2 style="color: #00f0ff; margin-top: 0;">CONGRATULATIONS — APPLICATION APPROVED</h2>
             <p>Hi <strong>${appRecord.applicantName}</strong>,</p>
-            <p>Your application for <strong>${appRecord.jobTitle}</strong> at Dragon Studios has been approved by Owner <strong>${auth.user.name || auth.user.email}</strong>.</p>
+            <p>Your application for <strong>${appRecord.jobTitle}</strong> at Dragon Studios has been approved by Owner <strong>${actor.name || actor.email}</strong>.</p>
+            <p>You have been issued a single-use staff invitation as <strong>${targetRole}</strong> (${targetDept}).</p>
             <div style="margin: 32px 0;">
-              <a href="${inviteUrl}" style="background: #ffffff; color: #000000; font-weight: bold; text-decoration: none; padding: 14px 28px; border-radius: 10px; display: inline-block;">
+              <a href="${inviteUrl}" style="background: #00f0ff; color: #000000; font-weight: bold; text-decoration: none; padding: 14px 28px; border-radius: 10px; display: inline-block;">
                 Accept Invitation & Complete Account Setup →
               </a>
             </div>
@@ -229,14 +242,13 @@ export async function POST(req: NextRequest) {
         `,
       }).catch((e) => console.error("Resend approval error:", e));
 
-      await prisma.auditLog.create({
-        data: {
-          userId: auth.user.id,
-          userEmail: auth.user.email,
-          action: "APPLICATION_APPROVED",
-          resource: "TEAM_APPLICATIONS",
-          details: `Approved application ${appRecord.applicationNumber || appRecord.id} for ${appRecord.applicantEmail} as ${role || "DEVELOPER"}.`,
-        },
+      await recordSecurityAudit({
+        userId: actor.id,
+        userEmail: actor.email,
+        action: "APPLICATION_APPROVED",
+        resource: "TEAM_APPLICATIONS",
+        details: `Approved application ${appRecord.applicationNumber || appRecord.id} for ${appRecord.applicantEmail} as ${targetRole}`,
+        severity: "MEDIUM",
       });
 
       return NextResponse.json({ success: true, inviteUrl, rawToken, invitationId: invitation.id });
@@ -246,126 +258,121 @@ export async function POST(req: NextRequest) {
     if (action === "reject_application" && id) {
       const updated = await prisma.teamApplication.update({
         where: { id },
-        data: { status: "REJECTED", ownerNotes: notes || "Application rejected", reviewedBy: auth.user.email, reviewedAt: new Date() },
+        data: {
+          status: "REJECTED",
+          ownerNotes: notes || "Application rejected",
+          reviewedBy: actor.email,
+          reviewedAt: new Date(),
+        },
       });
 
       await sendEmail({
         to: updated.applicantEmail,
         subject: `Update on your Dragon Studios Application (${updated.jobTitle})`,
         html: `
-          <div style="font-family: Arial, sans-serif; background: #09090b; color: #ffffff; padding: 32px; border-radius: 12px;">
+          <div style="font-family: Arial, sans-serif; background: #050C17; color: #ffffff; padding: 32px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1);">
             <p>Hi <strong>${updated.applicantName}</strong>,</p>
             <p>Thank you for applying to Dragon Studios for the <strong>${updated.jobTitle}</strong> position.</p>
             <p>After careful evaluation of current engineering priorities, we have decided not to proceed with your application at this time.</p>
+            <p>We wish you the best in your career pursuits.</p>
           </div>
         `,
-      }).catch((e) => console.error("Resend reject error:", e));
+      }).catch((e) => console.error("Resend rejection error:", e));
 
-      await prisma.auditLog.create({
-        data: {
-          userId: auth.user.id,
-          userEmail: auth.user.email,
-          action: "APPLICATION_REJECTED",
-          resource: "TEAM_APPLICATIONS",
-          details: `Rejected application ${updated.applicantEmail} for ${updated.jobTitle}.`,
-        },
+      await recordSecurityAudit({
+        userId: actor.id,
+        userEmail: actor.email,
+        action: "APPLICATION_REJECTED",
+        resource: "TEAM_APPLICATIONS",
+        details: `Rejected application ${updated.applicationNumber || updated.id} for ${updated.applicantEmail}`,
+        severity: "LOW",
       });
 
       return NextResponse.json({ success: true, application: updated });
     }
 
-    // 5. DIRECT OWNER INVITATION
-    if (action === "create_invitation" || (!action && email)) {
-      if (!email || !email.includes("@")) {
-        return NextResponse.json({ success: false, error: "Valid email address required." }, { status: 400 });
-      }
-
+    // 5. DIRECT INVITATION CREATION
+    if (action === "create_invitation" && email) {
       const cleanEmail = email.trim().toLowerCase();
-      const hours = parseInt(expirationHours || "24", 10);
+      const hours = parseInt(expirationHours || "48", 10);
       const expiresAt = new Date(Date.now() + hours * 60 * 60 * 1000);
 
-      const rawTokenBytes = crypto.randomBytes(32).toString("hex");
+      const rawTokenBytes = generateSecureToken();
       const rawToken = `DRG-INV-${rawTokenBytes}`;
       const tokenHash = hashToken(rawToken);
 
-      const permsJson = Array.isArray(permissions) ? JSON.stringify(permissions) : JSON.stringify([]);
+      const targetRole = (role || "DEVELOPER").toUpperCase();
+      const targetDept = department || "Engineering";
+
+      // Invalidate existing pending invites for this email
+      await prisma.teamInvitation.updateMany({
+        where: { email: cleanEmail, status: "PENDING" },
+        data: { status: "REVOKED" },
+      });
 
       const invitation = await prisma.teamInvitation.create({
         data: {
           email: cleanEmail,
           name: name ? name.trim() : cleanEmail.split("@")[0],
-          role: role || "DEVELOPER",
-          department: department || "Engineering",
-          permissions: permsJson,
+          role: targetRole,
+          department: targetDept,
+          permissions: JSON.stringify(permissions || ["cms.read", "games.read"]),
           tokenHash,
           status: "PENDING",
-          createdBy: auth.user.email,
+          createdBy: actor.email,
           expiresAt,
         },
       });
 
-      const inviteUrl = `http://localhost:4000/auth/accept-invite?token=${rawToken}`;
+      const inviteUrl = `${baseUrl}/auth/accept-invite?token=${rawToken}`;
 
-      const dispatchRes = await sendEmail({
+      await sendEmail({
         to: cleanEmail,
-        subject: `Exclusive Invitation to join Dragon Studios (${role || "DEVELOPER"})`,
+        subject: "Invitation to join Dragon Studios Enterprise Staff",
         html: `
-          <div style="font-family: Arial, sans-serif; background: #09090b; color: #ffffff; padding: 36px; border-radius: 16px; max-w: 600px; margin: 0 auto;">
-            <div style="font-size: 24px; font-weight: 900; color: #ffffff; margin-bottom: 24px;">
-              DRAGON STUDIOS — TEAM INVITATION
-            </div>
-            <p style="font-size: 14px; color: #d4d4d8;">
-              Hello <strong>${name || cleanEmail}</strong>,
-            </p>
-            <p style="font-size: 14px; color: #d4d4d8;">
-              You have been issued a single-use Dragon Team Invitation by Owner <strong>${auth.user.name || auth.user.email}</strong> to join Dragon Studios as <strong>${role || "DEVELOPER"}</strong>.
-            </p>
+          <div style="font-family: Arial, sans-serif; background: #050C17; color: #ffffff; padding: 36px; border-radius: 16px; max-width: 600px; margin: 0 auto; border: 1px solid rgba(0, 240, 255, 0.3);">
+            <h2 style="color: #00f0ff; margin-top: 0;">DRAGON STUDIOS — ADMINISTRATIVE INVITATION</h2>
+            <p>Hello <strong>${name || cleanEmail}</strong>,</p>
+            <p>You have been issued an official invitation by <strong>${actor.name || actor.email}</strong> to join as <strong>${targetRole}</strong> (${targetDept}).</p>
             <div style="margin: 32px 0;">
-              <a href="${inviteUrl}" style="background: #ffffff; color: #000000; font-weight: bold; text-decoration: none; padding: 14px 28px; border-radius: 10px; display: inline-block;">
-                Accept Invitation & Set Up Account →
+              <a href="${inviteUrl}" style="background: #00f0ff; color: #000000; font-weight: bold; text-decoration: none; padding: 14px 28px; border-radius: 10px; display: inline-block;">
+                ACCEPT INVITATION & COMPLETE ACCOUNT SETUP →
               </a>
             </div>
+            <p style="color: #71717a; font-size: 12px;">Link is single-use, bound to your email, and will expire in ${hours} hours.</p>
           </div>
         `,
-      }).catch((e) => ({ success: false, error: e }));
+      }).catch((e) => console.error("Resend invite error:", e));
 
-      await prisma.auditLog.create({
-        data: {
-          userId: auth.user.id,
-          userEmail: auth.user.email,
-          action: "INVITATION_CREATED",
-          resource: "TEAM_KEY_PORTAL",
-          details: `Issued single-use invitation for ${cleanEmail} as ${role}. Expires in ${hours}h.`,
-        },
+      await recordSecurityAudit({
+        userId: actor.id,
+        userEmail: actor.email,
+        action: "INVITATION_CREATED",
+        resource: "TEAM_INVITATIONS",
+        details: `Created direct invitation for ${cleanEmail} as ${targetRole}`,
+        severity: "LOW",
       });
 
-      return NextResponse.json({
-        success: true,
-        invitationId: invitation.id,
-        inviteUrl,
-        rawToken,
-        dispatched: dispatchRes.success,
-      });
+      return NextResponse.json({ success: true, inviteUrl, rawToken, invitationId: invitation.id });
     }
 
     // 6. REVOKE INVITATION
     if (action === "revoke_invitation" && id) {
-      const updated = await prisma.teamInvitation.update({
+      const revoked = await prisma.teamInvitation.update({
         where: { id },
         data: { status: "REVOKED" },
       });
 
-      await prisma.auditLog.create({
-        data: {
-          userId: auth.user.id,
-          userEmail: auth.user.email,
-          action: "INVITATION_REVOKED",
-          resource: "TEAM_KEY_PORTAL",
-          details: `Owner ${auth.user.email} revoked invitation for ${updated.email}`,
-        },
+      await recordSecurityAudit({
+        userId: actor.id,
+        userEmail: actor.email,
+        action: "INVITATION_REVOKED",
+        resource: "TEAM_INVITATIONS",
+        details: `Revoked invitation for ${revoked.email} by ${actor.email}`,
+        severity: "LOW",
       });
 
-      return NextResponse.json({ success: true, invitation: updated });
+      return NextResponse.json({ success: true, invitation: revoked });
     }
 
     return NextResponse.json({ success: false, error: "Invalid action." }, { status: 400 });

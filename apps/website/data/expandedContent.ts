@@ -332,9 +332,9 @@ export const careerPositions: CareerPosition[] = [
       "Profile and optimize memory usage and CPU frame times to maintain 120 FPS targets.",
     ],
     qualifications: [
-      "5+ years of professional C++ experience on shipped AAA console or PC titles.",
+      "5+ years of professional C++ or C# experience on shipped PC or mobile titles.",
       "Strong foundation in linear algebra, 3D math, physics, and data-oriented design (ECS).",
-      "Demonstrated passion for action RPG combat responsiveness and tight game feel.",
+      "Demonstrated passion for action combat responsiveness and tight game feel.",
     ],
   },
   {
@@ -351,7 +351,7 @@ export const careerPositions: CareerPosition[] = [
       "Mentor technical artists and bridge communication between core rendering engineers and environment artists.",
     ],
     qualifications: [
-      "7+ years in technical art roles with at least 1 shipped AAA title in a Senior/Lead capacity.",
+      "7+ years in technical art roles with at least 1 shipped game title in a Senior/Lead capacity.",
       "Mastery of HLSL, PBR material workflows, and real-time GPU particle systems.",
       "Experience profiling GPU frames using RenderDoc, Nsight, or PIX.",
     ],
@@ -363,7 +363,7 @@ export const careerPositions: CareerPosition[] = [
     location: "Bengaluru (Hybrid)",
     type: "Full-Time",
     experience: "Senior",
-    summary: "Develop rollback netcode architecture for high-velocity multiplayer games Blacksite Zero and Neon Drift.",
+    summary: "Develop rollback netcode architecture for high-velocity multiplayer games Cyber Drift 3D and Dragon Slayer.",
     responsibilities: [
       "Architect deterministic state serialization and fast snapshot rollback buffers in C++.",
       "Optimize UDP packet compression, client prediction, and lag compensation systems.",
@@ -389,7 +389,7 @@ export const careerPositions: CareerPosition[] = [
       "Iterate on player sightlines, traversal rhythms, and surprise encounter density.",
     ],
     qualifications: [
-      "6+ years designing levels for AAA open-world or action-adventure games.",
+      "6+ years designing levels for 3D open-world or action-adventure games.",
       "Expertise in spatial pacing, landmark composition, and systemic combat design.",
       "Strong portfolio demonstrating playable level layouts from initial blockout to final shipping polish.",
     ],
@@ -408,7 +408,7 @@ export const careerPositions: CareerPosition[] = [
       "Mix dynamic interactive soundtracks that adapt to combat intensity and player health states.",
     ],
     qualifications: [
-      "5+ years as a sound designer on shipped AAA games.",
+      "5+ years as a sound designer on shipped commercial games.",
       "Mastery of Wwise, Reaper, field recording, and spatial 3D audio technologies (Dolby Atmos, Tempest 3D).",
       "Strong aesthetic sense for heavy punchy impacts, sci-fi synth textures, and natural acoustics.",
     ],
@@ -429,9 +429,9 @@ export const leadershipTeam: LeadershipMember[] = [
     name: "Vikram R. Sharma",
     role: "Chief Executive Officer & Founder",
     location: "Bengaluru Campus",
-    bio: "Former Tech Director at Sony Santa Monica & Ubisoft. Founded Dragon Studios to pioneer uncompromised proprietary game engines in India.",
+    bio: "Visionary game technology director. Founded Dragon Studios to pioneer uncompromised game development in India.",
     avatarColor: "from-dragon-400 to-neon-purple",
-    previousStudio: "Sony Santa Monica / Ubisoft",
+    previousStudio: "Dragon Studios Founding Architect",
   },
   {
     name: "Elena Rostova",
@@ -439,7 +439,7 @@ export const leadershipTeam: LeadershipMember[] = [
     location: "London Hub",
     bio: "Lead World Designer behind iconic open-world RPG franchises. Oversees narrative direction, universe world-building, and character lore.",
     avatarColor: "from-neon-cyan to-dragon-500",
-    previousStudio: "CD Projekt Red / Guerrilla",
+    previousStudio: "Dragon Studios Creative Division",
   },
   {
     name: "Dr. Marcus Vance",
@@ -447,14 +447,14 @@ export const leadershipTeam: LeadershipMember[] = [
     location: "Montreal Hub",
     bio: "PhD in Parallel GPU Computing. Architect of Dragon Engine's temporal upscaling, high-performance ECS, and low-latency netcode.",
     avatarColor: "from-neon-pink to-dragon-600",
-    previousStudio: "NVIDIA Research / EA Frostbite",
+    previousStudio: "Dragon Engine Core Labs",
   },
   {
     name: "Ananya Deshmukh",
     role: "Head of Operations & Culture",
     location: "Bengaluru Campus",
-    bio: "Pioneered human-centric AAA studio operations, zero-crunch policies, and global talent acquisition across 3 continents.",
+    bio: "Pioneered human-centric studio operations, zero-crunch policies, and global talent acquisition across 3 continents.",
     avatarColor: "from-amber-400 to-orange-600",
-    previousStudio: "Riot Games / Square Enix",
+    previousStudio: "Dragon Studios Global Operations",
   },
 ];

@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Gamepad2, Cpu, ChevronDown, Trophy, ArrowRight, ShieldCheck } from "lucide-react";
+import { Gamepad2, Cpu, ChevronDown, Sparkles, ArrowRight, ShieldCheck } from "lucide-react";
 import { games } from "@/data/content";
 
 export function MegaMenu() {
@@ -116,9 +116,9 @@ export function MegaMenu() {
 
                 <div className="grid grid-cols-3 gap-4 text-xs">
                   <div className="rounded-2xl bg-white/5 p-4 border border-white/10">
-                    <Trophy className="size-5 text-amber-400 mb-2" />
-                    <strong className="block text-white text-sm">Award-Winning</strong>
-                    <p className="text-[11px] text-muted-foreground mt-1">Named Studio of the Year & Innovation Leader in Real-time Graphics.</p>
+                    <Sparkles className="size-5 text-cyan-400 mb-2" />
+                    <strong className="block text-white text-sm">3D & 2D Core</strong>
+                    <p className="text-[11px] text-muted-foreground mt-1">High-performance graphics and unscripted physical mechanics.</p>
                   </div>
 
                   <div className="rounded-2xl bg-white/5 p-4 border border-white/10">

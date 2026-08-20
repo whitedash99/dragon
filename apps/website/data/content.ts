@@ -121,10 +121,10 @@ export const studioStory = {
     }
   ] as StudioPhilosophy[],
   timeline: [
-    { year: "2023", title: "The Genesis", description: "Founded by industry veterans from top AAA studios in Bengaluru & worldwide." },
-    { year: "2024", title: "Dragon Engine", description: "Completed proprietary ray tracing pipeline and rollback netcode architecture." },
-    { year: "2025", title: "Embers Revealed", description: "Unveiled first flagship title Embers of Valyria to global acclaim." },
-    { year: "2026", title: "Multi-Studio Expansion", description: "Scaled engine capabilities and initiated production on 3 simultaneous AAA titles." }
+    { year: "2023", title: "The Genesis", description: "Founded by passionate game developers creating original 3D and 2D games." },
+    { year: "2024", title: "Dragon Engine Pipeline", description: "Completed proprietary ray tracing shaders and rollback netcode architecture." },
+    { year: "2025", title: "Game Suite Revealed", description: "Unveiled first flagship titles Dragon Slayer 3D and Neon Drift to global acclaim." },
+    { year: "2026", title: "Cross-Platform Expansion", description: "Scaled production on 3D & 2D titles with dedicated PC .exe & Mobile .apk builds." }
   ]
 };
 
@@ -210,11 +210,11 @@ export interface StatisticItem {
 
 export const statistics: StatisticItem[] = [
   {
-    id: "players",
-    value: 15,
-    suffix: "M+",
-    label: "Global Players",
-    sublabel: "Across pre-registrations & early access",
+    id: "titles",
+    value: 4,
+    suffix: " Titles",
+    label: "Original Game Releases",
+    sublabel: "3D & 2D games for PC and Mobile",
     accent: "from-dragon-400 to-neon-cyan",
   },
   {
@@ -226,20 +226,21 @@ export const statistics: StatisticItem[] = [
     accent: "from-neon-purple to-neon-pink",
   },
   {
-    id: "countries",
-    value: 180,
-    suffix: "+",
-    label: "Countries Reached",
-    sublabel: "Global gaming community footprint",
+    id: "engine",
+    value: 100,
+    suffix: "%",
+    label: "Proprietary Tech",
+    sublabel: "Custom Dragon 3D & 2D Core Engine",
     accent: "from-neon-blue to-dragon-400",
   },
   {
-    id: "awards",
-    value: 28,
-    suffix: "",
-    label: "Industry Awards",
-    sublabel: "For technical & artistic excellence",
-    accent: "from-amber-400 to-orange-500",
+    id: "latency",
+    value: 15,
+    prefix: "< ",
+    suffix: " ms",
+    label: "Target Netcode",
+    sublabel: "Real-time low latency networking",
+    accent: "from-cyan-400 to-blue-500",
   },
 ];
 

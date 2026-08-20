@@ -42,7 +42,7 @@ export default function RegisterPage() {
         throw new Error(data.error || "Registration failed.");
       }
 
-      router.push("/profile");
+      router.push("/dashboard?welcome=true");
     } catch (err: any) {
       setError(err.message || "Registration failed.");
     } finally {
@@ -99,7 +99,7 @@ export default function RegisterPage() {
             <div className="mt-6">
               <button
                 type="button"
-                onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+                onClick={() => signIn("google", { callbackUrl: "/dashboard?welcome=true" })}
                 className="w-full flex items-center justify-center gap-3 py-3 px-4 bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs rounded-xl shadow-lg transition-all border border-slate-200"
               >
                 <svg className="w-4 h-4" viewBox="0 0 24 24">

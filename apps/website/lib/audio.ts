@@ -101,7 +101,7 @@ class AAAAudioEngine {
   }
 
   // ═══════════════════════════════════════════════════════
-  // SYNTHESIZED AAA AUDIO PACK (Pure Web Audio Oscillators)
+  // SYNTHESIZED DRAGON AUDIO PACK (Pure Web Audio Oscillators)
   // ═══════════════════════════════════════════════════════
 
   public play(category: SoundCategory) {

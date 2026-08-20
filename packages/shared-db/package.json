@@ -9,7 +9,7 @@
     "prisma:generate": "prisma generate",
     "validate": "prisma validate",
     "db:push": "prisma db push",
-    "seed": "node src/seed.ts"
+    "seed": "node src/seed.js"
   },
   "dependencies": {
     "@prisma/client": "6.19.3"

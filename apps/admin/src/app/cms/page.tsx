@@ -1,19 +1,15 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { motion } from "framer-motion";
 import { Sidebar } from "@/components/sidebar/Sidebar";
-import { Navbar } from "@/components/navbar/Navbar";
-import { History, X, Minimize2, ExternalLink } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { VisualStudioHeader } from "@/components/cms/VisualStudioHeader";
 import { VisualStudioCanvas } from "@/components/cms/VisualStudioCanvas";
 import { VisualStudioLeftSidebar } from "@/components/cms/VisualStudioLeftSidebar";
 import { VisualStudioInspector } from "@/components/cms/VisualStudioInspector";
-import { SEOInspectorPanel } from "@/components/cms/SEOInspectorPanel";
-import { TextDictionaryManager } from "@/components/cms/TextDictionaryManager";
-import { PageManagerModal, CMSPageItem } from "@/components/cms/PageManagerModal";
+import { GeminiAICopilot } from "@/components/cms/GeminiAICopilot";
+import { CMSBannerManagerModal } from "@/components/cms/CMSBannerManagerModal";
+import { CMSBlogManagerModal } from "@/components/cms/CMSBlogManagerModal";
+import { CMSPageItem } from "@/components/cms/PageManagerModal";
 
 interface CMSBlock {
   id: string;
@@ -29,29 +25,19 @@ interface CMSBlock {
   updatedAt: string;
 }
 
-interface Revision {
-  id: string;
-  blockKey: string;
-  version: number;
-  content: string;
-  changedBy: string;
-  createdAt: string;
-}
-
-export default function ResizableFigmaStudioPage() {
-  const [pages, setPages] = useState<CMSPageItem[]>([
-    { id: "1", title: "Home Page", slug: "/", status: "PUBLISHED", category: "General", updatedAt: "Just now" },
-    { id: "2", title: "Games Catalog", slug: "/games", status: "PUBLISHED", category: "Games", updatedAt: "2 mins ago" },
-    { id: "3", title: "Dragon Studio Tech", slug: "/studio", status: "PUBLISHED", category: "Studio", updatedAt: "10 mins ago" },
-    { id: "4", title: "Downloads Launcher", slug: "/downloads", status: "PUBLISHED", category: "Downloads", updatedAt: "1 hour ago" },
-    { id: "5", title: "Community Forums", slug: "/community", status: "PUBLISHED", category: "Community", updatedAt: "Yesterday" },
-    { id: "6", title: "Contact Support", slug: "/contact", status: "PUBLISHED", category: "Support", updatedAt: "Yesterday" },
-    { id: "7", title: "Careers & Hiring", slug: "/careers", status: "PUBLISHED", category: "Company", updatedAt: "Yesterday" },
-    { id: "8", title: "News & Press", slug: "/news", status: "PUBLISHED", category: "News", updatedAt: "Yesterday" },
+export default function CleanDragonStudioCMSPage() {
+  const [pages] = useState<CMSPageItem[]>([
+    { id: "1", title: "Home Page", slug: "/", status: "PUBLISHED", category: "General", updatedAt: "Live" },
+    { id: "2", title: "Games Showcase", slug: "/games", status: "PUBLISHED", category: "Games", updatedAt: "Live" },
+    { id: "3", title: "Dragon Studio Tech", slug: "/studio", status: "PUBLISHED", category: "Studio", updatedAt: "Live" },
+    { id: "4", title: "Downloads Launcher", slug: "/downloads", status: "PUBLISHED", category: "Downloads", updatedAt: "Live" },
+    { id: "5", title: "Community Lounge", slug: "/community", status: "PUBLISHED", category: "Community", updatedAt: "Live" },
+    { id: "6", title: "Contact Support", slug: "/contact", status: "PUBLISHED", category: "Support", updatedAt: "Live" },
+    { id: "7", title: "Careers Center", slug: "/careers", status: "PUBLISHED", category: "Company", updatedAt: "Live" },
+    { id: "8", title: "News & Press", slug: "/news", status: "PUBLISHED", category: "News", updatedAt: "Live" },
   ]);
 
   const [activePage, setActivePage] = useState<CMSPageItem>(pages[0]);
-  const [pageManagerOpen, setPageManagerOpen] = useState(false);
   const [blocks, setBlocks] = useState<CMSBlock[]>([]);
   const [categories] = useState<string[]>(["All", "Hero", "Games", "Studio", "News", "Footer", "General"]);
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -63,49 +49,19 @@ export default function ResizableFigmaStudioPage() {
   const [saving, setSaving] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
 
-  // Studio Viewport & Layout State
-  const [viewportMode, setViewportMode] = useState<"desktop" | "tablet" | "mobile" | "responsive" | "2k" | "4k">("desktop");
-  const [zoomLevel, setZoomLevel] = useState(1);
-  const [showRulers, setShowRulers] = useState(true);
-  const [showGrid, setShowGrid] = useState(false);
-  const [isLeftOpen, setIsLeftOpen] = useState(true);
-  const [isRightOpen, setIsRightOpen] = useState(true);
+  // Full Screen Review Studio Mode
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [isMaximizedCanvas, setIsMaximizedCanvas] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  // View Mode Tabs
-  const [viewTab, setViewTab] = useState<"visual" | "dictionary" | "seo">("visual");
+  // Layout: Left & Right Drawers & Gemini AI Copilot
+  const [isLeftOpen, setIsLeftOpen] = useState(false);
+  const [isRightOpen, setIsRightOpen] = useState(false);
+  const [isAiOpen, setIsAiOpen] = useState(false);
+  const [isBannerModalOpen, setIsBannerModalOpen] = useState(false);
+  const [isBlogModalOpen, setIsBlogModalOpen] = useState(false);
+  const [viewportMode, setViewportMode] = useState<"desktop" | "tablet" | "mobile" | "responsive" | "2k" | "4k">("desktop");
+  const [zoomLevel] = useState(1);
   const [refreshKey, setRefreshKey] = useState(0);
-
-  // Revision History State
-  const [historyOpen, setHistoryOpen] = useState(false);
-  const [revisions, setRevisions] = useState<Revision[]>([]);
-  const [loadingHistory, setLoadingHistory] = useState(false);
-
-  // Auto-collapse sidebars on Canvas Maximize toggle
-  useEffect(() => {
-    if (isMaximizedCanvas) {
-      setIsLeftOpen(false);
-      setIsRightOpen(false);
-    } else {
-      setIsLeftOpen(true);
-      setIsRightOpen(true);
-    }
-  }, [isMaximizedCanvas]);
-
-  // Keyboard Shortcuts (F11 Fullscreen, Esc Exit)
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "F11") {
-        e.preventDefault();
-        setIsFullscreen((prev) => !prev);
-      } else if (e.key === "Escape" && isFullscreen) {
-        setIsFullscreen(false);
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isFullscreen]);
 
   const fetchBlocks = useCallback(async () => {
     try {
@@ -136,6 +92,7 @@ export default function ResizableFigmaStudioPage() {
     setSelectedBlock(b);
     setEditContent(b.content);
     setIsPublished(b.isPublished);
+    setIsRightOpen(true);
   };
 
   const handleSaveBlock = async (shouldRefreshCanvas = false, overrideContent?: string) => {
@@ -155,7 +112,7 @@ export default function ResizableFigmaStudioPage() {
           content: contentToSave,
           draftContent: contentToSave,
           isPublished,
-          updatedBy: "Dragon Studio Admin",
+          updatedBy: "Executive Owner",
         }),
       });
 
@@ -164,13 +121,12 @@ export default function ResizableFigmaStudioPage() {
         setSavedSuccess(true);
         setTimeout(() => setSavedSuccess(false), 2500);
 
-        // Update local block state immediately
         setBlocks((prev) =>
           prev.map((b) => (b.key === data.block.key ? { ...b, ...data.block } : b))
         );
         setSelectedBlock((prev) => (prev ? { ...prev, ...data.block } : null));
 
-        // Real-time broadcast to website iframe and cross-tab
+        // Real-time Broadcast to Live Website
         if (typeof window !== "undefined") {
           const payload = {
             type: "DRAGON_CMS_REALTIME_SYNC",
@@ -188,7 +144,7 @@ export default function ResizableFigmaStudioPage() {
         }
 
         if (shouldRefreshCanvas) {
-          setRefreshKey((prev) => prev + 1);
+          setRefreshKey((k) => k + 1);
         }
       }
     } catch (e) {
@@ -198,109 +154,246 @@ export default function ResizableFigmaStudioPage() {
     }
   };
 
-  const handlePopoutWindow = () => {
-    const targetUrl = `http://localhost:3000${activePage.slug}`;
-    window.open(targetUrl, "_blank", "width=1440,height=900,menubar=no,toolbar=no");
-  };
-
-  const fetchRevisions = async () => {
-    if (!selectedBlock) return;
-    setLoadingHistory(true);
-    setHistoryOpen(true);
+  // Add Block Handler
+  const handleAddBlock = async (newBlock: { key: string; category: string; label: string; type: string; content: string }) => {
     try {
-      const res = await fetch(`/api/cms/history?blockKey=${encodeURIComponent(selectedBlock.key)}`);
+      const res = await fetch("/api/cms/blocks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...newBlock,
+          draftContent: newBlock.content,
+          isPublished: true,
+          updatedBy: "Executive Owner",
+        }),
+      });
       const data = await res.json();
-      if (data.success && Array.isArray(data.revisions)) {
-        setRevisions(data.revisions);
+      if (data.success && data.block) {
+        setBlocks((prev) => [data.block, ...prev.filter((b) => b.key !== data.block.key)]);
+        setSelectedBlock(data.block);
+        setEditContent(data.block.content);
+        setIsRightOpen(true);
+        fetchBlocks();
       }
     } catch (e) {
-      console.error("Fetch revisions error", e);
-    } finally {
-      setLoadingHistory(false);
+      console.error("Add block error", e);
     }
   };
 
-  // Page CRUD handlers
-  const handleAddPage = (title: string, slug: string) => {
-    const newPage: CMSPageItem = {
-      id: String(Date.now()),
-      title,
-      slug,
-      status: "DRAFT",
-      category: "Custom",
-      updatedAt: "Just now",
-    };
-    setPages((prev) => [...prev, newPage]);
-    setActivePage(newPage);
+  // Delete Block Handler
+  const handleDeleteBlock = async (key: string) => {
+    try {
+      const res = await fetch(`/api/cms/blocks?key=${encodeURIComponent(key)}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (data.success) {
+        setBlocks((prev) => prev.filter((b) => b.key !== key));
+        if (selectedBlock?.key === key) {
+          setSelectedBlock(null);
+          setIsRightOpen(false);
+        }
+      }
+    } catch (e) {
+      console.error("Delete block error", e);
+    }
   };
 
-  const handleDuplicatePage = (id: string) => {
-    const target = pages.find((p) => p.id === id);
+  // Save Banner Handler
+  const handleSaveBanner = async (key: string, content: string, label?: string) => {
+    try {
+      const res = await fetch("/api/cms/blocks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          key,
+          category: "Hero",
+          label: label || key,
+          type: "text",
+          content,
+          draftContent: content,
+          isPublished: true,
+          updatedBy: "Banner Studio",
+        }),
+      });
+      const data = await res.json();
+      if (data.success && data.block) {
+        setBlocks((prev) => [data.block, ...prev.filter((b) => b.key !== data.block.key)]);
+        if (typeof window !== "undefined") {
+          try {
+            const bc = new BroadcastChannel("dragon_cms_live_sync");
+            bc.postMessage({
+              type: "DRAGON_CMS_REALTIME_SYNC",
+              key: data.block.key,
+              content: data.block.content,
+              status: "saved",
+            });
+            bc.close();
+          } catch {}
+        }
+        fetchBlocks();
+      }
+    } catch (e) {
+      console.error("Save banner error", e);
+    }
+  };
+
+  // 1-Click AI Apply to Website & Neon DB
+  const handleApplyAiContent = async (key: string, newContent: string) => {
+    const target = blocks.find((b) => b.key === key) || selectedBlock;
     if (!target) return;
-    const duplicated: CMSPageItem = {
-      id: String(Date.now()),
-      title: `${target.title} (Copy)`,
-      slug: `${target.slug}-copy`,
-      status: "DRAFT",
-      category: target.category,
-      updatedAt: "Just now",
-    };
-    setPages((prev) => [...prev, duplicated]);
+
+    setEditContent(newContent);
+    setSelectedBlock((prev) => (prev ? { ...prev, content: newContent } : null));
+
+    // Save directly to Neon DB
+    try {
+      await fetch("/api/cms/blocks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          key: target.key,
+          category: target.category,
+          label: target.label,
+          type: target.type,
+          content: newContent,
+          draftContent: newContent,
+          isPublished: true,
+          updatedBy: "Gemini AI Studio Engine",
+        }),
+      });
+
+      // Broadcast live to canvas
+      const payload = {
+        type: "DRAGON_CMS_REALTIME_SYNC",
+        key: target.key,
+        content: newContent,
+        status: "saved",
+        timestamp: Date.now(),
+      };
+      window.postMessage(payload, "*");
+      try {
+        const bc = new BroadcastChannel("dragon_cms_live_sync");
+        bc.postMessage(payload);
+        bc.close();
+      } catch {}
+
+      fetchBlocks();
+    } catch (e) {
+      console.error("Error applying AI content", e);
+    }
   };
 
-  const handleDeletePage = (id: string) => {
-    if (pages.length <= 1) return;
-    setPages((prev) => prev.filter((p) => p.id !== id));
-    if (activePage.id === id) {
-      setActivePage(pages[0]);
+  // Reset all blocks to default seeds
+  const handleResetDefaults = async () => {
+    if (!confirm("Are you sure you want to reset all website copy back to the official Dragon Studios default text?")) {
+      return;
     }
+    try {
+      const res = await fetch("/api/cms/blocks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "reset_defaults" }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert("All website copy has been restored to official default seeds!");
+        setRefreshKey((k) => k + 1);
+        fetchBlocks();
+      }
+    } catch (e) {
+      console.error("Reset error", e);
+    }
+  };
+
+  const handlePopoutWindow = () => {
+    window.open(`https://dragongamingstudios.vercel.app${activePage.slug}?editor=true`, "_blank");
   };
 
   return (
-    <div className="flex min-h-screen bg-slate-50 text-slate-900 font-sans overflow-hidden">
-      {/* Fullscreen Portal Mode Overlay */}
-      {isFullscreen ? (
-        <div className="fixed inset-0 z-50 bg-slate-900 flex flex-col w-screen h-screen">
-          {/* Top Fullscreen Control Bar */}
-          <div className="bg-slate-900/90 border-b border-white/10 px-6 py-2.5 flex items-center justify-between z-30">
-            <div className="flex items-center gap-3">
-              <Badge variant="purple" size="sm">Fullscreen Mode (Press Esc to exit)</Badge>
-              <span className="text-xs font-mono text-slate-300">Target Route: {activePage.slug}</span>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <Button
-                onClick={handlePopoutWindow}
-                variant="outline"
-                className="text-xs border-white/10 text-slate-300 hover:bg-white/5"
-              >
-                <ExternalLink className="w-3.5 h-3.5 mr-1" /> Dual Monitor Pop-Out
-              </Button>
-
-              <button
-                onClick={() => setIsFullscreen(false)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold shadow-lg shadow-purple-950/40"
-              >
-                <Minimize2 className="w-4 h-4" /> Return to Studio Editor
-              </button>
-            </div>
+    <div className="flex h-screen w-screen bg-[#01040D] text-[#F8FAFC] font-sans overflow-hidden select-none">
+      {/* Optional Collapsible Sidebar Overlay */}
+      {isSidebarOpen && !isFullscreen && (
+        <div className="fixed inset-0 z-40 flex">
+          <div className="w-64 h-full bg-[#040D24] border-r border-cyan-500/30 shadow-2xl z-50 animate-in slide-in-from-left duration-200">
+            <Sidebar />
           </div>
+          <div
+            className="flex-1 bg-black/60 backdrop-blur-sm"
+            onClick={() => setIsSidebarOpen(false)}
+          />
+        </div>
+      )}
 
-          {/* Fullscreen Live Canvas */}
-          <div className="flex-1 w-full h-full">
+      <div className="flex-1 flex flex-col min-w-0 bg-[#01040D] overflow-hidden">
+        {/* Studio Header */}
+        <VisualStudioHeader
+          pages={pages}
+          activePage={activePage}
+          setActivePage={setActivePage}
+          viewportMode={viewportMode}
+          setViewportMode={setViewportMode}
+          isLeftOpen={isLeftOpen}
+          setIsLeftOpen={setIsLeftOpen}
+          isRightOpen={isRightOpen}
+          setIsRightOpen={setIsRightOpen}
+          isAiOpen={isAiOpen}
+          setIsAiOpen={setIsAiOpen}
+          isFullscreen={isFullscreen}
+          setIsFullscreen={setIsFullscreen}
+          isSidebarOpen={isSidebarOpen}
+          setIsSidebarOpen={setIsSidebarOpen}
+          isSaving={saving}
+          isSavedSuccess={savedSuccess}
+          targetEnv="production"
+          setTargetEnv={() => {}}
+          onPublishAll={async () => {
+            await handleSaveBlock(true);
+          }}
+          onRefreshCanvas={() => setRefreshKey((k) => k + 1)}
+          onPopoutWindow={handlePopoutWindow}
+          onResetDefaults={handleResetDefaults}
+          onOpenBannerManager={() => setIsBannerModalOpen(true)}
+          onOpenBlogManager={() => setIsBlogModalOpen(true)}
+        />
+
+        {/* 100% Edge-to-Edge Canvas Area */}
+        <div className="flex-1 flex overflow-hidden relative">
+          {/* Left: Collapsible Blocks Drawer */}
+          <VisualStudioLeftSidebar
+            isOpen={isLeftOpen}
+            blocks={blocks}
+            selectedBlock={selectedBlock}
+            onSelectBlock={handleSelectBlock}
+            categories={categories}
+            selectedCategory={selectedCategory}
+            onSelectCategory={setSelectedCategory}
+            onAddBlock={handleAddBlock}
+            onDeleteBlock={handleDeleteBlock}
+          />
+
+          {/* Center: Full Height & Width Live Canvas */}
+          <div className="flex-1 flex flex-col overflow-hidden relative bg-[#020614]">
             <VisualStudioCanvas
               viewportMode={viewportMode}
               zoomLevel={zoomLevel}
-              setZoomLevel={setZoomLevel}
-              showRulers={showRulers}
-              showGrid={showGrid}
               activeSlug={activePage.slug}
               onRefreshKey={refreshKey}
               selectedBlock={selectedBlock}
+              targetEnv="production"
               onLiveTyping={(newContent) => {
                 setEditContent(newContent);
                 if (selectedBlock) {
                   setSelectedBlock((prev) => (prev ? { ...prev, content: newContent } : null));
+                  try {
+                    const bc = new BroadcastChannel("dragon_cms_live_sync");
+                    bc.postMessage({
+                      type: "DRAGON_CMS_TEXT_UPDATE",
+                      key: selectedBlock.key,
+                      content: newContent,
+                    });
+                    bc.close();
+                  } catch {}
                 }
               }}
               onSaveBlockContent={(newContent) => {
@@ -311,231 +404,83 @@ export default function ResizableFigmaStudioPage() {
                 const found = blocks.find((b) => b.key === key);
                 if (found) {
                   handleSelectBlock(found);
-                } else if (selectedBlock && selectedBlock.key === key) {
+                } else if (key) {
+                  setSelectedBlock({
+                    id: String(Date.now()),
+                    key,
+                    category: "Live Editable",
+                    label: key,
+                    type: "text",
+                    content: text,
+                    isPublished: true,
+                    version: 1,
+                    updatedBy: "Canvas Click",
+                    updatedAt: "Just now",
+                  });
                   setEditContent(text);
+                  setIsRightOpen(true);
                 }
               }}
             />
           </div>
+
+          {/* Right: Floating Slide-Over Property Inspector */}
+          <VisualStudioInspector
+            isOpen={isRightOpen}
+            onClose={() => setIsRightOpen(false)}
+            selectedBlock={selectedBlock}
+            editContent={editContent}
+            setEditContent={setEditContent}
+            isPublished={isPublished}
+            setIsPublished={setIsPublished}
+            isSaving={saving}
+            isSavedSuccess={savedSuccess}
+            onSave={handleSaveBlock}
+            onLiveTyping={(newContent) => {
+              setEditContent(newContent);
+              if (selectedBlock) {
+                setSelectedBlock((prev) => (prev ? { ...prev, content: newContent } : null));
+                try {
+                  const bc = new BroadcastChannel("dragon_cms_live_sync");
+                  bc.postMessage({
+                    type: "DRAGON_CMS_TEXT_UPDATE",
+                    key: selectedBlock.key,
+                    content: newContent,
+                  });
+                  bc.close();
+                } catch {}
+              }
+            }}
+          />
+
+          {/* ✦ GOD-LEVEL GEMINI AI COPILOT DRAWER ✦ */}
+          <GeminiAICopilot
+            isOpen={isAiOpen}
+            onClose={() => setIsAiOpen(false)}
+            blocks={blocks}
+            selectedBlock={selectedBlock}
+            onSelectBlock={(b) => {
+              setSelectedBlock(b);
+              setEditContent(b.content);
+            }}
+            onApplyContent={handleApplyAiContent}
+          />
+
+          {/* ✦ Dedicated Banner Manager Modal ✦ */}
+          <CMSBannerManagerModal
+            isOpen={isBannerModalOpen}
+            onClose={() => setIsBannerModalOpen(false)}
+            onSaveBanner={handleSaveBanner}
+            currentBanners={blocks}
+          />
+
+          {/* ✦ Dedicated Blog & News Manager Modal ✦ */}
+          <CMSBlogManagerModal
+            isOpen={isBlogModalOpen}
+            onClose={() => setIsBlogModalOpen(false)}
+          />
         </div>
-      ) : (
-        <>
-          <Sidebar />
-
-          <div className="flex-1 flex flex-col min-w-0">
-            <Navbar />
-
-            {/* Top Floating Studio Header */}
-            <VisualStudioHeader
-              viewportMode={viewportMode}
-              setViewportMode={setViewportMode}
-              zoomLevel={zoomLevel}
-              setZoomLevel={setZoomLevel}
-              showRulers={showRulers}
-              setShowRulers={setShowRulers}
-              showGrid={showGrid}
-              setShowGrid={setShowGrid}
-              isLeftOpen={isLeftOpen}
-              setIsLeftOpen={setIsLeftOpen}
-              isRightOpen={isRightOpen}
-              setIsRightOpen={setIsRightOpen}
-              isFullscreen={isFullscreen}
-              setIsFullscreen={setIsFullscreen}
-              isMaximizedCanvas={isMaximizedCanvas}
-              setIsMaximizedCanvas={setIsMaximizedCanvas}
-              activePageTitle={activePage.title}
-              activePageSlug={activePage.slug}
-              isSaving={saving}
-              isSavedSuccess={savedSuccess}
-              onPublishAll={() => handleSaveBlock(true)}
-              onRefreshCanvas={() => setRefreshKey((p) => p + 1)}
-              onPopoutWindow={handlePopoutWindow}
-              onOpenPageManager={() => setPageManagerOpen(true)}
-            />
-
-            {/* Studio View Selector Bar */}
-            <div className="bg-slate-900/60 border-b border-white/5 px-6 py-1.5 flex items-center justify-between z-20">
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setViewTab("visual")}
-                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
-                    viewTab === "visual"
-                      ? "bg-purple-600/30 text-purple-300 border border-purple-500/40"
-                      : "text-slate-400 hover:text-white"
-                  }`}
-                >
-                  Figma / Webflow Live Viewport Studio
-                </button>
-
-                <button
-                  onClick={() => setViewTab("dictionary")}
-                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
-                    viewTab === "dictionary"
-                      ? "bg-purple-600/30 text-purple-300 border border-purple-500/40"
-                      : "text-slate-400 hover:text-white"
-                  }`}
-                >
-                  Universal Text Dictionary & AI
-                </button>
-
-                <button
-                  onClick={() => setViewTab("seo")}
-                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
-                    viewTab === "seo"
-                      ? "bg-cyan-600/30 text-cyan-300 border border-cyan-500/40"
-                      : "text-slate-400 hover:text-white"
-                  }`}
-                >
-                  SEO & Social Metadata
-                </button>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <span className="text-[11px] text-slate-400 font-mono">Page Target:</span>
-                <select
-                  value={activePage.id}
-                  onChange={(e) => {
-                    const found = pages.find((p) => p.id === e.target.value);
-                    if (found) setActivePage(found);
-                  }}
-                  className="px-2.5 py-1 bg-slate-950/80 border border-white/10 rounded-lg text-xs text-white focus:outline-none focus:border-purple-500/50"
-                >
-                  {pages.map((p) => (
-                    <option key={p.id} value={p.id}>{p.title} ({p.slug})</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {/* Main Studio Workspace */}
-            <main className="flex-1 flex overflow-hidden relative">
-              {viewTab === "visual" ? (
-                <div className="flex-1 flex w-full h-full">
-                  {/* Left Studio Sidebar Drawer */}
-                  <VisualStudioLeftSidebar
-                    isOpen={isLeftOpen}
-                    blocks={blocks}
-                    selectedBlock={selectedBlock}
-                    onSelectBlock={handleSelectBlock}
-                    categories={categories}
-                    selectedCategory={selectedCategory}
-                    setSelectedCategory={setSelectedCategory}
-                  />
-
-                  {/* Center Resizable Live Viewport Canvas */}
-                  <VisualStudioCanvas
-                    viewportMode={viewportMode}
-                    zoomLevel={zoomLevel}
-                    setZoomLevel={setZoomLevel}
-                    showRulers={showRulers}
-                    showGrid={showGrid}
-                    activeSlug={activePage.slug}
-                    onRefreshKey={refreshKey}
-                    selectedBlock={selectedBlock}
-                    onLiveTyping={(newContent) => {
-                      setEditContent(newContent);
-                      if (selectedBlock) {
-                        setSelectedBlock((prev) => (prev ? { ...prev, content: newContent } : null));
-                      }
-                    }}
-                    onSaveBlockContent={(newContent) => {
-                      setEditContent(newContent);
-                      handleSaveBlock(false, newContent);
-                    }}
-                    onSelectBlockFromCanvas={(key, text) => {
-                      const found = blocks.find((b) => b.key === key);
-                      if (found) {
-                        handleSelectBlock(found);
-                      } else if (selectedBlock && selectedBlock.key === key) {
-                        setEditContent(text);
-                      }
-                    }}
-                  />
-
-                  {/* Right Figma/Webflow Style Inspector */}
-                  <VisualStudioInspector
-                    isOpen={isRightOpen}
-                    selectedBlock={selectedBlock}
-                    editContent={editContent}
-                    setEditContent={setEditContent}
-                    isPublished={isPublished}
-                    setIsPublished={setIsPublished}
-                    onSaveBlock={handleSaveBlock}
-                    onOpenHistory={fetchRevisions}
-                    saving={saving}
-                  />
-                </div>
-              ) : viewTab === "dictionary" ? (
-                <div className="flex-1 p-6 overflow-y-auto">
-                  <TextDictionaryManager />
-                </div>
-              ) : (
-                <div className="flex-1 p-6 overflow-y-auto">
-                  <SEOInspectorPanel initialSlug={activePage.slug} />
-                </div>
-              )}
-            </main>
-          </div>
-        </>
-      )}
-
-      {/* Page Manager Modal */}
-      <PageManagerModal
-        isOpen={pageManagerOpen}
-        onClose={() => setPageManagerOpen(false)}
-        pages={pages}
-        onAddPage={handleAddPage}
-        onDuplicatePage={handleDuplicatePage}
-        onDeletePage={handleDeletePage}
-        onReorderPages={(updatedPages) => setPages(updatedPages)}
-      />
-
-      {/* Revision History Modal Drawer */}
-      {historyOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-white/15 rounded-2xl w-full max-w-lg p-6 space-y-4 text-xs shadow-2xl">
-            <div className="flex items-center justify-between border-b border-white/5 pb-3">
-              <div>
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <History className="w-4 h-4 text-purple-400" /> Revision History Log
-                </h3>
-                <span className="text-[10px] font-mono text-purple-300">
-                  Block Key: {selectedBlock?.key}
-                </span>
-              </div>
-              <button
-                onClick={() => setHistoryOpen(false)}
-                className="text-slate-400 hover:text-white"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            {loadingHistory ? (
-              <div className="p-6 text-center text-slate-400">Loading audit history...</div>
-            ) : revisions.length === 0 ? (
-              <div className="p-6 text-center text-slate-500">No previous revisions logged for this block element.</div>
-            ) : (
-              <div className="space-y-3 max-h-80 overflow-y-auto pr-1">
-                {revisions.map((rev) => (
-                  <div key={rev.id} className="p-3.5 rounded-xl bg-slate-950/60 border border-white/10 space-y-1">
-                    <div className="flex items-center justify-between">
-                      <Badge variant="purple" size="sm">Version {rev.version}</Badge>
-                      <span className="text-[10px] text-slate-400 font-mono">
-                        {new Date(rev.createdAt).toLocaleString()}
-                      </span>
-                    </div>
-                    <div className="text-[11px] text-slate-300 font-mono truncate">
-                      {rev.content}
-                    </div>
-                    <div className="text-[10px] text-slate-500 font-mono">Changed by: {rev.changedBy}</div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+      </div>
     </div>
   );
 }

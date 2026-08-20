@@ -3,11 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Rajdhani } from "next/font/google";
 import "./globals.css";
 import { SessionProvider } from "@/providers/session-provider";
-import { AudioProvider } from "@/providers/audio-provider";
 import { AiProvider } from "@/providers/ai-provider";
 import { SmoothScrollProvider } from "@/providers/smooth-scroll-provider";
-import { Preloader } from "@/components/motion/Preloader";
-import { CustomCursor } from "@/components/motion/CustomCursor";
 import { ScrollProgress } from "@/components/motion/ScrollProgress";
 import { AiAssistant } from "@/components/ai/AiAssistant";
 import { CommandPalette } from "@/components/navigation/CommandPalette";
@@ -33,28 +30,30 @@ const rajdhani = Rajdhani({
 
 export const metadata: Metadata = {
   title: {
-    default: "Dragon Studios | AAA Game Development Studio",
+    default: "Dragon Studios | 3D & 2D Game Development Studio",
     template: "%s | Dragon Studios",
   },
   description:
-    "Dragon Studios - Premier AAA Game Development Studio creating immersive worlds powered by Dragon Engine.",
+    "Dragon Studios - Independent Game Development Studio creating immersive 3D & 2D games for PC and Mobile.",
   keywords: [
     "Dragon Studios",
     "Game Studio",
-    "AAA Games",
-    "Dragon Engine",
+    "Dragon Games",
+    "3D Games",
+    "2D Games",
+    "PC Games",
+    "Android Games",
     "Embers of Valyria",
     "Neon Drift",
-    "Blacksite Zero",
     "Game Development",
   ],
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://dragonstudios.com",
+    url: "https://dragongamingstudios.vercel.app",
     siteName: "Dragon Studios",
-    title: "Dragon Studios | AAA Game Development Studio",
-    description: "Creating immersive worlds powered by Dragon Engine.",
+    title: "Dragon Studios | 3D & 2D Game Development Studio",
+    description: "Creating immersive 3D & 2D games for PC and Mobile.",
   },
   twitter: {
     card: "summary_large_image",
@@ -83,20 +82,16 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${rajdhani.variable} antialiased bg-background text-foreground selection:bg-dragon-500/30 selection:text-white`}
       >
         <SessionProvider>
-          <AudioProvider>
-            <AiProvider>
-              <SmoothScrollProvider>
-                <Preloader />
-                <CustomCursor />
-                <ScrollProgress />
-                <CommandPalette />
-                <AiAssistant />
-                <CMSLiveSync />
-                <WebsiteAnalyticsTracker />
-                {children}
-              </SmoothScrollProvider>
-            </AiProvider>
-          </AudioProvider>
+          <AiProvider>
+            <SmoothScrollProvider>
+              <ScrollProgress />
+              <CommandPalette />
+              <AiAssistant />
+              <CMSLiveSync />
+              <WebsiteAnalyticsTracker />
+              {children}
+            </SmoothScrollProvider>
+          </AiProvider>
         </SessionProvider>
       </body>
     </html>

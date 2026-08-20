@@ -188,6 +188,17 @@ export async function POST(req: NextRequest) {
         },
       });
 
+      // Step 3b: Create Customer In-App Notification for User Dashboard
+      await tx.notification.create({
+        data: {
+          title: `Support Ticket Received: ${ticketId}`,
+          message: `Your inquiry "${subject.trim()}" has been received. Your response will be delivered shortly via email and dashboard.`,
+          type: "TICKET_CREATED",
+          recipient: targetEmail,
+          channel: "IN_APP",
+        },
+      }).catch((e: unknown) => console.warn("UserNotification creation warning:", e));
+
       // Step 4: Create Activity Log (uses mirror Ticket.id — satisfies FK constraint)
       await tx.ticketActivity.create({
         data: {

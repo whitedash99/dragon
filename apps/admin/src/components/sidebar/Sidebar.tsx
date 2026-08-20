@@ -52,26 +52,26 @@ const NAV_GROUPS: NavGroup[] = [
   {
     title: "OVERVIEW",
     items: [
-      { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard, badgeColor: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" },
-      { label: "Website Analytics", href: "/analytics", icon: BarChart3, badge: "REALTIME", badgeColor: "bg-cyan-500/10 text-cyan-400 border-cyan-500/20" },
-      { label: "Owner Data Control", href: "/data-control", icon: Lock, badge: "ROOT", badgeColor: "bg-purple-500/10 text-purple-400 border-purple-500/20" },
+      { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+      { label: "Website Analytics", href: "/analytics", icon: BarChart3 },
+      { label: "Owner Data Control", href: "/data-control", icon: Lock },
     ],
   },
   {
     title: "WORKSPACE",
     items: [
-      { label: "Community Hub", href: "/community", icon: MessagesSquare, badge: "CHAT", badgeColor: "bg-cyan-500/10 text-cyan-400 border-cyan-500/20" },
+      { label: "Community Hub", href: "/community", icon: MessagesSquare },
       { label: "Team Workforce", href: "/users", icon: Users },
-      { label: "Recruitment Portal", href: "/team-key-portal", icon: Key, badge: "DIP", badgeColor: "bg-amber-500/10 text-amber-400 border-amber-500/20" },
+      { label: "Recruitment Portal", href: "/team-key-portal", icon: Key },
       { label: "Support Desk", href: "/crm", icon: LifeBuoy },
-      { label: "Studio CMS", href: "/cms", icon: FolderKanban, badge: "LIVE", badgeColor: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" },
-      { label: "AAA Games", href: "/games", icon: Gamepad2, badge: "3 TITLES", badgeColor: "bg-pink-500/10 text-pink-400 border-pink-500/20" },
+      { label: "Studio CMS", href: "/cms", icon: FolderKanban },
+      { label: "Insert Games", href: "/games", icon: Gamepad2 },
     ],
   },
   {
     title: "SECURITY & AUDIT",
     items: [
-      { label: "Security Posture", href: "/security", icon: ShieldCheck, badge: "98%", badgeColor: "bg-purple-500/10 text-purple-400 border-purple-500/20" },
+      { label: "Security Posture", href: "/security", icon: ShieldCheck },
       { label: "Audit Center", href: "/audit", icon: Activity },
       { label: "Passkeys & MFA", href: "/security/mfa", icon: Fingerprint },
       { label: "Devices", href: "/devices", icon: Smartphone },
@@ -81,8 +81,8 @@ const NAV_GROUPS: NavGroup[] = [
   {
     title: "SYSTEM",
     items: [
-      { label: "Command Terminal", href: "/terminal", icon: TerminalIcon, badge: "CLI", badgeColor: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" },
-      { label: "Command Library", href: "/terminal/library", icon: BookOpen, badge: "DOCS", badgeColor: "bg-cyan-500/10 text-cyan-400 border-cyan-500/20" },
+      { label: "Command Terminal", href: "/terminal", icon: TerminalIcon },
+      { label: "Command Library", href: "/terminal/library", icon: BookOpen },
       { label: "Integrations", href: "/integrations", icon: Plug },
       { label: "Custom Domains", href: "/domains", icon: Globe2 },
       { label: "Settings", href: "/settings", icon: Settings },

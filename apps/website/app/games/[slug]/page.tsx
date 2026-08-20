@@ -34,6 +34,7 @@ import { gameDetailsMap } from "@/data/expandedContent";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
 import { OFFICIAL_SOCIALS } from "@/lib/site";
+import { WhatsAppIcon, ThreadsIcon } from "@/components/ui/social-icons";
 
 const iconMap: Record<string, React.ReactNode> = {
   Flame: <Flame className="size-6 text-dragon-400" />,
@@ -163,13 +164,33 @@ export default function GameDetailPage({ params }: { params: Promise<{ slug: str
                 </a>
 
                 <a
+                  href={OFFICIAL_SOCIALS.whatsapp.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 px-4 py-2 text-xs font-bold text-emerald-300 border border-emerald-500/30 transition-colors"
+                >
+                  <WhatsAppIcon className="size-3.5 text-emerald-400" />
+                  <span>WhatsApp Updates</span>
+                </a>
+
+                <a
+                  href={OFFICIAL_SOCIALS.threads.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 px-4 py-2 text-xs font-bold text-cyan-300 border border-cyan-500/30 transition-colors"
+                >
+                  <ThreadsIcon className="size-3.5 text-cyan-400" />
+                  <span>Threads Dispatches</span>
+                </a>
+
+                <a
                   href={OFFICIAL_SOCIALS.youtube.href}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 rounded-xl bg-white/10 hover:bg-red-500/20 px-4 py-2 text-xs font-bold text-white border border-white/15 transition-colors"
                 >
                   <Youtube className="size-3.5 text-red-400" />
-                  <span>Watch Trailer on YouTube</span>
+                  <span>Watch Trailer</span>
                 </a>
 
                 <a
@@ -179,7 +200,7 @@ export default function GameDetailPage({ params }: { params: Promise<{ slug: str
                   className="inline-flex items-center gap-2 rounded-xl bg-white/10 hover:bg-pink-500/20 px-4 py-2 text-xs font-bold text-white border border-white/15 transition-colors"
                 >
                   <Instagram className="size-3.5 text-pink-400" />
-                  <span>Follow Studio</span>
+                  <span>Instagram</span>
                 </a>
               </div>
             </div>

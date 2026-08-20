@@ -6,19 +6,30 @@ import { Badge } from "@/components/ui/badge";
 interface AIRewriteModalProps {
   isOpen: boolean;
   onClose: () => void;
-  originalText: string;
-  onApplyText: (newText: string) => void;
+  originalText?: string;
+  currentText?: string;
+  onApplyText?: (newText: string) => void;
+  onApply?: (newText: string) => void;
 }
 
 export function AIRewriteModal({
   isOpen,
   onClose,
-  originalText,
+  originalText = "",
+  currentText = "",
   onApplyText,
+  onApply,
 }: AIRewriteModalProps) {
-  const [resultText, setResultText] = useState(originalText);
+  const initialText = currentText || originalText;
+  const [resultText, setResultText] = useState(initialText);
   const [isProcessing, setIsProcessing] = useState(false);
   const [activeAction, setActiveAction] = useState<string | null>(null);
+
+  const handleApply = (text: string) => {
+    if (onApply) onApply(text);
+    else if (onApplyText) onApplyText(text);
+    onClose();
+  };
 
   if (!isOpen) return null;
 
@@ -91,7 +102,7 @@ export function AIRewriteModal({
             className="p-2.5 rounded-xl bg-slate-950/60 border border-white/10 hover:border-purple-500/40 text-left font-semibold text-slate-200 flex items-center gap-2 hover:bg-purple-950/20 transition-all"
           >
             <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-            <span>AAA Tone Polish</span>
+            <span>Epic Tone Polish</span>
           </button>
 
           <button
@@ -151,11 +162,8 @@ export function AIRewriteModal({
           </Button>
 
           <Button
-            onClick={() => {
-              onApplyText(resultText);
-              onClose();
-            }}
-            className="bg-purple-600 hover:bg-purple-500 text-white text-xs px-4 py-2"
+            onClick={() => handleApply(resultText)}
+            className="bg-[#00f0ff] hover:bg-cyan-300 text-black text-xs px-4 py-2 font-bold"
           >
             <Check className="w-3.5 h-3.5 mr-1.5" /> Apply AI Result
           </Button>

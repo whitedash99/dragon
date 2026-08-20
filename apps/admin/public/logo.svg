@@ -79,7 +79,7 @@
         stroke-opacity="0.6" 
         stroke-linejoin="round" />
 
-  <!-- Dragon Vector Art (AAA Geometric Dragon Head Emblem) -->
+  <!-- Dragon Vector Art (Geometric Dragon Head Emblem) -->
   <g id="dragon-head">
     <!-- Main Upper Horn Left/Top (Massive Horn Sweeping Up-Right) -->
     <path d="M 256 90 L 330 130 L 415 95 L 365 175 L 435 185 L 350 230 L 320 200 L 256 220 Z" 

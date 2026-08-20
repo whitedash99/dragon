@@ -5,7 +5,17 @@ import { analyzeContactSubmission } from "@/lib/ai/contact-processor";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { action, text, prompt, targetLanguage, ticketData } = body;
+    const { action, text, prompt, targetLanguage, ticketData, currentContent } = body;
+
+    // 0. God-Level CMS Copy Rewriter (Gemini 2.5)
+    if (action === "cms_rewrite") {
+      const rewritePrompt = prompt || `Make this gaming studio copy more epic, punchy, and cinematic: "${currentContent || text}". Return ONLY the rewritten text.`;
+      const result = await generateGeminiContent({
+        prompt: rewritePrompt,
+        systemInstruction: "You are a world-class game studio creative director and lead copywriter. You write legendary, punchy, immersive gaming headlines, subheadlines, and announcements for 3D & 2D games.",
+      });
+      return NextResponse.json({ success: true, result, completion: result });
+    }
 
     // 1. Analyze / Summarize Support Ticket
     if (action === "analyze_ticket") {
@@ -33,7 +43,7 @@ export async function POST(req: NextRequest) {
 
     // 2. Generate SEO Metadata
     if (action === "generate_seo") {
-      const subjectText = text || prompt || "Dragon Studios AAA Games";
+      const subjectText = text || prompt || "Dragon Studios Games";
       const seoData = await generateSeoWithAi(subjectText);
       return NextResponse.json({
         success: true,
@@ -54,7 +64,7 @@ export async function POST(req: NextRequest) {
 
     // 4. Content Generation (Blogs, Patch Notes, FAQs)
     if (action === "generate_content") {
-      const contentPrompt = `Write a professional AAA game studio announcement about: "${prompt || text}". Format with Markdown headers and bullet points.`;
+      const contentPrompt = `Write a professional game studio announcement about: "${prompt || text}". Format with Markdown headers and bullet points.`;
       const generatedContent = await generateGeminiContent({ prompt: contentPrompt });
       return NextResponse.json({
         success: true,

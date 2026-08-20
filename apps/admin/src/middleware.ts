@@ -23,10 +23,24 @@ const PROTECTED_ROUTES = [
   "/deployments",
   "/editor",
   "/communication",
+  "/secrets",
+  "/terminal",
+  "/data-control",
+  "/devices",
+  "/audit",
+  "/identity",
+  "/domains",
+  "/access",
 ];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
+
+  // 0. Redirect public signup to secure login gateway
+  if (pathname === "/signup") {
+    return NextResponse.redirect(new URL("/login", req.url));
+  }
+
   const adminCookie = req.cookies.get("dragon_admin_session")?.value;
   const token = await getToken({
     req,
@@ -49,7 +63,7 @@ export async function middleware(req: NextRequest) {
 
   // 2. Check Role Authorization for Admin Panel
   if (isProtectedRoute && token && !canAccessAdmin(userRole)) {
-    const unauthorizedUrl = new URL("http://localhost:3000/dashboard");
+    const unauthorizedUrl = new URL("/login", req.url);
     unauthorizedUrl.searchParams.set("error", "UnauthorizedAdminAccess");
     return NextResponse.redirect(unauthorizedUrl);
   }
@@ -59,7 +73,19 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
-  return NextResponse.next();
+  const response = NextResponse.next();
+
+  // 4. Inject Production Security Headers
+  response.headers.set("X-Content-Type-Options", "nosniff");
+  response.headers.set("X-Frame-Options", "SAMEORIGIN");
+  response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  response.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  response.headers.set(
+    "Strict-Transport-Security",
+    "max-age=63072000; includeSubDomains; preload"
+  );
+
+  return response;
 }
 
 export const config = {
@@ -84,6 +110,15 @@ export const config = {
     "/deployments/:path*",
     "/editor/:path*",
     "/communication/:path*",
+    "/secrets/:path*",
+    "/terminal/:path*",
+    "/data-control/:path*",
+    "/devices/:path*",
+    "/audit/:path*",
+    "/identity/:path*",
+    "/domains/:path*",
+    "/access/:path*",
     "/login",
+    "/signup",
   ],
 };

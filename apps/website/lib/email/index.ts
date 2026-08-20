@@ -77,73 +77,35 @@ export async function sendEnterpriseEmail(params: TicketEmailParams): Promise<{
     return { success: false, internalSent: false, customerSent: false, error: errorMsg };
   }
 
+  // Admin recipients array: guarantees both owner emails receive the alert
+  const adminRecipients = Array.from(
+    new Set([
+      "dragonstudiosofficial01@gmail.com",
+      "whitedash99@gmail.com",
+      ownerEmail.toLowerCase().trim(),
+    ].filter(Boolean))
+  );
+
+  const formattedFrom = fromEmail.includes("<") ? fromEmail : `Dragon Studios <${fromEmail}>`;
+
   let customerSent = false;
   let internalSent = false;
   const errors: string[] = [];
 
   // ─────────────────────────────────────────────────────
-  // 1. ADMIN/OWNER NOTIFICATION EMAIL (HIGHEST PRIORITY)
+  // 1. ADMIN/OWNER NOTIFICATION EMAIL (INDIVIDUAL RECIPIENT DISPATCH)
   // ─────────────────────────────────────────────────────
-  // This is the most critical email — send to the owner FIRST
-  try {
-    console.log(`\n📨 Sending ADMIN notification to: ${ownerEmail}`);
-    
-    const adminRes = await resend.emails.send({
-      from: `Dragon Studios Operations <${fromEmail}>`,
-      to: [ownerEmail],
-      replyTo: params.email.trim(),
-      subject: `🚨 [${params.ticketId}] ${params.category || "General"} | ${params.subject.trim()}`,
-      html: renderAdminResendEmail({
-        ticketId: params.ticketId,
-        name: params.name,
-        email: params.email,
-        company: params.company,
-        phone: params.phone,
-        category: params.category,
-        subject: params.subject,
-        message: params.message,
-        priority: params.priority,
-        status: params.status || "OPEN",
-        estimatedResponse: params.slaTarget,
-        trackingUrl,
-        clientIp: params.clientIp,
-        clientCountry: params.clientCountry,
-        browser: params.browser,
-        createdAt: params.createdAt || new Date(),
-      }),
-    });
-
-    if (adminRes.data?.id) {
-      internalSent = true;
-      console.log(`✅ ADMIN email DELIVERED — Resend ID: ${adminRes.data.id}`);
-    } else if (adminRes.error) {
-      const errMsg = `Resend API error: ${adminRes.error.name} — ${adminRes.error.message}`;
-      console.error(`❌ ADMIN email FAILED: ${errMsg}`);
-      errors.push(errMsg);
-    }
-  } catch (e: unknown) {
-    const errMsg = e instanceof Error ? e.message : String(e);
-    console.error(`❌ ADMIN email EXCEPTION: ${errMsg}`);
-    errors.push(`Admin dispatch exception: ${errMsg}`);
-  }
-
-  // ─────────────────────────────────────────────────────
-  // 2. CUSTOMER CONFIRMATION EMAIL
-  // ─────────────────────────────────────────────────────
-  // In sandbox mode, this will only work if the customer email
-  // is the same as the Resend account owner email.
-  if (isSandbox && params.email.trim().toLowerCase() !== ownerEmail.toLowerCase()) {
-    console.warn(`⚠️  SANDBOX MODE: Skipping customer email to ${params.email} — sandbox can only deliver to account owner (${ownerEmail})`);
-    customerSent = false;
-  } else {
+  // Sending individually ensures that Resend sandbox multi-recipient 403 error is avoided
+  for (const recipient of adminRecipients) {
     try {
-      console.log(`\n📨 Sending CUSTOMER confirmation to: ${params.email}`);
-
-      const customerRes = await resend.emails.send({
-        from: `Dragon Studios <${fromEmail}>`,
-        to: [params.email.trim()],
-        subject: `Support Request Received [${params.ticketId}] — Dragon Studios`,
-        html: renderCustomerResendEmail({
+      console.log(`\n📨 Sending ADMIN notification to: ${recipient}`);
+      
+      const adminRes = await resend.emails.send({
+        from: formattedFrom,
+        to: [recipient],
+        replyTo: params.email.trim(),
+        subject: `🚨 [${params.ticketId}] ${params.category || "General"} | ${params.subject.trim()}`,
+        html: renderAdminResendEmail({
           ticketId: params.ticketId,
           name: params.name,
           email: params.email,
@@ -163,19 +125,63 @@ export async function sendEnterpriseEmail(params: TicketEmailParams): Promise<{
         }),
       });
 
-      if (customerRes.data?.id) {
-        customerSent = true;
-        console.log(`✅ CUSTOMER email DELIVERED — Resend ID: ${customerRes.data.id}`);
-      } else if (customerRes.error) {
-        const errMsg = `Resend API error: ${customerRes.error.name} — ${customerRes.error.message}`;
-        console.error(`❌ CUSTOMER email FAILED: ${errMsg}`);
+      if (adminRes.data?.id) {
+        internalSent = true;
+        console.log(`✅ ADMIN email DELIVERED to ${recipient} — Resend ID: ${adminRes.data.id}`);
+      } else if (adminRes.error) {
+        const errMsg = `Resend API error for ${recipient}: ${adminRes.error.name} — ${adminRes.error.message}`;
+        console.error(`❌ ADMIN email to ${recipient} FAILED: ${errMsg}`);
         errors.push(errMsg);
       }
     } catch (e: unknown) {
       const errMsg = e instanceof Error ? e.message : String(e);
-      console.error(`❌ CUSTOMER email EXCEPTION: ${errMsg}`);
-      errors.push(`Customer dispatch exception: ${errMsg}`);
+      console.error(`❌ ADMIN email EXCEPTION for ${recipient}: ${errMsg}`);
+      errors.push(`Admin dispatch exception for ${recipient}: ${errMsg}`);
     }
+  }
+
+  // ─────────────────────────────────────────────────────
+  // 2. CUSTOMER CONFIRMATION EMAIL
+  // ─────────────────────────────────────────────────────
+  try {
+    console.log(`\n📨 Sending CUSTOMER confirmation to: ${params.email}`);
+
+    const customerRes = await resend.emails.send({
+      from: formattedFrom,
+      to: [params.email.trim()],
+      subject: `Support Request Received [${params.ticketId}] — Dragon Studios`,
+      html: renderCustomerResendEmail({
+        ticketId: params.ticketId,
+        name: params.name,
+        email: params.email,
+        company: params.company,
+        phone: params.phone,
+        category: params.category,
+        subject: params.subject,
+        message: params.message,
+        priority: params.priority,
+        status: params.status || "OPEN",
+        estimatedResponse: params.slaTarget,
+        trackingUrl,
+        clientIp: params.clientIp,
+        clientCountry: params.clientCountry,
+        browser: params.browser,
+        createdAt: params.createdAt || new Date(),
+      }),
+    });
+
+    if (customerRes.data?.id) {
+      customerSent = true;
+      console.log(`✅ CUSTOMER email DELIVERED — Resend ID: ${customerRes.data.id}`);
+    } else if (customerRes.error) {
+      const errMsg = `Resend API error: ${customerRes.error.name} — ${customerRes.error.message}`;
+      console.error(`❌ CUSTOMER email FAILED: ${errMsg}`);
+      errors.push(errMsg);
+    }
+  } catch (e: unknown) {
+    const errMsg = e instanceof Error ? e.message : String(e);
+    console.error(`❌ CUSTOMER email EXCEPTION: ${errMsg}`);
+    errors.push(`Customer dispatch exception: ${errMsg}`);
   }
 
   // ─────────────────────────────────────────────────────

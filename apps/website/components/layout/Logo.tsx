@@ -17,7 +17,7 @@ export default function Logo({
       size={size}
       showText={showText}
       textVariant="studios"
-      subtitle="AAA Game Studio"
+      subtitle="Game Studio"
       className={className}
     />
   );

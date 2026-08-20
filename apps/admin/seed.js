@@ -90,7 +90,7 @@ async function main() {
       category: "Homepage",
       label: "Hero Subheadline Description",
       type: "textarea",
-      content: "We craft AAA interactive experiences that push the boundaries of real-time graphics and cinematic storytelling.",
+      content: "We craft original 3D & 2D games for PC and Mobile with high-performance graphics and immersive storytelling.",
       isPublished: true,
     },
     {
@@ -98,7 +98,7 @@ async function main() {
       category: "Global",
       label: "Top Announcement Banner",
       type: "text",
-      content: "🔥 PROJECT DRAGON REAL-TIME ALPHA EXPANSION LIVE NOW — JOIN COMMUNITY ACCESS",
+      content: "🔥 DRAGON SLAYER 3D & NEON DRIFT — PC & MOBILE BUILDS READY",
       isPublished: true,
     },
     {
@@ -106,7 +106,7 @@ async function main() {
       category: "Footer",
       label: "Footer Studio Tagline",
       type: "textarea",
-      content: "Dragon Studios is a premier game development powerhouse. Transporting players into uncharted digital dimensions.",
+      content: "Dragon Studios is an independent game development studio creating original 3D and 2D games for PC and Mobile.",
       isPublished: true,
     },
   ];
@@ -119,6 +119,107 @@ async function main() {
     });
   }
   console.log("✓ Essential CMS Content Blocks seeded.");
+
+  // 3. Seed Dragon 3D & 2D Games with PC (.exe) & Mobile (.apk) Builds
+  const dragonGames = [
+    {
+      slug: "dragon-slayer-3d",
+      name: "Dragon Slayer 3D: Realm of Fire",
+      genre: "3D Action RPG • Open World",
+      status: "Live Released",
+      releaseDate: "2026",
+      developer: "Dragon Studios",
+      publisher: "Dragon Interactive",
+      engine: "Dragon 3D Engine",
+      platforms: "PC (.exe), Android (.apk)",
+      description: "An epic 3D open-world fantasy action RPG built by Dragon Studios. Battle ancient dragons, forge legendary gear, and explore vast immersive landscapes.",
+      isPublished: true,
+      features: JSON.stringify({
+        dimension: "3D",
+        engineVersion: "Dragon Engine v5.4",
+        pcExeUrl: "https://dragongamingstudios.vercel.app/downloads/DragonSlayer3D_Setup.exe",
+        pcFileSize: "650 MB",
+        mobileApkUrl: "https://dragongamingstudios.vercel.app/downloads/DragonSlayer3D.apk",
+        mobileFileSize: "120 MB",
+      }),
+      requirements: "PC: Windows 10/11, 8GB RAM, GTX 1060+ | Mobile: Android 10+, 4GB RAM",
+    },
+    {
+      slug: "cyber-drift-3d",
+      name: "Cyber Drift 3D: Overdrive",
+      genre: "3D Anti-Gravity Racing",
+      status: "Live Released",
+      releaseDate: "2026",
+      developer: "Dragon Studios",
+      publisher: "Dragon Interactive",
+      engine: "Dragon 3D Engine",
+      platforms: "PC (.exe), Android (.apk)",
+      description: "High-octane 3D tactical anti-gravity racing on futuristic neon tracks with reactive synthwave audio and 120 FPS high-refresh physics.",
+      isPublished: true,
+      features: JSON.stringify({
+        dimension: "3D",
+        engineVersion: "Dragon Engine Ultra",
+        pcExeUrl: "https://dragongamingstudios.vercel.app/downloads/CyberDrift3D_Setup.exe",
+        pcFileSize: "480 MB",
+        mobileApkUrl: "https://dragongamingstudios.vercel.app/downloads/CyberDrift3D.apk",
+        mobileFileSize: "95 MB",
+      }),
+      requirements: "PC: Windows 10/11, 8GB RAM, GTX 1050+ | Mobile: Android 9+, 3GB RAM",
+    },
+    {
+      slug: "shadow-ninja-2d",
+      name: "Shadow Ninja 2D",
+      genre: "2D Action Platformer & Boss Battles",
+      status: "Live Released",
+      releaseDate: "2026",
+      developer: "Dragon Studios",
+      publisher: "Dragon Interactive",
+      engine: "Dragon 2D Engine",
+      platforms: "PC (.exe), Android (.apk)",
+      description: "Fast-paced 2D ninja action platformer featuring katana slicing, wall running, intense multi-phase boss fights, and pixel-perfect controls.",
+      isPublished: true,
+      features: JSON.stringify({
+        dimension: "2D",
+        engineVersion: "Dragon 2D Engine",
+        pcExeUrl: "https://dragongamingstudios.vercel.app/downloads/ShadowNinja2D_Setup.exe",
+        pcFileSize: "240 MB",
+        mobileApkUrl: "https://dragongamingstudios.vercel.app/downloads/ShadowNinja2D.apk",
+        mobileFileSize: "65 MB",
+      }),
+      requirements: "PC: Windows 7/8/10/11, 4GB RAM | Mobile: Android 8+, 2GB RAM",
+    },
+    {
+      slug: "dragon-kingdom-2d",
+      name: "Dragon Kingdom Chronicles",
+      genre: "2D Fantasy Strategy RPG",
+      status: "Early Access",
+      releaseDate: "2026",
+      developer: "Dragon Studios",
+      publisher: "Dragon Interactive",
+      engine: "Dragon 2D Engine",
+      platforms: "PC (.exe), Android (.apk)",
+      description: "Tactical 2D kingdom builder and hero strategy RPG. Defend dragon castles, command magical armies, and conquer enemy territory.",
+      isPublished: true,
+      features: JSON.stringify({
+        dimension: "2D",
+        engineVersion: "Dragon 2D Engine",
+        pcExeUrl: "https://dragongamingstudios.vercel.app/downloads/DragonKingdom_Setup.exe",
+        pcFileSize: "310 MB",
+        mobileApkUrl: "https://dragongamingstudios.vercel.app/downloads/DragonKingdom.apk",
+        mobileFileSize: "80 MB",
+      }),
+      requirements: "PC: Windows 7/8/10/11, 4GB RAM | Mobile: Android 8+, 2GB RAM",
+    },
+  ];
+
+  for (const g of dragonGames) {
+    await prisma.gameContent.upsert({
+      where: { slug: g.slug },
+      update: g,
+      create: g,
+    });
+    console.log(`✓ Seeded Dragon Game: ${g.name} (${g.slug})`);
+  }
 
   console.log("🎉 Database seeding completed successfully!");
 }

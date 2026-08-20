@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { Navbar } from "@/components/navbar/Navbar";
-import { Search, RefreshCw } from "lucide-react";
+import { Search, RefreshCw, LifeBuoy, ShieldCheck, Tag, Trash2, CheckCircle } from "lucide-react";
 import { CRMTicketTimeline } from "@/components/crm/CRMTicketTimeline";
 import { CRMCustomerSidebar } from "@/components/crm/CRMCustomerSidebar";
 import { CRMTicketComposer } from "@/components/crm/CRMTicketComposer";
@@ -169,7 +169,7 @@ export default function CRMPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans select-none overflow-hidden">
+    <div className="flex min-h-screen bg-[#02050E] text-slate-100 font-sans select-none overflow-hidden selection:bg-cyan-500/30 selection:text-white">
       <Sidebar />
 
       <div className="flex-1 flex flex-col min-w-0">
@@ -177,27 +177,34 @@ export default function CRMPage() {
 
         <main className="flex-1 flex overflow-hidden">
           {/* LEFT INBOX DRAWER (320px) */}
-          <aside className="w-80 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col shrink-0 p-4 space-y-4 shadow-xs">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                Support Queue ({tickets.length})
-              </span>
-              <button onClick={fetchTickets} className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors">
+          <aside className="w-80 bg-[#040A18]/95 backdrop-blur-2xl border-r border-cyan-500/20 flex flex-col shrink-0 p-4 space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <div className="flex items-center gap-2">
+                <LifeBuoy className="size-4 text-cyan-400" />
+                <span className="text-xs font-mono font-bold text-white uppercase tracking-wider">
+                  SUPPORT QUEUE ({tickets.length})
+                </span>
+              </div>
+              <button
+                onClick={fetchTickets}
+                className="p-1.5 rounded-xl bg-[#020614] border border-cyan-500/30 text-cyan-400 hover:text-white transition-colors cursor-pointer"
+                title="Refresh Queue"
+              >
                 <RefreshCw className={cn("size-3.5", loading && "animate-spin")} />
               </button>
             </div>
 
             {/* Filter Bar */}
-            <div className="flex items-center gap-1.5">
-              {["All", "NEW", "IN_PROGRESS", "RESOLVED"].map((st) => (
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+              {["All", "OPEN", "NEW", "RESOLVED"].map((st) => (
                 <button
                   key={st}
                   onClick={() => setStatusFilter(st)}
                   className={cn(
-                    "px-2.5 py-1 rounded-lg text-xs font-medium transition-all",
+                    "px-3 py-1.5 rounded-xl text-xs font-mono font-bold uppercase transition-all cursor-pointer",
                     statusFilter === st
-                      ? "bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-semibold shadow-xs"
-                      : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800"
+                      ? "bg-cyan-500 text-black shadow-lg shadow-cyan-500/30"
+                      : "bg-[#020614] border border-cyan-500/20 text-slate-400 hover:text-white"
                   )}
                 >
                   {st}
@@ -206,65 +213,79 @@ export default function CRMPage() {
             </div>
 
             {/* Ticket List */}
-            <div className="flex-1 overflow-y-auto space-y-2 pr-1">
-              {tickets.map((t) => {
-                const isSelected = selectedTicket?.ticketId === t.ticketId;
-                return (
-                  <button
-                    key={t.id}
-                    onClick={() => setSelectedTicket(t)}
-                    className={cn(
-                      "w-full text-left p-3.5 rounded-xl border transition-all space-y-1.5",
-                      isSelected
-                        ? "bg-slate-900 dark:bg-slate-100 border-slate-900 dark:border-slate-100 text-white dark:text-slate-900 shadow-xs"
-                        : "bg-slate-50/70 dark:bg-slate-800/40 border-slate-200/80 dark:border-slate-700/80 text-slate-700 dark:text-slate-300 hover:bg-slate-100/80 dark:hover:bg-slate-800"
-                    )}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className={cn("text-xs font-mono font-bold", isSelected ? "text-white dark:text-slate-900" : "text-slate-900 dark:text-slate-100")}>{t.ticketId}</span>
-                      <span className={cn(
-                        "text-[10px] font-mono uppercase px-2 py-0.5 rounded-full border",
+            <div className="flex-1 overflow-y-auto space-y-2 pr-1 scrollbar-thin">
+              {tickets.length === 0 ? (
+                <div className="text-center py-12 text-xs font-mono text-slate-500">
+                  No tickets found.
+                </div>
+              ) : (
+                tickets.map((t) => {
+                  const isSelected = selectedTicket?.ticketId === t.ticketId;
+                  return (
+                    <button
+                      key={t.id}
+                      onClick={() => setSelectedTicket(t)}
+                      className={cn(
+                        "w-full text-left p-4 rounded-2xl border transition-all space-y-2 cursor-pointer relative overflow-hidden",
                         isSelected
-                          ? "bg-emerald-800 dark:bg-emerald-200 text-emerald-100 dark:text-emerald-900 border-emerald-700 dark:border-emerald-300"
-                          : "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800"
-                      )}>
-                        {t.status}
-                      </span>
-                    </div>
-                    <div className={cn("text-xs font-semibold truncate", isSelected ? "text-white dark:text-slate-900" : "text-slate-900 dark:text-slate-100")}>{t.subject}</div>
-                    <div className={cn("flex items-center justify-between text-[11px]", isSelected ? "text-slate-300 dark:text-slate-600" : "text-slate-500 dark:text-slate-400")}>
-                      <span>{t.customerName}</span>
-                      <span>{new Date(t.createdAt).toLocaleDateString()}</span>
-                    </div>
-                  </button>
-                );
-              })}
+                          ? "bg-gradient-to-r from-blue-600/30 via-cyan-500/20 to-blue-500/30 border-cyan-400 text-white shadow-[0_0_20px_rgba(0,240,255,0.25)]"
+                          : "bg-[#020614]/80 border-white/10 hover:border-cyan-500/30 text-slate-300"
+                      )}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className={cn("text-xs font-mono font-black tracking-wider", isSelected ? "text-cyan-300" : "text-white")}>
+                          {t.ticketId}
+                        </span>
+                        <span className={cn(
+                          "text-[9px] font-mono font-bold uppercase px-2 py-0.5 rounded-full border",
+                          t.status === "RESOLVED" || t.status === "CLOSED"
+                            ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
+                            : "bg-cyan-500/20 text-cyan-300 border-cyan-400/40"
+                        )}>
+                          {t.status || "OPEN"}
+                        </span>
+                      </div>
+                      <div className="text-xs font-heading font-bold uppercase truncate text-white">
+                        {t.subject}
+                      </div>
+                      <div className="flex items-center justify-between text-[10px] font-mono text-slate-400">
+                        <span className="truncate">{t.customerName}</span>
+                        <span>{new Date(t.createdAt).toLocaleDateString()}</span>
+                      </div>
+                    </button>
+                  );
+                })
+              )}
             </div>
           </aside>
 
           {/* MAIN TICKET WORKSPACE & CUSTOMER DETAILS PANEL */}
-          <section className="flex-1 flex min-w-0 bg-slate-50 dark:bg-slate-950 overflow-hidden">
+          <section className="flex-1 flex min-w-0 bg-[#02050E] overflow-hidden">
             {selectedTicket ? (
               <div className="flex-1 flex overflow-hidden">
                 {/* Center Conversation Stream */}
-                <div className="flex-1 overflow-y-auto p-8 space-y-6">
-                  {/* Ticket Banner */}
-                  <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 space-y-2 shadow-xs">
+                <div className="flex-1 overflow-y-auto p-6 lg:p-8 space-y-6 scrollbar-thin">
+                  {/* Ticket Banner Header */}
+                  <div className="bg-[#040A18]/90 backdrop-blur-2xl border border-cyan-500/30 rounded-3xl p-6 space-y-3 shadow-2xl relative overflow-hidden">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-semibold uppercase bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-full text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-mono">
-                        {selectedTicket.category}
+                      <span className="text-[10px] font-mono font-bold uppercase bg-cyan-500/20 text-cyan-300 px-3 py-1 rounded-full border border-cyan-400/40">
+                        {selectedTicket.category || "Technical Support"}
                       </span>
-                      <span className="text-xs font-semibold uppercase bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 px-2.5 py-1 rounded-full border border-rose-200 dark:border-rose-800 font-mono">
-                        {selectedTicket.priority} Priority
+                      <span className="text-[10px] font-mono font-bold uppercase bg-blue-600/20 text-blue-300 px-3 py-1 rounded-full border border-blue-400/40">
+                        {selectedTicket.priority || "NORMAL"} PRIORITY
                       </span>
                     </div>
-                    <h1 className="text-2xl font-extrabold text-slate-900 dark:text-slate-100">{selectedTicket.subject}</h1>
-                    <div className="text-xs text-slate-500 dark:text-slate-400 font-mono">
-                      Customer: {selectedTicket.customerName} ({selectedTicket.customerEmail}) • Ticket ID: {selectedTicket.ticketId}
+                    <h1 className="text-2xl sm:text-3xl font-black uppercase text-white font-heading tracking-tight">
+                      {selectedTicket.subject}
+                    </h1>
+                    <div className="text-xs text-slate-400 font-mono flex flex-wrap items-center gap-3">
+                      <span>Customer: <strong className="text-white">{selectedTicket.customerName}</strong> ({selectedTicket.customerEmail})</span>
+                      <span>•</span>
+                      <span>Ticket ID: <strong className="text-cyan-400">{selectedTicket.ticketId}</strong></span>
                     </div>
                   </div>
 
-                  {/* Timeline */}
+                  {/* Timeline Stream */}
                   <CRMTicketTimeline ticket={selectedTicket} />
 
                   {/* Response Composer */}
@@ -277,7 +298,7 @@ export default function CRMPage() {
                 </div>
 
                 {/* Right Context Inspector Panel (320px) */}
-                <div className="w-80 border-l border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/50 p-6 overflow-y-auto shrink-0 hidden xl:block">
+                <div className="w-80 border-l border-cyan-500/20 bg-[#020614]/90 p-6 overflow-y-auto shrink-0 hidden xl:block scrollbar-thin">
                   <CRMCustomerSidebar
                     ticket={selectedTicket}
                     onStatusChange={handleStatusChange}
@@ -286,8 +307,9 @@ export default function CRMPage() {
                 </div>
               </div>
             ) : (
-              <div className="flex-1 flex items-center justify-center text-slate-400 dark:text-slate-500 text-sm font-sans">
-                Select a ticket from the left queue to view details and compose replies.
+              <div className="flex-1 flex flex-col items-center justify-center text-slate-500 text-xs font-mono space-y-3">
+                <LifeBuoy className="size-10 text-cyan-400/40" />
+                <span>Select a ticket from the left queue to view conversation and dispatch replies.</span>
               </div>
             )}
           </section>

@@ -190,7 +190,7 @@ export async function GET() {
       ),
       fetchDatasetMeta(
         "GameContent",
-        "AAA Game titles, platforms, patch notes & DLC metadata",
+        "3D & 2D Game titles, platforms, patch notes & DLC metadata",
         "PERMANENT",
         "LEVEL_2",
         true,

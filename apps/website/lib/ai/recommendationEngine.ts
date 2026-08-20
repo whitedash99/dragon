@@ -44,7 +44,7 @@ export class RecommendationEngineService {
       {
         id: "top-rated",
         title: "Top Rated Universes",
-        subtitle: "Critically acclaimed AAA worlds rated 95%+ by players",
+        subtitle: "Original worlds rated 95%+ by players",
         badge: "AI Selected",
         gameSlugs: ["embers-of-valyria", "neon-drift"],
       },

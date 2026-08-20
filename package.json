@@ -15,8 +15,13 @@
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
     "verify": "pnpm run prisma:generate && pnpm run typecheck && pnpm run lint && pnpm run build"
   },
+  "dependencies": {
+    "@prisma/client": "6.19.3"
+  },
   "devDependencies": {
+    "next": "15.1.6",
     "prettier": "^3.5.1",
+    "prisma": "6.19.3",
     "turbo": "^2.4.0",
     "typescript": "^5.7.3"
   }

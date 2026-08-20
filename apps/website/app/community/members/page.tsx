@@ -9,7 +9,6 @@ import {
   ShieldCheck, 
   Sparkles, 
   Flame, 
-  Award, 
   Star 
 } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";

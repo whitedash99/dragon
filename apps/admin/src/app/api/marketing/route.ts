@@ -95,8 +95,8 @@ export async function POST(req: NextRequest) {
 
     // 2. AI Copywriting Generator with Gemini 2.5
     if (action === "ai_copywriting" && topic) {
-      const prompt = `Generate compelling AAA gaming marketing copy for: "${topic}". Include:\n1. Catchy Headline\n2. Call to Action (CTA)\n3. Email Subject Line\n4. 2-sentence Ad Copy for Social Media.`;
-      const systemInstruction = `You are the Lead Marketing & Copywriting AI for Dragon Studios AAA Game Franchise. Target Audience: ${targetAudience || "Gamers"}.`;
+      const prompt = `Generate compelling 3D & 2D gaming marketing copy for: "${topic}". Include:\n1. Catchy Headline\n2. Call to Action (CTA)\n3. Email Subject Line\n4. 2-sentence Ad Copy for Social Media.`;
+      const systemInstruction = `You are the Lead Marketing & Copywriting AI for Dragon Studios Game Franchise. Target Audience: ${targetAudience || "Gamers"}.`;
 
       const generatedCopy = await generateGeminiText({ prompt, systemInstruction });
 

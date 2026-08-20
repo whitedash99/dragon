@@ -11,12 +11,19 @@ interface Asset {
 }
 
 interface DigitalAssetsPanelProps {
-  onInsertAsset: (assetUrl: string) => void;
+  onInsertAsset?: (assetUrl: string) => void;
+  onSelectAsset?: (assetUrl: string) => void;
 }
 
-export function DigitalAssetsPanel({ onInsertAsset }: DigitalAssetsPanelProps) {
+export function DigitalAssetsPanel({ onInsertAsset, onSelectAsset }: DigitalAssetsPanelProps) {
   const [query, setQuery] = useState("");
   const [selectedAsset, setSelectedAsset] = useState<string | null>(null);
+
+  const handleChoose = (url: string) => {
+    setSelectedAsset(url);
+    if (onSelectAsset) onSelectAsset(url);
+    if (onInsertAsset) onInsertAsset(url);
+  };
 
   const assets: Asset[] = [
     { id: "1", name: "Dragon Hero Cyberpunk Banner", type: "image", url: "/images/hero-banner.jpg", size: "2.4 MB" },
@@ -82,10 +89,10 @@ export function DigitalAssetsPanel({ onInsertAsset }: DigitalAssetsPanelProps) {
 
       {selectedAsset && (
         <button
-          onClick={() => onInsertAsset(selectedAsset)}
-          className="w-full py-2 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-purple-950/40"
+          onClick={() => handleChoose(selectedAsset)}
+          className="w-full py-2 bg-[#00f0ff] hover:bg-cyan-300 text-black font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-cyan-500/30"
         >
-          <Plus className="w-4 h-4" /> Insert Media Asset
+          <Plus className="w-3.5 h-3.5" /> Insert Selected Asset
         </button>
       )}
     </div>

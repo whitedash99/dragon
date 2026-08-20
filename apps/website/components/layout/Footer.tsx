@@ -4,33 +4,22 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { 
   ArrowUp, 
-  Twitter, 
-  Youtube, 
-  Instagram, 
-  MessageSquare, 
   Send, 
   Check, 
-  Globe,
   Zap,
-  ShieldCheck,
-  MousePointer,
-  Sliders,
-  X as XIcon
+  Instagram,
+  Youtube,
+  MessageSquare
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { OFFICIAL_SOCIALS } from "@/lib/site";
-import { DragonLogo } from "@/components/ui/dragon-logo";
+import { DragonLogoIcon } from "@/components/ui/dragon-logo";
+import { WhatsAppIcon, ThreadsIcon, XIcon } from "@/components/ui/social-icons";
 
 export default function Footer() {
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
   const [newsletterLoading, setNewsletterLoading] = useState(false);
   const [newsletterError, setNewsletterError] = useState<string | null>(null);
-
-  // Cursor Settings Modal State
-  const [showCursorSettings, setShowCursorSettings] = useState(false);
-  const [cursorEnabled, setCursorEnabled] = useState(true);
-  const [glowEnabled, setGlowEnabled] = useState(true);
   const [year, setYear] = useState<number>(2026);
 
   useEffect(() => {
@@ -38,28 +27,11 @@ export default function Footer() {
     Promise.resolve().then(() => {
       if (!isMounted) return;
       setYear(new Date().getFullYear());
-      const userCursorDisabled = localStorage.getItem("dragon_cursor_enabled") === "false";
-      const userGlowDisabled = localStorage.getItem("dragon_cursor_glow") === "false";
-      setCursorEnabled(!userCursorDisabled);
-      setGlowEnabled(!userGlowDisabled);
     });
-    return () => { isMounted = false; };
+    return () => {
+      isMounted = false;
+    };
   }, []);
-
-  const toggleCursorSetting = (key: "enabled" | "glow", val: boolean) => {
-    if (key === "enabled") {
-      setCursorEnabled(val);
-      localStorage.setItem("dragon_cursor_enabled", val ? "true" : "false");
-      if (val) {
-        document.documentElement.classList.add("dragon-cursor-active");
-      } else {
-        document.documentElement.classList.remove("dragon-cursor-active");
-      }
-    } else if (key === "glow") {
-      setGlowEnabled(val);
-      localStorage.setItem("dragon_cursor_glow", val ? "true" : "false");
-    }
-  };
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -94,26 +66,26 @@ export default function Footer() {
   };
 
   return (
-    <footer className="relative bg-[#02050E] text-slate-100 border-t border-blue-500/20 pt-24 pb-16 lg:pt-32 lg:pb-20 overflow-hidden">
-      {/* Background Ambient Lighting */}
-      <div 
-        aria-hidden="true" 
-        className="pointer-events-none absolute left-1/2 top-0 -translate-x-1/2 h-[400px] w-[1000px] rounded-full bg-gradient-to-b from-blue-600/10 via-cyan-500/5 to-transparent blur-[200px]" 
+    <footer className="relative bg-[#01040D] text-slate-200 border-t border-cyan-500/20 pt-16 pb-24 sm:pt-20 sm:pb-16 lg:pt-24 lg:pb-16 overflow-hidden font-sans select-none">
+      {/* Background Subtle Ambient Glow */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute left-1/2 top-0 -translate-x-1/2 h-[350px] w-[900px] rounded-full bg-gradient-to-b from-blue-600/10 via-cyan-500/5 to-transparent blur-[160px]"
       />
 
-      {/* Top Electric Blue Separator Accent */}
-      <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_20px_#38bdf8]" />
+      {/* Top Electric Cyan Accent Line */}
+      <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_20px_#00f0ff]" />
 
-      <div className="container-site relative z-10 space-y-20">
-        {/* ═══ 1. Studio Newsletter Dispatch Banner ═══ */}
-        <div className="rounded-3xl bg-[#0B132B]/90 p-8 sm:p-12 border border-blue-500/30 overflow-hidden relative shadow-2xl backdrop-blur-xl">
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 space-y-16 relative z-10">
+        {/* ═══ 1. Spacious Newsletter Dispatch Banner ═══ */}
+        <div className="rounded-3xl bg-[#03091D]/90 p-6 sm:p-10 lg:p-12 border border-cyan-500/30 overflow-hidden relative shadow-2xl backdrop-blur-2xl">
           <div className="grid gap-8 lg:grid-cols-12 items-center">
-            <div className="lg:col-span-7 space-y-3">
-              <div className="inline-flex items-center gap-2 rounded-full border border-blue-500/30 bg-blue-600/15 px-3.5 py-1 text-xs font-mono font-bold uppercase tracking-widest text-cyan-400">
+            <div className="lg:col-span-7 space-y-2.5">
+              <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-blue-600/15 px-3.5 py-1 text-[11px] font-mono font-bold uppercase tracking-widest text-cyan-400">
                 <Zap className="size-3.5 text-cyan-400 animate-pulse" />
                 <span>Dragon Dispatch Network</span>
               </div>
-              <h2 className="text-2xl font-black uppercase text-white tracking-tight sm:text-3xl lg:text-4xl">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black uppercase text-white tracking-tight font-heading">
                 Stay Connected to the Realm
               </h2>
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-xl font-sans">
@@ -125,22 +97,26 @@ export default function Footer() {
               {subscribed ? (
                 <div className="flex items-center gap-3 rounded-2xl bg-emerald-500/15 p-4 border border-emerald-500/30 text-emerald-300 font-mono text-xs font-bold">
                   <Check className="size-5 text-emerald-400" />
-                  <span>Subscribed! Saved to Dragon Studios dispatch database.</span>
+                  <span>SUBSCRIPTION VERIFIED • WELCOME WARRIOR</span>
                 </div>
               ) : (
-                <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row items-center gap-3">
+                <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3">
                   <input
                     type="email"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter your email address..."
-                    className="w-full rounded-xl bg-[#060B18] px-4 py-3.5 text-xs text-white placeholder:text-slate-500 border border-slate-700 focus:outline-none focus:border-blue-500 transition-colors font-mono shadow-inner"
+                    placeholder="Enter warrior email..."
+                    className="flex-1 rounded-2xl bg-[#01040D] border border-cyan-500/30 px-4 py-3.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 font-mono"
                   />
-                  <Button type="submit" disabled={newsletterLoading} variant="default" size="lg" className="rounded-xl px-6 shrink-0 w-full sm:w-auto text-xs font-black">
-                    <span>{newsletterLoading ? "SENDING..." : "SUBSCRIBE"}</span>
+                  <button
+                    type="submit"
+                    disabled={newsletterLoading}
+                    className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-500 text-black font-mono font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/25 hover:scale-105 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+                  >
+                    <span>{newsletterLoading ? "CONNECTING..." : "DISPATCH"}</span>
                     <Send className="size-3.5" />
-                  </Button>
+                  </button>
                 </form>
               )}
               {newsletterError && (
@@ -150,193 +126,162 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* ═══ 2. 7-Column Enterprise Grid ═══ */}
-        <div className="grid gap-8 grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 pt-4 pb-12 border-b border-slate-800">
-          {/* Column 1: Dragon Studios Brand */}
+        {/* ═══ 2. Clean, Ultra-Spacious Minimal Sitemap with Official Social Channels (Symbol + Name) ═══ */}
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 lg:gap-12 pt-4 border-t border-white/10">
+          {/* Brand Column */}
           <div className="col-span-2 space-y-4">
-            <Link href="/" className="group inline-flex items-center gap-3">
-              <DragonLogo textVariant="studios" subtitle="ENTERPRISE AAA GAME STUDIO" size="md" />
-            </Link>
+            <div className="flex items-center gap-3">
+              <DragonLogoIcon size="md" className="shadow-[0_0_20px_rgba(0,240,255,0.4)] border-cyan-400/50" />
+              <span className="font-heading font-black tracking-widest text-white text-lg uppercase">
+                DRAGON STUDIOS
+              </span>
+            </div>
 
-            <p className="text-xs text-slate-400 leading-relaxed max-w-xs font-sans">
+            <p className="text-xs text-slate-400 max-w-sm font-sans leading-relaxed">
               Premier game development studio crafting next-generation interactive worlds powered by Dragon Engine technology.
             </p>
-
-            {/* Official Social Channels */}
-            <div className="flex items-center gap-2 pt-2">
-              {[
-                { href: OFFICIAL_SOCIALS.youtube.href, icon: Youtube, label: "YouTube" },
-                { href: OFFICIAL_SOCIALS.instagram.href, icon: Instagram, label: "Instagram" },
-                { href: OFFICIAL_SOCIALS.x.href, icon: Twitter, label: "X" },
-                { href: OFFICIAL_SOCIALS.reddit.href, icon: MessageSquare, label: "Reddit" },
-              ].map((soc) => (
-                <a
-                  key={soc.label}
-                  href={soc.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={soc.label}
-                  className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600/10 border border-blue-500/20 text-slate-300 hover:text-white hover:border-cyan-400 hover:bg-blue-600/20 transition-colors"
-                >
-                  <soc.icon className="size-4" />
-                </a>
-              ))}
-            </div>
           </div>
 
-          {/* Column 2: Games */}
+          {/* Games Column */}
           <div className="space-y-3">
             <h3 className="text-xs font-mono font-bold uppercase tracking-[0.16em] text-white">
               GAMES
             </h3>
-            <ul className="flex flex-col gap-2 text-xs text-slate-400 font-sans">
-              <li><Link href="/games/embers-of-valyria" className="hover:text-cyan-300 transition-colors">Embers of Valyria</Link></li>
-              <li><Link href="/games/parking-nightmare" className="hover:text-cyan-300 transition-colors">Parking Nightmare</Link></li>
-              <li><Link href="/games/neon-drift" className="hover:text-cyan-300 transition-colors">Neon Drift</Link></li>
-              <li><Link href="/games/blacksite-zero" className="hover:text-cyan-300 transition-colors">Blacksite Zero</Link></li>
-              <li><Link href="/games" className="text-cyan-400 font-bold hover:underline transition-colors">All Titles →</Link></li>
+            <ul className="flex flex-col gap-2.5 text-xs text-slate-400 font-sans">
+              <li><Link href="/games/dragon-slayer-3d" className="hover:text-cyan-300 transition-colors">Dragon Slayer 3D</Link></li>
+              <li><Link href="/games/cyber-drift-3d" className="hover:text-cyan-300 transition-colors">Cyber Drift 3D</Link></li>
+              <li><Link href="/games/shadow-ninja-2d" className="hover:text-cyan-300 transition-colors">Shadow Ninja 2D</Link></li>
+              <li><Link href="/games" className="hover:text-cyan-300 transition-colors text-cyan-400 font-bold">All Franchises →</Link></li>
             </ul>
           </div>
 
-          {/* Column 3: Community */}
+          {/* Official Channels Column (Clean: Symbol + Handle Name) */}
           <div className="space-y-3">
             <h3 className="text-xs font-mono font-bold uppercase tracking-[0.16em] text-white">
-              COMMUNITY
+              OFFICIAL CHANNELS
             </h3>
-            <ul className="flex flex-col gap-2 text-xs text-slate-400 font-sans">
-              <li><a href={OFFICIAL_SOCIALS.youtube.href} target="_blank" rel="noopener noreferrer" className="hover:text-cyan-300 transition-colors">YouTube Channel</a></li>
-              <li><a href={OFFICIAL_SOCIALS.instagram.href} target="_blank" rel="noopener noreferrer" className="hover:text-cyan-300 transition-colors">Instagram</a></li>
-              <li><a href={OFFICIAL_SOCIALS.x.href} target="_blank" rel="noopener noreferrer" className="hover:text-cyan-300 transition-colors">X (Twitter)</a></li>
-              <li><a href={OFFICIAL_SOCIALS.reddit.href} target="_blank" rel="noopener noreferrer" className="hover:text-cyan-300 transition-colors">Reddit Hub</a></li>
+            <ul className="flex flex-col gap-2 text-xs font-sans">
+              <li>
+                <a
+                  href={OFFICIAL_SOCIALS.whatsapp.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-center gap-2.5 text-slate-400 hover:text-cyan-300 transition-colors"
+                >
+                  <div className="size-6 rounded-lg bg-[#040D24] border border-cyan-500/20 flex items-center justify-center text-emerald-400 group-hover:border-emerald-400 group-hover:scale-105 transition-all">
+                    <WhatsAppIcon className="size-3.5" />
+                  </div>
+                  <span>WhatsApp Channel</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href={OFFICIAL_SOCIALS.threads.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-center gap-2.5 text-slate-400 hover:text-cyan-300 transition-colors"
+                >
+                  <div className="size-6 rounded-lg bg-[#040D24] border border-cyan-500/20 flex items-center justify-center text-cyan-400 group-hover:border-cyan-400 group-hover:scale-105 transition-all">
+                    <ThreadsIcon className="size-3.5" />
+                  </div>
+                  <span>Threads Feed</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href={OFFICIAL_SOCIALS.instagram.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-center gap-2.5 text-slate-400 hover:text-cyan-300 transition-colors"
+                >
+                  <div className="size-6 rounded-lg bg-[#040D24] border border-cyan-500/20 flex items-center justify-center text-pink-400 group-hover:border-pink-400 group-hover:scale-105 transition-all">
+                    <Instagram className="size-3.5" />
+                  </div>
+                  <span>Instagram</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href={OFFICIAL_SOCIALS.youtube.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-center gap-2.5 text-slate-400 hover:text-cyan-300 transition-colors"
+                >
+                  <div className="size-6 rounded-lg bg-[#040D24] border border-cyan-500/20 flex items-center justify-center text-red-400 group-hover:border-red-400 group-hover:scale-105 transition-all">
+                    <Youtube className="size-3.5" />
+                  </div>
+                  <span>YouTube Channel</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href={OFFICIAL_SOCIALS.x.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-center gap-2.5 text-slate-400 hover:text-cyan-300 transition-colors"
+                >
+                  <div className="size-6 rounded-lg bg-[#040D24] border border-cyan-500/20 flex items-center justify-center text-slate-300 group-hover:border-cyan-400 group-hover:scale-105 transition-all">
+                    <XIcon className="size-3.5" />
+                  </div>
+                  <span>X (Twitter)</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href={OFFICIAL_SOCIALS.reddit.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-center gap-2.5 text-slate-400 hover:text-cyan-300 transition-colors"
+                >
+                  <div className="size-6 rounded-lg bg-[#040D24] border border-cyan-500/20 flex items-center justify-center text-orange-400 group-hover:border-orange-400 group-hover:scale-105 transition-all">
+                    <MessageSquare className="size-3.5" />
+                  </div>
+                  <span>Reddit Hub</span>
+                </a>
+              </li>
             </ul>
           </div>
 
-          {/* Column 4: Developers */}
+          {/* Company Column */}
           <div className="space-y-3">
             <h3 className="text-xs font-mono font-bold uppercase tracking-[0.16em] text-white">
-              DEVELOPERS
+              STUDIO
             </h3>
-            <ul className="flex flex-col gap-2 text-xs text-slate-400 font-sans">
-              <li><Link href="/studio#tech" className="hover:text-cyan-300 transition-colors">Dragon Engine</Link></li>
-              <li><Link href="/press" className="hover:text-cyan-300 transition-colors">Press Documentation</Link></li>
-              <li><Link href="/news" className="hover:text-cyan-300 transition-colors">Developer Dispatches</Link></li>
-            </ul>
-          </div>
-
-          {/* Column 5: Company */}
-          <div className="space-y-3">
-            <h3 className="text-xs font-mono font-bold uppercase tracking-[0.16em] text-white">
-              COMPANY
-            </h3>
-            <ul className="flex flex-col gap-2 text-xs text-slate-400 font-sans">
-              <li><Link href="/studio" className="hover:text-cyan-300 transition-colors">About Studio</Link></li>
-              <li><Link href="/team" className="hover:text-cyan-300 transition-colors">Leadership</Link></li>
-              <li><Link href="/careers" className="hover:text-cyan-300 transition-colors">Careers</Link></li>
-              <li><Link href="/press" className="hover:text-cyan-300 transition-colors">Media Kit</Link></li>
-            </ul>
-          </div>
-
-          {/* Column 6: Support & Legal */}
-          <div className="space-y-3">
-            <h3 className="text-xs font-mono font-bold uppercase tracking-[0.16em] text-white">
-              SUPPORT & LEGAL
-            </h3>
-            <ul className="flex flex-col gap-2 text-xs text-slate-400 font-sans">
-              <li><Link href="/contact" className="hover:text-cyan-300 transition-colors">Contact Support</Link></li>
-              <li><Link href="/privacy" className="hover:text-cyan-300 transition-colors">Privacy Policy</Link></li>
+            <ul className="flex flex-col gap-2.5 text-xs text-slate-400 font-sans">
+              <li><Link href="/studio" className="hover:text-cyan-300 transition-colors font-semibold text-cyan-400">About Me / About Studio</Link></li>
+              <li><Link href="/team" className="hover:text-cyan-300 transition-colors">Leadership & Devs</Link></li>
+              <li><Link href="/privacy" className="hover:text-cyan-300 transition-colors font-semibold text-cyan-400">Privacy Policy</Link></li>
               <li><Link href="/terms" className="hover:text-cyan-300 transition-colors">Terms of Service</Link></li>
-              <li><Link href="/cookies" className="hover:text-cyan-300 transition-colors">Cookie Policy</Link></li>
+              <li><Link href="/careers" className="hover:text-cyan-300 transition-colors">Careers</Link></li>
+              <li><Link href="/press" className="hover:text-cyan-300 transition-colors">Press & Media</Link></li>
+              <li><Link href="/contact" className="hover:text-cyan-300 transition-colors">Contact & Support</Link></li>
             </ul>
           </div>
         </div>
 
-        {/* ═══ 3. Bottom Enterprise Utility Bar ═══ */}
-        <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between text-xs text-slate-400 font-mono">
-          <div className="flex flex-wrap items-center gap-4">
+        {/* ═══ 3. Bottom Clean Minimal Copyright Bar ═══ */}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between text-xs text-slate-400 font-mono pt-6 border-t border-white/10">
+          <div className="flex items-center gap-3 flex-wrap">
             <span>© {year} Dragon Studios Inc. All rights reserved.</span>
-            <span className="hidden sm:inline text-slate-700">•</span>
-            <span className="flex items-center gap-1.5 text-cyan-400 font-bold">
-              <ShieldCheck className="size-4 text-emerald-400" />
-              <span>POSTGRESQL DB CONNECTED</span>
-            </span>
+            <span className="text-slate-600">•</span>
+            <Link href="/studio" className="hover:text-cyan-300 text-slate-300 transition-colors">About Me</Link>
+            <span className="text-slate-600">•</span>
+            <Link href="/privacy" className="hover:text-cyan-300 text-slate-300 transition-colors">Privacy Policy</Link>
+            <span className="text-slate-600">•</span>
+            <Link href="/terms" className="hover:text-cyan-300 text-slate-300 transition-colors">Terms of Service</Link>
           </div>
 
-          <div className="flex items-center gap-4">
-            {/* Cursor Controls Button */}
+          <div>
             <button
-              onClick={() => setShowCursorSettings(!showCursorSettings)}
-              className="flex items-center gap-1.5 rounded-lg border border-slate-700/80 px-3 py-1.5 text-xs hover:border-cyan-400 hover:text-white transition-colors"
-              title="Customize Cursor"
-            >
-              <MousePointer className="size-3.5 text-cyan-400" />
-              <span>CURSOR SETTINGS</span>
-            </button>
-
-            <Button
               onClick={scrollToTop}
-              variant="outline"
-              size="sm"
-              className="rounded-lg gap-1.5 text-xs border-slate-700 hover:border-cyan-400"
+              className="px-3.5 py-1.5 rounded-xl border border-slate-700 hover:border-cyan-400 text-slate-300 hover:text-white font-mono text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer"
             >
               <span>TOP</span>
               <ArrowUp className="size-3.5 text-cyan-400" />
-            </Button>
+            </button>
           </div>
         </div>
       </div>
-
-      {/* Cursor Settings Modal Overlay */}
-      {showCursorSettings && (
-        <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
-          <div className="rounded-3xl bg-[#0B132B] p-8 max-w-md w-full border border-blue-500/30 space-y-6 relative shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
-              <div className="flex items-center gap-2">
-                <Sliders className="size-5 text-cyan-400" />
-                <h3 className="text-lg font-black uppercase text-white font-heading">CURSOR SYSTEM SETTINGS</h3>
-              </div>
-              <button onClick={() => setShowCursorSettings(false)} className="text-slate-400 hover:text-white">
-                <XIcon className="size-5" />
-              </button>
-            </div>
-
-            <div className="space-y-4 font-mono text-xs">
-              <div className="flex items-center justify-between p-4 rounded-xl bg-[#060B18] border border-slate-800">
-                <div>
-                  <span className="font-bold text-white block">Custom Cursor</span>
-                  <span className="text-[10px] text-slate-400">Toggle GPU custom cursor on/off</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => toggleCursorSetting("enabled", !cursorEnabled)}
-                  className={`relative h-6 w-11 rounded-full transition-colors ${cursorEnabled ? "bg-blue-600" : "bg-slate-700"}`}
-                >
-                  <span className={`inline-block h-4 w-4 rounded-full bg-white transition-transform transform ${cursorEnabled ? "translate-x-6" : "translate-x-1"}`} />
-                </button>
-              </div>
-
-              <div className="flex items-center justify-between p-4 rounded-xl bg-[#060B18] border border-slate-800">
-                <div>
-                  <span className="font-bold text-white block">Cursor Glow & Reticle</span>
-                  <span className="text-[10px] text-slate-400">Toggle ambient cursor lighting</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => toggleCursorSetting("glow", !glowEnabled)}
-                  className={`relative h-6 w-11 rounded-full transition-colors ${glowEnabled ? "bg-blue-600" : "bg-slate-700"}`}
-                >
-                  <span className={`inline-block h-4 w-4 rounded-full bg-white transition-transform transform ${glowEnabled ? "translate-x-6" : "translate-x-1"}`} />
-                </button>
-              </div>
-            </div>
-
-            <div className="pt-2">
-              <Button onClick={() => setShowCursorSettings(false)} variant="default" size="sm" className="w-full rounded-xl">
-                SAVE PREFERENCES
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
     </footer>
   );
 }

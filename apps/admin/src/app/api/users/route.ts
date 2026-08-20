@@ -1,10 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
-import { getAuthenticatedUser } from "@/lib/auth/auth";
-import { can, canModifyUser } from "@dragon/auth";
+import { invalidateAllUserSessions } from "@/lib/auth/auth";
+import {
+  requireAdmin,
+  requireOwner,
+  assertNotZeroOwners,
+  recordSecurityAudit,
+} from "@/lib/auth/security";
 
 export async function GET(req: NextRequest) {
   try {
+    const authResult = await requireAdmin();
+    if (!authResult.authorized) {
+      return authResult.response;
+    }
+
     const { searchParams } = new URL(req.url);
     const role = searchParams.get("role");
     const q = searchParams.get("q");
@@ -72,7 +82,7 @@ export async function GET(req: NextRequest) {
     const adminsCount = users.filter(
       (u) => ["FOUNDER", "CO_FOUNDER", "SUPER_ADMIN", "ADMINISTRATOR", "ADMIN", "OWNER"].includes(u.role)
     ).length;
-    const suspendedCount = users.filter((u) => !u.isActive || u.status === "DISABLED" || u.status === "DEACTIVATED").length;
+    const suspendedCount = users.filter((u) => !u.isActive || u.status === "SUSPENDED" || u.status === "DISABLED" || u.status === "DEACTIVATED").length;
 
     const enrichedUsers = filtered.map((u) => {
       const passkeys = passkeysByUserId.get(u.id) || [];
@@ -106,15 +116,12 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const auth = await getAuthenticatedUser();
-    if (!auth) {
-      return NextResponse.json({ success: false, error: "Authentication required." }, { status: 401 });
+    const authResult = await requireOwner();
+    if (!authResult.authorized) {
+      return authResult.response;
     }
 
-    if (!can(auth.user, "users.manage")) {
-      return NextResponse.json({ success: false, error: "Access Denied: Requires users.manage permission." }, { status: 403 });
-    }
-
+    const { user: actor } = authResult.context;
     const body = await req.json();
     const { action, id, name, email, role, department, status, isActive } = body;
 
@@ -125,84 +132,67 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ success: false, error: "User account not found." }, { status: 404 });
       }
 
-      const check = canModifyUser(auth.user.role, targetUser.role, targetUser.isProtected);
-      if (!check.allowed && auth.user.id !== targetUser.id) {
-        return NextResponse.json({ success: false, error: `Security Guard: ${check.reason}` }, { status: 403 });
-      }
+      await invalidateAllUserSessions(id);
 
-      await prisma.session.deleteMany({ where: { userId: id } });
-
-      await prisma.auditLog.create({
-        data: {
-          userId: auth.user.id,
-          userEmail: auth.user.email,
-          action: "REVOKE_ALL_SESSIONS",
-          resource: "USERS_IAM",
-          details: `All active sessions revoked for ${targetUser.email} by ${auth.user.email}`,
-        },
-      }).catch((e: unknown) => console.warn("Audit log warning:", e));
+      await recordSecurityAudit({
+        userId: actor.id,
+        userEmail: actor.email,
+        action: "REVOKE_ALL_SESSIONS",
+        resource: "USERS_IAM",
+        details: `All active sessions revoked for ${targetUser.email} by ${actor.email}`,
+        severity: "MEDIUM",
+      });
 
       return NextResponse.json({ success: true, message: `All active sessions revoked for ${targetUser.email}.` });
     }
 
-    if (!email) {
-      return NextResponse.json({ success: false, error: "Email is required" }, { status: 400 });
+    if (!id && !email) {
+      return NextResponse.json({ success: false, error: "User ID or Email is required." }, { status: 400 });
     }
 
-    const cleanEmail = email.trim().toLowerCase();
-
-    // Verify immutability rules if editing existing user
+    // Zero-Owner Invariant Check
     if (id) {
       const targetUser = await prisma.user.findUnique({ where: { id } });
-      if (targetUser) {
-        const check = canModifyUser(auth.user.role, targetUser.role, targetUser.isProtected);
-        if (!check.allowed) {
-          return NextResponse.json({ success: false, error: `Security Guard: ${check.reason}` }, { status: 403 });
-        }
+      if (!targetUser) {
+        return NextResponse.json({ success: false, error: "User not found." }, { status: 404 });
       }
+
+      const zeroOwnerCheck = await assertNotZeroOwners(id, role, status);
+      if (!zeroOwnerCheck.safe) {
+        return NextResponse.json({ success: false, error: zeroOwnerCheck.error }, { status: 403 });
+      }
+
+      const updatedUser = await prisma.user.update({
+        where: { id },
+        data: {
+          name: name !== undefined ? name : undefined,
+          role: role !== undefined ? role : undefined,
+          department: department !== undefined ? department : undefined,
+          status: status !== undefined ? status : undefined,
+          isActive: isActive !== undefined ? isActive : undefined,
+          isProtected: role === "OWNER" || role === "FOUNDER" ? true : undefined,
+          updatedAt: new Date(),
+        },
+      });
+
+      // If status or role changed, invalidate user sessions
+      if (status !== undefined || role !== undefined || isActive === false) {
+        await invalidateAllUserSessions(id);
+      }
+
+      await recordSecurityAudit({
+        userId: actor.id,
+        userEmail: actor.email,
+        action: "UPDATE_USER_IAM",
+        resource: "USERS_IAM",
+        details: `Modified administrator: ${updatedUser.email} -> Role: ${updatedUser.role}, Status: ${updatedUser.status}`,
+        severity: "HIGH",
+      });
+
+      return NextResponse.json({ success: true, user: updatedUser });
     }
 
-    const user = await prisma.user.upsert({
-      where: { email: cleanEmail },
-      update: {
-        name: name !== undefined ? name : undefined,
-        role: role !== undefined ? role : undefined,
-        department: department !== undefined ? department : undefined,
-        status: status !== undefined ? status : undefined,
-        isActive: isActive !== undefined ? isActive : undefined,
-        updatedAt: new Date(),
-      },
-      create: {
-        name: name || cleanEmail.split("@")[0],
-        email: cleanEmail,
-        password: "argon2id_hashed_default_pass",
-        role: role || "USER",
-        department: department || "General",
-        status: status || "ACTIVE",
-        provider: "credentials",
-        isActive: isActive ?? true,
-        isDeleted: false,
-        profile: {
-          create: {
-            country: "United States",
-            language: "en-US",
-            theme: "dark",
-          },
-        },
-      },
-    });
-
-    await prisma.auditLog.create({
-      data: {
-        userId: auth.user.id,
-        userEmail: auth.user.email,
-        action: id ? "UPDATE_USER" : "PROVISION_USER",
-        resource: "USERS_IAM",
-        details: `Modified User: ${user.email} -> Role: ${user.role}, Status: ${user.status}`,
-      },
-    }).catch((e: unknown) => console.warn("Audit log warning:", e));
-
-    return NextResponse.json({ success: true, user });
+    return NextResponse.json({ success: false, error: "Direct provisioning without invitation is disabled. Use Owner Invitation." }, { status: 403 });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json({ success: false, error: message }, { status: 500 });
@@ -211,32 +201,29 @@ export async function POST(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   try {
-    const auth = await getAuthenticatedUser();
-    if (!auth) {
-      return NextResponse.json({ success: false, error: "Authentication required." }, { status: 401 });
+    const authResult = await requireOwner();
+    if (!authResult.authorized) {
+      return authResult.response;
     }
 
-    if (!can(auth.user, "users.manage")) {
-      return NextResponse.json({ success: false, error: "Access Denied: Requires users.manage permission." }, { status: 403 });
-    }
-
+    const { user: actor } = authResult.context;
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
-    const action = searchParams.get("action") || "disable";
+    const action = searchParams.get("action") || "suspend";
 
     if (!id) {
       return NextResponse.json({ success: false, error: "User ID is required" }, { status: 400 });
     }
 
-    const user = await prisma.user.findUnique({ where: { id } });
-    if (!user) {
+    const targetUser = await prisma.user.findUnique({ where: { id } });
+    if (!targetUser) {
       return NextResponse.json({ success: false, error: "User not found." }, { status: 404 });
     }
 
-    // Verify immutability rules before disabling or deleting
-    const check = canModifyUser(auth.user.role, user.role, user.isProtected);
-    if (!check.allowed) {
-      return NextResponse.json({ success: false, error: `Security Guard: ${check.reason}` }, { status: 403 });
+    // Zero-Owner Invariant Check
+    const zeroOwnerCheck = await assertNotZeroOwners(id, undefined, "SUSPENDED");
+    if (!zeroOwnerCheck.safe) {
+      return NextResponse.json({ success: false, error: zeroOwnerCheck.error }, { status: 403 });
     }
 
     if (action === "delete") {
@@ -244,26 +231,25 @@ export async function DELETE(req: NextRequest) {
         where: { id },
         data: { isDeleted: true, status: "DELETED", isActive: false },
       });
-      await prisma.session.deleteMany({ where: { userId: id } });
+      await invalidateAllUserSessions(id);
     } else {
       await prisma.user.update({
         where: { id },
-        data: { status: "DISABLED", isActive: false },
+        data: { status: "SUSPENDED", isActive: false },
       });
-      await prisma.session.deleteMany({ where: { userId: id } });
+      await invalidateAllUserSessions(id);
     }
 
-    await prisma.auditLog.create({
-      data: {
-        userId: auth.user.id,
-        userEmail: auth.user.email,
-        action: action === "delete" ? "DELETE_USER" : "DISABLE_USER",
-        resource: "USERS_IAM",
-        details: `User ${action}d: ${user.email} by ${auth.user.email}`,
-      },
-    }).catch((e: unknown) => console.warn("Audit log warning:", e));
+    await recordSecurityAudit({
+      userId: actor.id,
+      userEmail: actor.email,
+      action: action === "delete" ? "DELETE_ADMIN_USER" : "SUSPEND_ADMIN_USER",
+      resource: "USERS_IAM",
+      details: `Administrator account ${action}ed: ${targetUser.email} by ${actor.email}`,
+      severity: "CRITICAL",
+    });
 
-    return NextResponse.json({ success: true, message: `User account ${action}d.` });
+    return NextResponse.json({ success: true, message: `Administrator account ${action}ed successfully.` });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json({ success: false, error: message }, { status: 500 });

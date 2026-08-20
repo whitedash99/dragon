@@ -8,6 +8,7 @@ interface DragonLogoProps {
   iconClassName?: string;
   size?: "xs" | "sm" | "md" | "lg" | "xl";
   showText?: boolean;
+  showIcon?: boolean;
   textVariant?: "gaming" | "studios" | "os";
   subtitle?: string;
   animated?: boolean;
@@ -19,20 +20,21 @@ export function DragonLogoIcon({
 }: {
   className?: string;
   size?: "xs" | "sm" | "md" | "lg" | "xl";
+  animated?: boolean;
 }) {
   const sizeMap = {
-    xs: "size-6",
-    sm: "size-9",
-    md: "size-11",
-    lg: "size-14",
-    xl: "size-20",
+    xs: "w-6 h-6",
+    sm: "w-8 h-8",
+    md: "w-11 h-11",
+    lg: "w-16 h-16",
+    xl: "w-24 h-24",
   };
 
   return (
     <div
       className={cn(
         "relative rounded-2xl bg-gradient-to-b from-[#0a1838] via-[#050e24] to-[#02050f] border border-cyan-400/50 p-1.5 flex items-center justify-center shrink-0 shadow-[0_0_20px_rgba(0,240,255,0.4)] transition-all duration-300 group-hover:border-cyan-300 group-hover:shadow-[0_0_30px_rgba(0,240,255,0.7)] group-hover:scale-105",
-        sizeMap[size],
+        sizeMap[size] || sizeMap.md,
         className
       )}
     >
@@ -80,7 +82,6 @@ export function DragonLogoIcon({
         </defs>
 
         {/* ═══ 1. OUTER DRACONIC MANTLE WINGS / SHIELD ═══ */}
-        {/* Left Wing Flange */}
         <path
           d="M 20 42 L 10 68 L 26 88 L 38 78 L 28 56 Z"
           fill="url(#dlApexDark)"
@@ -93,7 +94,6 @@ export function DragonLogoIcon({
           opacity="0.35"
         />
 
-        {/* Right Wing Flange */}
         <path
           d="M 108 42 L 118 68 L 102 88 L 90 78 L 100 56 Z"
           fill="url(#dlApexDark)"
@@ -107,43 +107,36 @@ export function DragonLogoIcon({
         />
 
         {/* ═══ 2. SWEEPING APEX HORNS ═══ */}
-        {/* Left Horn */}
         <path
           d="M 52 44 L 20 12 L 36 38 L 46 54 Z"
           fill="url(#dlApexChrome)"
           stroke="#00f0ff"
           strokeWidth="1.5"
         />
-        {/* Left Sub-Horn */}
         <path
           d="M 36 38 L 14 30 L 28 48 Z"
           fill="url(#dlApexCyan)"
         />
 
-        {/* Right Horn */}
         <path
           d="M 76 44 L 108 12 L 92 38 L 82 54 Z"
           fill="url(#dlApexChrome)"
           stroke="#00f0ff"
           strokeWidth="1.5"
         />
-        {/* Right Sub-Horn */}
         <path
           d="M 92 38 L 114 30 L 100 48 Z"
           fill="url(#dlApexCyan)"
         />
 
         {/* ═══ 3. DRAGON CROWN SPIKES ═══ */}
-        {/* Center Crown Blade */}
         <polygon
           points="64,14 71,36 64,46 57,36"
           fill="url(#dlApexChrome)"
           stroke="#00f0ff"
           strokeWidth="1.5"
         />
-        {/* Left Crown Spike */}
         <polygon points="52,24 57,38 48,42" fill="url(#dlApexCyan)" />
-        {/* Right Crown Spike */}
         <polygon points="76,24 71,38 80,42" fill="url(#dlApexCyan)" />
 
         {/* ═══ 4. FOREHEAD & BROW ARMOR ═══ */}
@@ -161,11 +154,9 @@ export function DragonLogoIcon({
 
         {/* ═══ 5. PIERCING GLOWING EYES ═══ */}
         <g filter="url(#dlApexGlow)">
-          {/* Left Eye */}
           <polygon points="40,58 52,61 48,67 38,63" fill="#00f0ff" />
           <polygon points="43,60 49,62 47,65 41,63" fill="#ffffff" />
 
-          {/* Right Eye */}
           <polygon points="88,58 76,61 80,67 90,63" fill="#00f0ff" />
           <polygon points="85,60 79,62 81,65 87,63" fill="#ffffff" />
         </g>
@@ -177,7 +168,6 @@ export function DragonLogoIcon({
           stroke="#38bdf8"
           strokeWidth="1.5"
         />
-        {/* Nostrils */}
         <polygon points="58,80 62,82 60,84" fill="#020617" />
         <polygon points="70,80 66,82 68,84" fill="#020617" />
 
@@ -193,9 +183,7 @@ export function DragonLogoIcon({
           stroke="#00f0ff"
           strokeWidth="1.8"
         />
-        {/* Mandible Left Wing Spike */}
         <polygon points="38,88 48,104 52,94" fill="url(#dlApexCyan)" />
-        {/* Mandible Right Wing Spike */}
         <polygon points="90,88 80,104 76,94" fill="url(#dlApexCyan)" />
 
         {/* ═══ 9. CENTRAL ENERGY SPARK ═══ */}
@@ -210,12 +198,13 @@ export function DragonLogo({
   iconClassName,
   size = "md",
   showText = true,
+  showIcon = true,
   textVariant = "gaming",
   subtitle,
 }: DragonLogoProps) {
   return (
     <div className={cn("flex items-center gap-3.5 group shrink-0 select-none", className)}>
-      <DragonLogoIcon size={size} className={iconClassName} />
+      {showIcon && <DragonLogoIcon size={size} className={iconClassName} />}
 
       {showText && (
         <div className="flex flex-col leading-none">

@@ -1,27 +1,45 @@
 export const OFFICIAL_SOCIALS = {
+  whatsapp: {
+    label: "WhatsApp Channel",
+    name: "Dragon Studios Official",
+    href: "https://www.whatsapp.com/channel/0029Vb8zJ8w96H4YmYUqh201",
+    handle: "Dragon Studios Official Channel",
+    status: "OFFICIAL BROADCAST",
+  },
+  threads: {
+    label: "Threads",
+    name: "Threads Official",
+    href: "https://www.threads.com/@_dragongamingstudio.official_",
+    handle: "@_dragongamingstudio.official_",
+    status: "OFFICIAL FEED",
+  },
   instagram: {
     label: "Instagram",
+    name: "Instagram Official",
     href: "https://www.instagram.com/_dragongamingstudio.official_?igsh=ZDJsM3E1aWsxMWNs",
     handle: "@_dragongamingstudio.official_",
-    followers: "450K+",
+    status: "VERIFIED",
   },
   youtube: {
     label: "YouTube",
+    name: "Dragon Gaming Studio",
     href: "https://www.youtube.com/@DRAGONGAMINGSTUDIO12",
     handle: "@DRAGONGAMINGSTUDIO12",
-    subscribers: "1.2M",
+    status: "OFFICIAL CHANNEL",
   },
   x: {
     label: "X (Twitter)",
+    name: "DGStudio",
     href: "https://x.com/DGStudio1212",
     handle: "@DGStudio1212",
-    followers: "890K+",
+    status: "OFFICIAL DISPATCHES",
   },
   reddit: {
     label: "Reddit",
+    name: "Dragon Gaming Studio",
     href: "https://www.reddit.com/user/DragonGamingStudio/?share_id=HI1UG4-JJAj7wvkIIiFHt&utm_content=1&utm_medium=android_app&utm_name=androidcss&utm_source=share&utm_term=1/",
     handle: "u/DragonGamingStudio",
-    members: "250K+",
+    status: "OFFICIAL COMMUNITY",
   },
 } as const;
 
@@ -29,18 +47,19 @@ export const siteConfig = {
   name: "Dragon Studios",
   shortName: "Dragon",
   description:
-    "Premier AAA Game Development Studio creating immersive worlds powered by Dragon Engine.",
-  url: "https://dragonstudios.com",
+    "Independent Game Development Studio creating immersive 3D & 2D worlds powered by Dragon Engine.",
+  url: "https://dragongamingstudios.vercel.app",
   ogImage: "/images/og.jpg",
   creator: "Dragon Studios",
   keywords: [
     "Dragon Studios",
     "Game Studio",
-    "AAA Games",
+    "3D Games",
+    "2D Games",
+    "Dragon Slayer 3D",
+    "Cyber Drift 3D",
+    "Shadow Ninja 2D",
     "Dragon Engine",
-    "Embers of Valyria",
-    "Neon Drift",
-    "Blacksite Zero",
     "Game Development",
   ],
   email: "hello@dragonstudios.com",
@@ -50,6 +69,8 @@ export const siteConfig = {
   mission:
     "To create breathtaking interactive experiences that transport players to worlds beyond imagination.",
   sameAs: [
+    OFFICIAL_SOCIALS.whatsapp.href,
+    OFFICIAL_SOCIALS.threads.href,
     OFFICIAL_SOCIALS.instagram.href,
     OFFICIAL_SOCIALS.youtube.href,
     OFFICIAL_SOCIALS.x.href,
@@ -63,6 +84,8 @@ export const siteConfig = {
     { label: "Community", href: "/community" },
   ],
   socialLinks: [
+    OFFICIAL_SOCIALS.whatsapp,
+    OFFICIAL_SOCIALS.threads,
     OFFICIAL_SOCIALS.instagram,
     OFFICIAL_SOCIALS.youtube,
     OFFICIAL_SOCIALS.x,

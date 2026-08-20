@@ -94,7 +94,7 @@ export async function generateSeoWithAi(topic: string) {
   const prompt = `Generate SEO meta tags for a gaming web page about "${topic}" at Dragon Studios.
 Provide output formatted as JSON with keys: title, description, keywords.`;
 
-  const systemInstruction = "You are an expert SEO Optimization AI for AAA Gaming Studios.";
+  const systemInstruction = "You are an expert SEO Optimization AI for Gaming Studios.";
   const text = await generateGeminiText({ prompt, systemInstruction });
   try {
     const cleanJson = text.replace(/```json|```/g, "").trim();
@@ -102,8 +102,8 @@ Provide output formatted as JSON with keys: title, description, keywords.`;
   } catch {
     return {
       title: `${topic} | Dragon Studios`,
-      description: `Discover ${topic} from Dragon Studios, premier AAA game development studio.`,
-      keywords: `Dragon Studios, ${topic}, AAA Games, Dragon Engine`,
+      description: `Discover ${topic} from Dragon Studios, independent game development studio.`,
+      keywords: `Dragon Studios, ${topic}, 3D Games, 2D Games, Dragon Engine`,
     };
   }
 }

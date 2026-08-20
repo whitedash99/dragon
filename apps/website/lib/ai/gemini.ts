@@ -39,7 +39,7 @@ export async function generateGeminiContent(options: GeminiGenerateOptions): Pro
           ],
           systemInstruction: options.systemInstruction
             ? { parts: [{ text: options.systemInstruction }] }
-            : { parts: [{ text: "You are Dragon Assistant, an intelligent, helpful AI assistant for Dragon Studios, a premier AAA game studio." }] },
+            : { parts: [{ text: "You are Dragon Assistant, an intelligent, helpful AI assistant for Dragon Studios, an independent game studio." }] },
           generationConfig: {
             temperature: options.temperature ?? 0.7,
             maxOutputTokens: options.maxTokens ?? 1024,
@@ -107,7 +107,7 @@ export async function generateSeoWithAi(topic: string) {
   const prompt = `Generate SEO meta tags for a gaming web page about "${topic}" at Dragon Studios.
 Provide output formatted as JSON with keys: title, description, keywords.`;
 
-  const systemInstruction = "You are an expert SEO Optimization AI for AAA Gaming Studios.";
+  const systemInstruction = "You are an expert SEO Optimization AI for Gaming Studios.";
 
   const text = await generateGeminiContent({ prompt, systemInstruction });
   try {
@@ -116,8 +116,8 @@ Provide output formatted as JSON with keys: title, description, keywords.`;
   } catch {
     return {
       title: `${topic} | Dragon Studios`,
-      description: `Discover ${topic} from Dragon Studios, premier AAA game development studio.`,
-      keywords: `Dragon Studios, ${topic}, AAA Games, Dragon Engine`,
+      description: `Discover ${topic} from Dragon Studios, independent game development studio.`,
+      keywords: `Dragon Studios, ${topic}, 3D Games, 2D Games, Dragon Engine`,
     };
   }
 }

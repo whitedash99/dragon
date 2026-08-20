@@ -18,6 +18,8 @@ export interface EditableTextProps {
   children?: React.ReactNode;
 }
 
+import { isEditorEnvironment } from "@/lib/cms/editorSafety";
+
 export const EditableText = memo(function EditableText({
   cmsKey,
   initialContent,
@@ -54,10 +56,8 @@ export const EditableText = memo(function EditableText({
     debounceMs,
   });
 
-  // Enable editor mode if in iframe or ?editor=true
-  const isEditorMode =
-    typeof window !== "undefined" &&
-    (window.self !== window.top || window.location.search.includes("editor=true"));
+  // Enable editor mode safely
+  const isEditorMode = isEditorEnvironment();
 
   // Keep DOM innerText synchronized when content changes externally
   useEffect(() => {

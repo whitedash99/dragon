@@ -1,184 +1,48 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { ShieldCheck, Lock, Mail, User, RefreshCw, AlertCircle, CheckCircle2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ShieldAlert, ArrowLeft, Lock, Key } from "lucide-react";
 
 export default function SignupPage() {
-  const router = useRouter();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [role, setRole] = useState("EDITOR");
-
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-
-  const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setSuccess(null);
-
-    if (password !== confirmPassword) {
-      setError("Passwords do not match.");
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const res = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password, confirmPassword, role }),
-      });
-
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || "Registration failed.");
-      }
-
-      setSuccess("Admin account provisioned! Redirecting to login...");
-      setTimeout(() => {
-        router.push("/login");
-      }, 1500);
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Failed to create account.";
-      setError(msg);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-[#030304] flex items-center justify-center p-4 font-mono text-xs text-white relative overflow-hidden">
+    <div className="min-h-screen bg-[#02040A] flex items-center justify-center p-4 font-mono text-xs text-white relative overflow-hidden select-none">
       {/* Background Ambient Glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-tr from-[#ff1e4b]/15 to-purple-600/10 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-tr from-cyan-500/10 via-blue-600/10 to-transparent rounded-full blur-[140px] pointer-events-none" />
 
-      <div className="w-full max-w-md rounded-3xl glass-heavy p-8 sm:p-10 border border-white/15 space-y-6 relative z-10 shadow-2xl">
-        {/* Brand Header */}
-        <div className="text-center space-y-2">
-          <div className="inline-flex size-12 rounded-2xl bg-gradient-to-tr from-[#ff1e4b] to-purple-600 items-center justify-center font-black text-white text-xl shadow-lg shadow-[#ff1e4b]/30 font-heading">
-            D
-          </div>
-          <div>
-            <h1 className="text-2xl font-black uppercase tracking-tight font-heading text-white">
-              CREATE ADMIN ACCOUNT
-            </h1>
-            <span className="text-[10px] font-bold text-[#ff1e4b] tracking-widest uppercase block mt-0.5">
-              ENTERPRISE SAAS REGISTRATION
-            </span>
-          </div>
+      <div className="w-full max-w-md bg-[#050C17]/95 border border-cyan-500/30 rounded-3xl p-8 shadow-2xl backdrop-blur-3xl relative z-10 space-y-6 text-center">
+        <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/40 flex items-center justify-center mx-auto text-[#00f0ff] shadow-lg shadow-cyan-500/20">
+          <ShieldAlert className="w-8 h-8" />
         </div>
 
-        {error && (
-          <div className="p-3.5 rounded-2xl bg-red-500/10 border border-red-500/30 text-red-400 font-bold flex items-center gap-2">
-            <AlertCircle className="size-4 shrink-0" />
-            <span>{error}</span>
-          </div>
-        )}
-
-        {success && (
-          <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-bold flex items-center gap-2">
-            <CheckCircle2 className="size-4 shrink-0" />
-            <span>{success}</span>
-          </div>
-        )}
-
-        {/* Signup Form */}
-        <form onSubmit={handleSignup} className="space-y-4">
-          <div className="space-y-1">
-            <label className="block text-[10px] font-bold uppercase text-muted-foreground">FULL NAME</label>
-            <div className="relative">
-              <User className="size-4 absolute left-3.5 top-3 text-muted-foreground" />
-              <input
-                type="text"
-                required
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="e.g. Kaelen Voss"
-                className="w-full rounded-xl bg-black/60 pl-10 pr-4 py-2.5 text-xs text-white border border-white/10 focus:outline-none focus:border-[#ff1e4b]"
-              />
-            </div>
-          </div>
-
-          <div className="space-y-1">
-            <label className="block text-[10px] font-bold uppercase text-muted-foreground">ADMIN EMAIL</label>
-            <div className="relative">
-              <Mail className="size-4 absolute left-3.5 top-3 text-muted-foreground" />
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="operator@dragonstudios.com"
-                className="w-full rounded-xl bg-black/60 pl-10 pr-4 py-2.5 text-xs text-white border border-white/10 focus:outline-none focus:border-[#ff1e4b]"
-              />
-            </div>
-          </div>
-
-          <div className="space-y-1">
-            <label className="block text-[10px] font-bold uppercase text-muted-foreground">ADMIN ROLE</label>
-            <select
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              className="w-full rounded-xl bg-black/60 px-4 py-2.5 text-xs text-white border border-white/10 focus:outline-none focus:border-[#ff1e4b]"
-            >
-              <option value="ADMIN">Administrator</option>
-              <option value="DEVELOPER">Developer / DevOps</option>
-              <option value="SUPPORT">Support Agent</option>
-              <option value="EDITOR">Content Editor</option>
-            </select>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-1">
-              <label className="block text-[10px] font-bold uppercase text-muted-foreground">PASSWORD</label>
-              <div className="relative">
-                <Lock className="size-4 absolute left-3.5 top-3 text-muted-foreground" />
-                <input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full rounded-xl bg-black/60 pl-10 pr-3 py-2.5 text-xs text-white border border-white/10 focus:outline-none focus:border-[#ff1e4b]"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-1">
-              <label className="block text-[10px] font-bold uppercase text-muted-foreground">CONFIRM PASSWORD</label>
-              <div className="relative">
-                <Lock className="size-4 absolute left-3.5 top-3 text-muted-foreground" />
-                <input
-                  type="password"
-                  required
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full rounded-xl bg-black/60 pl-10 pr-3 py-2.5 text-xs text-white border border-white/10 focus:outline-none focus:border-[#ff1e4b]"
-                />
-              </div>
-            </div>
-          </div>
-
-          <Button type="submit" disabled={loading} variant="solidRed" size="lg" className="w-full rounded-xl font-bold uppercase tracking-wider gap-2 mt-2">
-            {loading ? <RefreshCw className="size-4 animate-spin" /> : <ShieldCheck className="size-4" />}
-            <span>PROVISION ADMIN USER</span>
-          </Button>
-        </form>
-
-        <div className="pt-4 border-t border-white/10 text-center">
-          <span className="text-[10px] text-muted-foreground">ALREADY HAVE AN ADMIN ACCOUNT? </span>
-          <Link href="/login" className="text-[#ff1e4b] font-bold hover:underline">
-            SIGN IN HERE →
-          </Link>
+        <div className="space-y-2">
+          <h1 className="text-lg font-heading font-black tracking-widest text-white uppercase">
+            RESTRICTED ADMINISTRATIVE GATEWAY
+          </h1>
+          <p className="text-slate-400 text-xs leading-relaxed">
+            Public registration is disabled. Administrative access to Dragon Control OS is strictly governed by single-use cryptographic invitations.
+          </p>
         </div>
+
+        <div className="p-4 rounded-2xl bg-[#030712] border border-cyan-500/20 text-left space-y-2">
+          <div className="flex items-center gap-2 text-cyan-400 font-bold">
+            <Lock className="w-3.5 h-3.5" />
+            <span>HOW TO OBTAIN ACCESS:</span>
+          </div>
+          <p className="text-slate-400 text-[11px] leading-normal">
+            1. An authorized Dragon Studios Owner must issue an invitation to your corporate email.<br />
+            2. Follow the secure link inside the email to establish your credentials and MFA.<br />
+            3. Once activated, authenticate via the administrative login portal.
+          </p>
+        </div>
+
+        <Link
+          href="/login"
+          className="w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-500 text-black font-heading font-black tracking-wider uppercase flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>RETURN TO SECURE LOGIN</span>
+        </Link>
       </div>
     </div>
   );

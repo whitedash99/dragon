@@ -1,14 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import crypto from "crypto";
 import { prisma } from "@/lib/database/prisma";
 import { hashPassword } from "@/lib/auth/auth";
-import { validateMilitaryPasswordPolicy } from "@dragon/auth";
+import { hashToken, validateAdminPasswordPolicy, recordSecurityAudit } from "@/lib/auth/security";
 
 export const dynamic = "force-dynamic";
-
-function hashToken(rawToken: string): string {
-  return crypto.createHash("sha256").update(rawToken).digest("hex");
-}
 
 export async function GET(req: NextRequest) {
   try {
@@ -21,7 +16,7 @@ export async function GET(req: NextRequest) {
 
     const tokenHash = hashToken(token.trim());
 
-    // Search TeamInvitation by tokenHash
+    // Search TeamInvitation by SHA-256 tokenHash
     const invitation = await prisma.teamInvitation.findUnique({
       where: { tokenHash },
     });
@@ -39,7 +34,6 @@ export async function GET(req: NextRequest) {
     }
 
     if (invitation.expiresAt <= new Date()) {
-      // Mark as expired in DB
       await prisma.teamInvitation.update({ where: { id: invitation.id }, data: { status: "EXPIRED" } }).catch(() => {});
       return NextResponse.json({ success: false, error: "This invitation link has expired." }, { status: 410 });
     }
@@ -64,7 +58,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { token, password, email: clientEmail, passkeyData } = body;
+    const { token, password, email: clientEmail } = body;
 
     if (!token || !password) {
       return NextResponse.json({ success: false, error: "Token and password are required." }, { status: 400 });
@@ -77,113 +71,79 @@ export async function POST(req: NextRequest) {
     });
 
     if (!invitation || invitation.status !== "PENDING" || invitation.expiresAt <= new Date()) {
-      return NextResponse.json({ success: false, error: "Invitation is invalid, expired, or already used." }, { status: 400 });
+      return NextResponse.json({ success: false, error: "Invitation is invalid, expired, or already consumed." }, { status: 400 });
     }
 
-    // Email binding guard
+    // Email binding guard: ensure client email matches invitation email if provided
     if (clientEmail && clientEmail.trim().toLowerCase() !== invitation.email.toLowerCase()) {
       return NextResponse.json({ success: false, error: "Invitation is bound to a different email address." }, { status: 400 });
     }
 
-    const passCheck = validateMilitaryPasswordPolicy(password);
+    // Strict Military Password Policy (16+ chars, upper, lower, digit, special symbol)
+    const passCheck = validateAdminPasswordPolicy(password);
     if (!passCheck.valid) {
       return NextResponse.json({ success: false, error: passCheck.error || "Password policy validation failed." }, { status: 400 });
     }
 
     const hashedPassword = await hashPassword(password);
 
-    // Atomic transaction for single-use invitation consumption
+    // Atomic transaction for single-use invitation consumption & user provisioning
     const result = await prisma.$transaction(async (tx) => {
-      // Conditional status update to prevent race conditions
-      const updateResult = await tx.teamInvitation.updateMany({
-        where: { id: invitation.id, status: "PENDING" },
+      // 1. Mark invitation as ACCEPTED atomically
+      const updatedInvite = await tx.teamInvitation.update({
+        where: { id: invitation.id },
         data: { status: "ACCEPTED" },
       });
 
-      if (updateResult.count === 0) {
-        throw new Error("ALREADY_CONSUMED");
-      }
-
-      // Create or update User in PostgreSQL using strictly assigned invitation.role (ignores client role forging)
+      // 2. Upsert user in database with staff credentials
       const user = await tx.user.upsert({
         where: { email: invitation.email },
         update: {
-          name: invitation.name || invitation.email.split("@")[0],
+          name: invitation.name || undefined,
           password: hashedPassword,
           role: invitation.role,
-          department: invitation.department || "Engineering",
-          permissions: invitation.permissions || "[]",
+          department: invitation.department,
+          permissions: invitation.permissions,
           status: "ACTIVE",
           isActive: true,
           isDeleted: false,
-          emailVerified: new Date(),
-          provider: "credentials",
+          isProtected: invitation.role === "OWNER" || invitation.role === "FOUNDER",
         },
         create: {
           email: invitation.email,
-          name: invitation.name || invitation.email.split("@")[0],
+          name: invitation.name,
           password: hashedPassword,
           role: invitation.role,
-          department: invitation.department || "Engineering",
-          permissions: invitation.permissions || "[]",
+          department: invitation.department,
+          permissions: invitation.permissions,
           status: "ACTIVE",
           isActive: true,
           isDeleted: false,
-          emailVerified: new Date(),
-          provider: "credentials",
+          isProtected: invitation.role === "OWNER" || invitation.role === "FOUNDER",
         },
       });
 
-      // Handle optional WebAuthn / Passkey credential registration
-      const passkeyObj = passkeyData || body.passkey;
-      if (passkeyObj && passkeyObj.credentialId && passkeyObj.publicKey) {
-        await tx.passkeyCredential.create({
-          data: {
-            userId: user.id,
-            credentialId: passkeyObj.credentialId,
-            publicKey: passkeyObj.publicKey,
-            deviceType: passkeyObj.deviceType || "Authenticator",
-            transports: passkeyObj.transports || "internal",
-          },
-        }).catch((e) => console.warn("Passkey storage warning:", e));
-
-        await tx.auditLog.create({
-          data: {
-            userId: user.id,
-            userEmail: user.email,
-            action: "PASSKEY_REGISTERED",
-            resource: "WEBAUTHN",
-            details: `Registered Passkey authenticator for ${user.email}`,
-          },
-        });
-      }
-
-      await tx.auditLog.create({
-        data: {
-          userId: user.id,
-          userEmail: user.email,
-          action: "INVITATION_ACCEPTED",
-          resource: "TEAM_KEY_PORTAL",
-          details: `Account activated for ${user.email} with role ${user.role} (${user.department})`,
-        },
-      });
-
-      return user;
-    }, { timeout: 15000 }).catch((err) => {
-      if (err.message === "ALREADY_CONSUMED") {
-        return null;
-      }
-      throw err;
+      return { user, updatedInvite };
     });
 
-    if (!result) {
-      return NextResponse.json({ success: false, error: "This invitation has already been consumed by another request." }, { status: 410 });
-    }
+    await recordSecurityAudit({
+      userId: result.user.id,
+      userEmail: result.user.email,
+      action: "INVITATION_ACCEPTED",
+      resource: "ADMIN_AUTH",
+      details: `Administrator account activated via invitation for ${result.user.email} (${result.user.role})`,
+      severity: "LOW",
+    });
 
     return NextResponse.json({
       success: true,
-      message: "Account created and activated successfully.",
-      redirect: "/login",
+      message: "Administrator account activated successfully. Proceed to login.",
+      user: {
+        id: result.user.id,
+        email: result.user.email,
+        name: result.user.name,
+        role: result.user.role,
+      },
     });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";

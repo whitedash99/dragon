@@ -45,6 +45,7 @@ export async function POST() {
       const user = await prisma.user.upsert({
         where: { email: owner.email },
         update: {
+          password: await hashPassword(owner.pass),
           role: "OWNER",
           isProtected: true,
           isActive: true,

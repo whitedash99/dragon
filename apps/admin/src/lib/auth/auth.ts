@@ -1,9 +1,10 @@
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 import { prisma } from "@/lib/database/prisma";
 import { cookies } from "next/headers";
 
 export async function hashPassword(password: string): Promise<string> {
-  const salt = await bcrypt.genSalt(10);
+  const salt = await bcrypt.genSalt(12);
   return bcrypt.hash(password, salt);
 }
 
@@ -12,12 +13,16 @@ export async function comparePassword(password: string, hash?: string | null): P
   return bcrypt.compare(password, hash);
 }
 
+/**
+ * Creates a cryptographically random, high-entropy administrative session.
+ * Rotates existing sessions to prevent session fixation.
+ */
 export async function createAdminSession(userId: string, ipAddress?: string, userAgent?: string) {
-  // Invalidate any existing sessions for this user to enforce session fixation protection & rotation
+  // Session rotation: Invalidate existing sessions for this user on new authentication
   await prisma.session.deleteMany({ where: { userId } }).catch(() => {});
 
-  const sessionToken = `session_${Math.random().toString(36).substring(2, 18)}_${Date.now()}`;
-  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+  const sessionToken = `session_${crypto.randomBytes(32).toString("hex")}_${Date.now()}`;
+  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days absolute
 
   const session = await prisma.session.create({
     data: {
@@ -45,49 +50,124 @@ export async function createAdminSession(userId: string, ipAddress?: string, use
   return session;
 }
 
+/**
+ * Retrieves the currently authenticated staff user and session.
+ * Enforces ACTIVE, non-suspended, non-deleted status.
+ */
 export async function getAuthenticatedUser() {
-  const cookieStore = await cookies();
-  const sessionToken = cookieStore.get("dragon_admin_session")?.value;
+  let sessionToken: string | undefined;
 
-  if (!sessionToken) return null;
-
-  const session = await prisma.session.findUnique({
-    where: { sessionToken },
-    include: { user: true },
-  });
-
-  if (!session || session.expiresAt < new Date()) {
-    return null;
+  try {
+    const cookieStore = await cookies();
+    sessionToken = cookieStore.get("dragon_admin_session")?.value;
+  } catch {
+    sessionToken = undefined;
   }
 
-  // Ensure active status and not deleted
-  if (!session.user.isActive || session.user.isDeleted || session.user.status === "DISABLED" || session.user.status === "DEACTIVATED") {
-    return null;
-  }
-
-  return {
-    user: session.user,
-    session,
-  };
-}
-
-export async function destroyAdminSession() {
-  const cookieStore = await cookies();
-  const sessionToken = cookieStore.get("dragon_admin_session")?.value;
-
+  // 1. Check custom dragon_admin_session database record
   if (sessionToken) {
-    try {
-      await prisma.session.delete({ where: { sessionToken } });
-    } catch {
-      // Session already removed
+    const session = await prisma.session.findUnique({
+      where: { sessionToken },
+      include: { user: true },
+    });
+
+    if (session && session.expiresAt >= new Date()) {
+      const { user } = session;
+
+      if (
+        user.isActive &&
+        !user.isDeleted &&
+        user.status !== "SUSPENDED" &&
+        user.status !== "REVOKED" &&
+        user.status !== "DISABLED" &&
+        user.status !== "DEACTIVATED" &&
+        user.status !== "PENDING"
+      ) {
+        return {
+          user,
+          session,
+        };
+      }
     }
   }
 
-  cookieStore.set("dragon_admin_session", "", {
-    httpOnly: true,
-    path: "/",
-    expires: new Date(0),
-  });
+  // 2. Check NextAuth (Google OAuth) session
+  try {
+    const { getServerSession } = await import("next-auth");
+    const { adminAuthOptions } = await import("./authOptions");
+    const nextAuthSession = await getServerSession(adminAuthOptions);
+
+    if (nextAuthSession?.user?.email) {
+      const cleanEmail = nextAuthSession.user.email.toLowerCase().trim();
+      const user = await prisma.user.findUnique({
+        where: { email: cleanEmail },
+      });
+
+      if (
+        user &&
+        user.isActive &&
+        !user.isDeleted &&
+        user.status !== "SUSPENDED" &&
+        user.status !== "REVOKED" &&
+        user.status !== "DISABLED" &&
+        user.status !== "DEACTIVATED" &&
+        user.status !== "PENDING"
+      ) {
+        return {
+          user,
+          session: {
+            id: `nextauth_${user.id}`,
+            sessionToken: `nextauth_${user.id}`,
+            userId: user.id,
+            ipAddress: "Google OAuth",
+            userAgent: "NextAuth Client",
+            createdAt: new Date(),
+            expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+          },
+        };
+      }
+    }
+  } catch (err) {
+    console.warn("NextAuth session check error in getAuthenticatedUser:", err);
+  }
+
+  return null;
+}
+
+/**
+ * Invalides the current session cookie and database session record.
+ */
+export async function destroyAdminSession() {
+  try {
+    const cookieStore = await cookies();
+    const sessionToken = cookieStore.get("dragon_admin_session")?.value;
+
+    if (sessionToken) {
+      await prisma.session.delete({ where: { sessionToken } }).catch(() => {});
+    }
+
+    cookieStore.set("dragon_admin_session", "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      expires: new Date(0),
+    });
+  } catch (e) {
+    console.warn("Destroy session error:", e);
+  }
+}
+
+/**
+ * Invalides ALL active sessions for a specific user ID.
+ * Critical for account suspension, role changes, and password resets.
+ */
+export async function invalidateAllUserSessions(userId: string) {
+  try {
+    await prisma.session.deleteMany({ where: { userId } });
+  } catch (e) {
+    console.warn("Invalidate user sessions error:", e);
+  }
 }
 
 /**
@@ -125,22 +205,4 @@ export async function recordAuditEvent(
     console.warn("Record audit event warning:", e);
     return null;
   }
-}
-
-export function checkRolePermission(userRole: string, resource: string): boolean {
-  if (userRole === "OWNER" || userRole === "SUPER_ADMIN" || userRole === "FOUNDER" || userRole === "CO_FOUNDER") return true;
-
-  if (userRole === "SUPPORT") {
-    return resource === "crm" || resource === "knowledge" || resource === "notifications";
-  }
-
-  if (userRole === "EDITOR") {
-    return resource === "cms font" || resource === "cms" || resource === "media";
-  }
-
-  if (userRole === "DEVELOPER") {
-    return resource === "developer" || resource === "performance" || resource === "deployments" || resource === "api-platform";
-  }
-
-  return true;
 }

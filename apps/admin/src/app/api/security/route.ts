@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
-import { getAuthenticatedUser } from "@/lib/auth/auth";
-import { can } from "@dragon/auth";
+import { requireAdmin, requireOwner, recordSecurityAudit } from "@/lib/auth/security";
 
 export async function GET() {
   try {
+    const authResult = await requireAdmin();
+    if (!authResult.authorized) {
+      return authResult.response;
+    }
+
     const activeSessionsCount = await prisma.session.count({
       where: { expiresAt: { gte: new Date() } },
     });
@@ -21,7 +25,7 @@ export async function GET() {
 
     const failedLogins = await prisma.auditLog.count({
       where: {
-        action: { in: ["USER_LOGIN_FAILED", "DOMAIN_REJECTED", "UNAUTHORIZED_GOOGLE_LOGIN_ATTEMPT"] },
+        action: { in: ["USER_LOGIN_FAILED", "LOGIN_FAILURE_INVALID_PASSWORD", "LOGIN_RATE_LIMITED", "DOMAIN_REJECTED", "UNAUTHORIZED_GOOGLE_LOGIN_ATTEMPT"] },
       },
     });
 
@@ -30,7 +34,6 @@ export async function GET() {
     const resendConfigured = Boolean(process.env.RESEND_API_KEY && process.env.RESEND_API_KEY.startsWith("re_"));
     const googleOauthConfigured = Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET);
 
-    // Transparent, deterministic posture score components
     const components = [
       {
         name: "Neon PostgreSQL SSL Database",
@@ -144,43 +147,39 @@ export async function GET() {
       })),
     });
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unknown error";
+    const message = error instanceof Error ? error.message : "Internal server error";
     return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }
 
 export async function POST(req: NextRequest) {
   try {
-    const auth = await getAuthenticatedUser();
-    if (!auth) {
-      return NextResponse.json({ success: false, error: "Authentication required." }, { status: 401 });
-    }
-    if (!can(auth.user, "security.manage")) {
-      return NextResponse.json({ success: false, error: "Access Denied: Requires security.manage permission." }, { status: 403 });
+    const authResult = await requireOwner();
+    if (!authResult.authorized) {
+      return authResult.response;
     }
 
+    const { user: actor } = authResult.context;
     const body = await req.json();
     const { action } = body;
 
-    // Manual database backup event logging
     if (action === "create_backup") {
       const filename = `dragon_pg_backup_${Date.now()}.sql`;
-      await prisma.auditLog.create({
-        data: {
-          userId: auth.user.id,
-          userEmail: auth.user.email,
-          action: "CREATE_DATABASE_BACKUP",
-          resource: "SECURITY",
-          details: `Manual PostgreSQL snapshot record committed: ${filename}`,
-        },
-      }).catch((e) => console.warn("AuditLog warning:", e));
+      await recordSecurityAudit({
+        userId: actor.id,
+        userEmail: actor.email,
+        action: "CREATE_DATABASE_BACKUP",
+        resource: "SECURITY",
+        details: `Manual PostgreSQL snapshot record committed: ${filename}`,
+        severity: "HIGH",
+      });
 
       return NextResponse.json({ success: true, filename });
     }
 
-    return NextResponse.json({ success: false, error: "Invalid action" }, { status: 400 });
+    return NextResponse.json({ success: false, error: "Invalid action payload." }, { status: 400 });
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unknown error";
+    const message = error instanceof Error ? error.message : "Internal server error";
     return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }

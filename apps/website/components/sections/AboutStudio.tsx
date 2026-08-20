@@ -119,7 +119,7 @@ export default function AboutStudio() {
               </h3>
             </div>
             <p className="text-xs text-muted-foreground max-w-sm leading-relaxed">
-              From an independent engineering team to a global AAA studio collective.
+              From an independent engineering team to an original 3D & 2D game studio collective.
             </p>
           </div>
 

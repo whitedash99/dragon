@@ -1,301 +1,329 @@
-import React from "react";
-import { Monitor, Tablet, Smartphone, ZoomIn, ZoomOut, Grid, Move, Save, RefreshCw, Sparkles, Layers, Sliders, Maximize2, ExternalLink, Tv, Globe } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+"use client";
+
+import React, { useEffect } from "react";
+import Link from "next/link";
+import {
+  Monitor,
+  Tablet,
+  Smartphone,
+  ExternalLink,
+  RefreshCw,
+  Save,
+  CheckCircle2,
+  Layers,
+  Sliders,
+  Maximize2,
+  Minimize2,
+  Sparkles,
+  RotateCcw,
+  LayoutDashboard,
+  Menu,
+  Radio,
+  Newspaper
+} from "lucide-react";
+import { CMSPageItem } from "./PageManagerModal";
 
 interface VisualStudioHeaderProps {
+  pages: CMSPageItem[];
+  activePage: CMSPageItem;
+  setActivePage: (page: CMSPageItem) => void;
   viewportMode: "desktop" | "tablet" | "mobile" | "responsive" | "2k" | "4k";
   setViewportMode: (mode: "desktop" | "tablet" | "mobile" | "responsive" | "2k" | "4k") => void;
-  zoomLevel: number;
-  setZoomLevel: (zoom: number) => void;
-  showRulers: boolean;
-  setShowRulers: (show: boolean) => void;
-  showGrid: boolean;
-  setShowGrid: (show: boolean) => void;
   isLeftOpen: boolean;
   setIsLeftOpen: (open: boolean) => void;
   isRightOpen: boolean;
   setIsRightOpen: (open: boolean) => void;
+  isAiOpen?: boolean;
+  setIsAiOpen?: (open: boolean) => void;
   isFullscreen: boolean;
-  setIsFullscreen: (full: boolean) => void;
-  isMaximizedCanvas: boolean;
-  setIsMaximizedCanvas: (max: boolean) => void;
-  activePageTitle: string;
-  activePageSlug: string;
+  setIsFullscreen: (fullscreen: boolean) => void;
+  isSidebarOpen?: boolean;
+  setIsSidebarOpen?: (open: boolean) => void;
   isSaving: boolean;
   isSavedSuccess: boolean;
+  targetEnv: "production" | "local";
+  setTargetEnv?: (env: "production" | "local") => void;
   onPublishAll: () => Promise<void>;
   onRefreshCanvas: () => void;
   onPopoutWindow: () => void;
-  onOpenPageManager?: () => void;
+  onResetDefaults?: () => Promise<void>;
+  onOpenBannerManager?: () => void;
+  onOpenBlogManager?: () => void;
 }
 
 export function VisualStudioHeader({
+  pages,
+  activePage,
+  setActivePage,
   viewportMode,
   setViewportMode,
-  zoomLevel,
-  setZoomLevel,
-  showRulers,
-  setShowRulers,
-  showGrid,
-  setShowGrid,
   isLeftOpen,
   setIsLeftOpen,
   isRightOpen,
   setIsRightOpen,
+  isAiOpen = false,
+  setIsAiOpen,
   isFullscreen,
   setIsFullscreen,
-  isMaximizedCanvas,
-  setIsMaximizedCanvas,
-  activePageTitle,
-  activePageSlug,
+  isSidebarOpen = false,
+  setIsSidebarOpen,
   isSaving,
   isSavedSuccess,
   onPublishAll,
   onRefreshCanvas,
   onPopoutWindow,
-  onOpenPageManager,
+  onResetDefaults,
+  onOpenBannerManager,
+  onOpenBlogManager,
 }: VisualStudioHeaderProps) {
-  const zoomOptions = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 3, 5];
+
+  // Native F11 / Browser Fullscreen Trigger
+  const toggleNativeFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+      setIsFullscreen(true);
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+        setIsFullscreen(false);
+      }
+    }
+  };
+
+  // Sync state with native browser fullscreen events
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
+  }, [setIsFullscreen]);
 
   return (
-    <div className="bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 py-2 flex flex-wrap items-center justify-between gap-3 shadow-xs z-30 select-none text-slate-900">
-      {/* Left: Sidebar Toggle & Page Info */}
-      <div className="flex items-center gap-3">
-        <button
-          onClick={() => setIsLeftOpen(!isLeftOpen)}
-          className={`p-2 rounded-xl border transition-all ${
-            isLeftOpen
-              ? "bg-slate-900 text-white border-slate-900"
-              : "bg-slate-50 border-slate-200 text-slate-500 hover:text-slate-900"
-          }`}
-          title="Toggle Left Studio Drawer (Tree & Library)"
+    <header className="bg-[#040D24]/95 backdrop-blur-2xl border-b border-cyan-500/20 px-3 sm:px-4 py-1 flex items-center justify-between gap-2 shadow-2xl z-30 select-none text-[#F8FAFC] h-12 shrink-0 w-full overflow-x-auto overflow-y-hidden no-scrollbar whitespace-nowrap">
+      {/* ═══ Left: Navigation, Fullscreen & Page Selector ═══ */}
+      <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+        {/* Toggle Admin Sidebar */}
+        {setIsSidebarOpen && (
+          <button
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            className={`p-1.5 rounded-xl border text-xs font-mono font-bold transition-all cursor-pointer shrink-0 ${
+              isSidebarOpen
+                ? "bg-cyan-500/20 text-[#00f0ff] border-cyan-400"
+                : "bg-[#01040D] border-cyan-500/20 text-slate-400 hover:text-white hover:border-cyan-400"
+            }`}
+            title="Toggle Admin Sidebar Menu"
+          >
+            <Menu className="w-4 h-4" />
+          </button>
+        )}
+
+        {/* Dashboard Link */}
+        <Link
+          href="/dashboard"
+          className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-[#01040D] border border-cyan-500/20 text-slate-400 hover:text-white hover:border-cyan-400 text-xs font-mono font-bold transition-all cursor-pointer shrink-0"
+          title="Back to Admin Dashboard"
         >
-          <Layers className="w-4 h-4" />
+          <LayoutDashboard className="w-3.5 h-3.5 text-cyan-400" />
+          <span className="hidden md:inline">Dashboard</span>
+        </Link>
+
+        {/* Fullscreen Trigger */}
+        <button
+          onClick={toggleNativeFullscreen}
+          className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl border text-xs font-mono font-bold transition-all cursor-pointer shrink-0 ${
+            isFullscreen
+              ? "bg-[#00f0ff] text-black border-[#00f0ff] shadow-lg shadow-cyan-500/30 font-black"
+              : "bg-[#01040D] border-cyan-500/30 text-cyan-400 hover:text-white hover:border-cyan-400"
+          }`}
+          title="Toggle Fullscreen Mode (Press F11 for Full Laptop Screen)"
+        >
+          {isFullscreen ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+          <span>{isFullscreen ? "Exit" : "Full Screen [F11]"}</span>
         </button>
 
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-slate-900 flex items-center justify-center text-white font-bold">
-            <Sparkles className="w-3.5 h-3.5" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-extrabold text-slate-900 tracking-tight">{activePageTitle}</span>
-              <Badge variant="purple" size="sm">Studio Pro</Badge>
-            </div>
-            <span className="text-[10px] text-slate-500 font-mono">{activePageSlug}</span>
-          </div>
-        </div>
+        {/* Blocks Drawer Toggle */}
+        <button
+          onClick={() => setIsLeftOpen(!isLeftOpen)}
+          className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl border text-xs font-mono font-bold transition-all cursor-pointer shrink-0 ${
+            isLeftOpen
+              ? "bg-cyan-500/20 text-[#00f0ff] border-cyan-400"
+              : "bg-[#01040D] border-cyan-500/20 text-slate-400 hover:text-white hover:border-cyan-400"
+          }`}
+          title="Toggle Content Blocks Drawer"
+        >
+          <Layers className="w-3.5 h-3.5" />
+          <span className="hidden sm:inline">Blocks</span>
+        </button>
 
-        {onOpenPageManager && (
-          <Button
-            onClick={onOpenPageManager}
-            variant="outline"
-            className="text-xs border-slate-200 text-slate-700 hover:bg-slate-50 px-2.5 py-1"
-            title="Manage Website Routes & Pages"
-          >
-            <Globe className="w-3.5 h-3.5 mr-1" /> Pages
-          </Button>
-        )}
+        {/* Page Select */}
+        <select
+          value={activePage.id}
+          onChange={(e) => {
+            const found = pages.find((p) => p.id === e.target.value);
+            if (found) setActivePage(found);
+          }}
+          className="bg-[#01040D] border border-cyan-500/30 rounded-xl px-2 py-1.5 text-white text-xs font-mono font-bold focus:outline-none focus:border-[#00f0ff] cursor-pointer shrink-0 max-w-[150px] truncate"
+        >
+          {pages.map((p) => (
+            <option key={p.id} value={p.id} className="bg-[#040D24] text-white">
+              {p.title} ({p.slug})
+            </option>
+          ))}
+        </select>
       </div>
 
-      {/* Center: Device Viewport Switcher & Extended Zoom Controls */}
-      <div className="flex items-center gap-3">
-        {/* Device Viewport Buttons */}
-        <div className="flex items-center bg-slate-50 border border-slate-200 p-1 rounded-xl font-mono">
+      {/* ═══ Center: Responsive Device Presets + Dedicated Studio Modals ═══ */}
+      <div className="flex items-center gap-1.5 shrink-0">
+        {/* Add Banner Button */}
+        {onOpenBannerManager && (
+          <button
+            onClick={onOpenBannerManager}
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-[#01040D] border border-cyan-500/30 text-cyan-300 hover:text-white hover:border-cyan-400 text-xs font-mono font-bold transition-all cursor-pointer shrink-0"
+            title="Manage Announcement Banners"
+          >
+            <Radio className="w-3.5 h-3.5 text-cyan-400" />
+            <span>✦ Add Banner</span>
+          </button>
+        )}
+
+        {/* Add Blog Button */}
+        {onOpenBlogManager && (
+          <button
+            onClick={onOpenBlogManager}
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-[#01040D] border border-cyan-500/30 text-cyan-300 hover:text-white hover:border-cyan-400 text-xs font-mono font-bold transition-all cursor-pointer shrink-0"
+            title="Manage Blog Articles & Dispatches"
+          >
+            <Newspaper className="w-3.5 h-3.5 text-cyan-400" />
+            <span>✦ Add Blog</span>
+          </button>
+        )}
+
+        <div className="flex items-center bg-[#01040D] border border-cyan-500/30 rounded-xl p-0.5 shadow-inner shrink-0">
           <button
             onClick={() => setViewportMode("desktop")}
-            className={`px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 transition-all ${
-              viewportMode === "desktop" ? "bg-slate-900 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
+            className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold flex items-center gap-1 transition-all cursor-pointer shrink-0 ${
+              viewportMode === "desktop"
+                ? "bg-[#00f0ff] text-black shadow-md shadow-cyan-500/30 font-black"
+                : "text-slate-400 hover:text-white"
             }`}
-            title="Full HD (1920px)"
+            title="Desktop Mode (100% Width)"
           >
-            <Monitor className="w-3.5 h-3.5" /> 1920
-          </button>
-
-          <button
-            onClick={() => setViewportMode("2k")}
-            className={`px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 transition-all ${
-              viewportMode === "2k" ? "bg-slate-900 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
-            }`}
-            title="2K QHD (2560px)"
-          >
-            <Tv className="w-3.5 h-3.5" /> 2K
-          </button>
-
-          <button
-            onClick={() => setViewportMode("4k")}
-            className={`px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 transition-all ${
-              viewportMode === "4k" ? "bg-slate-900 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
-            }`}
-            title="4K UHD (3840px)"
-          >
-            <Tv className="w-3.5 h-3.5" /> 4K
+            <Monitor className="w-3.5 h-3.5" />
+            <span className="hidden lg:inline">Desktop</span>
           </button>
 
           <button
             onClick={() => setViewportMode("tablet")}
-            className={`px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 transition-all ${
-              viewportMode === "tablet" ? "bg-slate-900 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
+            className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold flex items-center gap-1 transition-all cursor-pointer shrink-0 ${
+              viewportMode === "tablet"
+                ? "bg-[#00f0ff] text-black shadow-md shadow-cyan-500/30 font-black"
+                : "text-slate-400 hover:text-white"
             }`}
-            title="Tablet Viewport (768px)"
+            title="Tablet Mode (768px)"
           >
-            <Tablet className="w-3.5 h-3.5" /> 768
+            <Tablet className="w-3.5 h-3.5" />
+            <span className="hidden lg:inline">Tablet</span>
           </button>
 
           <button
             onClick={() => setViewportMode("mobile")}
-            className={`px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 transition-all ${
-              viewportMode === "mobile" ? "bg-slate-900 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
+            className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold flex items-center gap-1 transition-all cursor-pointer shrink-0 ${
+              viewportMode === "mobile"
+                ? "bg-[#00f0ff] text-black shadow-md shadow-cyan-500/30 font-black"
+                : "text-slate-400 hover:text-white"
             }`}
-            title="Mobile Viewport (375px)"
+            title="Mobile Mode (390px)"
           >
-            <Smartphone className="w-3.5 h-3.5" /> 375
-          </button>
-        </div>
-
-        {/* Extended Zoom Selector & Quick Percentage Pills */}
-        <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-2 py-1 rounded-xl font-mono">
-          <button
-            onClick={() => setZoomLevel(Math.max(0.25, zoomLevel - 0.25))}
-            className="text-slate-500 hover:text-slate-900 p-1"
-            title="Zoom Out"
-          >
-            <ZoomOut className="w-3.5 h-3.5" />
-          </button>
-
-          <div className="flex items-center gap-1 border-r border-slate-200 pr-1.5">
-            {[0.5, 0.75, 1, 1.25, 1.5, 2].map((p) => (
-              <button
-                key={p}
-                onClick={() => setZoomLevel(p)}
-                className={`px-1.5 py-0.5 rounded text-[10px] font-mono font-bold transition-all ${
-                  zoomLevel === p
-                    ? "bg-slate-900 text-white shadow-xs"
-                    : "text-slate-500 hover:text-slate-900 hover:bg-slate-100"
-                }`}
-                title={`Set Zoom to ${Math.round(p * 100)}%`}
-              >
-                {Math.round(p * 100)}%
-              </button>
-            ))}
-          </div>
-
-          <select
-            value={zoomLevel}
-            onChange={(e) => setZoomLevel(parseFloat(e.target.value))}
-            className="bg-transparent text-xs font-mono font-bold text-slate-900 focus:outline-none cursor-pointer px-1"
-          >
-            {zoomOptions.map((z) => (
-              <option key={z} value={z} className="bg-white text-slate-900 font-mono">
-                {Math.round(z * 100)}%
-              </option>
-            ))}
-          </select>
-
-          <button
-            onClick={() => setZoomLevel(Math.min(5, zoomLevel + 0.25))}
-            className="text-slate-500 hover:text-slate-900 p-1"
-            title="Zoom In (up to 500%)"
-          >
-            <ZoomIn className="w-3.5 h-3.5" />
-          </button>
-        </div>
-
-        {/* Canvas Maximize (95-100%) Button */}
-        <button
-          onClick={() => setIsMaximizedCanvas(!isMaximizedCanvas)}
-          className={`px-2.5 py-1 rounded-lg border text-xs font-bold transition-all font-mono ${
-            isMaximizedCanvas ? "bg-slate-900 text-white border-slate-900 shadow-xs" : "bg-slate-50 border-slate-200 text-slate-600 hover:text-slate-900"
-          }`}
-          title="Maximize Canvas Area (95-100% Window Width)"
-        >
-          <Maximize2 className="w-3.5 h-3.5" /> {isMaximizedCanvas ? "Restore" : "Maximize"}
-        </button>
-
-        {/* Overlays & Fullscreen Toggles */}
-        <div className="flex items-center gap-1 font-mono">
-          <button
-            onClick={() => setShowGrid(!showGrid)}
-            className={`p-1.5 rounded-lg border text-xs transition-all ${
-              showGrid ? "bg-slate-900 text-white border-slate-900 shadow-xs" : "bg-slate-50 border-slate-200 text-slate-500 hover:text-slate-900"
-            }`}
-            title="Toggle Pixel Grid Guides"
-          >
-            <Grid className="w-3.5 h-3.5" />
-          </button>
-
-          <button
-            onClick={() => setShowRulers(!showRulers)}
-            className={`p-1.5 rounded-lg border text-xs transition-all ${
-              showRulers ? "bg-slate-900 text-white border-slate-900 shadow-xs" : "bg-slate-50 border-slate-200 text-slate-500 hover:text-slate-900"
-            }`}
-            title="Toggle Workspace Rulers"
-          >
-            <Move className="w-3.5 h-3.5" />
-          </button>
-
-          <button
-            onClick={() => setIsFullscreen(!isFullscreen)}
-            className={`px-2.5 py-1 rounded-lg border text-xs font-bold transition-all ${
-              isFullscreen ? "bg-slate-900 text-white border-slate-900 shadow-xs" : "bg-slate-50 border-slate-200 text-slate-600 hover:text-slate-900"
-            }`}
-            title="Full Screen Preview Studio (F11)"
-          >
-            F11
+            <Smartphone className="w-3.5 h-3.5" />
+            <span className="hidden lg:inline">Mobile</span>
           </button>
         </div>
       </div>
 
-      {/* Right: Dual Monitor Launch, AutoSave & Inspector Toggle */}
-      <div className="flex items-center gap-2 font-mono">
-        {isSavedSuccess ? (
-          <span className="text-xs text-emerald-700 font-bold flex items-center gap-1">
-            <Save className="w-3.5 h-3.5 text-emerald-600" /> Saved
-          </span>
-        ) : isSaving ? (
-          <span className="text-xs text-slate-700 font-bold flex items-center gap-1">
-            <RefreshCw className="w-3.5 h-3.5 animate-spin" /> Saving...
-          </span>
-        ) : null}
+      {/* ═══ Right: Actions, Gemini AI Copilot, Inspector Toggle, Save ═══ */}
+      <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+        {/* Quick Actions Toolstrip */}
+        <div className="flex items-center bg-[#01040D] border border-cyan-500/30 rounded-xl p-0.5 shadow-inner shrink-0">
+          {onResetDefaults && (
+            <button
+              onClick={onResetDefaults}
+              className="p-1.5 rounded-lg text-slate-400 hover:text-cyan-300 hover:bg-cyan-500/20 transition-all cursor-pointer"
+              title="Reset all blocks to Dragon Studios defaults"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+            </button>
+          )}
 
-        <Button
-          onClick={onPopoutWindow}
-          variant="outline"
-          className="text-xs border-slate-200 text-slate-700 hover:bg-slate-50 px-2.5 py-1 font-mono font-semibold"
-          title="Open Dual Monitor Live Preview Window"
+          <button
+            onClick={onRefreshCanvas}
+            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-cyan-500/20 transition-all cursor-pointer"
+            title="Reload live website canvas"
+          >
+            <RefreshCw className="w-3.5 h-3.5" />
+          </button>
+
+          <button
+            onClick={onPopoutWindow}
+            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-cyan-500/20 transition-all cursor-pointer"
+            title="Open live website in new tab"
+          >
+            <ExternalLink className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
+        {/* PROMINENT GEMINI AI BUTTON */}
+        <button
+          onClick={() => setIsAiOpen?.(!isAiOpen)}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-heading font-black tracking-wider uppercase transition-all cursor-pointer shadow-lg shrink-0 ${
+            isAiOpen
+              ? "bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-400 text-black border-[#00f0ff] shadow-cyan-500/50 scale-105"
+              : "bg-gradient-to-r from-blue-900/70 via-[#040D24] to-blue-900/70 border-cyan-400/50 text-[#00f0ff] hover:border-cyan-300 hover:text-white shadow-cyan-500/20"
+          }`}
+          title="Open Google Gemini AI Copilot"
         >
-          <ExternalLink className="w-3.5 h-3.5 mr-1 text-slate-500" /> Dual Monitor
-        </Button>
+          <Sparkles className="w-3.5 h-3.5 text-[#00f0ff] animate-pulse" />
+          <span>✦ GEMINI AI</span>
+        </button>
 
-        <Button
-          onClick={onRefreshCanvas}
-          variant="outline"
-          className="text-xs border-slate-200 text-slate-700 hover:bg-slate-50 px-2.5 py-1 font-mono font-semibold"
-        >
-          <RefreshCw className="w-3.5 h-3.5 mr-1" /> Sync
-        </Button>
-
-        <Button
-          onClick={onPublishAll}
-          disabled={isSaving}
-          className="bg-slate-900 hover:bg-slate-800 text-white text-xs px-4 py-1 font-bold shadow-xs"
-        >
-          <Save className="w-3.5 h-3.5 mr-1.5" /> Publish All
-        </Button>
-
+        {/* Inspector Toggle */}
         <button
           onClick={() => setIsRightOpen(!isRightOpen)}
-          className={`p-2 rounded-xl border transition-all ${
+          className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl border text-xs font-mono font-bold transition-all cursor-pointer shrink-0 ${
             isRightOpen
-              ? "bg-slate-900 text-white border-slate-900 shadow-xs"
-              : "bg-slate-50 border-slate-200 text-slate-500 hover:text-slate-900"
+              ? "bg-cyan-500/20 text-[#00f0ff] border-cyan-400"
+              : "bg-[#01040D] border-cyan-500/20 text-slate-400 hover:text-white hover:border-cyan-400"
           }`}
-          title="Toggle Right Inspector Panel"
+          title="Toggle Property Inspector"
         >
-          <Sliders className="w-4 h-4" />
+          <Sliders className="w-3.5 h-3.5" />
+          <span className="hidden sm:inline">Inspector</span>
+        </button>
+
+        {/* Save & Publish Button */}
+        <button
+          onClick={onPublishAll}
+          disabled={isSaving}
+          className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-500 text-black text-xs font-heading font-black tracking-wider uppercase shadow-lg shadow-cyan-500/40 hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shrink-0"
+        >
+          {isSaving ? (
+            <>
+              <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+              <span>SAVING...</span>
+            </>
+          ) : isSavedSuccess ? (
+            <>
+              <CheckCircle2 className="w-3.5 h-3.5 text-black" />
+              <span>SAVED!</span>
+            </>
+          ) : (
+            <>
+              <Save className="w-3.5 h-3.5" />
+              <span>SAVE & PUBLISH</span>
+            </>
+          )}
         </button>
       </div>
-    </div>
+    </header>
   );
 }

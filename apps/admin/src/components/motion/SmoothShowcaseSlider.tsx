@@ -21,9 +21,9 @@ interface SlideItem {
 const SHOWCASE_SLIDES: SlideItem[] = [
   {
     id: "slide-embers",
-    title: "Embers of Valyria",
-    subtitle: "AAA Open-World Fantasy RPG powered by Dragon Engine v5.4",
-    category: "AAA TITLE SHOWCASE",
+    title: "Dragon Slayer 3D: Realm of Fire",
+    subtitle: "3D Open-World Fantasy RPG powered by Dragon 3D Engine",
+    category: "3D GAME SHOWCASE",
     badge: "FEATURED GAME",
     gradient: "from-amber-600 via-pink-600 to-purple-600",
     glowColor: "rgba(245, 158, 11, 0.25)",

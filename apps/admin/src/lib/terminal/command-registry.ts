@@ -1376,7 +1376,7 @@ registerCommand({
   aliases: ["d games"],
   namespace: "games",
   category: "GAMES CONTENT",
-  description: "List AAA game titles and release status from Neon PostgreSQL.",
+  description: "List 3D & 2D game titles and release status from Neon PostgreSQL.",
   usage: "dragon games list",
   requiredPermission: "cms.read",
   dangerLevel: "SAFE",
@@ -1394,7 +1394,7 @@ registerCommand({
     const rows = games.map((g) => [g.slug, g.name, g.status, g.isPublished ? "YES" : "NO"]);
 
     const table = formatTableOutput(headers, rows);
-    return { exitCode: 0, output: `DRAGON AAA GAMES CATALOG (${games.length})\n\n${table}`, format: "table" };
+    return { exitCode: 0, output: `DRAGON GAMES CATALOG (${games.length})\n\n${table}`, format: "table" };
   },
 });
 
@@ -1402,7 +1402,7 @@ registerCommand({
   name: "dragon games get",
   namespace: "games",
   category: "GAMES CONTENT",
-  description: "Get detailed AAA game info by slug or ID.",
+  description: "Get detailed game info by slug or ID.",
   usage: "dragon games get <slug|id>",
   requiredPermission: "cms.read",
   dangerLevel: "SAFE",
@@ -1442,7 +1442,7 @@ registerCommand({
   name: "dragon games publish",
   namespace: "games",
   category: "GAMES CONTENT",
-  description: "Publish AAA game content to public website (isPublished = true).",
+  description: "Publish game content to public website (isPublished = true).",
   usage: "dragon games publish <slug>",
   requiredPermission: "cms.publish",
   dangerLevel: "OPERATIONAL",

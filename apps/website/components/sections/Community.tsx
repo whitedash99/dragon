@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Send, Check, Twitter, Youtube } from "lucide-react";
 import { OFFICIAL_SOCIALS } from "@/lib/site";
 import { Button } from "@/components/ui/button";
+import { WhatsAppIcon, ThreadsIcon } from "@/components/ui/social-icons";
 
 export default function Community() {
   const [email, setEmail] = useState("");
@@ -92,28 +93,52 @@ export default function Community() {
             {/* Actions */}
             <div className="pt-6 flex flex-col items-center gap-6">
               {/* Primary CTAs */}
-              <div className="flex flex-wrap items-center justify-center gap-4">
+              <div className="flex flex-wrap items-center justify-center gap-3">
                 <Button
                   variant="default"
                   size="lg"
-                  className="rounded-xl gap-2 px-8 text-xs"
+                  className="rounded-xl gap-2 px-6 text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-mono font-bold"
                   asChild
                 >
-                  <a href={OFFICIAL_SOCIALS.youtube.href} target="_blank" rel="noopener noreferrer">
-                    <Youtube className="size-4 text-white" />
-                    <span>{cmsText.youtubeCta}</span>
+                  <a href={OFFICIAL_SOCIALS.whatsapp.href} target="_blank" rel="noopener noreferrer">
+                    <WhatsAppIcon className="size-4 text-white" />
+                    <span>WHATSAPP CHANNEL</span>
                   </a>
                 </Button>
 
                 <Button
                   variant="outline"
                   size="lg"
-                  className="rounded-xl gap-2 px-8 text-xs border-slate-700/80 hover:border-cyan-400"
+                  className="rounded-xl gap-2 px-6 text-xs border-cyan-500/40 hover:border-cyan-400 font-mono font-bold"
+                  asChild
+                >
+                  <a href={OFFICIAL_SOCIALS.threads.href} target="_blank" rel="noopener noreferrer">
+                    <ThreadsIcon className="size-4 text-cyan-400" />
+                    <span>THREADS FEED</span>
+                  </a>
+                </Button>
+
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="rounded-xl gap-2 px-6 text-xs border-slate-700/80 hover:border-red-500 font-mono font-bold"
+                  asChild
+                >
+                  <a href={OFFICIAL_SOCIALS.youtube.href} target="_blank" rel="noopener noreferrer">
+                    <Youtube className="size-4 text-red-400" />
+                    <span>YOUTUBE</span>
+                  </a>
+                </Button>
+
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="rounded-xl gap-2 px-6 text-xs border-slate-700/80 hover:border-sky-400 font-mono font-bold"
                   asChild
                 >
                   <a href={OFFICIAL_SOCIALS.x.href} target="_blank" rel="noopener noreferrer">
-                    <Twitter className="size-4 text-cyan-400" />
-                    <span>{cmsText.xCta}</span>
+                    <Twitter className="size-4 text-sky-400" />
+                    <span>X (TWITTER)</span>
                   </a>
                 </Button>
               </div>

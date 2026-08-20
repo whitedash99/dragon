@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useCallback } from "react";
 import { cn } from "@/lib/cn";
+import { isEditorEnvironment } from "@/lib/cms/editorSafety";
 
 interface Circle {
   x: number;
@@ -67,8 +68,8 @@ export function Particles({
   }, [resizeCanvas, drawParticles]);
 
   useEffect(() => {
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reducedMotion) return;
+    const reducedMotion = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reducedMotion || isEditorEnvironment()) return;
 
     if (canvasRef.current) {
       context.current = canvasRef.current.getContext("2d");

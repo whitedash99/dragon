@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Lock, Mail, ArrowRight, Gamepad2, Sparkles, AlertCircle } from "lucide-react";
+import { Lock, Mail, ArrowRight, Gamepad2, Sparkles, AlertCircle, RefreshCw } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { SceneBackground } from "@/components/background/SceneBackground";
@@ -18,6 +18,7 @@ export default function LoginPage() {
   const [rememberMe, setRememberMe] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [authenticatedUser, setAuthenticatedUser] = useState<{ name?: string; email?: string } | null>(null);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,13 +37,11 @@ export default function LoginPage() {
         throw new Error(data.error || "Authentication failed.");
       }
 
-      if (data.user?.role && ["SUPER_ADMIN", "ADMINISTRATOR", "OWNER", "DEVELOPER"].includes(data.user.role)) {
-        router.push("/admin");
-      } else {
-        router.push("/profile");
-      }
-    } catch (err: any) {
-      setError(err.message || "Invalid credentials.");
+      setAuthenticatedUser(data.user);
+      router.push("/dashboard?welcome=true");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Invalid credentials.";
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -75,7 +74,7 @@ export default function LoginPage() {
                 DRAGONID SIGN IN
               </h1>
               <p className="mt-1 text-xs text-muted-foreground font-sans">
-                Central identity portal for Dragon Studios games, playtests & admin tools.
+                Central identity portal for Dragon Studios games, playtests & player hub.
               </p>
             </div>
 
@@ -97,8 +96,8 @@ export default function LoginPage() {
             <div className="mt-6">
               <button
                 type="button"
-                onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
-                className="w-full flex items-center justify-center gap-3 py-3 px-4 bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs rounded-xl shadow-lg transition-all border border-slate-200"
+                onClick={() => signIn("google", { callbackUrl: "/dashboard?welcome=true" })}
+                className="w-full flex items-center justify-center gap-3 py-3 px-4 bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs rounded-xl shadow-lg transition-all border border-slate-200 cursor-pointer"
               >
                 <svg className="w-4 h-4" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -138,11 +137,14 @@ export default function LoginPage() {
 
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-white">
-                    Password
+                  <label className="text-xs font-bold uppercase tracking-wider text-white">
+                    Secret Password
                   </label>
-                  <Link href="/auth/forgot-password" className="text-xs text-[#ff1e4b] hover:underline font-bold">
-                    Forgot?
+                  <Link
+                    href="/forgot-password"
+                    className="text-[10px] text-muted-foreground hover:text-[#ff1e4b] transition-colors"
+                  >
+                    Forgot Password?
                   </Link>
                 </div>
                 <div className="relative">
@@ -158,15 +160,15 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between text-xs pt-1">
-                <label className="flex items-center gap-2 text-muted-foreground cursor-pointer select-none">
+              <div className="flex items-center justify-between pt-1">
+                <label className="flex items-center gap-2 cursor-pointer text-xs text-muted-foreground">
                   <input
                     type="checkbox"
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
-                    className="rounded bg-black/40 border-white/20 text-[#ff1e4b] focus:ring-[#ff1e4b]"
+                    className="rounded border-white/10 bg-black/60 text-[#ff1e4b] focus:ring-0"
                   />
-                  <span>Remember Session</span>
+                  <span>Trust this device</span>
                 </label>
               </div>
 
@@ -175,24 +177,21 @@ export default function LoginPage() {
                 disabled={loading}
                 variant="solidRed"
                 size="lg"
-                className="w-full rounded-xl gap-2 mt-4 text-xs font-bold uppercase"
+                className="w-full gap-2 rounded-xl text-xs uppercase tracking-wider mt-4"
               >
                 {loading ? (
-                  <span>AUTHENTICATING DRAGONID...</span>
+                  <RefreshCw className="size-4 animate-spin" />
                 ) : (
-                  <>
-                    <span>SIGN IN TO DRAGONID</span>
-                    <ArrowRight className="size-4" />
-                  </>
+                  <ArrowRight className="size-4" />
                 )}
+                <span>AUTHENTICATE & ENTER DRAGON STUDIOS</span>
               </Button>
             </form>
 
-            {/* Footer Prompt */}
-            <div className="mt-8 text-center text-xs text-muted-foreground font-sans">
-              Don&apos;t have a DragonID Account?{" "}
+            <div className="mt-8 border-t border-white/10 pt-6 text-center text-xs text-muted-foreground">
+              New to Dragon Studios?{" "}
               <Link href="/register" className="font-bold text-white hover:text-[#ff1e4b] transition-colors">
-                Create Account →
+                Create DragonID Account
               </Link>
             </div>
           </motion.div>

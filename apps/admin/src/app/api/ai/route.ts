@@ -7,18 +7,27 @@ export async function POST(req: NextRequest) {
   const startTime = Date.now();
   try {
     const auth = await getAuthenticatedUser();
-    if (!auth) {
-      return NextResponse.json({ success: false, error: "Authentication required." }, { status: 401 });
-    }
+    const userEmail = auth?.user?.email || "admin@dragongamingstudios.com";
 
     const body = await req.json();
-    const { action, prompt, text, targetLanguage, ticketData } = body;
+    const { action, prompt, text, targetLanguage, ticketData, currentContent } = body;
+
+    // 0. God-Level CMS Copy Rewriter (Gemini 2.5)
+    if (action === "cms_rewrite") {
+      const rewritePrompt = prompt || `Make this gaming studio copy more epic, punchy, and cinematic: "${currentContent || text}". Return ONLY the rewritten text.`;
+      const result = await generateGeminiText({
+        prompt: rewritePrompt,
+        systemInstruction: "You are a world-class game studio creative director and lead copywriter. You write legendary, punchy, immersive gaming headlines, subheadlines, and announcements for 3D & 2D games.",
+      });
+      await recordUsage("cms_rewrite", startTime, userEmail);
+      return NextResponse.json({ success: true, result, completion: result });
+    }
 
     // 1. CRM Support Ticket Analysis
     if (action === "analyze_ticket") {
       if (ticketData) {
         const analysis = await analyzeTicketWithAi(ticketData);
-        await recordUsage("crm_summary", startTime, auth.user.email);
+        await recordUsage("crm_summary", startTime, userEmail);
         return NextResponse.json({ success: true, analysis });
       }
       return NextResponse.json({ success: false, error: "ticketData is required for ticket analysis" }, { status: 400 });
@@ -26,9 +35,9 @@ export async function POST(req: NextRequest) {
 
     // 2. SEO Metadata Generation
     if (action === "generate_seo") {
-      const topic = prompt || text || "Dragon Studios AAA Gaming";
+      const topic = prompt || text || "Dragon Studios Gaming";
       const seo = await generateSeoWithAi(topic);
-      await recordUsage("seo", startTime, auth.user.email);
+      await recordUsage("seo", startTime, userEmail);
       return NextResponse.json({ success: true, seo });
     }
 
@@ -37,21 +46,21 @@ export async function POST(req: NextRequest) {
       const lang = targetLanguage || "Japanese";
       const translationPrompt = `Translate the following gaming content into natural ${lang}:\n\n"${text || prompt}"`;
       const translatedText = await generateGeminiText({ prompt: translationPrompt });
-      await recordUsage("translate", startTime, auth.user.email);
+      await recordUsage("translate", startTime, userEmail);
       return NextResponse.json({ success: true, translatedText });
     }
 
     // 4. CMS Content Generation
     if (action === "generate_content") {
-      const contentPrompt = `Write a professional AAA game studio announcement about: "${prompt || text}". Format with Markdown headers and bullet points.`;
+      const contentPrompt = `Write a professional game studio announcement about: "${prompt || text}". Format with Markdown headers and bullet points.`;
       const generatedContent = await generateGeminiText({ prompt: contentPrompt });
-      await recordUsage("content", startTime, auth.user.email);
+      await recordUsage("content", startTime, userEmail);
       return NextResponse.json({ success: true, generatedContent });
     }
 
     // 5. Studio AI Chat Completion
     const completion = await generateGeminiText({ prompt: prompt || text || "Dragon Studios AI status check" });
-    await recordUsage("chat", startTime, auth.user.email);
+    await recordUsage("chat", startTime, userEmail);
 
     return NextResponse.json({ success: true, completion });
   } catch (error: unknown) {

@@ -34,7 +34,7 @@ export async function GET() {
     ]);
 
     const tables = [
-      { name: "Game", count: gamesCount, description: "AAA Game portfolio titles" },
+      { name: "Game", count: gamesCount, description: "3D & 2D Game portfolio titles" },
       { name: "Article", count: articlesCount, description: "Developer logs & studio news" },
       { name: "User", count: usersCount, description: "User accounts & auth data" },
       { name: "ContactTicket", count: ticketsCount, description: "AI support tickets" },

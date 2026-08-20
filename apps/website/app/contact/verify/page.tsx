@@ -102,7 +102,7 @@ function VerificationContent() {
           </div>
 
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Your support ticket is active in our PostgreSQL database. You can track your ticket status, read replies, and upload files without creating an account using your secure tracking link below.
+            Your support ticket is active in our secure support network. You can track your ticket status, read replies, and upload files without creating an account using your secure tracking link below.
           </p>
 
           <div className="flex flex-wrap items-center gap-4 pt-2">

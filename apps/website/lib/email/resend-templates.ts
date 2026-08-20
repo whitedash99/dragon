@@ -19,7 +19,7 @@ export interface TicketEmailPayload {
 }
 
 /**
- * Render Customer Confirmation HTML Email (Responsive Dark Theme AAA Game Studio Styling)
+ * Render Customer Confirmation HTML Email (Responsive Dark Theme Game Studio Styling)
  */
 export function renderCustomerResendEmail(data: TicketEmailPayload): string {
   const year = new Date().getFullYear();

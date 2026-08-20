@@ -1,7 +1,7 @@
+"use client";
+
 import React, { useState } from "react";
-import { Layers, LayoutGrid, Palette, Image as ImageIcon, GripVertical } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { DigitalAssetsPanel } from "./DigitalAssetsPanel";
+import { Search, Layers, Plus, Trash2, Check, X, Sparkles, Folder } from "lucide-react";
 
 interface CMSBlock {
   id: string;
@@ -24,7 +24,9 @@ interface VisualStudioLeftSidebarProps {
   onSelectBlock: (block: CMSBlock) => void;
   categories: string[];
   selectedCategory: string;
-  setSelectedCategory: (cat: string) => void;
+  onSelectCategory: (cat: string) => void;
+  onAddBlock?: (newBlock: { key: string; category: string; label: string; type: string; content: string }) => Promise<void>;
+  onDeleteBlock?: (key: string) => Promise<void>;
 }
 
 export function VisualStudioLeftSidebar({
@@ -34,172 +36,268 @@ export function VisualStudioLeftSidebar({
   onSelectBlock,
   categories,
   selectedCategory,
-  setSelectedCategory,
+  onSelectCategory,
+  onAddBlock,
+  onDeleteBlock,
 }: VisualStudioLeftSidebarProps) {
-  const [tab, setTab] = useState<"tree" | "library" | "tokens" | "media">("tree");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newKey, setNewKey] = useState("");
+  const [newCategory, setNewCategory] = useState("Hero");
+  const [newLabel, setNewLabel] = useState("");
+  const [newContent, setNewContent] = useState("");
+  const [isAdding, setIsAdding] = useState(false);
 
   if (!isOpen) return null;
 
-  const componentLibrary = [
-    { title: "Hero Section", category: "Hero", type: "hero", desc: "Cinematic headline with CTA buttons" },
-    { title: "Games Showcase", category: "Games", type: "games", desc: "AAA Game catalog grid & specs" },
-    { title: "Studio Features", category: "Studio", type: "features", desc: "3D Graphics engine telemetry" },
-    { title: "Testimonials & Reviews", category: "Community", type: "testimonials", desc: "Player quote carousel" },
-    { title: "FAQ Accordion", category: "Support", type: "faq", desc: "Expandable questions & answers" },
-    { title: "Newsletter Signup", category: "Forms", type: "forms", desc: "Subscriber email form" },
-  ];
+  const filteredBlocks = blocks.filter((b) => {
+    const matchesSearch =
+      b.label?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      b.key.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      b.content?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCat = selectedCategory === "All" || b.category.toLowerCase() === selectedCategory.toLowerCase();
+    return matchesSearch && matchesCat;
+  });
+
+  const handleCreateBlock = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newKey.trim() || !newContent.trim()) return;
+
+    setIsAdding(true);
+    try {
+      if (onAddBlock) {
+        await onAddBlock({
+          key: newKey.trim(),
+          category: newCategory,
+          label: newLabel.trim() || newKey.trim(),
+          type: "text",
+          content: newContent.trim(),
+        });
+      }
+      setNewKey("");
+      setNewLabel("");
+      setNewContent("");
+      setShowAddModal(false);
+    } catch (e) {
+      console.error("Create block failed", e);
+    } finally {
+      setIsAdding(false);
+    }
+  };
 
   return (
-    <div className="w-80 bg-white border-r border-slate-200 flex flex-col h-full shrink-0 select-none text-xs text-slate-900">
-      {/* Top Sidebar Tab Controls */}
-      <div className="flex items-center justify-around border-b border-slate-100 p-2 bg-slate-50">
-        <button
-          onClick={() => setTab("tree")}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-            tab === "tree" ? "bg-slate-900 text-white shadow-xs" : "text-slate-500 hover:text-slate-900"
-          }`}
-          title="Website Structure Tree"
-        >
-          <Layers className="w-3.5 h-3.5" /> Tree
-        </button>
+    <div className="w-80 bg-[#040D24] border-r border-cyan-500/20 flex flex-col h-full shrink-0 select-none text-xs text-[#F8FAFC]">
+      {/* ═══ Header & Search ═══ */}
+      <div className="p-4 border-b border-cyan-500/20 space-y-3 bg-[#020718]">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Layers className="w-4 h-4 text-cyan-400" />
+            <span className="font-heading font-black text-xs text-white uppercase tracking-wider">
+              Content Blocks ({filteredBlocks.length})
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowAddModal(true)}
+            className="px-2.5 py-1 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-500 text-black font-mono font-black text-[10px] uppercase tracking-wider flex items-center gap-1 hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-md shadow-cyan-500/20"
+          >
+            <Plus className="size-3" />
+            <span>Add Block</span>
+          </button>
+        </div>
 
-        <button
-          onClick={() => setTab("library")}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-            tab === "library" ? "bg-slate-900 text-white shadow-xs" : "text-slate-500 hover:text-slate-900"
-          }`}
-          title="Drag and Drop Component Library"
-        >
-          <LayoutGrid className="w-3.5 h-3.5" /> Library
-        </button>
+        {/* Search Input */}
+        <div className="relative">
+          <Search className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-2.5" />
+          <input
+            type="text"
+            placeholder="Filter sections or keys..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-8 pr-3 py-1.5 rounded-xl bg-[#01040D] border border-cyan-500/20 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 font-mono"
+          />
+        </div>
 
-        <button
-          onClick={() => setTab("tokens")}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-            tab === "tokens" ? "bg-slate-900 text-white shadow-xs" : "text-slate-500 hover:text-slate-900"
-          }`}
-          title="Global Design Tokens"
-        >
-          <Palette className="w-3.5 h-3.5" /> Tokens
-        </button>
-
-        <button
-          onClick={() => setTab("media")}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-            tab === "media" ? "bg-slate-900 text-white shadow-xs" : "text-slate-500 hover:text-slate-900"
-          }`}
-          title="Digital Assets Manager (DAM)"
-        >
-          <ImageIcon className="w-3.5 h-3.5" /> Assets
-        </button>
+        {/* Categories Pills */}
+        <div className="flex flex-wrap gap-1">
+          {categories.slice(0, 6).map((cat) => (
+            <button
+              key={cat}
+              onClick={() => onSelectCategory(cat)}
+              className={`px-2 py-0.5 rounded-lg text-[10px] font-mono font-bold transition-all cursor-pointer ${
+                selectedCategory === cat
+                  ? "bg-gradient-to-r from-blue-600 to-cyan-400 text-black font-black"
+                  : "bg-[#01040D] border border-cyan-500/20 text-slate-400 hover:text-white"
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Tab Content */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {tab === "tree" && (
-          <div className="space-y-4">
-            {/* Category Filter Pills */}
-            <div className="flex flex-wrap gap-1">
-              {categories.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setSelectedCategory(cat)}
-                  className={`px-2 py-0.5 rounded-md text-[11px] font-medium transition-all ${
-                    selectedCategory === cat
-                      ? "bg-slate-900 text-white font-semibold shadow-xs"
-                      : "bg-slate-50 border border-slate-200 text-slate-600 hover:text-slate-900"
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
-
-            {/* Tree Structure Nodes */}
-            <div className="space-y-1.5 font-mono">
-              {blocks.map((b) => {
-                const isSelected = selectedBlock?.key === b.key;
-                return (
-                  <div
-                    key={b.id}
-                    onClick={() => onSelectBlock(b)}
-                    className={`p-2.5 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${
-                      isSelected
-                        ? "bg-slate-900 border-slate-900 text-white shadow-xs"
-                        : "bg-slate-50 border-slate-200 text-slate-800 hover:bg-slate-100"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2 overflow-hidden">
-                      <GripVertical className="w-3.5 h-3.5 opacity-50 shrink-0 cursor-grab" />
-                      <div className="truncate">
-                        <div className="font-bold text-xs truncate">{b.label || b.key}</div>
-                        <div className="text-[10px] opacity-75 truncate">{b.key}</div>
-                      </div>
-                    </div>
-
-                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${b.isPublished ? (isSelected ? "bg-emerald-800 text-emerald-100 border-emerald-700" : "bg-emerald-50 text-emerald-800 border-emerald-200") : (isSelected ? "bg-slate-800 text-slate-300 border-slate-700" : "bg-slate-200 text-slate-700 border-slate-300")}`}>
-                      {b.isPublished ? "Live" : "Draft"}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
+      {/* ═══ Blocks List ═══ */}
+      <div className="flex-1 overflow-y-auto p-3 space-y-1.5">
+        {filteredBlocks.length === 0 ? (
+          <div className="py-12 text-center text-slate-500 font-mono text-xs">
+            No matching blocks found.
           </div>
-        )}
-
-        {tab === "library" && (
-          <div className="space-y-3 font-mono">
-            <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">
-              Drag & Drop Components
-            </div>
-            {componentLibrary.map((comp) => (
+        ) : (
+          filteredBlocks.map((b) => {
+            const isSelected = selectedBlock?.key === b.key;
+            return (
               <div
-                key={comp.type}
-                className="p-3 bg-slate-50 border border-slate-200 rounded-xl hover:border-slate-400 cursor-grab transition-all space-y-1"
+                key={b.key}
+                onClick={() => onSelectBlock(b)}
+                className={`group relative p-3 rounded-xl border transition-all cursor-pointer flex flex-col gap-1 ${
+                  isSelected
+                    ? "bg-[#05153B] border-cyan-400 shadow-[0_0_20px_rgba(0,240,255,0.25)]"
+                    : "bg-[#020718] border-cyan-500/15 hover:border-cyan-400/40 hover:bg-[#030B22]"
+                }`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-slate-900 text-xs">{comp.title}</span>
-                  <Badge variant="cyan" size="sm">{comp.category}</Badge>
+                  <div className="flex items-center gap-1.5 truncate">
+                    <span className="font-mono text-[10px] text-cyan-400 font-bold uppercase truncate">
+                      {b.category}
+                    </span>
+                    <span className="text-slate-600">•</span>
+                    <span className="font-heading font-bold text-xs text-white truncate">
+                      {b.label || b.key}
+                    </span>
+                  </div>
+
+                  {/* Delete Block (Only for non-default or with confirmation) */}
+                  {onDeleteBlock && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (confirm(`Delete content block "${b.key}" from Neon PostgreSQL?`)) {
+                          onDeleteBlock(b.key);
+                        }
+                      }}
+                      className="opacity-0 group-hover:opacity-100 p-1 text-slate-500 hover:text-red-400 transition-opacity cursor-pointer"
+                      title="Delete block"
+                    >
+                      <Trash2 className="size-3.5" />
+                    </button>
+                  )}
                 </div>
-                <p className="text-[11px] text-slate-500 leading-snug font-sans">{comp.desc}</p>
+
+                <div className="font-mono text-[10px] text-slate-400 truncate">
+                  Key: <span className="text-slate-300">{b.key}</span>
+                </div>
+
+                <div className="font-sans text-xs text-slate-300 line-clamp-2 mt-0.5">
+                  {b.content}
+                </div>
               </div>
-            ))}
-          </div>
-        )}
-
-        {tab === "tokens" && (
-          <div className="space-y-4 font-mono">
-            <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">
-              Global Brand Tokens
-            </div>
-
-            {/* Colors */}
-            <div className="space-y-2">
-              <span className="text-[10px] font-bold text-slate-500 block uppercase">Primary Palette</span>
-              <div className="grid grid-cols-4 gap-2">
-                <div className="h-9 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center text-[9px] font-mono text-white font-bold">#0f172a</div>
-                <div className="h-9 rounded-lg bg-slate-700 border border-slate-600 flex items-center justify-center text-[9px] font-mono text-white font-bold">#334155</div>
-                <div className="h-9 rounded-lg bg-sky-600 border border-sky-500 flex items-center justify-center text-[9px] font-mono text-white font-bold">#0284c7</div>
-                <div className="h-9 rounded-lg bg-emerald-600 border border-emerald-500 flex items-center justify-center text-[9px] font-mono text-white font-bold">#059669</div>
-              </div>
-            </div>
-
-            {/* Typography Tokens */}
-            <div className="space-y-2">
-              <span className="text-[10px] font-bold text-slate-500 block uppercase">Typography Tokens</span>
-              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1.5 font-mono text-[11px]">
-                <div className="text-slate-900 font-semibold">--font-sans: &quot;Geist Sans&quot;</div>
-                <div className="text-slate-700">--font-header: &quot;Rajdhani&quot;</div>
-                <div className="text-sky-700 font-semibold">--font-mono: &quot;Geist Mono&quot;</div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {tab === "media" && (
-          <DigitalAssetsPanel onInsertAsset={(assetUrl) => console.log("Inserted media asset:", assetUrl)} />
+            );
+          })
         )}
       </div>
+
+      {/* ═══ Add New Block Modal ═══ */}
+      {showAddModal && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="w-full max-w-md bg-[#040D24] border-2 border-cyan-500/40 rounded-3xl p-6 shadow-2xl space-y-4 text-white">
+            <div className="flex items-center justify-between border-b border-cyan-500/20 pb-3">
+              <div className="flex items-center gap-2">
+                <Plus className="size-4 text-cyan-400" />
+                <h3 className="font-heading font-black text-sm uppercase tracking-wider">
+                  Create Content Block
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowAddModal(false)}
+                className="p-1 text-slate-400 hover:text-white cursor-pointer"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateBlock} className="space-y-3">
+              <div>
+                <label className="block text-[10px] font-mono text-cyan-300 uppercase mb-1">
+                  Block Key (e.g. hero.announcement)
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. games.promo_banner"
+                  value={newKey}
+                  onChange={(e) => setNewKey(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl bg-[#01040D] border border-cyan-500/30 text-xs text-white placeholder-slate-500 font-mono focus:border-cyan-400 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-mono text-cyan-300 uppercase mb-1">
+                  Category
+                </label>
+                <select
+                  value={newCategory}
+                  onChange={(e) => setNewCategory(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl bg-[#01040D] border border-cyan-500/30 text-xs text-white font-mono focus:border-cyan-400 focus:outline-none"
+                >
+                  <option value="Hero">Hero</option>
+                  <option value="Games">Games</option>
+                  <option value="Studio">Studio</option>
+                  <option value="News">News</option>
+                  <option value="Footer">Footer</option>
+                  <option value="General">General</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-mono text-cyan-300 uppercase mb-1">
+                  Human Label
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Games Promo Banner Text"
+                  value={newLabel}
+                  onChange={(e) => setNewLabel(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl bg-[#01040D] border border-cyan-500/30 text-xs text-white placeholder-slate-500 font-mono focus:border-cyan-400 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-mono text-cyan-300 uppercase mb-1">
+                  Initial Content Text
+                </label>
+                <textarea
+                  required
+                  rows={3}
+                  placeholder="Enter initial content..."
+                  value={newContent}
+                  onChange={(e) => setNewContent(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl bg-[#01040D] border border-cyan-500/30 text-xs text-white placeholder-slate-500 font-sans focus:border-cyan-400 focus:outline-none"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-cyan-500/20">
+                <button
+                  type="button"
+                  onClick={() => setShowAddModal(false)}
+                  className="px-4 py-2 rounded-xl border border-slate-700 text-xs text-slate-400 hover:text-white font-mono cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isAdding}
+                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-400 text-black font-mono font-black text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-lg shadow-cyan-500/25 hover:scale-105 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+                >
+                  <Check className="size-3.5" />
+                  <span>{isAdding ? "Saving to Neon..." : "Create Block"}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

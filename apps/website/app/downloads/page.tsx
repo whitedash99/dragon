@@ -6,9 +6,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   Download, 
   Monitor, 
+  Smartphone,
   Pause, 
   Play, 
-  X, 
   HardDrive, 
   Check, 
   Sparkles, 
@@ -16,16 +16,12 @@ import {
   Activity, 
   ChevronRight,
   Settings,
-  Terminal,
-  RefreshCw,
-  Sliders,
-  Bot,
-  Flame
+  Gamepad2,
+  Zap
 } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { SceneBackground } from "@/components/background/SceneBackground";
-import { DashboardNav } from "@/components/dashboard/DashboardNav";
 import { userLibrary } from "@/data/userData";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
@@ -42,67 +38,73 @@ export default function DownloadsPage() {
   return (
     <SceneBackground gradient noise orbs vignette>
       <Navbar />
-      <DashboardNav />
 
-      <main className="cinematic-page relative min-h-screen overflow-x-hidden pb-32 pt-12 font-mono text-xs">
-        {/* AAA Dragon Launcher Desktop Client Hero */}
-        <section className="container-site relative z-10 mb-12">
-          <div className="rounded-3xl glass-heavy p-8 sm:p-12 border border-white/15 overflow-hidden relative">
+      <main className="cinematic-page relative min-h-screen overflow-x-hidden pb-28 pt-20 sm:pt-24 font-mono text-xs">
+        {/* Dragon Launcher Desktop & Mobile Client Hero */}
+        <section className="container-site relative z-10 mb-8 sm:mb-12 px-4 sm:px-6">
+          <div className="rounded-3xl bg-[#060D22]/90 backdrop-blur-xl p-5 sm:p-8 lg:p-12 border border-cyan-500/30 overflow-hidden relative shadow-2xl">
             <div 
               aria-hidden="true" 
-              className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-[#ff1e4b] via-purple-600 to-sky-400" 
+              className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-blue-600 via-cyan-400 to-sky-300" 
             />
 
-            <div className="grid gap-8 lg:grid-cols-12 items-center">
-              <div className="lg:col-span-7">
-                <div className="inline-flex items-center gap-2 rounded-full border border-[#ff1e4b]/30 bg-[#ff1e4b]/10 px-3.5 py-1 text-xs font-bold uppercase tracking-widest text-[#ff1e4b] mb-4">
+            <div className="grid gap-6 sm:gap-8 lg:grid-cols-12 items-center">
+              <div className="lg:col-span-7 space-y-4">
+                <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-blue-600/15 px-3.5 py-1 text-xs font-bold uppercase tracking-widest text-cyan-400">
                   <Monitor className="size-3.5" />
-                  <span>DRAGON LAUNCHER v4.2 DESKTOP CLIENT</span>
+                  <span>DRAGON CLIENT v4.2 DOWNLOADS</span>
                 </div>
 
-                <h1 className="text-4xl font-black uppercase text-white tracking-tight sm:text-5xl lg:text-6xl leading-[0.9] font-heading">
-                  ONE LAUNCHER. <br />
-                  <span className="text-[#ff1e4b]">ALL DRAGON UNIVERSES.</span>
+                <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black uppercase text-white tracking-tight leading-[0.95] font-heading">
+                  ONE CLIENT. <br />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">ALL 3D & 2D UNIVERSES.</span>
                 </h1>
 
-                <p className="mt-4 text-sm text-muted-foreground leading-relaxed sm:text-base max-w-xl font-sans">
-                  The official AAA desktop launcher for Dragon Studios. High-velocity delta patching, low-latency netcode sync, and 120 FPS high-refresh rate game updates.
+                <p className="text-xs sm:text-base text-slate-300 leading-relaxed font-sans max-w-xl">
+                  The official high-performance client for Dragon Studios games. Fast delta updates, low-latency netcode sync, and 120 FPS game builds for PC and Mobile.
                 </p>
 
-                <div className="mt-8 flex flex-wrap items-center gap-4">
-                  <Button variant="solidRed" size="xl" className="rounded-xl gap-3 px-8 text-xs font-bold uppercase" asChild>
-                    <a href="/downloads/DragonLauncher-Setup-v4.2.exe" download>
-                      <Download className="size-5" />
-                      <span>DOWNLOAD FOR WINDOWS 11/10 (124 MB)</span>
+                <div className="pt-2 flex flex-col sm:flex-row items-center gap-3">
+                  <Button variant="glow" size="lg" className="w-full sm:w-auto rounded-2xl gap-2.5 px-6 sm:px-8 text-xs font-mono font-black uppercase shadow-lg shadow-cyan-500/25" asChild>
+                    <a href="https://dragongamingstudios.vercel.app/downloads/DragonSlayer3D_Setup.exe" download>
+                      <Monitor className="size-4" />
+                      <span>DOWNLOAD PC (.EXE)</span>
                     </a>
                   </Button>
 
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <ShieldCheck className="size-4 text-emerald-400" />
-                    <span>SHA-256 Code Signed • Windows, Mac, Linux</span>
-                  </div>
+                  <Button variant="outline" size="lg" className="w-full sm:w-auto rounded-2xl gap-2.5 px-6 sm:px-8 text-xs font-mono font-bold uppercase border-cyan-500/40 text-cyan-300 hover:bg-cyan-600/20" asChild>
+                    <a href="https://dragongamingstudios.vercel.app/downloads/DragonSlayer3D.apk" download>
+                      <Smartphone className="size-4" />
+                      <span>DOWNLOAD MOBILE (.APK)</span>
+                    </a>
+                  </Button>
+                </div>
+
+                <div className="flex items-center gap-2 text-[10px] sm:text-xs text-slate-400 pt-1">
+                  <ShieldCheck className="size-4 text-emerald-400" />
+                  <span>SHA-256 Code Signed • Windows 11/10 (.exe) & Android 10+ (.apk)</span>
                 </div>
               </div>
 
               {/* Launcher Client Configuration Card */}
-              <div className="lg:col-span-5 rounded-3xl glass-heavy p-6 border border-white/15 space-y-4">
+              <div className="lg:col-span-5 rounded-3xl bg-[#040816] p-4 sm:p-6 border border-cyan-500/20 space-y-3 sm:space-y-4">
                 <div className="flex items-center justify-between border-b border-white/10 pb-3">
                   <span className="text-xs font-bold uppercase text-white flex items-center gap-2 font-heading">
-                    <Settings className="size-4 text-[#ff1e4b]" />
-                    <span>LAUNCHER CLIENT CONFIG</span>
+                    <Settings className="size-4 text-cyan-400" />
+                    <span>LAUNCHER CONFIG</span>
                   </span>
-                  <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                    VULKAN & DX12 READY
+                  <span className="text-[9px] sm:text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                    DRAGON NETCODE READY
                   </span>
                 </div>
 
-                <div className="space-y-3 text-xs text-muted-foreground">
+                <div className="space-y-2.5 sm:space-y-3 text-xs text-slate-400">
                   <div className="flex items-center justify-between py-1">
                     <span>Release Channel:</span>
                     <select
                       value={releaseChannel}
                       onChange={(e: any) => setReleaseChannel(e.target.value)}
-                      className="rounded-lg bg-black/60 px-3 py-1 text-xs text-white border border-white/10 focus:outline-none focus:border-[#ff1e4b]"
+                      className="rounded-xl bg-[#07132B] px-3 py-1.5 text-xs text-white border border-cyan-500/30 focus:outline-none focus:border-cyan-400"
                     >
                       <option value="STABLE">STABLE (Production)</option>
                       <option value="BETA">BETA (Playtest Builds)</option>
@@ -111,11 +113,11 @@ export default function DownloadsPage() {
                   </div>
 
                   <div className="flex items-center justify-between py-1">
-                    <span>Download Bandwidth Limit:</span>
+                    <span>Bandwidth Limit:</span>
                     <select
                       value={downloadLimit}
                       onChange={(e) => setDownloadLimit(e.target.value)}
-                      className="rounded-lg bg-black/60 px-3 py-1 text-xs text-white border border-white/10 focus:outline-none focus:border-[#ff1e4b]"
+                      className="rounded-xl bg-[#07132B] px-3 py-1.5 text-xs text-white border border-cyan-500/30 focus:outline-none focus:border-cyan-400"
                     >
                       <option value="UNLIMITED">UNLIMITED (Full Fiber)</option>
                       <option value="50MB">50 MB/s Cap</option>
@@ -128,8 +130,8 @@ export default function DownloadsPage() {
                     <button
                       onClick={() => setAutoStart(!autoStart)}
                       className={cn(
-                        "px-3 py-1 rounded-lg font-bold text-[10px] uppercase border transition-colors",
-                        autoStart ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" : "bg-white/5 text-muted-foreground"
+                        "px-3 py-1.5 rounded-xl font-bold text-[10px] uppercase border transition-colors cursor-pointer",
+                        autoStart ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" : "bg-white/5 text-slate-400"
                       )}
                     >
                       {autoStart ? "ENABLED" : "DISABLED"}
@@ -142,58 +144,58 @@ export default function DownloadsPage() {
         </section>
 
         {/* Active Game Download Stream Monitor */}
-        <section className="container-site relative z-10 mb-12">
-          <div className="mb-6 flex items-center justify-between">
+        <section className="container-site relative z-10 mb-8 sm:mb-12 px-4 sm:px-6">
+          <div className="mb-4 sm:mb-6 flex items-center justify-between">
             <div>
-              <span className="text-xs font-bold uppercase tracking-widest text-[#ff1e4b]">
+              <span className="text-xs font-bold uppercase tracking-widest text-cyan-400">
                 HIGH-SPEED DELTA DOWNLOADER
               </span>
-              <h2 className="mt-0.5 text-2xl font-black uppercase text-white font-heading">
-                ACTIVE DOWNLOAD STREAM & QUEUE
+              <h2 className="mt-0.5 text-xl sm:text-2xl font-black uppercase text-white font-heading">
+                ACTIVE DOWNLOAD STREAM
               </h2>
             </div>
           </div>
 
-          <div className="rounded-3xl glass-heavy p-8 border border-white/15 space-y-6">
+          <div className="rounded-3xl bg-[#060D22]/80 backdrop-blur-xl p-5 sm:p-8 border border-blue-500/20 space-y-4 sm:space-y-6 shadow-xl">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <div className="rounded-2xl bg-black/60 p-3.5 border border-white/10 shrink-0">
-                  <Activity className="size-6 text-[#ff1e4b] animate-pulse" />
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="rounded-2xl bg-blue-600/20 p-3 sm:p-3.5 border border-blue-500/30 shrink-0">
+                  <Activity className="size-5 sm:size-6 text-cyan-400 animate-pulse" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-black text-white uppercase font-heading">{activeDownload.title}</h3>
-                  <span className="text-xs text-muted-foreground">{activeDownload.genre} • {activeDownload.installSize}</span>
+                  <h3 className="text-base sm:text-lg font-black text-white uppercase font-heading">{activeDownload.title}</h3>
+                  <span className="text-[11px] sm:text-xs text-slate-400">{activeDownload.genre} • {activeDownload.installSize}</span>
                 </div>
               </div>
 
-              <div className="flex items-center gap-4">
-                <div className="text-right">
-                  <span className="block text-lg font-black font-mono text-[#ff1e4b]">
+              <div className="flex items-center justify-between sm:justify-end gap-4">
+                <div className="text-left sm:text-right">
+                  <span className="block text-base sm:text-lg font-black font-mono text-cyan-400">
                     {downloading ? "124.5 MB/s" : "PAUSED"}
                   </span>
-                  <span className="text-[10px] text-muted-foreground font-mono">NVMe DirectStorage Write</span>
+                  <span className="text-[9px] sm:text-[10px] text-slate-400 font-mono">NVMe DirectStorage Write</span>
                 </div>
 
                 <button
                   onClick={() => setDownloading(!downloading)}
-                  className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#ff1e4b] text-white hover:bg-[#ff1e4b]/80 transition-colors shadow-lg shadow-[#ff1e4b]/30"
+                  className="flex size-10 sm:size-11 items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-black hover:opacity-90 transition-all cursor-pointer shadow-lg shadow-cyan-500/25"
                   title={downloading ? "Pause Download" : "Resume Download"}
                 >
-                  {downloading ? <Pause className="size-5" /> : <Play className="size-5 fill-current" />}
+                  {downloading ? <Pause className="size-4 sm:size-5 stroke-[2.5]" /> : <Play className="size-4 sm:size-5 fill-current" />}
                 </button>
               </div>
             </div>
 
             {/* Progress Bar */}
             <div className="space-y-2">
-              <div className="flex items-center justify-between text-xs font-mono text-muted-foreground">
-                <span>Downloading high-resolution textures & Vulkan pipeline shaders...</span>
-                <span className="text-white font-bold">{progress}% (ETA: 2m 14s)</span>
+              <div className="flex items-center justify-between text-[10px] sm:text-xs font-mono text-slate-400">
+                <span className="truncate pr-2">Downloading textures & game files...</span>
+                <span className="text-white font-bold shrink-0">{progress}% (ETA: 2m 14s)</span>
               </div>
 
-              <div className="h-3 w-full rounded-full bg-black/60 p-0.5 border border-white/10 overflow-hidden">
+              <div className="h-2.5 sm:h-3 w-full rounded-full bg-black/60 p-0.5 border border-white/10 overflow-hidden">
                 <motion.div
-                  className="h-full rounded-full bg-gradient-to-r from-[#ff1e4b] via-purple-600 to-sky-400 shadow-[0_0_12px_#ff1e4b]"
+                  className="h-full rounded-full bg-gradient-to-r from-blue-600 via-cyan-400 to-emerald-400 shadow-[0_0_12px_#00f0ff]"
                   style={{ width: `${progress}%` }}
                 />
               </div>
@@ -202,25 +204,25 @@ export default function DownloadsPage() {
         </section>
 
         {/* Installed Storage Allocation Matrix */}
-        <section className="container-site relative z-10 mb-16">
-          <div className="mb-6">
-            <span className="text-xs font-bold uppercase tracking-widest text-[#ff1e4b]">
+        <section className="container-site relative z-10 mb-12 sm:mb-16 px-4 sm:px-6">
+          <div className="mb-4 sm:mb-6">
+            <span className="text-xs font-bold uppercase tracking-widest text-cyan-400">
               STORAGE ALLOCATION
             </span>
-            <h2 className="mt-0.5 text-2xl font-black uppercase text-white font-heading">
-              INSTALLED GAMES ON DRIVE C:\
+            <h2 className="mt-0.5 text-xl sm:text-2xl font-black uppercase text-white font-heading">
+              INSTALLED GAMES LIBRARY
             </h2>
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-3">
+          <div className="grid gap-3 sm:gap-6 grid-cols-1 sm:grid-cols-3">
             {userLibrary.map((game) => (
-              <div key={game.id} className="rounded-3xl glass-heavy p-6 border border-white/15 space-y-3">
+              <div key={game.id} className="rounded-3xl bg-[#060D22]/80 backdrop-blur-xl p-4 sm:p-6 border border-blue-500/20 space-y-2 sm:space-y-3">
                 <div className="flex items-center justify-between">
-                  <HardDrive className="size-5 text-[#ff1e4b]" />
+                  <HardDrive className="size-4 sm:size-5 text-cyan-400" />
                   <span className="text-xs font-mono text-white font-bold">{game.installSize}</span>
                 </div>
-                <h3 className="text-base font-black text-white uppercase font-heading">{game.title}</h3>
-                <span className="text-xs text-emerald-400 font-bold block">{game.status}</span>
+                <h3 className="text-sm sm:text-base font-black text-white uppercase font-heading">{game.title}</h3>
+                <span className="text-[10px] sm:text-xs text-emerald-400 font-bold block">{game.status}</span>
               </div>
             ))}
           </div>

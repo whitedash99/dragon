@@ -12,7 +12,7 @@ const securityHeaders = [
   },
   {
     key: "Content-Security-Policy",
-    value: "frame-ancestors 'self' http://localhost:* http://127.0.0.1:* https://*.dragonstudios.com",
+    value: "frame-ancestors 'self' https://dragoncontrol.vercel.app https://*.vercel.app https://*.dragonstudios.com http://localhost:* http://127.0.0.1:*",
   },
   {
     key: "X-Content-Type-Options",
@@ -29,10 +29,12 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  outputFileTracingRoot: path.join(__dirname, "../../"),
+  outputFileTracingRoot: path.resolve(__dirname, "../../"),
   reactStrictMode: true,
   poweredByHeader: false,
   compress: true,
+  transpilePackages: ["@dragon/shared-db", "@dragon/auth", "@dragon/ui", "@dragon/utils"],
+  serverExternalPackages: ["@prisma/client"],
 
   images: {
     formats: ["image/avif", "image/webp"],

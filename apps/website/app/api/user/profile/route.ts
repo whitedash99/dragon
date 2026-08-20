@@ -1,40 +1,78 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
+import { authOptions } from "@/lib/auth";
+
+export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
   try {
-    const sessionToken = req.cookies.get("dragon_session")?.value;
+    let targetUser: any = null;
 
-    if (!sessionToken) {
+    // Method 1: Check dragon_session cookie
+    const sessionToken = req.cookies.get("dragon_session")?.value;
+    if (sessionToken) {
+      const session = await prisma.session.findUnique({
+        where: { sessionToken },
+        include: { user: { include: { profile: true } } },
+      });
+      if (session && session.user) {
+        targetUser = session.user;
+      }
+    }
+
+    // Method 2: Fallback to NextAuth Google OAuth session
+    if (!targetUser) {
+      const authSession = await getServerSession(authOptions).catch(() => null);
+      if (authSession?.user?.email) {
+        targetUser = await prisma.user.findUnique({
+          where: { email: authSession.user.email.toLowerCase().trim() },
+          include: { profile: true },
+        });
+      }
+    }
+
+    if (!targetUser) {
       return NextResponse.json({ success: false, error: "Unauthenticated" }, { status: 401 });
     }
 
-    const session = await prisma.session.findUnique({
-      where: { sessionToken },
-      include: { user: true },
-    });
+    // Parse custom metadata from profile
+    let customTheme = "valyria-fire";
+    let customBannerUrl = "";
+    let gamerTag = targetUser.name || targetUser.email.split("@")[0];
+    let primaryTitle = "Dragon Warrior";
 
-    if (!session || !session.user) {
-      return NextResponse.json({ success: false, error: "Session invalid or expired" }, { status: 401 });
+    if (targetUser.profile?.notificationSettings) {
+      try {
+        const meta = JSON.parse(targetUser.profile.notificationSettings);
+        if (meta.bannerTheme) customTheme = meta.bannerTheme;
+        if (meta.bannerUrl) customBannerUrl = meta.bannerUrl;
+        if (meta.gamerTag) gamerTag = meta.gamerTag;
+        if (meta.primaryTitle) primaryTitle = meta.primaryTitle;
+      } catch {}
     }
 
-    const user = session.user;
-
-    // Fetch user tickets
+    // Fetch user support tickets
     const tickets = await prisma.contactTicket.findMany({
-      where: { email: user.email, deleted: false },
+      where: { email: targetUser.email, deleted: false },
       orderBy: { createdAt: "desc" },
       take: 5,
-    });
+    }).catch(() => []);
 
     return NextResponse.json({
       success: true,
       user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        createdAt: user.createdAt,
+        id: targetUser.id,
+        name: targetUser.name,
+        email: targetUser.email,
+        role: targetUser.role,
+        image: targetUser.image,
+        createdAt: targetUser.createdAt,
+        gamerTag,
+        primaryTitle,
+        bannerTheme: customTheme,
+        bannerUrl: customBannerUrl,
+        bio: targetUser.profile?.bio || "Dragon Studios Player & VIP Member",
       },
       tickets,
     });
@@ -46,29 +84,77 @@ export async function GET(req: NextRequest) {
 
 export async function PUT(req: NextRequest) {
   try {
-    const sessionToken = req.cookies.get("dragon_session")?.value;
+    let targetUserId: string | null = null;
 
-    if (!sessionToken) {
+    // Method 1: Cookie session
+    const sessionToken = req.cookies.get("dragon_session")?.value;
+    if (sessionToken) {
+      const session = await prisma.session.findUnique({
+        where: { sessionToken },
+      });
+      if (session) {
+        targetUserId = session.userId;
+      }
+    }
+
+    // Method 2: NextAuth session
+    if (!targetUserId) {
+      const authSession = await getServerSession(authOptions).catch(() => null);
+      if (authSession?.user?.email) {
+        const user = await prisma.user.findUnique({
+          where: { email: authSession.user.email.toLowerCase().trim() },
+        });
+        if (user) targetUserId = user.id;
+      }
+    }
+
+    if (!targetUserId) {
       return NextResponse.json({ success: false, error: "Unauthenticated" }, { status: 401 });
     }
 
-    const session = await prisma.session.findUnique({
-      where: { sessionToken },
-    });
-
-    if (!session) {
-      return NextResponse.json({ success: false, error: "Invalid session" }, { status: 401 });
-    }
-
     const body = await req.json();
-    const { name } = body;
+    const { name, gamerTag, primaryTitle, bannerTheme, bannerUrl, bio } = body;
 
+    // Update User Name
     const updatedUser = await prisma.user.update({
-      where: { id: session.userId },
-      data: { name },
+      where: { id: targetUserId },
+      data: {
+        name: name ? String(name).trim() : undefined,
+      },
     });
 
-    return NextResponse.json({ success: true, user: updatedUser });
+    // Upsert UserProfile with gamer customization metadata
+    const settingsPayload = JSON.stringify({
+      bannerTheme: bannerTheme || "valyria-fire",
+      bannerUrl: bannerUrl || "",
+      gamerTag: gamerTag || name || "Player",
+      primaryTitle: primaryTitle || "Dragon Warrior",
+    });
+
+    await prisma.userProfile.upsert({
+      where: { userId: targetUserId },
+      update: {
+        bio: bio || undefined,
+        notificationSettings: settingsPayload,
+      },
+      create: {
+        userId: targetUserId,
+        bio: bio || "Dragon Studios Player & VIP Member",
+        notificationSettings: settingsPayload,
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      user: {
+        ...updatedUser,
+        gamerTag,
+        primaryTitle,
+        bannerTheme,
+        bannerUrl,
+        bio,
+      },
+    });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json({ success: false, error: message }, { status: 400 });
