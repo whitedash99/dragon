@@ -19,7 +19,7 @@
     "@prisma/client": "6.19.3"
   },
   "devDependencies": {
-    "next": "15.1.6",
+    "next": "^15.2.4",
     "prettier": "^3.5.1",
     "prisma": "6.19.3",
     "turbo": "^2.4.0",
