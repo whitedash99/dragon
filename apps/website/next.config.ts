@@ -29,7 +29,7 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  outputFileTracingRoot: __dirname,
+  outputFileTracingRoot: process.env.VERCEL ? path.resolve(__dirname, "../../") : __dirname,
   outputFileTracingExcludes: {
     '*': [
       '**/Application Data/**',
