@@ -2,9 +2,11 @@ import type { NextConfig } from "next";
 import path from "node:path";
 
 const nextConfig: NextConfig = {
-  outputFileTracingRoot: path.join(__dirname, "../../"),
+  outputFileTracingRoot: __dirname,
   reactStrictMode: true,
   poweredByHeader: false,
+  transpilePackages: ["@dragon/shared-db", "@dragon/auth", "@dragon/ui", "@dragon/utils"],
+  serverExternalPackages: ["@prisma/client"],
   eslint: {
     ignoreDuringBuilds: true,
   },

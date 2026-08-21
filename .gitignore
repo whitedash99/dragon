@@ -13,3 +13,5 @@ scripts/
 
 .vercel
 .env*
+src/generated/
+packages/shared-db/src/generated/

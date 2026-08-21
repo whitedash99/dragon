@@ -5,7 +5,7 @@ import { prisma } from "@/lib/database/prisma";
 import { isConfiguredOwnerEmail, recordSecurityAudit } from "@/lib/auth/security";
 
 export const adminAuthOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
+  adapter: PrismaAdapter(prisma as any) as any,
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || "",

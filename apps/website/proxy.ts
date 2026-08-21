@@ -5,22 +5,14 @@ const PROTECTED_WEBSITE_ROUTES = ["/dashboard", "/profile", "/account", "/settin
 
 export async function proxy(req: NextRequest) {
   const url = req.nextUrl;
-  const hostname = req.headers.get("host") || "";
   const pathname = url.pathname;
 
-  const isAdminDomain = hostname.startsWith("admin.") || hostname.includes("admin.localhost");
-  const isAdminPath = pathname.startsWith("/admin");
   const isApiPath = pathname.startsWith("/api");
   const isAuthPath = pathname.startsWith("/login") || pathname.startsWith("/register") || pathname.startsWith("/auth");
   const isStaticAsset = pathname.startsWith("/_next") || pathname.includes(".") || pathname.startsWith("/uploads");
 
   if (isStaticAsset) {
     return NextResponse.next();
-  }
-
-  // 0. Redirect dragoncontrol.vercel.app root to /crm
-  if (hostname.includes("dragoncontrol.vercel.app") && pathname === "/") {
-    return NextResponse.redirect(new URL("/crm", req.url));
   }
 
   // 1. Check Protected User Routes in Website
@@ -42,28 +34,8 @@ export async function proxy(req: NextRequest) {
     }
   }
 
-  // 2. Domain-based routing: Rewrites admin.dragonstudios.com root requests to /admin
-  if (isAdminDomain && !isAdminPath && !isApiPath && !isAuthPath) {
-    url.pathname = `/admin${pathname === "/" ? "" : pathname}`;
-    return NextResponse.rewrite(url);
-  }
-
-  // 3. Security Guard for Admin routes
-  if (isAdminDomain || isAdminPath) {
-    const sessionToken = req.cookies.get("dragon_session")?.value || req.cookies.get("dragon_auth_token")?.value;
-    if (!sessionToken && !isAuthPath && !isApiPath) {
-      const loginUrl = new URL("/login", req.url);
-      loginUrl.searchParams.set("redirect", pathname);
-      return NextResponse.redirect(loginUrl);
-    }
-  }
-
-  // 4. Construct Security Response Headers
+  // 2. Construct Security Response Headers
   const response = NextResponse.next();
-  response.headers.set(
-    "Content-Security-Policy",
-    "frame-ancestors 'self' https://dragoncontrol.vercel.app https://*.vercel.app https://*.dragonstudios.com http://localhost:* http://127.0.0.1:*"
-  );
   response.headers.set("X-Content-Type-Options", "nosniff");
   response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   response.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");

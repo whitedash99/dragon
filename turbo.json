@@ -45,7 +45,7 @@
     },
     "prisma:generate": {
       "inputs": ["schema.prisma"],
-      "outputs": ["node_modules/.prisma/client/**", "dist/**"]
+      "outputs": ["src/generated/client/**"]
     }
   }
 }

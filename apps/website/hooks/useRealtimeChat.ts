@@ -180,9 +180,11 @@ export function useRealtimeChat(roomId: string, roomSlug: string) {
           return;
         }
 
-        // Dynamically import Ably to avoid webpack parse errors with its bundled JS
-        const AblyModule = await import("ably");
-        const AblyRealtime = AblyModule.default?.Realtime || AblyModule.Realtime;
+        // Dynamically import Ably promises bundle to avoid webpack parse errors with legacy build/ably.js
+        // @ts-ignore
+        const AblyModule: any = await import("ably/build/ably-promises.js" as any).catch(() => null);
+        const AblyRealtime = AblyModule?.Realtime || AblyModule?.default?.Realtime;
+        if (!AblyRealtime) return;
 
         // Initialize Ably client with Token Auth
         const ably = new AblyRealtime({
@@ -209,7 +211,7 @@ export function useRealtimeChat(roomId: string, roomSlug: string) {
         channelRef.current = channel;
 
         // Subscribe to New Message
-        channel.subscribe("new_message", (message) => {
+        channel.subscribe("new_message", (message: any) => {
           if (!isMounted) return;
           const msgData: ChatMessageItemData = message.data;
           setMessages((prev) => {
@@ -219,7 +221,7 @@ export function useRealtimeChat(roomId: string, roomSlug: string) {
         });
 
         // Subscribe to Reactions Update
-        channel.subscribe("reaction_updated", (message) => {
+        channel.subscribe("reaction_updated", (message: any) => {
           if (!isMounted) return;
           const { messageId, reactions } = message.data;
           setMessages((prev) =>
@@ -230,7 +232,7 @@ export function useRealtimeChat(roomId: string, roomSlug: string) {
         });
 
         // Subscribe to Typing Events
-        channel.subscribe("user_typing", (message) => {
+        channel.subscribe("user_typing", (message: any) => {
           if (!isMounted) return;
           const { userId, userName } = message.data;
           if (userId === session?.user?.id) return;

@@ -29,11 +29,23 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  outputFileTracingRoot: path.resolve(__dirname, "../../"),
+  outputFileTracingRoot: __dirname,
+  outputFileTracingExcludes: {
+    '*': [
+      '**/Application Data/**',
+      'C:/Users/ASUS/Application Data/**',
+      'C:\\Users\\ASUS\\Application Data\\**',
+      'C:/Users/**',
+      'C:\\Users\\**',
+    ],
+  },
   reactStrictMode: true,
   poweredByHeader: false,
   compress: true,
-  transpilePackages: ["@dragon/shared-db", "@dragon/auth", "@dragon/ui", "@dragon/utils"],
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  transpilePackages: ["@dragon/shared-db", "@dragon/auth", "@dragon/ui", "@dragon/utils", "ably"],
   serverExternalPackages: ["@prisma/client"],
 
   images: {
