@@ -28,7 +28,7 @@
     "build": {
       "dependsOn": ["^build", "prisma:generate"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
+      "outputs": [".next/**", "!.next/cache/**", "dist/**", "src/generated/client/**"]
     },
     "lint": {
       "dependsOn": ["^lint"]
