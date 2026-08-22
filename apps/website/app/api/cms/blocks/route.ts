@@ -214,6 +214,8 @@ export async function GET(req: NextRequest) {
       updatedAt: new Date(),
     }));
 
+    const finalBlocks = [...blocks, ...missingDefaults];
+
     return NextResponse.json({ success: true, blocks: finalBlocks }, {
       headers: { "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0" },
     });
