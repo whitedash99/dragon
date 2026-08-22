@@ -112,6 +112,22 @@ export default function EnterpriseLiveEditorStudioPage() {
         setBlocks((prev) => prev.map((b) => (b.key === data.block.key ? { ...b, ...data.block } : b)));
         setSelectedBlock((prev) => (prev ? { ...prev, ...data.block } : null));
 
+        if (typeof window !== "undefined") {
+          const payload = {
+            type: "DRAGON_CMS_REALTIME_SYNC",
+            key: data.block.key,
+            content: data.block.content,
+            status: "saved",
+            timestamp: Date.now(),
+          };
+          window.postMessage(payload, "*");
+          try {
+            const bc = new BroadcastChannel("dragon_cms_live_sync");
+            bc.postMessage(payload);
+            bc.close();
+          } catch {}
+        }
+
         if (shouldRefreshCanvas) setRefreshKey((prev) => prev + 1);
       }
     } catch (e) {

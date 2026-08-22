@@ -23,21 +23,8 @@ interface CmsHeroData {
 }
 
 function cleanAaaText(str: string | undefined, fallback: string): string {
-  if (!str) return fallback;
-  const lower = str.toLowerCase().trim();
-  // Filter out test strings, personal greetings, and invalid CMS data
-  if (lower.includes("snigdha")) return fallback;
-  if (lower.includes("snigdhav")) return fallback;
-  if (/^hello\s/i.test(lower)) return fallback;
-  if (/^hi\s/i.test(lower)) return fallback;
-  if (/^hey\s/i.test(lower)) return fallback;
-  if (lower.length < 3) return fallback;
-  return str
-    .replace(/\bAAA\b/gi, "3D & 2D")
-    .replace(/Triple A/gi, "Original 3D & 2D")
-    .replace(/Triple L/gi, "3D & 2D")
-    .replace(/Rockstar/gi, "Dragon Studios")
-    .trim();
+  if (str === undefined || str === null || str.trim() === "") return fallback;
+  return str.trim();
 }
 
 export function HeroContent() {

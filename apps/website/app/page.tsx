@@ -27,33 +27,25 @@ export default async function Home() {
     <>
       <ClientAuthWatcher />
 
-      {/* ═══ MOBILE EXPERIENCE (< LG): EXACT GOD-LEVEL SPACIOUS DIAMOND APP UI ═══ */}
-      <div className="block lg:hidden">
-        <MobileGodLevelHome />
-      </div>
+      <Navbar />
+      <main id="main-content" className="cinematic-page overflow-x-hidden bg-background">
+        <Hero />
+        
+        <div className="section-divider" />
+        
+        {/* Section 2: Slides In Smoothly from Left to Right with 3D Air-Lifting Lightning */}
+        <ScrollSlideSection direction="left">
+          <FeaturedGames />
+        </ScrollSlideSection>
 
-      {/* ═══ DESKTOP EXPERIENCE (>= LG): FULL CINEMATIC STUDIO PLATFORM WITH 3D SLIDING EFFECTS ═══ */}
-      <div className="hidden lg:block">
-        <Navbar />
-        <main id="main-content" className="cinematic-page overflow-x-hidden bg-background">
-          <Hero />
-          
-          <div className="section-divider" />
-          
-          {/* Section 2: Slides In Smoothly from Left to Right with 3D Air-Lifting Lightning */}
-          <ScrollSlideSection direction="left">
-            <FeaturedGames />
-          </ScrollSlideSection>
-
-          <div className="section-divider" />
-          
-          {/* Section 3: Slides In Smoothly from Right to Left */}
-          <ScrollSlideSection direction="right">
-            <LatestNews />
-          </ScrollSlideSection>
-        </main>
-        <Footer />
-      </div>
+        <div className="section-divider" />
+        
+        {/* Section 3: Slides In Smoothly from Right to Left */}
+        <ScrollSlideSection direction="right">
+          <LatestNews />
+        </ScrollSlideSection>
+      </main>
+      <Footer />
     </>
   );
 }

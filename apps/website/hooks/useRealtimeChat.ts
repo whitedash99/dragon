@@ -180,10 +180,10 @@ export function useRealtimeChat(roomId: string, roomSlug: string) {
           return;
         }
 
-        // Dynamically import Ably promises bundle to avoid webpack parse errors with legacy build/ably.js
+        // Dynamically import Ably bundle
         // @ts-ignore
-        const AblyModule: any = await import("ably/build/ably-promises.js" as any).catch(() => null);
-        const AblyRealtime = AblyModule?.Realtime || AblyModule?.default?.Realtime;
+        const AblyModule: any = await import("ably" as any).catch(() => null);
+        const AblyRealtime = AblyModule?.Realtime || AblyModule?.default?.Realtime || AblyModule?.default;
         if (!AblyRealtime) return;
 
         // Initialize Ably client with Token Auth

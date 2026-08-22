@@ -214,30 +214,7 @@ export async function GET(req: NextRequest) {
       updatedAt: new Date(),
     }));
 
-    const finalBlocks = [...blocks, ...missingDefaults];
-
-    // Server-side sanitization: clean hero blocks of test/personal data
-    const HERO_DEFAULTS: Record<string, string> = {};
-    for (const d of DEFAULT_CMS_BLOCKS) {
-      HERO_DEFAULTS[d.key] = d.content;
-    }
-    const sanitizedBlocks = finalBlocks.map((b) => {
-      if (b.key.startsWith("hero.") && b.content) {
-        const lower = b.content.toLowerCase().trim();
-        if (
-          lower.includes("snigdha") ||
-          lower.includes("snigdhav") ||
-          /^hello\s/i.test(lower) ||
-          /^hi\s/i.test(lower) ||
-          /^hey\s/i.test(lower)
-        ) {
-          return { ...b, content: HERO_DEFAULTS[b.key] || b.content };
-        }
-      }
-      return b;
-    });
-
-    return NextResponse.json({ success: true, blocks: sanitizedBlocks }, {
+    return NextResponse.json({ success: true, blocks: finalBlocks }, {
       headers: { "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0" },
     });
   } catch (error: unknown) {
