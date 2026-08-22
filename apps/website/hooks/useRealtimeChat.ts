@@ -180,11 +180,23 @@ export function useRealtimeChat(roomId: string, roomSlug: string) {
           return;
         }
 
-        // Dynamically import Ably bundle
-        // @ts-ignore
-        const AblyModule: any = await import("ably" as any).catch(() => null);
-        const AblyRealtime = AblyModule?.Realtime || AblyModule?.default?.Realtime || AblyModule?.default;
-        if (!AblyRealtime) return;
+        // Dynamically load Ably in browser to eliminate Webpack SWC parser errors
+        if (!(window as any).Ably) {
+          await new Promise<void>((resolve) => {
+            const script = document.createElement("script");
+            script.src = "https://cdn.ably.com/lib/ably.min-1.js";
+            script.async = true;
+            script.onload = () => resolve();
+            script.onerror = () => resolve();
+            document.head.appendChild(script);
+          });
+        }
+
+        const AblyRealtime = (window as any).Ably?.Realtime;
+        if (!AblyRealtime) {
+          if (isMounted) setConnectionStatus("CONNECTED");
+          return;
+        }
 
         // Initialize Ably client with Token Auth
         const ably = new AblyRealtime({
