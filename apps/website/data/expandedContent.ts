@@ -43,6 +43,137 @@ export interface GameDetailExtra extends Game {
 }
 
 export const gameDetailsMap: Record<string, GameDetailExtra> = {
+  "uncharted-drive-beyond": {
+    ...games[0],
+    tagline: "High-Speed Highway Journeys Across Majestic Mountain Horizons",
+    posterArt: "from-[#ea580c] via-[#431407] to-[#070709]",
+    storyOverview: "Uncharted Drive: Beyond puts you behind the wheel on endless scenic highways spanning mountainous terrains, coastal ribbons, and golden sunset horizons. Master realistic handling physics, drift across perilous mountain passes, and customize your vehicle fleet.",
+    gameplayFeatures: [
+      {
+        title: "Next-Gen Driving Physics",
+        description: "Experience ultra-responsive tire friction, suspension geometry, and real-time aerodynamics across asphalt and mountain passes.",
+        iconName: "Zap",
+      },
+      {
+        title: "Dynamic Sunset & Weather Cycles",
+        description: "Volumetric atmospheric lighting brings golden sunsets, sudden rain showers, and twilight fog to every highway journey.",
+        iconName: "Globe",
+      },
+      {
+        title: "Highway Traffic Simulation",
+        description: "Navigate intelligent AI traffic patterns and test your high-speed overtaking precision.",
+        iconName: "Activity",
+      },
+      {
+        title: "Cross-Platform Saves",
+        description: "Seamlessly progress your car collection across Windows PC and Android devices.",
+        iconName: "Cpu",
+      },
+    ],
+    systemRequirements: {
+      minimum: {
+        os: "Windows 10 64-bit / Android 10+",
+        cpu: "Intel Core i5-8400 / Snapdragon 720G",
+        ram: "8 GB RAM",
+        gpu: "NVIDIA GTX 1060 (6GB) / Adreno 618",
+        directx: "Version 12 / Vulkan 1.2",
+        storage: "2.5 GB available space",
+      },
+      recommended: {
+        os: "Windows 11 64-bit / Android 13+",
+        cpu: "Intel Core i7-12700K / Snapdragon 8 Gen 2",
+        ram: "16 GB RAM",
+        gpu: "NVIDIA RTX 3070 (8GB) / Adreno 740",
+        directx: "Version 12 Ultimate / Vulkan 1.3",
+        storage: "2.5 GB NVMe SSD space",
+      },
+    },
+    characters: [
+      {
+        name: "Apex Drift GT",
+        role: "Flagship Supercar",
+        description: "Twin-turbocharged V8 engineered for sustained high-speed mountain drifting.",
+        faction: "Dragon Precision Motors",
+      },
+      {
+        name: "Horizon Cruiser",
+        role: "Endurance Grand Tourer",
+        description: "Balanced grand tourer built for cross-country sunset highway cruising.",
+        faction: "Sunset Dynamics",
+      },
+    ],
+    gallery: [
+      {
+        id: "udb-1",
+        title: "Mountain Highway Sunset",
+        caption: "Golden hour driving across coastal ridge passes.",
+        aspectRatio: "wide",
+      },
+      {
+        id: "udb-2",
+        title: "Cockpit View",
+        caption: "High-fidelity digital instrument cluster with active telemetry.",
+        aspectRatio: "wide",
+      },
+    ],
+  },
+  "reflex-rush": {
+    ...games[1],
+    tagline: "Test Your Lightning-Fast Reflexes in Pure Speed Arcade Adrenaline",
+    posterArt: "from-[#0284c7] via-[#082f49] to-[#070709]",
+    storyOverview: "Reflex Rush delivers pure adrenaline reaction trials. Dodge dynamic rhythm obstacles, execute instant swerves, and compete for supreme global leaderboard rankings right in your web browser.",
+    gameplayFeatures: [
+      {
+        title: "Instant Browser Play",
+        description: "Zero installation required. Jump straight into the action on desktop or mobile browsers.",
+        iconName: "Zap",
+      },
+      {
+        title: "Sub-Millisecond Input Buffering",
+        description: "Ultra-responsive reaction mechanics designed for competitive speed running.",
+        iconName: "Cpu",
+      },
+      {
+        title: "Dynamic Rhythm Obstacles",
+        description: "Procedurally generated hazard courses that escalate in speed and complexity.",
+        iconName: "Activity",
+      },
+    ],
+    systemRequirements: {
+      minimum: {
+        os: "Any Modern Web Browser",
+        cpu: "Dual Core CPU 1.8GHz+",
+        ram: "2 GB RAM",
+        gpu: "WebGL 2.0 Compatible GPU",
+        directx: "N/A",
+        storage: "Instant Cloud Stream",
+      },
+      recommended: {
+        os: "Chrome / Edge / Firefox / Safari (Latest)",
+        cpu: "Quad Core CPU 2.5GHz+",
+        ram: "4 GB RAM",
+        gpu: "Dedicated GPU with WebGL 2.0 Acceleration",
+        directx: "N/A",
+        storage: "Instant Cloud Stream",
+      },
+    },
+    characters: [
+      {
+        name: "Neon Runner",
+        role: "Speed Avatar",
+        description: "Hyper-responsive kinetic runner avatar.",
+        faction: "Dragon Arcade Core",
+      },
+    ],
+    gallery: [
+      {
+        id: "rr-1",
+        title: "Obstacle Course Rush",
+        caption: "High-speed reflex reaction gameplay.",
+        aspectRatio: "wide",
+      },
+    ],
+  },
   "embers-of-valyria": {
     ...games[0],
     tagline: "Reclaim the Living Flame in an Unforgiving Sovereign Realm",

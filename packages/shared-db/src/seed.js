@@ -7,55 +7,38 @@ async function main() {
 
   const games = [
     {
-      slug: "dragon-slayer-3d",
-      title: "Dragon Slayer 3D",
-      subtitle: "Realm of Fire & Ancient Runes",
-      genre: "Action RPG",
-      status: "ACTIVE DEVELOPMENT",
+      slug: "uncharted-drive-beyond",
+      title: "Uncharted Drive: Beyond",
+      subtitle: "Next-Gen Open Road Driving Simulation",
+      genre: "Open Road Simulation",
+      status: "OFFICIAL RELEASE",
       year: "2026",
-      description: "An epic high-octane 3D dark fantasy action RPG built with real-time particle dynamics and physical combat netcode.",
-      fullDescription: "Ascend the mountain peak of Valyria, forge ancestral dragon-forged steel, and conquer mythical leviathans in high-definition physical rendering.",
-      palette: "from-[#dc2626] via-[#450a0a] to-[#02050E]",
-      accentColor: "#ef4444",
-      glowColor: "rgba(239, 68, 68, 0.4)",
-      platforms: "PC (.exe), Mobile (.apk), Cross-Play",
-      tags: "3D, Action RPG, Dragon Slayer, Ray Tracing",
+      description: "Experience high-speed highway journeys across majestic mountain horizons, golden sunsets, and uncharted asphalt curves with next-gen vehicle dynamics.",
+      fullDescription: "Uncharted Drive: Beyond brings next-generation vehicle physics, realistic handling dynamics, and volumetric sunset weather cycles to scenic coastal and mountain highway networks.",
+      palette: "from-[#ea580c] via-[#431407] to-[#02050E]",
+      accentColor: "#f97316",
+      glowColor: "rgba(249, 115, 22, 0.5)",
+      platforms: "PC (.exe), Android (.apk)",
+      tags: "Driving Simulation, Open Highway, Sunset Horizons, Physics Core",
       featured: true,
-      heroImage: "/images/dragon_slayer_card.jpg"
+      heroImage: "/images/uncharted-drive-banner.png"
     },
     {
-      slug: "cyber-drift-3d",
-      title: "Cyber Drift 3D",
-      subtitle: "Neo-Tokyo Overdrive",
-      genre: "Cyberpunk Racing",
-      status: "ALPHA PLAYTEST",
+      slug: "reflex-rush",
+      title: "Reflex Rush",
+      subtitle: "High-Speed Reflex Reaction Runner",
+      genre: "Arcade Reflex",
+      status: "LIVE WEB PLAY",
       year: "2026",
-      description: "High-velocity futuristic anti-gravity drift racing through neon-soaked cybernetic megacities with custom telemetry.",
-      fullDescription: "Master high-speed anti-gravity vector drift mechanics, tune your cyber vehicle chassis, and race against elite syndicate drivers on global leaderboards.",
-      palette: "from-[#06b6d4] via-[#082f49] to-[#02050E]",
-      accentColor: "#06b6d4",
-      glowColor: "rgba(6, 182, 212, 0.4)",
-      platforms: "PC (.exe), Mobile (.apk), Cross-Play",
-      tags: "3D, Cyberpunk, Anti-Gravity Racing, Neon",
+      description: "Test your lightning reflexes in pure speed adrenaline gameplay. Dodge obstacles, beat high scores, and master rapid-fire runs live in your browser.",
+      fullDescription: "Reflex Rush is an instant-play web arcade runner crafted with high precision input buffering and dynamic rhythm beat obstacles.",
+      palette: "from-[#0284c7] via-[#082f49] to-[#02050E]",
+      accentColor: "#00f0ff",
+      glowColor: "rgba(0, 240, 255, 0.5)",
+      platforms: "Web Browser (Live), Mobile Web",
+      tags: "Arcade Runner, Reaction Speed, Live Web, Instant Play",
       featured: true,
-      heroImage: "/images/cyber_drift_card.jpg"
-    },
-    {
-      slug: "shadow-ninja-2d",
-      title: "Shadow Ninja 2D",
-      subtitle: "Clan of the Eclipse",
-      genre: "Stealth Action Platformer",
-      status: "EARLY ACCESS",
-      year: "2026",
-      description: "Fast-paced stylized 2D stealth martial arts platformer featuring frame-perfect katana parries and shuriken combat.",
-      fullDescription: "Infiltrate feudal celestial fortresses, utilize smoke arts and grapple physics, and defeat rogue warlords across handcrafted pixel-precision arenas.",
-      palette: "from-[#a855f7] via-[#2e1065] to-[#02050E]",
-      accentColor: "#a855f7",
-      glowColor: "rgba(168, 85, 247, 0.4)",
-      platforms: "PC (.exe), Mobile (.apk), Cross-Play",
-      tags: "2D, Stealth, Katana Combat, Martial Arts",
-      featured: true,
-      heroImage: "/images/shadow_ninja_card.jpg"
+      heroImage: "/images/uncharted-drive-banner.png"
     }
   ];
 
@@ -66,6 +49,54 @@ async function main() {
       create: game
     });
     console.log(`Upserted game: ${game.title}`);
+
+    const featuresObj = {
+      dimension: game.slug === "reflex-rush" ? "2D" : "3D",
+      engineVersion: game.slug === "reflex-rush" ? "Dragon Speed Web Core" : "Dragon Driving Engine 3D",
+      pcExeUrl: "https://dragongamingstudios.vercel.app/downloads/DragonSlayer3D_Setup.exe",
+      pcFileSize: "650 MB",
+      mobileApkUrl: "https://dragongamingstudios.vercel.app/downloads/DragonSlayer3D.apk",
+      mobileFileSize: "120 MB",
+      webPlayUrl: game.slug === "reflex-rush" ? "https://reflexrush-dragongamingstudio.netlify.app/" : "",
+    };
+
+    await prisma.gameContent.upsert({
+      where: { slug: game.slug },
+      update: {
+        name: game.title,
+        subtitle: game.subtitle,
+        genre: game.genre,
+        status: game.status,
+        releaseDate: game.year,
+        developer: "Dragon Gaming Studio",
+        publisher: "Dragon Interactive",
+        engine: game.slug === "reflex-rush" ? "Dragon Speed Web Core" : "Dragon Driving Engine 3D",
+        platforms: game.platforms,
+        description: game.description,
+        bannerUrl: game.heroImage,
+        logoUrl: "/images/dragon-logo.jpg",
+        features: JSON.stringify(featuresObj),
+        isPublished: true,
+      },
+      create: {
+        slug: game.slug,
+        name: game.title,
+        subtitle: game.subtitle,
+        genre: game.genre,
+        status: game.status,
+        releaseDate: game.year,
+        developer: "Dragon Gaming Studio",
+        publisher: "Dragon Interactive",
+        engine: game.slug === "reflex-rush" ? "Dragon Speed Web Core" : "Dragon Driving Engine 3D",
+        platforms: game.platforms,
+        description: game.description,
+        bannerUrl: game.heroImage,
+        logoUrl: "/images/dragon-logo.jpg",
+        features: JSON.stringify(featuresObj),
+        isPublished: true,
+      }
+    });
+    console.log(`Upserted GameContent: ${game.title}`);
   }
 
   const userCount = await prisma.user.count();

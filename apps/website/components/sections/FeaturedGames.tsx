@@ -36,8 +36,9 @@ export interface FranchiseGame {
   bannerGradient: string;
   accentColor: string;
   glowColor: string;
-  pcExeUrl: string;
-  apkUrl: string;
+  pcExeUrl?: string;
+  apkUrl?: string;
+  webPlayUrl?: string;
   features: string[];
   capabilities: {
     platforms: string;
@@ -49,77 +50,51 @@ export interface FranchiseGame {
 
 const FRANCHISE_GAMES: FranchiseGame[] = [
   {
-    id: "dragon-slayer-3d",
-    slug: "dragon-slayer-3d",
-    title: "DRAGON SLAYER 3D",
-    subtitle: "Open-World Dark Fantasy Action RPG",
-    tagline: "Wield primordial dragon blades in open mythical realms with fluid melee combat, dynamic dragon flight, and real-time world events.",
-    genre: "Action RPG • Open World",
-    engine: "Dragon 3D Engine (Vulkan)",
-    version: "v1.4.0 Alpha",
-    status: "ACTIVE DEVELOPMENT",
+    id: "uncharted-drive-beyond",
+    slug: "uncharted-drive-beyond",
+    title: "UNCHARTED DRIVE: BEYOND",
+    subtitle: "Next-Gen Open Road Driving Simulation",
+    tagline: "Experience high-speed highway journeys across majestic mountain horizons, golden sunsets, and uncharted asphalt curves with ultra-responsive vehicle dynamics and volumetric lighting.",
+    genre: "Open Road Simulation • High-Speed Driving",
+    engine: "Dragon Driving 3D Engine",
+    version: "v1.0.0 Official Release",
+    status: "OFFICIAL FLAGSHIP",
     dimension: "3D",
-    backdropUrl: "/images/dragon_slayer_card.jpg",
+    backdropUrl: "/images/uncharted-drive-banner.png",
+    bannerGradient: "from-amber-950/95 via-[#1a0c06]/90 to-[#02050e]",
+    accentColor: "#f97316",
+    glowColor: "rgba(249, 115, 22, 0.6)",
+    pcExeUrl: "https://dragongamingstudios.vercel.app/downloads/DragonSlayer3D_Setup.exe",
+    apkUrl: "https://dragongamingstudios.vercel.app/downloads/DragonSlayer3D.apk",
+    features: ["Next-Gen Vehicle Physics", "Sunset & Mountain Environments", "Dynamic Highway Traffic", "Cross-Platform Support"],
+    capabilities: {
+      platforms: "PC (.exe) & Android (.apk)",
+      renderEngine: "Dragon 3D Vulkan",
+      netcode: "Edge Low-Latency Sync",
+      graphics: "Volumetric Atmospheric Sunsets",
+    },
+  },
+  {
+    id: "reflex-rush",
+    slug: "reflex-rush",
+    title: "REFLEX RUSH",
+    subtitle: "High-Speed Reflex Reaction Runner",
+    tagline: "Test your lightning-fast reflexes in pure adrenaline arcade gameplay. Dodge obstacles, beat high scores, and master rapid-fire precision runs live in your browser.",
+    genre: "Arcade Reflex • Speed Runner",
+    engine: "Dragon Speed Web Core",
+    version: "v1.0.0 Live Play",
+    status: "LIVE WEB PLAY",
+    dimension: "2D",
+    backdropUrl: "/images/uncharted-drive-banner.png",
     bannerGradient: "from-blue-950/95 via-[#08183a]/90 to-[#02050e]",
     accentColor: "#00f0ff",
     glowColor: "rgba(0, 240, 255, 0.6)",
-    pcExeUrl: "https://github.com/whitedash99/dragon/releases/download/v1.0.0/DragonSlayer3D-Setup.exe",
-    apkUrl: "https://github.com/whitedash99/dragon/releases/download/v1.0.0/DragonSlayer3D-Mobile.apk",
-    features: ["Real-Time Ray Tracing", "Multi-Branch Combat", "Full Cross-Play", "Ultra-Low Latency Netcode"],
+    webPlayUrl: "https://reflexrush-dragongamingstudio.netlify.app/",
+    features: ["Instant Browser Play", "Lightning Reaction Trials", "Dynamic Rhythm Obstacles", "Global Leaderboards"],
     capabilities: {
-      platforms: "PC (.exe) & Mobile (.apk)",
-      renderEngine: "Vulkan 3D Core",
-      netcode: "Edge Sync Deterministic",
-      graphics: "Ray Tracing Accelerated",
-    },
-  },
-  {
-    id: "cyber-drift-3d",
-    slug: "cyber-drift-3d",
-    title: "CYBER DRIFT: OVERDRIVE",
-    subtitle: "Cyberpunk Anti-Gravity Tactical Racing",
-    tagline: "Defy gravity on vertical neon highways of Neo-Tokyo. High-octane plasma weapons, hyper-drift mechanics, and synthwave reactive sound.",
-    genre: "Anti-Gravity Racing",
-    engine: "Dragon Speed Engine 3D",
-    version: "v2.0.1 Beta",
-    status: "ALPHA PLAYTEST",
-    dimension: "3D",
-    backdropUrl: "/images/cyber_drift_card.jpg",
-    bannerGradient: "from-cyan-950/95 via-[#061e38]/90 to-[#02050e]",
-    accentColor: "#38bdf8",
-    glowColor: "rgba(56, 189, 248, 0.6)",
-    pcExeUrl: "https://github.com/whitedash99/dragon/releases/download/v1.0.0/CyberDrift-Setup.exe",
-    apkUrl: "https://github.com/whitedash99/dragon/releases/download/v1.0.0/CyberDrift-Mobile.apk",
-    features: ["Plasma Combat Boosters", "Track Editor Suite", "Global Leaderboards", "Anti-Gravity Physics"],
-    capabilities: {
-      platforms: "PC (.exe) & Mobile (.apk)",
-      renderEngine: "DirectX 12 / Vulkan",
-      netcode: "Real-Time Ghost Sync",
-      graphics: "Volumetric Plasma Lightning",
-    },
-  },
-  {
-    id: "shadow-ninja-2d",
-    slug: "shadow-ninja-2d",
-    title: "SHADOW NINJA: DYNASTY",
-    subtitle: "Fluid Stealth Action Platformer",
-    tagline: "Execute pixel-perfect stealth assassinations across hand-crafted feudal cyberpunk castles with katana combos and shadow teleportation.",
-    genre: "Stealth Action • Metroidvania",
-    engine: "Dragon 2D Pixel Core",
-    version: "v1.2.0 Release",
-    status: "EARLY ACCESS",
-    dimension: "2D",
-    backdropUrl: "/images/shadow_ninja_card.jpg",
-    bannerGradient: "from-purple-950/95 via-[#0b1028]/90 to-[#02050e]",
-    accentColor: "#c084fc",
-    glowColor: "rgba(192, 132, 252, 0.6)",
-    pcExeUrl: "https://github.com/whitedash99/dragon/releases/download/v1.0.0/ShadowNinja-Setup.exe",
-    apkUrl: "https://github.com/whitedash99/dragon/releases/download/v1.0.0/ShadowNinja-Mobile.apk",
-    features: ["Hand-Drawn Sprites", "Zero-Lag Input Buffer", "Speedrun Telemetry", "Boss Rush Trials"],
-    capabilities: {
-      platforms: "PC (.exe) & Mobile (.apk)",
-      renderEngine: "High-DPI 2D Vector",
-      netcode: "Cloud Save Sync",
+      platforms: "Web & Mobile Browser",
+      renderEngine: "HTML5 Canvas Turbo",
+      netcode: "Instant Edge Run",
       graphics: "Sub-Pixel Motion Smoothing",
     },
   },
@@ -354,25 +329,45 @@ export default function FeaturedGames() {
 
             {/* Launch & Download CTA Actions */}
             <div className="flex flex-wrap items-center gap-3 sm:gap-4 pt-2">
-              <a
-                href={currentGame.pcExeUrl}
-                download
-                onClick={() => soundFx.playClick()}
-                className="px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-500 text-black font-heading font-black text-xs uppercase tracking-wider flex items-center gap-2 shadow-[0_0_30px_rgba(0,240,255,0.4)] hover:scale-105 active:scale-95 transition-all cursor-pointer"
-              >
-                <Monitor className="size-4" />
-                <span>DOWNLOAD PC (.EXE)</span>
-              </a>
+              {currentGame.webPlayUrl ? (
+                <a
+                  href={currentGame.webPlayUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => soundFx.playClick()}
+                  className="px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl bg-gradient-to-r from-emerald-500 via-cyan-400 to-blue-500 text-black font-heading font-black text-xs uppercase tracking-wider flex items-center gap-2 shadow-[0_0_35px_rgba(0,240,255,0.6)] hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                >
+                  <Play className="size-4 fill-black" />
+                  <span>PLAY REFLEX RUSH (LIVE WEB)</span>
+                  <ExternalLink className="size-3.5 ml-1" />
+                </a>
+              ) : (
+                <>
+                  {currentGame.pcExeUrl && (
+                    <a
+                      href={currentGame.pcExeUrl}
+                      download
+                      onClick={() => soundFx.playClick()}
+                      className="px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl bg-gradient-to-r from-orange-500 via-amber-400 to-yellow-500 text-black font-heading font-black text-xs uppercase tracking-wider flex items-center gap-2 shadow-[0_0_30px_rgba(249,115,22,0.5)] hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                    >
+                      <Monitor className="size-4" />
+                      <span>DOWNLOAD PC (.EXE)</span>
+                    </a>
+                  )}
 
-              <a
-                href={currentGame.apkUrl}
-                download
-                onClick={() => soundFx.playClick()}
-                className="px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl bg-[#05112E] border border-cyan-500/40 text-cyan-300 hover:text-white hover:bg-cyan-500/20 font-heading font-black text-xs uppercase tracking-wider flex items-center gap-2 backdrop-blur-xl hover:scale-105 active:scale-95 transition-all cursor-pointer"
-              >
-                <Smartphone className="size-4" />
-                <span>MOBILE (.APK)</span>
-              </a>
+                  {currentGame.apkUrl && (
+                    <a
+                      href={currentGame.apkUrl}
+                      download
+                      onClick={() => soundFx.playClick()}
+                      className="px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl bg-[#140804] border border-orange-500/40 text-orange-300 hover:text-white hover:bg-orange-500/20 font-heading font-black text-xs uppercase tracking-wider flex items-center gap-2 backdrop-blur-xl hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                    >
+                      <Smartphone className="size-4" />
+                      <span>MOBILE (.APK)</span>
+                    </a>
+                  )}
+                </>
+              )}
 
               <Link
                 href={`/games/${currentGame.slug}`}
