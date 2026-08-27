@@ -10,34 +10,25 @@ interface MemberSidebarProps {
   className?: string;
 }
 
-// Fallback staff roster when in offline/demo mode
-const DEFAULT_STAFF: OnlineMember[] = [
-  { clientId: "st-1", userId: "st-1", name: "Kaelen Voss", role: "FOUNDER", status: "ONLINE" },
-  { clientId: "st-2", userId: "st-2", name: "Dr. Marcus Vance", role: "DEVELOPER", status: "ONLINE" },
-  { clientId: "st-3", userId: "st-3", name: "Aria Sterling", role: "MODERATOR", status: "ONLINE" },
-];
-
 export function MemberSidebar({ members, className }: MemberSidebarProps) {
-  const mergedMembers = members.length > 0 ? members : DEFAULT_STAFF;
-
-  const owners = mergedMembers.filter(
+  const owners = members.filter(
     (m) => m.role.toUpperCase() === "OWNER" || m.role.toUpperCase() === "FOUNDER"
   );
-  const devs = mergedMembers.filter(
+  const devs = members.filter(
     (m) =>
       m.role.toUpperCase() === "DEVELOPER" ||
       m.role.toUpperCase() === "ADMIN" ||
       m.role.toUpperCase() === "SUPER_ADMIN"
   );
-  const mods = mergedMembers.filter((m) => m.role.toUpperCase() === "MODERATOR");
-  const players = mergedMembers.filter(
+  const mods = members.filter((m) => m.role.toUpperCase() === "MODERATOR");
+  const players = members.filter(
     (m) => !["OWNER", "FOUNDER", "DEVELOPER", "ADMIN", "SUPER_ADMIN", "MODERATOR"].includes(m.role.toUpperCase())
   );
 
   return (
     <aside
       className={cn(
-        "w-60 bg-[#07111F]/95 backdrop-blur-2xl border-l border-blue-500/20 text-slate-200 p-4 select-none h-full overflow-y-auto custom-scrollbar space-y-6",
+        "w-60 bg-[#03091D]/95 backdrop-blur-2xl border-l border-cyan-500/20 text-slate-200 p-4 select-none h-full overflow-y-auto custom-scrollbar space-y-6 font-mono",
         className
       )}
     >
@@ -50,7 +41,7 @@ export function MemberSidebar({ members, className }: MemberSidebarProps) {
           </div>
           <div className="space-y-1">
             {owners.map((member) => (
-              <MemberCard key={member.clientId} member={member} isOwner />
+              <MemberCard key={member.clientId || member.userId} member={member} isOwner />
             ))}
           </div>
         </div>
@@ -65,7 +56,7 @@ export function MemberSidebar({ members, className }: MemberSidebarProps) {
           </div>
           <div className="space-y-1">
             {devs.map((member) => (
-              <MemberCard key={member.clientId} member={member} isDev />
+              <MemberCard key={member.clientId || member.userId} member={member} isDev />
             ))}
           </div>
         </div>
@@ -80,7 +71,7 @@ export function MemberSidebar({ members, className }: MemberSidebarProps) {
           </div>
           <div className="space-y-1">
             {mods.map((member) => (
-              <MemberCard key={member.clientId} member={member} isMod />
+              <MemberCard key={member.clientId || member.userId} member={member} isMod />
             ))}
           </div>
         </div>
@@ -89,15 +80,15 @@ export function MemberSidebar({ members, className }: MemberSidebarProps) {
       {/* ═══ Online Players Section ═══ */}
       <div className="space-y-1.5">
         <div className="text-[10px] font-mono font-bold tracking-widest text-slate-400 uppercase px-2">
-          INSIDERS — {players.length}
+          REAL PLAYERS — {players.length}
         </div>
         <div className="space-y-1">
           {players.length === 0 ? (
-            <div className="px-2 py-1 text-[11px] text-slate-500 font-mono">
-              Waiting for players...
+            <div className="px-2 py-2 text-[11px] text-slate-500 font-mono">
+              No other players in database.
             </div>
           ) : (
-            players.map((member) => <MemberCard key={member.clientId} member={member} />)
+            players.map((member) => <MemberCard key={member.clientId || member.userId} member={member} />)
           )}
         </div>
       </div>
@@ -117,15 +108,15 @@ function MemberCard({
   isMod?: boolean;
 }) {
   return (
-    <div className="flex items-center gap-2.5 px-2 py-1.5 rounded-xl hover:bg-blue-950/40 transition-colors group cursor-pointer">
-      <div className="relative size-7 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-[11px] text-slate-200 shrink-0">
+    <div className="flex items-center gap-2.5 px-2 py-1.5 rounded-xl hover:bg-cyan-500/10 transition-colors group cursor-pointer border border-transparent hover:border-cyan-500/20">
+      <div className="relative size-7 rounded-xl bg-[#02050E] border border-cyan-500/30 flex items-center justify-center font-bold text-[11px] text-cyan-300 shrink-0">
         {member.avatar ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={member.avatar} alt={member.name} className="size-full rounded-xl object-cover" />
         ) : (
           (member.name || "D").substring(0, 2).toUpperCase()
         )}
-        <span className="absolute -bottom-0.5 -right-0.5 size-2 rounded-full bg-emerald-400 border-2 border-[#07111F]" />
+        <span className="absolute -bottom-0.5 -right-0.5 size-2 rounded-full bg-emerald-400 border-2 border-[#02050E]" />
       </div>
 
       <div className="truncate">
@@ -144,7 +135,7 @@ function MemberCard({
           {member.name}
         </div>
         <div className="text-[9px] text-slate-500 font-mono uppercase">
-          {member.role || "MEMBER"}
+          {member.role || "PLAYER"}
         </div>
       </div>
     </div>

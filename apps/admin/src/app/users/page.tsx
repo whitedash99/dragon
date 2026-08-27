@@ -17,9 +17,14 @@ import {
   Eye,
   LogOut,
   Activity,
-  Shield
+  Shield,
+  X,
+  Crown,
+  Sparkles,
+  Globe
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+import { GlassCard, GlassStat, GlassButton, GlassBadge } from "@/components/ui/glass";
 
 interface PasskeyItem {
   id: string;
@@ -41,6 +46,17 @@ interface AuditItem {
   details?: string;
   ipAddress?: string;
   createdAt: string;
+}
+
+interface UserProfileData {
+  dragonId?: string;
+  title?: string;
+  tagline?: string;
+  level?: number;
+  avatarUrl?: string;
+  bannerUrl?: string;
+  hasCompletedWelcome?: boolean;
+  hasForgedDragonId?: boolean;
 }
 
 interface UserItem {
@@ -65,6 +81,7 @@ interface UserItem {
   passkeys?: PasskeyItem[];
   sessions?: SessionItem[];
   auditLogs?: AuditItem[];
+  profile?: UserProfileData | null;
   permissions?: string;
 }
 
@@ -79,6 +96,8 @@ const ROLES_LIST = [
   "FINANCE",
   "HR",
   "VIEWER",
+  "USER",
+  "PLAYER",
 ];
 
 export default function UsersPage() {
@@ -90,7 +109,7 @@ export default function UsersPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [inviteModalOpen, setInviteModalOpen] = useState(false);
   const [inspectUser, setInspectUser] = useState<UserItem | null>(null);
-  const [inspectTab, setInspectTab] = useState<"overview" | "permissions" | "passkeys" | "sessions" | "audit">("overview");
+  const [inspectTab, setInspectTab] = useState<"overview" | "dragon_id" | "permissions" | "passkeys" | "sessions" | "audit">("overview");
 
   const [saving, setSaving] = useState(false);
   const [inviting, setInviting] = useState(false);
@@ -260,29 +279,35 @@ export default function UsersPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans select-none">
+    <div className="flex min-h-screen w-full bg-[#02040A] text-slate-100 font-sans antialiased overflow-hidden select-none font-mono">
       <Sidebar />
 
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
         <Navbar />
 
-        <main className="flex-1 overflow-y-auto p-8 max-w-7xl mx-auto w-full space-y-8">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full space-y-6 scrollbar-thin scrollbar-thumb-cyan-500/20 font-mono">
           {/* Header Bar */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-4 border-b border-slate-200 dark:border-slate-800">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-cyan-500/20">
             <div>
-              <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
-                Dragon Identity Platform (DIP) IAM
+              <div className="text-xs font-bold text-cyan-400 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                <span className="size-2 rounded-full bg-cyan-400 shadow-[0_0_8px_#00E5FF] animate-pulse" />
+                <span>Dragon Identity & Access Control (IAM)</span>
               </div>
-              <h1 className="text-2xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">Team Directory & Access Roles</h1>
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-white tracking-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
+                Team Workforce & Real Players
+              </h1>
+              <p className="text-xs text-slate-400 font-mono">
+                Direct PostgreSQL database connection: Google OAuth accounts, credentials, Dragon IDs, and access levels.
+              </p>
             </div>
 
             <div className="flex items-center gap-3">
               <button
                 onClick={fetchUsers}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-all shadow-xs"
+                className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-[#03091D] hover:border-cyan-400 border border-cyan-500/30 text-xs font-bold text-cyan-300 transition-all shadow-[0_0_15px_rgba(0,0,0,0.5)] cursor-pointer"
               >
-                <RefreshCw className={cn("size-3.5 text-slate-500 dark:text-slate-400", loading && "animate-spin")} />
-                <span>Refresh Directory</span>
+                <RefreshCw className={cn("size-3.5", loading && "animate-spin text-cyan-400")} />
+                <span>Refresh Real Accounts</span>
               </button>
 
               <button
@@ -290,33 +315,33 @@ export default function UsersPage() {
                   setInviteSuccessMsg(null);
                   setInviteModalOpen(true);
                 }}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-white border border-slate-900 dark:border-slate-100 text-xs font-semibold text-white dark:text-slate-900 transition-all shadow-xs"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 text-black text-xs font-black uppercase tracking-wider shadow-[0_0_20px_rgba(0,229,255,0.4)] hover:scale-[1.01] transition-all cursor-pointer"
               >
-                <UserPlus className="size-4" />
+                <UserPlus className="size-4 text-black" />
                 <span>Invite Team Member</span>
               </button>
             </div>
           </div>
 
           {noticeMsg && (
-            <div className={`p-4 rounded-xl border font-bold flex items-center justify-between text-xs font-mono ${noticeMsg.type === "success" ? "bg-emerald-50 dark:bg-emerald-950/60 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300" : "bg-rose-50 dark:bg-rose-950/60 border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300"}`}>
+            <div className={`p-4 rounded-2xl border font-bold flex items-center justify-between text-xs ${noticeMsg.type === "success" ? "bg-emerald-500/15 border-emerald-400/40 text-emerald-300" : "bg-rose-500/15 border-rose-400/40 text-rose-300"}`}>
               <span>{noticeMsg.text}</span>
-              <button onClick={() => setNoticeMsg(null)} className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200">✕</button>
+              <button onClick={() => setNoticeMsg(null)} className="text-slate-400 hover:text-white">✕</button>
             </div>
           )}
 
           {/* Filter & Search Bar */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#03091D]/90 p-4 rounded-2xl border border-cyan-500/25 shadow-[0_0_30px_rgba(0,229,255,0.15)]">
+            <div className="flex flex-wrap items-center gap-1.5">
               {["All", ...ROLES_LIST].map((r) => (
                 <button
                   key={r}
                   onClick={() => setRoleFilter(r)}
                   className={cn(
-                    "px-3 py-1.5 rounded-lg text-xs font-medium transition-all",
+                    "px-2.5 py-1 rounded-xl text-xs font-bold font-mono transition-all cursor-pointer",
                     roleFilter === r
-                      ? "bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-semibold shadow-xs"
-                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800"
+                      ? "bg-cyan-500/25 text-cyan-300 border border-cyan-400/40 shadow-[0_0_10px_rgba(0,229,255,0.25)]"
+                      : "text-slate-400 hover:text-white hover:bg-white/5"
                   )}
                 >
                   {r}
@@ -324,178 +349,191 @@ export default function UsersPage() {
               ))}
             </div>
 
-            <div className="relative w-80">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-3.5 text-slate-400" />
+            <div className="relative w-full sm:w-72">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-3.5 text-cyan-400" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search staff, email, role, or IP..."
-                className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-slate-400 dark:focus:border-slate-600 transition-all shadow-xs"
+                placeholder="Search email, name, role..."
+                className="w-full pl-9 pr-4 py-2 bg-[#02050E] border border-cyan-500/30 rounded-xl text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-cyan-400 transition-all font-mono"
               />
             </div>
           </div>
 
           {/* User Directory Table */}
-          <div className="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden">
+          <div className="bg-[#03091D]/90 border border-cyan-500/25 rounded-2xl shadow-[0_0_30px_rgba(0,229,255,0.15)] overflow-hidden">
             {loading ? (
-              <div className="py-16 text-center text-slate-400 text-xs font-mono">
-                Loading Neon PostgreSQL user records...
+              <div className="py-16 text-center text-cyan-400 text-xs font-mono animate-pulse">
+                Querying real Neon PostgreSQL user accounts...
               </div>
             ) : users.length === 0 ? (
               <div className="py-16 text-center text-slate-400 text-xs font-mono">
-                No team accounts found.
+                No accounts found in database.
               </div>
             ) : (
-              <table className="w-full text-left text-xs">
-                <thead className="border-b border-slate-100 bg-slate-50 text-slate-500 uppercase font-mono text-[11px]">
-                  <tr>
-                    <th className="px-6 py-3.5">Team Member</th>
-                    <th className="px-6 py-3.5">Role Tier</th>
-                    <th className="px-6 py-3.5">Department</th>
-                    <th className="px-6 py-3.5">Authenticators</th>
-                    <th className="px-6 py-3.5">Status</th>
-                    <th className="px-6 py-3.5 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 text-slate-700">
-                  {users.map((usr) => (
-                    <tr key={usr.id} className="hover:bg-slate-50/80 transition-colors">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="size-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center font-bold text-slate-900 text-xs">
-                            {(usr.name || usr.email)[0].toUpperCase()}
-                          </div>
-                          <div>
-                            <div className="font-semibold text-slate-900 flex items-center gap-1.5">
-                              <span>{usr.name || "Staff Member"}</span>
-                              {usr.isProtected && (
-                                <span className="px-1.5 py-0.2 rounded bg-amber-50 text-amber-800 border border-amber-200 text-[9px] font-mono font-bold">
-                                  PROTECTED OWNER
-                                </span>
-                              )}
-                            </div>
-                            <div className="text-[11px] text-slate-500 font-mono">{usr.email}</div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 font-mono">
-                        <span className={cn(
-                          "px-2 py-0.5 rounded border text-[11px] font-semibold",
-                          usr.role === "OWNER" || usr.role === "FOUNDER" ? "bg-amber-50 text-amber-800 border-amber-200" : "bg-slate-100 text-slate-700 border-slate-200"
-                        )}>
-                          {usr.role}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 font-mono text-slate-500">
-                        {usr.department || "Engineering"}
-                      </td>
-                      <td className="px-6 py-4 font-mono">
-                        <div className="flex items-center gap-3">
-                          <span className="flex items-center gap-1 text-sky-700 text-[11px]" title="Hardware Passkeys">
-                            <Fingerprint className="size-3.5" />
-                            <span>{usr.passkeysCount || 0}</span>
-                          </span>
-                          <span className="flex items-center gap-1 text-purple-700 text-[11px]" title="Active HTTP-Only Sessions">
-                            <Smartphone className="size-3.5" />
-                            <span>{usr.activeSessionsCount || 0}</span>
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 font-mono text-emerald-700 font-medium">
-                        {usr.status}
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <button
-                            onClick={() => {
-                              setInspectUser(usr);
-                              setInspectTab("overview");
-                            }}
-                            className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-sky-700 transition-colors"
-                            title="Inspect Member Profile"
-                          >
-                            <Eye className="size-3.5" />
-                          </button>
-                          <button
-                            onClick={() => handleOpenEdit(usr)}
-                            className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
-                            title="Edit Role"
-                          >
-                            <ShieldCheck className="size-3.5" />
-                          </button>
-                          <button
-                            onClick={() => handleDisableUser(usr)}
-                            disabled={usr.isProtected || usr.role === "OWNER"}
-                            className={cn(
-                              "p-1.5 rounded-lg transition-colors",
-                              usr.isProtected || usr.role === "OWNER" ? "opacity-30 cursor-not-allowed text-slate-400 bg-slate-100" : "bg-slate-100 hover:bg-slate-200 text-amber-700"
-                            )}
-                            title={usr.isProtected ? "Protected Owner account cannot be disabled" : "Disable Account"}
-                          >
-                            <Ban className="size-3.5" />
-                          </button>
-                          <button
-                            onClick={() => handleDeleteUser(usr)}
-                            disabled={usr.isProtected || usr.role === "OWNER"}
-                            className={cn(
-                              "p-1.5 rounded-lg transition-colors",
-                              usr.isProtected || usr.role === "OWNER" ? "opacity-30 cursor-not-allowed text-slate-400 bg-slate-100" : "bg-slate-100 hover:bg-slate-200 text-rose-700"
-                            )}
-                            title={usr.isProtected ? "Protected Owner account cannot be deleted" : "Delete Account"}
-                          >
-                            <Trash2 className="size-3.5" />
-                          </button>
-                        </div>
-                      </td>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs font-mono">
+                  <thead className="border-b border-cyan-500/20 bg-[#02050E] text-cyan-400/80 uppercase text-[10.5px]">
+                    <tr>
+                      <th className="px-6 py-3.5">Account / Google Email</th>
+                      <th className="px-6 py-3.5">Provider & Dragon ID</th>
+                      <th className="px-6 py-3.5">Role Tier</th>
+                      <th className="px-6 py-3.5">Authenticators</th>
+                      <th className="px-6 py-3.5">Status</th>
+                      <th className="px-6 py-3.5 text-right">Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-cyan-500/10 text-slate-300">
+                    {users.map((usr) => (
+                      <tr key={usr.id} className="hover:bg-cyan-500/5 transition-colors">
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="size-8 rounded-lg bg-gradient-to-br from-cyan-500 to-purple-600 flex items-center justify-center font-black text-black text-xs shadow-[0_0_10px_rgba(0,229,255,0.3)]">
+                              {(usr.name || usr.email)[0].toUpperCase()}
+                            </div>
+                            <div>
+                              <div className="font-bold text-white flex items-center gap-1.5">
+                                <span>{usr.name || "Player / Staff"}</span>
+                                {usr.isProtected && (
+                                  <span className="px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-400/40 text-[9px] font-bold">
+                                    PROTECTED OWNER
+                                  </span>
+                                )}
+                              </div>
+                              <div className="text-[10.5px] text-cyan-400/80">{usr.email}</div>
+                            </div>
+                          </div>
+                        </td>
+
+                        <td className="px-6 py-4">
+                          <div className="space-y-1">
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold inline-block border ${
+                              usr.provider === "google"
+                                ? "bg-blue-500/20 text-blue-300 border-blue-400/30"
+                                : "bg-[#02050E] text-slate-400 border-cyan-500/20"
+                            }`}>
+                              {usr.provider === "google" ? "⚡ Google OAuth" : "🔑 Credentials"}
+                            </span>
+                            {usr.profile?.dragonId && (
+                              <div className="text-[10px] text-cyan-300 font-bold">
+                                @{usr.profile.dragonId} (Lv. {usr.profile.level || 1})
+                              </div>
+                            )}
+                          </div>
+                        </td>
+
+                        <td className="px-6 py-4">
+                          <span className={cn(
+                            "px-2 py-0.5 rounded border text-[10px] font-bold font-mono",
+                            usr.role === "OWNER" || usr.role === "FOUNDER" ? "bg-cyan-500/20 text-cyan-300 border-cyan-400/40" : "bg-[#02050E] text-slate-300 border-cyan-500/20"
+                          )}>
+                            {usr.role}
+                          </span>
+                        </td>
+
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <span className="flex items-center gap-1 text-cyan-400 text-[11px]" title="Hardware Passkeys">
+                              <Fingerprint className="size-3.5" />
+                              <span>{usr.passkeysCount || 0}</span>
+                            </span>
+                            <span className="flex items-center gap-1 text-purple-400 text-[11px]" title="Active HTTP-Only Sessions">
+                              <Smartphone className="size-3.5" />
+                              <span>{usr.activeSessionsCount || 0}</span>
+                            </span>
+                          </div>
+                        </td>
+
+                        <td className="px-6 py-4 text-emerald-400 font-bold">
+                          {usr.status}
+                        </td>
+
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              onClick={() => {
+                                setInspectUser(usr);
+                                setInspectTab("overview");
+                              }}
+                              className="p-1.5 rounded-lg bg-[#02050E] hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/20 transition-colors cursor-pointer"
+                              title="Inspect Member Profile"
+                            >
+                              <Eye className="size-3.5" />
+                            </button>
+                            <button
+                              onClick={() => handleOpenEdit(usr)}
+                              className="p-1.5 rounded-lg bg-[#02050E] hover:bg-cyan-500/20 text-slate-300 border border-cyan-500/20 transition-colors cursor-pointer"
+                              title="Edit Role"
+                            >
+                              <ShieldCheck className="size-3.5" />
+                            </button>
+                            <button
+                              onClick={() => handleDisableUser(usr)}
+                              disabled={usr.isProtected || usr.role === "OWNER"}
+                              className={cn(
+                                "p-1.5 rounded-lg transition-colors border",
+                                usr.isProtected || usr.role === "OWNER" ? "opacity-30 cursor-not-allowed text-slate-500 border-white/5 bg-[#02050E]" : "bg-[#02050E] hover:bg-amber-500/20 text-amber-400 border-amber-500/30 cursor-pointer"
+                              )}
+                              title={usr.isProtected ? "Protected Owner account cannot be disabled" : "Disable Account"}
+                            >
+                              <Ban className="size-3.5" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteUser(usr)}
+                              disabled={usr.isProtected || usr.role === "OWNER"}
+                              className={cn(
+                                "p-1.5 rounded-lg transition-colors border",
+                                usr.isProtected || usr.role === "OWNER" ? "opacity-30 cursor-not-allowed text-slate-500 border-white/5 bg-[#02050E]" : "bg-[#02050E] hover:bg-rose-500/20 text-rose-400 border-rose-500/30 cursor-pointer"
+                              )}
+                              title={usr.isProtected ? "Protected Owner account cannot be deleted" : "Delete Account"}
+                            >
+                              <Trash2 className="size-3.5" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             )}
           </div>
         </main>
       </div>
 
-      {/* Spacious Member Inspection Workspace Modal */}
+      {/* INSPECT USER MODAL DRAWER */}
       {inspectUser && (
-        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl w-full max-w-2xl p-6 sm:p-8 space-y-6 shadow-2xl border border-slate-200">
-            {/* Header section matching Requirement 12 */}
-            <div className="flex items-start justify-between border-b border-slate-100 pb-4">
-              <div className="flex items-center gap-4">
-                <div className="size-12 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center font-bold text-slate-900 text-lg">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-[#03091D] border border-cyan-500/35 rounded-3xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-[0_0_50px_rgba(0,229,255,0.25)] overflow-hidden font-mono">
+            {/* Header */}
+            <div className="p-6 border-b border-cyan-500/20 flex items-center justify-between bg-[#02050E]">
+              <div className="flex items-center gap-3">
+                <div className="size-10 rounded-xl bg-gradient-to-br from-cyan-500 to-purple-600 flex items-center justify-center font-black text-black text-base shadow-[0_0_15px_rgba(0,229,255,0.3)]">
                   {(inspectUser.name || inspectUser.email)[0].toUpperCase()}
                 </div>
                 <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-bold text-slate-900 text-base">{inspectUser.name || "Staff Member"}</h3>
-                    <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-mono">
-                      {inspectUser.status}
-                    </span>
-                    {inspectUser.isProtected && (
-                      <span className="px-2 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200 text-[10px] font-mono font-bold">
-                        PROTECTED OWNER
-                      </span>
-                    )}
-                  </div>
-                  <div className="text-xs text-slate-500 font-mono mt-0.5">{inspectUser.email}</div>
-                  <div className="text-xs text-slate-400 font-mono mt-0.5">{inspectUser.role} · {inspectUser.department || "Engineering"}</div>
+                  <h3 className="font-bold text-white text-base flex items-center gap-2">
+                    <span>{inspectUser.name || "Member Profile"}</span>
+                    {inspectUser.role === "OWNER" && <Crown className="size-4 text-amber-400" />}
+                  </h3>
+                  <p className="text-xs text-cyan-400/80">{inspectUser.email}</p>
                 </div>
               </div>
-              <button onClick={() => setInspectUser(null)} className="text-slate-400 hover:text-slate-700 text-xs font-mono">
-                Close
+              <button onClick={() => setInspectUser(null)} className="p-2 text-slate-400 hover:text-white rounded-xl">
+                <X className="size-5" />
               </button>
             </div>
 
-            {/* Navigation Tabs */}
-            <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
+            {/* Tab Navigation */}
+            <div className="flex items-center gap-2 p-3 bg-[#02050E] border-b border-cyan-500/20 overflow-x-auto">
               {[
-                { id: "overview" as const, label: "Overview", icon: Eye },
+                { id: "overview" as const, label: "Overview", icon: ShieldCheck },
+                { id: "dragon_id" as const, label: "Dragon ID", icon: Sparkles },
                 { id: "permissions" as const, label: "Permissions", icon: Shield },
                 { id: "passkeys" as const, label: `Passkeys (${inspectUser.passkeysCount || 0})`, icon: Fingerprint },
                 { id: "sessions" as const, label: `Sessions (${inspectUser.activeSessionsCount || 0})`, icon: Smartphone },
-                { id: "audit" as const, label: "Audit", icon: Activity },
+                { id: "audit" as const, label: "Audit Log", icon: Activity },
               ].map((tab) => {
                 const Icon = tab.icon;
                 const isSelected = inspectTab === tab.id;
@@ -504,8 +542,8 @@ export default function UsersPage() {
                     key={tab.id}
                     onClick={() => setInspectTab(tab.id)}
                     className={cn(
-                      "px-3.5 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-all font-mono",
-                      isSelected ? "bg-slate-900 text-white font-semibold shadow-xs" : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
+                      "px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all font-mono cursor-pointer",
+                      isSelected ? "bg-cyan-500/25 text-cyan-300 border border-cyan-400/40 shadow-[0_0_10px_rgba(0,229,255,0.2)]" : "text-slate-400 hover:text-white"
                     )}
                   >
                     <Icon className="size-3.5" />
@@ -516,121 +554,155 @@ export default function UsersPage() {
             </div>
 
             {/* Tab Contents */}
-            {inspectTab === "overview" && (
-              <div className="grid grid-cols-2 gap-4 text-xs font-mono">
-                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
-                  <span className="text-slate-500 block text-[10px] uppercase font-bold">Staff ID</span>
-                  <span className="font-bold text-slate-900">{inspectUser.employeeId || inspectUser.id}</span>
+            <div className="flex-1 overflow-y-auto p-6 space-y-4">
+              {inspectTab === "overview" && (
+                <div className="grid grid-cols-2 gap-4 text-xs font-mono">
+                  <div className="p-4 rounded-xl bg-[#02050E] border border-cyan-500/20 space-y-1">
+                    <span className="text-slate-500 block text-[10px] uppercase font-bold">Account ID</span>
+                    <span className="font-bold text-white break-all">{inspectUser.id}</span>
+                  </div>
+                  <div className="p-4 rounded-xl bg-[#02050E] border border-cyan-500/20 space-y-1">
+                    <span className="text-slate-500 block text-[10px] uppercase font-bold">Identity Provider</span>
+                    <span className="font-bold text-cyan-300">{inspectUser.provider === "google" ? "⚡ Google OAuth2" : "🔑 Credentials"}</span>
+                  </div>
+                  <div className="p-4 rounded-xl bg-[#02050E] border border-cyan-500/20 space-y-1">
+                    <span className="text-slate-500 block text-[10px] uppercase font-bold">Account Created</span>
+                    <span className="font-bold text-slate-300">{new Date(inspectUser.createdAt).toLocaleDateString()}</span>
+                  </div>
+                  <div className="p-4 rounded-xl bg-[#02050E] border border-cyan-500/20 space-y-1">
+                    <span className="text-slate-500 block text-[10px] uppercase font-bold">Last Real Login</span>
+                    <span className="font-bold text-emerald-400">{inspectUser.lastLogin ? new Date(inspectUser.lastLogin).toLocaleString() : "Never"}</span>
+                  </div>
                 </div>
-                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
-                  <span className="text-slate-500 block text-[10px] uppercase font-bold">Identity Provider</span>
-                  <span className="font-bold text-sky-700">{inspectUser.provider || "credentials"}</span>
-                </div>
-                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
-                  <span className="text-slate-500 block text-[10px] uppercase font-bold">Account Created</span>
-                  <span className="font-bold text-slate-700">{new Date(inspectUser.createdAt).toLocaleDateString()}</span>
-                </div>
-                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
-                  <span className="text-slate-500 block text-[10px] uppercase font-bold">Last Activity</span>
-                  <span className="font-bold text-emerald-700">{inspectUser.lastLogin ? new Date(inspectUser.lastLogin).toLocaleString() : "Never"}</span>
-                </div>
-              </div>
-            )}
+              )}
 
-            {inspectTab === "permissions" && (
-              <div className="space-y-3 text-xs font-mono">
-                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
-                  <span className="text-slate-900 font-bold block">Assigned Role Tier: {inspectUser.role}</span>
-                  <p className="text-slate-500 text-sans">Fine-grained permissions granted for this account tier:</p>
-                  <div className="flex flex-wrap gap-2 pt-1">
-                    {["users.read", "applications.read", "cms.read", ...(inspectUser.role === "OWNER" || inspectUser.role === "ADMIN" ? ["users.manage", "applications.review", "invitations.create", "cms.edit", "security.view"] : [])].map((perm) => (
-                      <span key={perm} className="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-800 text-[11px] font-semibold shadow-xs">
-                        {perm}
+              {inspectTab === "dragon_id" && (
+                <div className="space-y-4 text-xs font-mono">
+                  <div className="p-4 rounded-xl bg-[#02050E] border border-cyan-500/20 space-y-3">
+                    <div className="flex items-center justify-between border-b border-cyan-500/20 pb-2">
+                      <span className="font-bold text-white text-sm">Dragon ID Card Identity</span>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-400/30">
+                        {inspectUser.profile?.hasForgedDragonId ? "FORGED & ACTIVE" : "ONBOARDING PENDING"}
                       </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {inspectTab === "passkeys" && (
-              <div className="space-y-3 text-xs font-mono">
-                {inspectUser.passkeys && inspectUser.passkeys.length > 0 ? (
-                  inspectUser.passkeys.map((pk) => (
-                    <div key={pk.id} className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
-                      <div>
-                        <div className="text-sky-700 font-bold">{pk.deviceType || "Hardware Security Key"}</div>
-                        <div className="text-[10px] text-slate-500">ID: {pk.id}</div>
-                      </div>
-                      <span className="text-[10px] text-slate-500">Registered: {new Date(pk.createdAt).toLocaleDateString()}</span>
                     </div>
-                  ))
-                ) : (
-                  <div className="p-8 text-center text-slate-400 font-mono text-xs bg-slate-50 rounded-xl border border-slate-200">
-                    No hardware WebAuthn passkeys registered for this account.
+
+                    <div className="grid grid-cols-2 gap-3 pt-1">
+                      <div>
+                        <span className="text-slate-500 text-[10px] uppercase block">GamerTag / Handle</span>
+                        <span className="font-bold text-cyan-400 text-sm">@{inspectUser.profile?.dragonId || "NotSet"}</span>
+                      </div>
+                      <div>
+                        <span className="text-slate-500 text-[10px] uppercase block">Primary Title</span>
+                        <span className="font-bold text-white">{inspectUser.profile?.title || "Dragon Operative"}</span>
+                      </div>
+                      <div>
+                        <span className="text-slate-500 text-[10px] uppercase block">Player Level</span>
+                        <span className="font-bold text-amber-400">Level {inspectUser.profile?.level || 1}</span>
+                      </div>
+                      <div>
+                        <span className="text-slate-500 text-[10px] uppercase block">Cinematic Welcome</span>
+                        <span className="font-bold text-emerald-400">{inspectUser.profile?.hasCompletedWelcome ? "Completed" : "Pending"}</span>
+                      </div>
+                    </div>
                   </div>
-                )}
-              </div>
-            )}
-
-            {inspectTab === "sessions" && (
-              <div className="space-y-4 text-xs font-mono">
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-900 font-bold">Active Sessions ({inspectUser.activeSessionsCount || 0})</span>
-                  <button
-                    onClick={() => handleRevokeSessions(inspectUser)}
-                    disabled={revokingSessions || (inspectUser.activeSessionsCount || 0) === 0}
-                    className={cn(
-                      "px-3 py-1.5 rounded-lg border text-xs font-semibold flex items-center gap-1.5 transition-all",
-                      (inspectUser.activeSessionsCount || 0) > 0
-                        ? "bg-rose-50 hover:bg-rose-100 border-rose-200 text-rose-700"
-                        : "opacity-40 cursor-not-allowed bg-slate-100 border-slate-200 text-slate-400"
-                    )}
-                  >
-                    {revokingSessions ? <RefreshCw className="size-3.5 animate-spin" /> : <LogOut className="size-3.5" />}
-                    <span>Revoke All Sessions</span>
-                  </button>
                 </div>
+              )}
 
-                <div className="space-y-2">
-                  {inspectUser.sessions && inspectUser.sessions.length > 0 ? (
-                    inspectUser.sessions.map((s) => (
-                      <div key={s.id} className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+              {inspectTab === "permissions" && (
+                <div className="space-y-3 text-xs font-mono">
+                  <div className="p-4 rounded-xl bg-[#02050E] border border-cyan-500/20 space-y-2">
+                    <span className="text-white font-bold block">Assigned Role Tier: {inspectUser.role}</span>
+                    <p className="text-slate-400">Permissions granted for this database account:</p>
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      {["users.read", "applications.read", "cms.read", ...(inspectUser.role === "OWNER" || inspectUser.role === "ADMIN" ? ["users.manage", "applications.review", "invitations.create", "cms.edit", "security.view"] : [])].map((perm) => (
+                        <span key={perm} className="px-2.5 py-1 rounded-lg bg-[#03091D] border border-cyan-500/30 text-cyan-300 text-[11px] font-bold">
+                          {perm}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {inspectTab === "passkeys" && (
+                <div className="space-y-3 text-xs font-mono">
+                  {inspectUser.passkeys && inspectUser.passkeys.length > 0 ? (
+                    inspectUser.passkeys.map((pk) => (
+                      <div key={pk.id} className="p-4 rounded-xl bg-[#02050E] border border-cyan-500/20 flex items-center justify-between">
                         <div>
-                          <div className="text-slate-900 font-semibold">{s.ipAddress || "127.0.0.1"}</div>
-                          <div className="text-[11px] text-slate-500 truncate max-w-sm">{s.userAgent || "Browser Client"}</div>
+                          <div className="text-cyan-300 font-bold">{pk.deviceType || "Hardware Security Key"}</div>
+                          <div className="text-[10px] text-slate-500">ID: {pk.id}</div>
                         </div>
-                        <span className="text-[10px] text-emerald-700 shrink-0 font-medium">Expires: {new Date(s.expiresAt).toLocaleDateString()}</span>
+                        <span className="text-[10px] text-slate-400">Registered: {new Date(pk.createdAt).toLocaleDateString()}</span>
                       </div>
                     ))
                   ) : (
-                    <div className="p-8 text-center text-slate-400 font-mono text-xs bg-slate-50 rounded-xl border border-slate-200">
-                      No active remote sessions for this account.
+                    <div className="p-8 text-center text-slate-500 font-mono text-xs bg-[#02050E] rounded-xl border border-cyan-500/20">
+                      No hardware WebAuthn passkeys registered for this account.
                     </div>
                   )}
                 </div>
-              </div>
-            )}
+              )}
 
-            {inspectTab === "audit" && (
-              <div className="space-y-2 text-xs font-mono">
-                {inspectUser.auditLogs && inspectUser.auditLogs.length > 0 ? (
-                  inspectUser.auditLogs.map((a) => (
-                    <div key={a.id} className="p-3.5 rounded-xl bg-black/40 border border-white/5 flex items-center justify-between">
-                      <div>
-                        <span className="font-bold text-white">{a.action}</span>
-                        <div className="text-[11px] text-zinc-400">{a.details}</div>
-                      </div>
-                      <span className="text-[10px] text-zinc-500">{new Date(a.createdAt).toLocaleString()}</span>
-                    </div>
-                  ))
-                ) : (
-                  <div className="p-8 text-center text-zinc-500 font-mono text-xs bg-white/[0.01] rounded-xl border border-white/5">
-                    No individual audit records for this account.
+              {inspectTab === "sessions" && (
+                <div className="space-y-4 text-xs font-mono">
+                  <div className="flex items-center justify-between">
+                    <span className="text-white font-bold">Active Sessions ({inspectUser.activeSessionsCount || 0})</span>
+                    <button
+                      onClick={() => handleRevokeSessions(inspectUser)}
+                      disabled={revokingSessions || (inspectUser.activeSessionsCount || 0) === 0}
+                      className={cn(
+                        "px-3 py-1.5 rounded-lg border text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer",
+                        (inspectUser.activeSessionsCount || 0) > 0
+                          ? "bg-rose-500/20 hover:bg-rose-500/30 border-rose-400/40 text-rose-300 shadow-[0_0_10px_rgba(244,63,94,0.2)]"
+                          : "opacity-40 cursor-not-allowed bg-[#02050E] border-cyan-500/20 text-slate-500"
+                      )}
+                    >
+                      {revokingSessions ? <RefreshCw className="size-3.5 animate-spin" /> : <LogOut className="size-3.5" />}
+                      <span>Revoke All Sessions</span>
+                    </button>
                   </div>
-                )}
-              </div>
-            )}
+
+                  <div className="space-y-2">
+                    {inspectUser.sessions && inspectUser.sessions.length > 0 ? (
+                      inspectUser.sessions.map((s) => (
+                        <div key={s.id} className="p-4 rounded-xl bg-[#02050E] border border-cyan-500/20 flex items-center justify-between">
+                          <div>
+                            <div className="text-white font-bold">{s.ipAddress || "127.0.0.1"}</div>
+                            <div className="text-[11px] text-slate-400 truncate max-w-sm">{s.userAgent || "Browser Client"}</div>
+                          </div>
+                          <span className="text-[10px] text-emerald-400 shrink-0 font-bold">Expires: {new Date(s.expiresAt).toLocaleDateString()}</span>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="p-8 text-center text-slate-500 font-mono text-xs bg-[#02050E] rounded-xl border border-cyan-500/20">
+                        No active remote sessions for this account.
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {inspectTab === "audit" && (
+                <div className="space-y-2 text-xs font-mono">
+                  {inspectUser.auditLogs && inspectUser.auditLogs.length > 0 ? (
+                    inspectUser.auditLogs.map((a) => (
+                      <div key={a.id} className="p-3.5 rounded-xl bg-[#02050E] border border-cyan-500/20 flex items-center justify-between">
+                        <div>
+                          <span className="font-bold text-cyan-300">{a.action}</span>
+                          <div className="text-[11px] text-slate-400">{a.details}</div>
+                        </div>
+                        <span className="text-[10px] text-slate-500">{new Date(a.createdAt).toLocaleString()}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="p-8 text-center text-slate-500 font-mono text-xs bg-[#02050E] rounded-xl border border-cyan-500/20">
+                      No individual audit records for this account.
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
@@ -638,55 +710,55 @@ export default function UsersPage() {
       {/* Invite Team Member Modal */}
       {inviteModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="surface-card rounded-2xl w-full max-w-md p-6 space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-white/5 pb-3">
-              <span className="font-semibold text-white text-sm flex items-center gap-2">
-                <Mail className="size-4 text-white" />
+          <div className="bg-[#03091D] border border-cyan-500/35 rounded-3xl w-full max-w-md p-6 space-y-4 shadow-[0_0_50px_rgba(0,229,255,0.25)] font-mono">
+            <div className="flex items-center justify-between border-b border-cyan-500/20 pb-3">
+              <span className="font-bold text-white text-sm flex items-center gap-2">
+                <Mail className="size-4 text-cyan-400" />
                 <span>Invite Dragon Team Member</span>
               </span>
-              <button onClick={() => setInviteModalOpen(false)} className="text-zinc-500 hover:text-white text-xs">
-                Cancel
+              <button onClick={() => setInviteModalOpen(false)} className="text-slate-400 hover:text-white text-xs">
+                ✕
               </button>
             </div>
 
             {inviteSuccessMsg && (
-              <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-mono flex items-center gap-2">
-                <Check className="size-4 shrink-0" />
+              <div className="p-3 rounded-xl bg-emerald-500/15 border border-emerald-400/40 text-emerald-300 text-xs font-mono flex items-center gap-2">
+                <Check className="size-4 shrink-0 text-emerald-400" />
                 <span>{inviteSuccessMsg}</span>
               </div>
             )}
 
-            <form onSubmit={handleInviteUser} className="space-y-4 text-xs">
+            <form onSubmit={handleInviteUser} className="space-y-3 text-xs font-mono">
               <div>
-                <label className="text-zinc-400 block mb-1">Full Name</label>
+                <label className="text-cyan-400 block mb-1 font-bold">Full Name *</label>
                 <input
                   type="text"
                   required
                   value={inviteName}
                   onChange={(e) => setInviteName(e.target.value)}
                   placeholder="Jane Doe"
-                  className="w-full rounded-xl bg-white/[0.03] p-3 text-white border border-white/10 focus:outline-none"
+                  className="w-full rounded-xl bg-[#02050E] p-2.5 text-white border border-cyan-500/30 focus:outline-none focus:border-cyan-400"
                 />
               </div>
 
               <div>
-                <label className="text-zinc-400 block mb-1">Corporate Email Address</label>
+                <label className="text-cyan-400 block mb-1 font-bold">Email Address *</label>
                 <input
                   type="email"
                   required
                   value={inviteEmail}
                   onChange={(e) => setInviteEmail(e.target.value)}
-                  placeholder="jane@dragonstudios.com"
-                  className="w-full rounded-xl bg-white/[0.03] p-3 text-white border border-white/10 focus:outline-none"
+                  placeholder="staff@dragonstudios.com"
+                  className="w-full rounded-xl bg-[#02050E] p-2.5 text-white border border-cyan-500/30 focus:outline-none focus:border-cyan-400"
                 />
               </div>
 
               <div>
-                <label className="text-zinc-400 block mb-1">Access Role Tier</label>
+                <label className="text-cyan-400 block mb-1 font-bold">Access Role Tier</label>
                 <select
                   value={inviteRole}
                   onChange={(e) => setInviteRole(e.target.value)}
-                  className="w-full rounded-xl bg-[#09090b] p-3 text-white border border-white/10 focus:outline-none"
+                  className="w-full rounded-xl bg-[#02050E] p-2.5 text-white border border-cyan-500/30 focus:outline-none focus:border-cyan-400 cursor-pointer"
                 >
                   {ROLES_LIST.map((r) => (
                     <option key={r} value={r}>{r}</option>
@@ -695,23 +767,30 @@ export default function UsersPage() {
               </div>
 
               <div>
-                <label className="text-zinc-400 block mb-1">Department</label>
+                <label className="text-cyan-400 block mb-1 font-bold">Department</label>
                 <input
                   type="text"
                   value={inviteDept}
                   onChange={(e) => setInviteDept(e.target.value)}
                   placeholder="Engineering / Executive / Marketing"
-                  className="w-full rounded-xl bg-white/[0.03] p-3 text-white border border-white/10 focus:outline-none"
+                  className="w-full rounded-xl bg-[#02050E] p-2.5 text-white border border-cyan-500/30 focus:outline-none focus:border-cyan-400"
                 />
               </div>
 
-              <div className="flex justify-end pt-2">
+              <div className="flex justify-end gap-2 pt-2 border-t border-cyan-500/20">
+                <button
+                  type="button"
+                  onClick={() => setInviteModalOpen(false)}
+                  className="px-4 py-2 rounded-xl bg-[#02050E] border border-cyan-500/20 text-slate-400 text-xs font-bold"
+                >
+                  Cancel
+                </button>
                 <button
                   type="submit"
                   disabled={inviting}
-                  className="px-4 py-2 rounded-xl bg-white text-black font-semibold hover:bg-zinc-200 transition-all flex items-center gap-2"
+                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 text-black font-black text-xs uppercase tracking-wider flex items-center gap-2 cursor-pointer shadow-[0_0_15px_rgba(0,229,255,0.35)]"
                 >
-                  {inviting && <RefreshCw className="size-3.5 animate-spin" />}
+                  {inviting && <RefreshCw className="size-3.5 animate-spin text-black" />}
                   <span>Dispatch Invitation</span>
                 </button>
               </div>
@@ -723,45 +802,45 @@ export default function UsersPage() {
       {/* Edit Role Modal */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="surface-card rounded-2xl w-full max-w-md p-6 space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-white/5 pb-3">
-              <span className="font-semibold text-white text-sm">
-                Edit Staff Role
+          <div className="bg-[#03091D] border border-cyan-500/35 rounded-3xl w-full max-w-md p-6 space-y-4 shadow-[0_0_50px_rgba(0,229,255,0.25)] font-mono">
+            <div className="flex items-center justify-between border-b border-cyan-500/20 pb-3">
+              <span className="font-bold text-white text-sm">
+                Edit User Account & Role
               </span>
-              <button onClick={() => setModalOpen(false)} className="text-zinc-500 hover:text-white text-xs">
-                Cancel
+              <button onClick={() => setModalOpen(false)} className="text-slate-400 hover:text-white text-xs">
+                ✕
               </button>
             </div>
 
-            <form onSubmit={handleSaveUser} className="space-y-4 text-xs">
+            <form onSubmit={handleSaveUser} className="space-y-3 text-xs font-mono">
               <div>
-                <label className="text-zinc-400 block mb-1">Full Name</label>
+                <label className="text-cyan-400 block mb-1 font-bold">Full Name</label>
                 <input
                   type="text"
                   required
                   value={formName}
                   onChange={(e) => setFormName(e.target.value)}
-                  className="w-full rounded-xl bg-white/[0.03] p-3 text-white border border-white/10 focus:outline-none"
+                  className="w-full rounded-xl bg-[#02050E] p-2.5 text-white border border-cyan-500/30 focus:outline-none focus:border-cyan-400"
                 />
               </div>
 
               <div>
-                <label className="text-zinc-400 block mb-1">Email Address</label>
+                <label className="text-cyan-400 block mb-1 font-bold">Email Address</label>
                 <input
                   type="email"
                   required
                   value={formEmail}
                   onChange={(e) => setFormEmail(e.target.value)}
-                  className="w-full rounded-xl bg-white/[0.03] p-3 text-white border border-white/10 focus:outline-none"
+                  className="w-full rounded-xl bg-[#02050E] p-2.5 text-white border border-cyan-500/30 focus:outline-none focus:border-cyan-400"
                 />
               </div>
 
               <div>
-                <label className="text-zinc-400 block mb-1">Role Tier</label>
+                <label className="text-cyan-400 block mb-1 font-bold">Role Tier</label>
                 <select
                   value={formRole}
                   onChange={(e) => setFormRole(e.target.value)}
-                  className="w-full rounded-xl bg-[#09090b] p-3 text-white border border-white/10 focus:outline-none"
+                  className="w-full rounded-xl bg-[#02050E] p-2.5 text-white border border-cyan-500/30 focus:outline-none focus:border-cyan-400 cursor-pointer"
                 >
                   {ROLES_LIST.map((r) => (
                     <option key={r} value={r}>{r}</option>
@@ -769,11 +848,18 @@ export default function UsersPage() {
                 </select>
               </div>
 
-              <div className="flex justify-end pt-2">
+              <div className="flex justify-end gap-2 pt-2 border-t border-cyan-500/20">
+                <button
+                  type="button"
+                  onClick={() => setModalOpen(false)}
+                  className="px-4 py-2 rounded-xl bg-[#02050E] border border-cyan-500/20 text-slate-400 text-xs font-bold"
+                >
+                  Cancel
+                </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-4 py-2 rounded-xl bg-white text-black font-semibold hover:bg-zinc-200 transition-all"
+                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 text-black font-black text-xs uppercase tracking-wider cursor-pointer shadow-[0_0_15px_rgba(0,229,255,0.35)]"
                 >
                   Save Changes
                 </button>

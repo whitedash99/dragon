@@ -57,84 +57,13 @@ export interface OnlineMember {
 
 export type ConnectionState = "CONNECTED" | "CONNECTING" | "RECONNECTING" | "OFFLINE";
 
-const DEFAULT_MOCK_MESSAGES: Record<string, ChatMessageItemData[]> = {
-  general: [
-    {
-      id: "msg-gen-1",
-      roomId: "default_general",
-      userId: "u-founder",
-      content: "Welcome to Dragon Insiders! Our network physics stack for Embers of Valyria is running at 128-tick deterministic lockstep across all global clusters. Drop your balance & netcode feedback directly in this channel.",
-      isPinned: true,
-      isEdited: false,
-      createdAt: new Date(Date.now() - 3600000).toISOString(),
-      user: { id: "u-founder", name: "Kaelen Voss", role: "OWNER", department: "Executive / Architecture" },
-      reactions: [
-        { id: "r1", messageId: "msg-gen-1", userId: "u-founder", emoji: "👑" },
-        { id: "r2", messageId: "msg-gen-1", userId: "u-1", emoji: "🔥" },
-      ]
-    },
-    {
-      id: "msg-gen-2",
-      roomId: "default_general",
-      userId: "u-dev",
-      content: "Just deployed Dragon Engine v5.5 hotfix: Vulkan mesh shaders are rendering 4K 120FPS with sub-millisecond frame pacing on RTX 40 & 50 series rigs. Test build is rolling out to Insiders Elite.",
-      isPinned: false,
-      isEdited: false,
-      createdAt: new Date(Date.now() - 1800000).toISOString(),
-      user: { id: "u-dev", name: "Dr. Marcus Vance", role: "DEVELOPER", department: "Graphics & Netcode" },
-      reactions: [
-        { id: "r3", messageId: "msg-gen-2", userId: "u-1", emoji: "⚡" },
-        { id: "r4", messageId: "msg-gen-2", userId: "u-2", emoji: "🚀" },
-      ]
-    },
-    {
-      id: "msg-gen-3",
-      roomId: "default_general",
-      userId: "u-mod",
-      content: "Tournament brackets for the $100K Archon Invitational open this Friday at 18:00 UTC. Check out #announcements and the Events tab for registration guidelines!",
-      isPinned: false,
-      isEdited: false,
-      createdAt: new Date(Date.now() - 600000).toISOString(),
-      user: { id: "u-mod", name: "Aria Sterling", role: "MODERATOR", department: "Community Safety" },
-      reactions: [
-        { id: "r5", messageId: "msg-gen-3", userId: "u-3", emoji: "🎮" },
-        { id: "r6", messageId: "msg-gen-3", userId: "u-4", emoji: "❤️" },
-      ]
-    }
-  ],
-  announcements: [
-    {
-      id: "msg-ann-1",
-      roomId: "default_announcements",
-      userId: "u-founder",
-      content: "📢 OFFICIAL DISPATCH: Dragon Studios global servers have completed migration to high-throughput Neon PostgreSQL clusters with multi-region replication.",
-      isPinned: true,
-      isEdited: false,
-      createdAt: new Date(Date.now() - 86400000).toISOString(),
-      user: { id: "u-founder", name: "Kaelen Voss", role: "OWNER", department: "Executive" },
-      reactions: [
-        { id: "r7", messageId: "msg-ann-1", userId: "u-1", emoji: "🔥" },
-        { id: "r8", messageId: "msg-ann-1", userId: "u-2", emoji: "👑" },
-      ]
-    }
-  ]
-};
-
 export function useRealtimeChat(roomId: string, roomSlug: string) {
   const { data: session } = useSession();
-  const [messages, setMessages] = useState<ChatMessageItemData[]>(() => {
-    return DEFAULT_MOCK_MESSAGES[roomSlug] || DEFAULT_MOCK_MESSAGES.general;
-  });
+  const [messages, setMessages] = useState<ChatMessageItemData[]>([]);
   const [loading, setLoading] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionState>("CONNECTED");
   const [typingUsers, setTypingUsers] = useState<string[]>([]);
-  const [onlineMembers, setOnlineMembers] = useState<OnlineMember[]>([
-    { clientId: "st-1", userId: "st-1", name: "Kaelen Voss", role: "FOUNDER", status: "ONLINE" },
-    { clientId: "st-2", userId: "st-2", name: "Dr. Marcus Vance", role: "DEVELOPER", status: "ONLINE" },
-    { clientId: "st-3", userId: "st-3", name: "Aria Sterling", role: "MODERATOR", status: "ONLINE" },
-    { clientId: "st-4", userId: "st-4", name: "ValkyrieStream", role: "INSIDER ELITE", status: "ONLINE" },
-    { clientId: "st-5", userId: "st-5", name: "ShadowSniper99", role: "INSIDER", status: "ONLINE" },
-  ]);
+  const [onlineMembers, setOnlineMembers] = useState<OnlineMember[]>([]);
 
   const ablyRef = useRef<any>(null);
   const channelRef = useRef<any>(null);
@@ -144,24 +73,45 @@ export function useRealtimeChat(roomId: string, roomSlug: string) {
   // 1. Fetch persistent history from Neon PostgreSQL
   const fetchMessages = useCallback(async () => {
     if (!roomId) return;
+    setLoading(true);
     try {
       const res = await fetch(`/api/community/chat/messages?roomId=${roomId}`);
       if (res.ok) {
         const data = await res.json();
-        if (data.success && Array.isArray(data.messages) && data.messages.length > 0) {
+        if (data.success && Array.isArray(data.messages)) {
           setMessages(data.messages);
+        } else {
+          setMessages([]);
         }
       }
     } catch (err) {
       console.warn("[RealtimeChat] Failed to load messages:", err);
+    } finally {
+      setLoading(false);
     }
   }, [roomId]);
 
+  // 2. Fetch real online / registered community members
+  const fetchMembers = useCallback(async () => {
+    try {
+      const res = await fetch("/api/community/chat/members");
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && Array.isArray(data.members)) {
+          setOnlineMembers(data.members);
+        }
+      }
+    } catch (err) {
+      console.warn("[RealtimeChat] Failed to load members:", err);
+    }
+  }, []);
+
   useEffect(() => {
     fetchMessages();
-  }, [fetchMessages]);
+    fetchMembers();
+  }, [fetchMessages, fetchMembers]);
 
-  // 2. Initialize Ably Realtime Connection & Channel Subscription
+  // 3. Initialize Ably Realtime Connection & Channel Subscription
   useEffect(() => {
     if (!roomSlug) return;
 
@@ -175,12 +125,12 @@ export function useRealtimeChat(roomId: string, roomSlug: string) {
 
         if (!tokenData.enabled) {
           if (isMounted) {
-            setConnectionStatus("CONNECTED"); // Local polling mode
+            setConnectionStatus("CONNECTED");
           }
           return;
         }
 
-        // Dynamically load Ably in browser to eliminate Webpack SWC parser errors
+        // Dynamically load Ably in browser
         if (!(window as any).Ably) {
           await new Promise<void>((resolve) => {
             const script = document.createElement("script");
@@ -222,82 +172,49 @@ export function useRealtimeChat(roomId: string, roomSlug: string) {
         const channel = ably.channels.get(channelName);
         channelRef.current = channel;
 
-        // Subscribe to New Message
-        channel.subscribe("new_message", (message: any) => {
+        // Subscribe to chat events
+        channel.subscribe("new_message", (messageEvent: any) => {
           if (!isMounted) return;
-          const msgData: ChatMessageItemData = message.data;
+          const newMsg = messageEvent.data as ChatMessageItemData;
           setMessages((prev) => {
-            if (prev.some((m) => m.id === msgData.id)) return prev;
-            return [...prev, msgData];
+            if (prev.some((m) => m.id === newMsg.id)) return prev;
+            return [...prev, newMsg];
           });
         });
 
-        // Subscribe to Reactions Update
-        channel.subscribe("reaction_updated", (message: any) => {
+        channel.subscribe("reaction_update", (event: any) => {
           if (!isMounted) return;
-          const { messageId, reactions } = message.data;
+          const { messageId, reactions } = event.data;
           setMessages((prev) =>
-            prev.map((msg) =>
-              msg.id === messageId ? { ...msg, reactions: reactions || [] } : msg
-            )
+            prev.map((m) => (m.id === messageId ? { ...m, reactions } : m))
           );
         });
 
-        // Subscribe to Typing Events
-        channel.subscribe("user_typing", (message: any) => {
+        channel.subscribe("typing_indicator", (event: any) => {
           if (!isMounted) return;
-          const { userId, userName } = message.data;
-          if (userId === session?.user?.id) return;
+          const { userName, isTyping } = event.data;
+          if (!userName || (session?.user?.name && userName === session.user.name)) return;
 
           setTypingUsers((prev) => {
-            if (!prev.includes(userName)) return [...prev, userName];
-            return prev;
+            if (isTyping) {
+              if (!prev.includes(userName)) return [...prev, userName];
+              return prev;
+            } else {
+              return prev.filter((u) => u !== userName);
+            }
           });
 
-          if (typingTimerRef.current[userId]) {
-            clearTimeout(typingTimerRef.current[userId]);
-          }
-
-          typingTimerRef.current[userId] = setTimeout(() => {
-            if (isMounted) {
+          if (isTyping) {
+            if (typingTimerRef.current[userName]) {
+              clearTimeout(typingTimerRef.current[userName]);
+            }
+            typingTimerRef.current[userName] = setTimeout(() => {
               setTypingUsers((prev) => prev.filter((u) => u !== userName));
-            }
-          }, 3000);
-        });
-
-        // Enter Presence
-        if (session?.user) {
-          channel.presence.enter({
-            userId: session.user.id,
-            name: session.user.name || "Dragon Insider",
-            role: session.user.role || "MEMBER",
-            avatar: session.user.image,
-            status: "ONLINE",
-          });
-        }
-
-        // Subscribe to Presence changes
-        channel.presence.subscribe(async () => {
-          try {
-            const members = await channel.presence.get();
-            if (!isMounted || !Array.isArray(members)) return;
-            const liveMembers: OnlineMember[] = members.map((m: any) => ({
-              clientId: m.clientId,
-              userId: m.data?.userId || m.clientId,
-              name: m.data?.name || "Player",
-              role: m.data?.role || "MEMBER",
-              avatar: m.data?.avatar,
-              status: m.data?.status || "ONLINE",
-            }));
-            if (liveMembers.length > 0) {
-              setOnlineMembers(liveMembers);
-            }
-          } catch {
-            // fallback
+            }, 3000);
           }
         });
-      } catch (err) {
-        console.warn("[RealtimeChat] Ably connect fallback:", err);
+      } catch (e) {
+        console.warn("[RealtimeChat] Setup notice:", e);
         if (isMounted) setConnectionStatus("CONNECTED");
       }
     };
@@ -306,129 +223,109 @@ export function useRealtimeChat(roomId: string, roomSlug: string) {
 
     return () => {
       isMounted = false;
-      Object.values(typingTimerRef.current).forEach((t) => clearTimeout(t));
       if (channelRef.current) {
         channelRef.current.unsubscribe();
-        if (session?.user) {
-          channelRef.current.presence.leave();
-        }
       }
       if (ablyRef.current) {
         ablyRef.current.close();
       }
     };
-  }, [roomSlug, session?.user]);
+  }, [roomSlug, session?.user?.name]);
 
-  // 3. Send Message Handler (with optimistic UI update)
-  const sendMessage = async (content: string, replyToId?: string | null) => {
-    if (!content.trim()) return;
+  // 4. Send Message Handler
+  const sendMessage = useCallback(
+    async (content: string, replyToId?: string | null, attachments?: string | null) => {
+      if (!content.trim() || !roomId) return;
 
-    const tempId = `temp_${Date.now()}`;
-    const optimisticMsg: ChatMessageItemData = {
-      id: tempId,
-      roomId,
-      userId: session?.user?.id || "guest",
-      content: content.trim(),
-      replyToId: replyToId || null,
-      isPinned: false,
-      isEdited: false,
-      createdAt: new Date().toISOString(),
-      user: {
-        id: session?.user?.id || "guest",
-        name: session?.user?.name || "Dragon Insider",
-        avatar: session?.user?.image,
-        role: session?.user?.role || "MEMBER",
-      },
-      reactions: [],
-    };
+      const tempId = `temp-${Date.now()}`;
+      const optimisticUser: ChatAuthor = {
+        id: session?.user?.email || "current-user",
+        name: session?.user?.name || session?.user?.email?.split("@")[0] || "Player",
+        email: session?.user?.email,
+        role: "MEMBER",
+      };
 
-    // Optimistically append message
-    setMessages((prev) => [...prev, optimisticMsg]);
+      const optimisticMsg: ChatMessageItemData = {
+        id: tempId,
+        roomId,
+        userId: session?.user?.email || "current-user",
+        content: content.trim(),
+        attachments: attachments || null,
+        replyToId: replyToId || null,
+        isPinned: false,
+        isEdited: false,
+        createdAt: new Date().toISOString(),
+        user: optimisticUser,
+        reactions: [],
+      };
 
-    try {
-      const res = await fetch("/api/community/chat/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          roomId,
-          content: content.trim(),
-          replyToId: replyToId || undefined,
-        }),
-      });
+      setMessages((prev) => [...prev, optimisticMsg]);
 
-      const data = await res.json();
-      if (!data.success) {
-        // Rollback optimistic message if rate-limited or error
-        setMessages((prev) => prev.filter((m) => m.id !== tempId));
-        alert(data.error || "Failed to send message.");
-      } else if (data.message) {
-        // Replace tempId with server created message
-        setMessages((prev) =>
-          prev.map((m) => (m.id === tempId ? data.message : m))
-        );
-      }
-    } catch (err) {
-      console.error("[RealtimeChat] Message transmission failed:", err);
-      setMessages((prev) => prev.filter((m) => m.id !== tempId));
-    }
-  };
+      try {
+        const res = await fetch("/api/community/chat/messages", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            roomId,
+            content: content.trim(),
+            replyToId: replyToId || undefined,
+            attachments: attachments || undefined,
+          }),
+        });
 
-  // 4. Toggle Emoji Reaction (Optimistic + Backend sync)
-  const toggleReaction = async (messageId: string, emoji: string) => {
-    const currentUserId = session?.user?.id || "guest";
-
-    setMessages((prev) =>
-      prev.map((msg) => {
-        if (msg.id !== messageId) return msg;
-
-        const exists = msg.reactions.some(
-          (r) => r.emoji === emoji && r.userId === currentUserId
-        );
-
-        let nextReactions: ChatReactionItem[];
-        if (exists) {
-          nextReactions = msg.reactions.filter(
-            (r) => !(r.emoji === emoji && r.userId === currentUserId)
+        const data = await res.json();
+        if (data.success && data.message) {
+          setMessages((prev) =>
+            prev.map((m) => (m.id === tempId ? data.message : m))
           );
         } else {
-          nextReactions = [
-            ...msg.reactions,
-            {
-              id: `temp_react_${Date.now()}`,
-              messageId,
-              userId: currentUserId,
-              emoji,
-            },
-          ];
+          setMessages((prev) => prev.filter((m) => m.id !== tempId));
+          alert(data.error || "Failed to deliver message.");
         }
-        return { ...msg, reactions: nextReactions };
-      })
-    );
+      } catch (err) {
+        setMessages((prev) => prev.filter((m) => m.id !== tempId));
+        alert("Network error sending message.");
+      }
+    },
+    [roomId, session]
+  );
 
-    try {
-      await fetch("/api/community/chat/reactions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messageId, emoji }),
-      });
-    } catch (err) {
-      console.error("[RealtimeChat] Toggle reaction error:", err);
-    }
-  };
+  // 5. Toggle Reaction Handler
+  const toggleReaction = useCallback(
+    async (messageId: string, emoji: string) => {
+      try {
+        const res = await fetch("/api/community/chat/reactions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ messageId, emoji }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          fetchMessages();
+        }
+      } catch (e) {
+        console.warn("Reaction error:", e);
+      }
+    },
+    [fetchMessages]
+  );
 
-  // 5. Send Typing Status Broadcast (throttled to 2 seconds)
-  const sendTyping = () => {
-    const now = Date.now();
-    if (now - lastTypingSentRef.current < 2000) return;
-    lastTypingSentRef.current = now;
+  // 6. Broadcast Typing State
+  const sendTyping = useCallback(
+    (isTyping: boolean) => {
+      const now = Date.now();
+      if (isTyping && now - lastTypingSentRef.current < 2000) return;
+      lastTypingSentRef.current = now;
 
-    if (channelRef.current && session?.user) {
-      channelRef.current.publish("user_typing", {
-        userId: session.user.id,
-        userName: session.user.name || "Player",
-      });
-    }
-  };
+      if (channelRef.current) {
+        channelRef.current.publish("typing_indicator", {
+          userName: session?.user?.name || "Player",
+          isTyping,
+        });
+      }
+    },
+    [session?.user?.name]
+  );
 
   return {
     messages,
@@ -439,6 +336,6 @@ export function useRealtimeChat(roomId: string, roomSlug: string) {
     sendMessage,
     toggleReaction,
     sendTyping,
-    refetch: fetchMessages,
+    refreshMessages: fetchMessages,
   };
 }

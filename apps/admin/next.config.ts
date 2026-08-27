@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
   outputFileTracingRoot: process.env.VERCEL ? path.resolve(__dirname, "../../") : __dirname,
   reactStrictMode: true,
   poweredByHeader: false,
-  transpilePackages: ["@dragon/shared-db", "@dragon/auth", "@dragon/ui", "@dragon/utils"],
+  transpilePackages: ["@dragon/shared-db", "@dragon/auth", "@dragon/ui", "@dragon/utils", "@dragon/storage", "@dragon/config", "@dragon/validation"],
   serverExternalPackages: ["@prisma/client"],
   eslint: {
     ignoreDuringBuilds: true,

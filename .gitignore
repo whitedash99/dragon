@@ -11,7 +11,5 @@ build-log.txt
 dragon-admin/
 scripts/
 
-.vercel
-.env*
-src/generated/
-packages/shared-db/src/generated/
+
+

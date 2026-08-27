@@ -3,38 +3,84 @@ import { prisma } from "@/lib/database/prisma";
 import { getAuthenticatedUser } from "@/lib/auth/auth";
 import { can } from "@dragon/auth";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
-    const cloudDeployments = await prisma.cloudDeployment.findMany({
+    const vercelToken = process.env.VERCEL_TOKEN;
+    const vercelProjectId = process.env.VERCEL_PROJECT_ID;
+    const vercelTeamId = process.env.VERCEL_TEAM_ID;
+    const isVercelConnected = Boolean(vercelToken && vercelProjectId);
+
+    let vercelDeployments: Array<{
+      id: string;
+      app: string;
+      domain: string;
+      environment: string;
+      target: string;
+      status: string;
+      commit?: string;
+      updatedAt: string;
+      url?: string;
+    }> = [];
+
+    if (isVercelConnected) {
+      try {
+        const teamParam = vercelTeamId ? `&teamId=${vercelTeamId}` : "";
+        const res = await fetch(
+          `https://api.vercel.com/v6/deployments?projectId=${vercelProjectId}&limit=10${teamParam}`,
+          {
+            headers: {
+              Authorization: `Bearer ${vercelToken}`,
+            },
+          }
+        );
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data.deployments)) {
+            vercelDeployments = data.deployments.map((d: any) => ({
+              id: d.uid || d.id,
+              app: d.name || "Dragon Studios",
+              domain: d.url ? `https://${d.url}` : "Vercel Edge",
+              environment: d.target === "production" ? "Production" : "Preview",
+              target: "Vercel Edge",
+              status: d.state || "READY",
+              commit: d.meta?.githubCommitMessage || d.meta?.gitlabCommitMessage || "Production Build",
+              updatedAt: new Date(d.createdAt || d.created).toLocaleDateString(),
+              url: d.url ? `https://${d.url}` : undefined,
+            }));
+          }
+        }
+      } catch (fetchErr) {
+        console.warn("Vercel API fetch warning:", fetchErr);
+      }
+    }
+
+    // Also fetch recorded deployment history in PostgreSQL DB
+    const dbDeployments = await prisma.cloudDeployment.findMany({
       orderBy: { createdAt: "desc" },
       take: 10,
     });
 
-    const envs = await prisma.productionEnvironment.findMany({
-      orderBy: { name: "asc" },
-    });
+    const hasDeployHook = Boolean(process.env.VERCEL_DEPLOY_HOOK_URL);
 
     return NextResponse.json({
       success: true,
-      telemetry: {
-        productionStatus: "ONLINE",
-        activeVersion: "v2.5.0-ENTERPRISE",
-        liveDomains: 3,
-        pipelineStatus: "HEALTHY",
-      },
-      domains: [
-        { name: "Public Website", domain: "dragonstudios.com", port: "3000", status: "ACTIVE" },
-        { name: "Admin Portal", domain: "admin.dragonstudios.com", port: "4000", status: "ACTIVE" },
-        { name: "API Gateway", domain: "api.dragonstudios.com", port: "4000/api", status: "ACTIVE" },
-      ],
-      environments: envs.length > 0 ? envs : [
-        { id: "1", name: "PRODUCTION", domain: "admin.dragonstudios.com", status: "ACTIVE" },
-        { id: "2", name: "STAGING", domain: "staging.admin.dragonstudios.com", status: "ACTIVE" },
-        { id: "3", name: "DEVELOPMENT", domain: "dev.dragonstudios.com", status: "ACTIVE" },
-      ],
-      cloudDeployments: cloudDeployments.length > 0 ? cloudDeployments : [
-        { id: "1", version: "v2.5.0-ENTERPRISE", branch: "main", commit: "a8f9c1e", status: "SUCCESS", deployedBy: "DevOps CI/CD", createdAt: new Date().toISOString() },
-      ],
+      connected: isVercelConnected || hasDeployHook,
+      provider: isVercelConnected ? "Vercel API" : hasDeployHook ? "Vercel Deploy Hook" : "Not Connected",
+      message: isVercelConnected || hasDeployHook 
+        ? "Deployment provider connected." 
+        : "Deployment provider not connected. Set VERCEL_TOKEN / VERCEL_DEPLOY_HOOK_URL in environment variables to manage live builds.",
+      deployments: vercelDeployments.length > 0 ? vercelDeployments : dbDeployments.map((d) => ({
+        id: d.id,
+        app: "Dragon Studios",
+        domain: "dragongamingstudios.vercel.app",
+        environment: "Production",
+        target: "Vercel Edge",
+        status: d.status,
+        commit: `${d.version} (${d.commit || "main"})`,
+        updatedAt: new Date(d.createdAt).toLocaleDateString(),
+      })),
     });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";
@@ -55,17 +101,35 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { action } = body;
 
-    // 1. Trigger Production Deployment Pipeline
+    // Trigger real Vercel Deploy Hook if configured
     if (action === "trigger_deploy") {
-      const commit = Math.random().toString(36).substring(2, 9);
-      const version = `v2.5.${Math.floor(Math.random() * 10 + 1)}-ENTERPRISE`;
+      const hookUrl = process.env.VERCEL_DEPLOY_HOOK_URL;
+      if (!hookUrl) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Deployment provider not connected: VERCEL_DEPLOY_HOOK_URL is not configured in environment variables.",
+          },
+          { status: 400 }
+        );
+      }
+
+      const hookRes = await fetch(hookUrl, { method: "POST" });
+      if (!hookRes.ok) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: `Vercel Deploy Hook returned status ${hookRes.status}`,
+          },
+          { status: 502 }
+        );
+      }
 
       const deploy = await prisma.cloudDeployment.create({
         data: {
-          version,
+          version: `Release-${new Date().toISOString().slice(0, 10)}`,
           branch: "main",
-          commit,
-          status: "SUCCESS",
+          status: "TRIGGERED",
           deployedBy: auth.user.email,
         },
       });
@@ -76,11 +140,11 @@ export async function POST(req: NextRequest) {
           userEmail: auth.user.email,
           action: "TRIGGER_PRODUCTION_DEPLOYMENT",
           resource: "DEPLOYMENTS",
-          details: `Production Deployment Pipeline triggered: ${version} (${commit})`,
+          details: `Triggered real Vercel deploy hook for production build.`,
         },
       }).catch((e) => console.warn("AuditLog warning:", e));
 
-      return NextResponse.json({ success: true, deployment: deploy });
+      return NextResponse.json({ success: true, deployment: deploy, message: "Production deployment triggered successfully via Vercel Deploy Hook." });
     }
 
     return NextResponse.json({ success: false, error: "Invalid action" }, { status: 400 });

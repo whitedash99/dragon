@@ -32,7 +32,8 @@ export async function POST(req: NextRequest) {
 
     // 1. CREDENTIALS LOGIN
     if (action === "login" && email && password) {
-      const cleanEmail = email.toLowerCase().trim();
+      const identifier = email.trim();
+      const cleanEmail = identifier.toLowerCase();
 
       // Rate Limiting: 5 attempts per 15 minutes per IP + Email combination
       const rateLimitKey = `login_${ipAddress}_${cleanEmail}`;
@@ -56,16 +57,29 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      // Check configured owner or corporate domain
-      const isOwnerAccount = isConfiguredOwnerEmail(cleanEmail);
-      const isCorporateDomain = cleanEmail.endsWith("@dragonstudios.com") || isOwnerAccount;
+      // Look up user by Email OR DragonID (e.g. DRG-XXXX-XXXX)
+      const user = await prisma.user.findFirst({
+        where: {
+          OR: [
+            { email: cleanEmail },
+            { dragonId: identifier },
+            { dragonId: identifier.toUpperCase() },
+            { dragonId: identifier.replace(/^@/, '') },
+          ],
+        },
+      });
 
-      if (!isCorporateDomain) {
+      // Check configured owner or corporate domain
+      const targetEmail = user?.email?.toLowerCase().trim() || cleanEmail;
+      const isOwnerAccount = isConfiguredOwnerEmail(targetEmail);
+      const isCorporateDomain = targetEmail.endsWith("@dragonstudios.com") || isOwnerAccount;
+
+      if (!isCorporateDomain && (!user || user.role === "USER")) {
         await recordSecurityAudit({
-          userEmail: cleanEmail,
+          userEmail: targetEmail,
           action: "UNAUTHORIZED_DOMAIN_LOGIN",
           resource: "AUTH_GATEWAY",
-          details: `Rejected login attempt from unapproved domain from IP: ${ipAddress}`,
+          details: `Rejected login attempt from unapproved domain/DragonID from IP: ${ipAddress}`,
           severity: "MEDIUM",
           ipAddress,
         });
@@ -75,17 +89,13 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      const user = await prisma.user.findUnique({
-        where: { email: cleanEmail },
-      });
-
       // Account enumeration protection: return uniform error message
       if (!user || user.role === "USER") {
         await recordSecurityAudit({
-          userEmail: cleanEmail,
+          userEmail: targetEmail,
           action: "LOGIN_FAILURE_UNKNOWN_USER",
           resource: "AUTH_SESSION",
-          details: `Failed login attempt for non-staff or non-existent account from ${ipAddress}`,
+          details: `Failed login attempt for non-staff or non-existent account (${identifier}) from ${ipAddress}`,
           severity: "LOW",
           ipAddress,
         });

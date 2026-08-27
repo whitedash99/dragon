@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { Navbar } from "@/components/navbar/Navbar";
 import { Lock, ShieldCheck, CheckCircle2, AlertTriangle, Key, Users } from "lucide-react";
+import { cn } from "@/lib/utils/cn";
 
 interface RoleDef {
   name: string;
@@ -51,33 +52,35 @@ export default function AccessPage() {
   const [selectedRole, setSelectedRole] = useState<RoleDef>(ROLES_MATRIX[0]);
 
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans select-none">
+    <div className="flex min-h-screen bg-[#02040A] text-slate-100 font-sans select-none">
       <Sidebar />
 
       <div className="flex-1 flex flex-col min-w-0">
         <Navbar />
 
-        <main className="flex-1 overflow-y-auto p-8 max-w-7xl mx-auto w-full space-y-8">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full space-y-6 scrollbar-thin scrollbar-thumb-cyan-500/20 font-mono">
           {/* Header Bar */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-6 border-b border-slate-200 dark:border-slate-800">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-cyan-500/20">
             <div>
-              <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1 flex items-center gap-1.5">
-                <Lock className="size-3.5 text-slate-700 dark:text-slate-300" />
+              <div className="text-xs font-bold text-cyan-400 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                <Lock className="size-3.5 text-cyan-400" />
                 <span>Dragon Authorization Matrix & Privilege Hierarchy</span>
               </div>
-              <h1 className="text-2xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">Access Control & Role Matrix</h1>
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-white tracking-tight font-heading">
+                Access Control & RBAC Matrix
+              </h1>
             </div>
 
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-300 text-xs font-semibold">
-              <ShieldCheck className="size-4 text-amber-600 dark:text-amber-400" />
+            <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-cyan-500/10 border border-cyan-400/30 text-cyan-300 text-xs font-bold shadow-[0_0_15px_rgba(0,229,255,0.15)]">
+              <ShieldCheck className="size-4 text-cyan-400" />
               <span>Privilege Escalation Guard Active</span>
             </div>
           </div>
 
-          <div className="grid gap-8 grid-cols-1 lg:grid-cols-3">
+          <div className="grid gap-6 grid-cols-1 lg:grid-cols-3">
             {/* Roles List */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 space-y-4 shadow-xs">
-              <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">System Role Tiers</h2>
+            <div className="bg-[#03091D]/90 border border-cyan-500/25 rounded-2xl p-5 space-y-3 shadow-[0_4px_20px_rgba(0,0,0,0.6)]">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-cyan-400">System Role Tiers</h2>
               <div className="space-y-2">
                 {ROLES_MATRIX.map((r) => {
                   const isSelected = selectedRole.name === r.name;
@@ -85,21 +88,22 @@ export default function AccessPage() {
                     <div
                       key={r.name}
                       onClick={() => setSelectedRole(r)}
-                      className={`p-4 rounded-xl border cursor-pointer transition-all ${
+                      className={cn(
+                        "p-4 rounded-xl border cursor-pointer transition-all space-y-1",
                         isSelected
-                          ? "bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 border-slate-900 dark:border-slate-100 shadow-xs font-semibold"
-                          : "bg-slate-50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-900 dark:text-slate-100"
-                      }`}
+                          ? "bg-cyan-500/25 border-cyan-400 text-white shadow-[0_0_15px_rgba(0,229,255,0.3)]"
+                          : "bg-[#02050E] border-cyan-500/20 hover:border-cyan-500/40 text-slate-300"
+                      )}
                     >
                       <div className="flex items-center justify-between font-mono">
-                        <span className="font-bold text-xs">{r.name}</span>
+                        <span className="font-bold text-xs text-white">{r.name}</span>
                         {r.isProtected && (
-                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${isSelected ? "bg-amber-900 dark:bg-amber-200 text-amber-100 dark:text-amber-900 border-amber-700 dark:border-amber-300" : "bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800"}`}>
+                          <span className="px-2 py-0.5 rounded text-[9.5px] font-bold border bg-cyan-500/20 text-cyan-300 border-cyan-400/40">
                             PROTECTED
                           </span>
                         )}
                       </div>
-                      <p className={`text-[11px] mt-1 line-clamp-2 ${isSelected ? "text-slate-300 dark:text-slate-600" : "text-slate-500 dark:text-slate-400"}`}>
+                      <p className="text-[10.5px] text-slate-400 line-clamp-2">
                         {r.description}
                       </p>
                     </div>
@@ -109,25 +113,25 @@ export default function AccessPage() {
             </div>
 
             {/* Selected Role Permissions Inspector */}
-            <div className="lg:col-span-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 space-y-6 shadow-xs">
-              <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+            <div className="lg:col-span-2 bg-[#03091D]/90 border border-cyan-500/25 rounded-2xl p-6 space-y-6 shadow-[0_4px_20px_rgba(0,0,0,0.6)]">
+              <div className="flex items-center justify-between border-b border-cyan-500/20 pb-4">
                 <div>
-                  <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                  <h2 className="text-lg font-black text-white flex items-center gap-2 font-heading">
                     <span>{selectedRole.name} Role Specifications</span>
                   </h2>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 font-sans mt-0.5">{selectedRole.description}</p>
+                  <p className="text-xs text-slate-400 font-mono mt-0.5">{selectedRole.description}</p>
                 </div>
-                <span className="text-xs font-mono px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 font-bold text-slate-700 dark:text-slate-300">
+                <span className="text-xs font-mono px-3 py-1 bg-[#02050E] rounded-xl border border-cyan-500/30 font-bold text-cyan-300">
                   Rank #{selectedRole.rank}
                 </span>
               </div>
 
               <div className="space-y-4">
-                <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Granted Authorization Entitlements</h3>
+                <h3 className="text-xs font-bold text-cyan-400 uppercase tracking-wider">Granted Authorization Entitlements</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {selectedRole.permissions.map((perm) => (
-                    <div key={perm} className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-xs font-mono font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
-                      <CheckCircle2 className="size-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                    <div key={perm} className="p-3.5 rounded-xl bg-[#02050E] border border-cyan-500/25 text-xs font-mono font-bold text-slate-200 flex items-center gap-2">
+                      <CheckCircle2 className="size-4 text-emerald-400 shrink-0" />
                       <span>{perm}</span>
                     </div>
                   ))}

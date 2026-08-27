@@ -3,17 +3,16 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Command, Gamepad2, FileText, Settings, User, Download, Home, ArrowRight, X } from "lucide-react";
-import { games } from "@/data/content";
+import { Search, Command, Gamepad2, FileText, Settings, User, Download, Home, ArrowRight, X, ShieldCheck, Mail, Briefcase } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { soundFx } from "@/lib/sound-effects";
 
 interface CommandItem {
   id: string;
   title: string;
   subtitle: string;
-  category: "Navigation" | "Games" | "Quick Actions";
-  href?: string;
-  action?: () => void;
+  category: "Navigation" | "Games" | "Support & Studio";
+  href: string;
   icon: React.ReactNode;
 }
 
@@ -21,12 +20,27 @@ export function CommandPalette() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [dbGames, setDbGames] = useState<any[]>([]);
   const router = useRouter();
 
+  // Load real published games from PostgreSQL API
+  useEffect(() => {
+    fetch("/api/games")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && Array.isArray(data.games)) {
+          setDbGames(data.games);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  // Global Shortcut
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
+        soundFx.playClick();
         setOpen((prev) => !prev);
       } else if (e.key === "Escape" && open) {
         setOpen(false);
@@ -36,25 +50,28 @@ export function CommandPalette() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [open]);
 
-  const items: CommandItem[] = [
-    { id: "nav-home", title: "Home", subtitle: "Dragon Studios Homepage", category: "Navigation", href: "/", icon: <Home className="size-4 text-dragon-400" /> },
-    { id: "nav-games", title: "Games Directory", subtitle: "Browse all portfolio titles", category: "Navigation", href: "/games", icon: <Gamepad2 className="size-4 text-neon-purple" /> },
-    { id: "nav-dashboard", title: "User Dashboard", subtitle: "Player statistics & stats", category: "Navigation", href: "/dashboard", icon: <User className="size-4 text-neon-cyan" /> },
-    { id: "nav-profile", title: "My Profile", subtitle: "View player profile & level", category: "Navigation", href: "/profile", icon: <User className="size-4 text-amber-400" /> },
-    { id: "nav-settings", title: "Account Settings", subtitle: "Security, notifications & preferences", category: "Navigation", href: "/settings", icon: <Settings className="size-4 text-emerald-400" /> },
-    { id: "nav-downloads", title: "Dragon Launcher & Downloads", subtitle: "Manage game downloads & patches", category: "Navigation", href: "/downloads", icon: <Download className="size-4 text-neon-blue" /> },
-    { id: "nav-studio", title: "About Studio", subtitle: "Dragon Studios manifesto & history", category: "Navigation", href: "/studio", icon: <FileText className="size-4 text-dragon-300" /> },
-    ...games.map((g) => ({
-      id: `game-${g.id}`,
-      title: g.title,
-      subtitle: `${g.genre} • ${g.status}`,
-      category: "Games" as const,
-      href: `/games/${g.slug}`,
-      icon: <Gamepad2 className="size-4 text-primary" />,
-    })),
+  const defaultNavigationItems: CommandItem[] = [
+    { id: "nav-home", title: "Home", subtitle: "Dragon Gaming Studios Portal", category: "Navigation", href: "/", icon: <Home className="size-4 text-cyan-400" /> },
+    { id: "nav-games", title: "Games Directory", subtitle: "Flagship portfolio & releases", category: "Navigation", href: "/games", icon: <Gamepad2 className="size-4 text-blue-400" /> },
+    { id: "nav-downloads", title: "Downloads & Builds", subtitle: "Direct PC & APK Binaries", category: "Navigation", href: "/downloads", icon: <Download className="size-4 text-emerald-400" /> },
+    { id: "nav-careers", title: "Careers", subtitle: "Join Dragon Gaming Studios", category: "Navigation", href: "/careers", icon: <Briefcase className="size-4 text-amber-400" /> },
+    { id: "nav-community", title: "Community Hub", subtitle: "Forums & Live Dispatches", category: "Navigation", href: "/community", icon: <User className="size-4 text-violet-400" /> },
+    { id: "nav-contact", title: "Contact Studio", subtitle: "Player & Business Inquiries", category: "Support & Studio", href: "/contact", icon: <Mail className="size-4 text-rose-400" /> },
+    { id: "nav-track", title: "Track Ticket", subtitle: "Check support status", category: "Support & Studio", href: "/track-ticket", icon: <ShieldCheck className="size-4 text-teal-400" /> },
   ];
 
-  const filteredItems = items.filter(
+  const gameItems: CommandItem[] = dbGames.map((g) => ({
+    id: `game-${g.id || g.slug}`,
+    title: g.title || g.name,
+    subtitle: `${g.genre} • ${g.status || "Live"}`,
+    category: "Games",
+    href: `/games/${g.slug}`,
+    icon: <Gamepad2 className="size-4 text-cyan-400" />,
+  }));
+
+  const allItems = [...defaultNavigationItems, ...gameItems];
+
+  const filteredItems = allItems.filter(
     (item) =>
       item.title.toLowerCase().includes(query.toLowerCase()) ||
       item.subtitle.toLowerCase().includes(query.toLowerCase()) ||
@@ -62,13 +79,10 @@ export function CommandPalette() {
   );
 
   const handleSelect = (item: CommandItem) => {
+    soundFx.playClick();
     setOpen(false);
     setQuery("");
-    if (item.href) {
-      router.push(item.href);
-    } else if (item.action) {
-      item.action();
-    }
+    router.push(item.href);
   };
 
   const handleKeyDownMenu = (e: React.KeyboardEvent) => {
@@ -91,21 +105,21 @@ export function CommandPalette() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[10000] flex items-start justify-center bg-black/80 px-4 pt-20 backdrop-blur-md"
+          className="fixed inset-0 z-[10000] flex items-start justify-center bg-black/85 px-4 pt-20 backdrop-blur-xl"
           onClick={() => setOpen(false)}
         >
           <motion.div
-            initial={{ scale: 0.95, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.95, opacity: 0 }}
+            initial={{ scale: 0.95, opacity: 0, y: -20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.95, opacity: 0, y: -20 }}
+            transition={{ duration: 0.2 }}
+            className="w-full max-w-xl overflow-hidden rounded-3xl border border-cyan-500/30 bg-[#090D16]/98 shadow-[0_0_50px_rgba(0,240,255,0.2)] backdrop-blur-2xl"
             onClick={(e) => e.stopPropagation()}
             onKeyDown={handleKeyDownMenu}
-            className="relative w-full max-w-2xl overflow-hidden rounded-2xl border border-white/15 bg-[linear-gradient(145deg,rgba(30,21,23,0.98),rgba(10,10,12,0.98)_45%)] p-5 shadow-[0_32px_100px_rgba(0,0,0,0.62)]"
           >
-            <div aria-hidden="true" className="absolute -right-20 -top-20 h-52 w-52 rounded-full bg-dragon-500/20 blur-3xl" />
-            {/* Input Header */}
-            <div className="relative flex items-center rounded-xl border border-white/10 bg-black/30 px-4 py-3 shadow-inner shadow-black/20">
-              <Search className="mr-3 size-5 text-gold-400" />
+            {/* Search Input Bar */}
+            <div className="relative flex items-center border-b border-white/10 px-4 py-3.5">
+              <Search className="size-5 text-cyan-400 mr-3 shrink-0" />
               <input
                 type="text"
                 autoFocus
@@ -114,59 +128,71 @@ export function CommandPalette() {
                   setQuery(e.target.value);
                   setSelectedIndex(0);
                 }}
-                placeholder="Type a command or search games, pages..."
-                className="w-full bg-transparent text-base text-white placeholder:text-muted-foreground focus:outline-none"
+                placeholder="Search games, routes, and downloads..."
+                className="w-full bg-transparent text-sm sm:text-base font-sans text-white placeholder:text-slate-500 focus:outline-none"
               />
               <button
                 onClick={() => setOpen(false)}
-                className="rounded-lg p-1 text-muted-foreground transition-colors hover:text-white"
+                className="p-1 text-slate-400 hover:text-white rounded-lg transition-colors ml-2"
               >
-                <X className="size-5" />
+                <X className="size-4" />
               </button>
             </div>
 
-            {/* Command List Results */}
-            <div className="mt-3 max-h-80 overflow-y-auto space-y-1 pr-1">
+            {/* Results List */}
+            <div className="max-h-80 overflow-y-auto p-2 space-y-1">
               {filteredItems.length === 0 ? (
-                <div className="py-8 text-center text-sm text-muted-foreground">
-                  No commands matching &quot;{query}&quot;
+                <div className="py-8 text-center text-xs font-mono text-slate-500">
+                  NO CANONICAL RESULTS FOUND
                 </div>
               ) : (
                 filteredItems.map((item, idx) => {
-                  const isSelected = idx === selectedIndex;
+                  const isSelected = selectedIndex === idx;
                   return (
                     <button
                       key={item.id}
                       onClick={() => handleSelect(item)}
                       onMouseEnter={() => setSelectedIndex(idx)}
                       className={cn(
-                        "flex w-full items-center justify-between rounded-xl border px-3.5 py-3 text-left text-sm transition-colors",
-                        isSelected ? "border-dragon-300/30 bg-primary/90 text-white shadow-lg shadow-dragon-500/15" : "border-transparent text-muted-foreground hover:border-white/8 hover:bg-white/5 hover:text-white"
+                        "w-full flex items-center justify-between p-3 rounded-2xl text-left transition-all cursor-pointer",
+                        isSelected
+                          ? "bg-cyan-500/15 border border-cyan-500/30 text-white shadow-sm"
+                          : "text-slate-300 hover:bg-white/5 border border-transparent"
                       )}
                     >
-                      <div className="flex items-center gap-3">
-                        <div className="rounded-lg bg-black/40 p-2 border border-white/10">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className={cn(
+                          "size-8 rounded-xl flex items-center justify-center shrink-0 border",
+                          isSelected ? "bg-cyan-500/20 border-cyan-400/40 text-cyan-300" : "bg-white/5 border-white/10 text-slate-400"
+                        )}>
                           {item.icon}
                         </div>
-                        <div>
-                          <span className="block font-semibold text-white">{item.title}</span>
-                          <span className="text-xs text-muted-foreground">{item.subtitle}</span>
+                        <div className="truncate">
+                          <div className="text-xs sm:text-sm font-heading font-black text-white uppercase tracking-tight truncate">
+                            {item.title}
+                          </div>
+                          <div className="text-[11px] font-sans text-slate-400 truncate">
+                            {item.subtitle}
+                          </div>
                         </div>
                       </div>
-                      <ArrowRight className={cn("size-4 opacity-0 transition-opacity", isSelected && "opacity-100")} />
+
+                      <div className="flex items-center gap-2 shrink-0 ml-2">
+                        <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-500">
+                          {item.category}
+                        </span>
+                        <ArrowRight className={cn("size-3.5 transition-transform", isSelected ? "text-cyan-400 translate-x-0.5" : "text-slate-600")} />
+                      </div>
                     </button>
                   );
                 })
               )}
             </div>
 
-            {/* Footer Shortcut Bar */}
-            <div className="mt-4 flex items-center justify-between border-t border-white/10 pt-3 font-mono text-[11px] text-muted-foreground">
-              <span className="flex items-center gap-1.5">
-                <Command className="size-3 text-dragon-400" />
-                <span>Dragon Command Palette</span>
-              </span>
-              <span>Use ↑ ↓ to navigate, Enter to select</span>
+            {/* Footer Hints */}
+            <div className="flex items-center justify-between border-t border-white/10 px-4 py-2 text-[10px] font-mono text-slate-500 bg-black/40">
+              <span>Use ↑ ↓ to navigate</span>
+              <span>ESC to dismiss</span>
             </div>
           </motion.div>
         </motion.div>

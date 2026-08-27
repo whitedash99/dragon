@@ -39,14 +39,20 @@ const nextConfig: NextConfig = {
       'C:\\Users\\**',
     ],
   },
+  outputFileTracingIncludes: {
+    '/api/**/*': [
+      '../../packages/shared-db/src/generated/client/**/*',
+      '../../packages/shared-db/schema.prisma',
+    ],
+  },
   reactStrictMode: true,
   poweredByHeader: false,
   compress: true,
   eslint: {
     ignoreDuringBuilds: true,
   },
-  transpilePackages: ["@dragon/shared-db", "@dragon/auth", "@dragon/ui", "@dragon/utils", "ably"],
-  serverExternalPackages: ["@prisma/client"],
+  transpilePackages: ["@dragon/auth", "@dragon/ui", "@dragon/utils", "@dragon/storage", "@dragon/config", "@dragon/validation", "ably"],
+  serverExternalPackages: ["@prisma/client", "prisma"],
 
   images: {
     formats: ["image/avif", "image/webp"],

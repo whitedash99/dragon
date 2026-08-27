@@ -20,9 +20,6 @@ export const DEFAULT_COMMUNITY_ROOMS: CommunityRoomItem[] = [
   { id: "room_clips", name: "gameplay-clips", slug: "gameplay-clips", description: "Share 4K gameplay clips, screenshots, and artwork.", category: "COMMUNITY", type: "TEXT", icon: "Image", order: 12 },
   { id: "room_suggestions", name: "suggestions", slug: "suggestions", description: "Pitch features and balance ideas directly to Dragon devs.", category: "COMMUNITY", type: "TEXT", icon: "Lightbulb", order: 13 },
   { id: "room_offtopic", name: "off-topic", slug: "off-topic", description: "Chill lounge for non-gaming banter and memes.", category: "COMMUNITY", type: "TEXT", icon: "Coffee", order: 14 },
-  { id: "room_valyria", name: "embers-of-valyria", slug: "embers-of-valyria", description: "Official tactical discussion for Embers of Valyria playtesters.", category: "GAMES", type: "TEXT", icon: "Flame", order: 20 },
-  { id: "room_neondrift", name: "neon-drift", slug: "neon-drift", description: "Speedruns, vehicle tuning, and track leaderboard discussion.", category: "GAMES", type: "TEXT", icon: "Zap", order: 21 },
-  { id: "room_blacksite", name: "blacksite-zero", slug: "blacksite-zero", description: "Extraction tactics, weapon loadouts, and classified intel.", category: "GAMES", type: "TEXT", icon: "Crosshair", order: 22 },
 ];
 
 export function CommunityChatView() {
@@ -70,7 +67,7 @@ export function CommunityChatView() {
   };
 
   return (
-    <div className="w-full h-[720px] max-h-[85vh] min-h-[580px] rounded-3xl bg-[#040812] border border-blue-500/30 overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.9)] flex relative z-10">
+    <div className="w-full h-[720px] max-h-[85vh] min-h-[580px] rounded-3xl bg-[#03091D] border border-cyan-500/30 overflow-hidden shadow-[0_0_50px_rgba(0,229,255,0.15)] flex relative z-10 font-mono">
       {/* ═══ 1. Desktop Left: Channel Sidebar ═══ */}
       <div className="hidden lg:flex shrink-0 w-64 h-full">
         <ChannelSidebar
@@ -93,7 +90,7 @@ export function CommunityChatView() {
             />
             <button
               onClick={() => setShowChannelsMobile(false)}
-              className="absolute top-4 right-4 p-1.5 rounded-xl bg-blue-950 text-slate-400 hover:text-white"
+              className="absolute top-4 right-4 p-1.5 rounded-xl bg-cyan-950 text-slate-400 hover:text-white"
             >
               <X className="size-4" />
             </button>
@@ -103,7 +100,7 @@ export function CommunityChatView() {
       )}
 
       {/* ═══ 2. Center: Chat Arena ═══ */}
-      <div className="flex-1 flex flex-col min-w-0 bg-[#07111F]/70 h-full relative">
+      <div className="flex-1 flex flex-col min-w-0 bg-[#02050E] h-full relative">
         <ChatHeader
           roomName={activeRoom.name}
           roomDescription={activeRoom.description}
@@ -111,7 +108,7 @@ export function CommunityChatView() {
           onToggleMembers={() => setShowMembers((prev) => !prev)}
           onToggleChannels={() => setShowChannelsMobile(true)}
           showMembers={showMembers}
-          onlineCount={onlineMembers.length || 5}
+          onlineCount={onlineMembers.length}
         />
 
         <div className="flex-1 overflow-hidden flex flex-col justify-between">
@@ -133,7 +130,7 @@ export function CommunityChatView() {
           replyingTo={replyingTo}
           onCancelReply={() => setReplyingTo(null)}
           onSendMessage={sendMessage}
-          onSendTyping={sendTyping}
+          onSendTyping={() => sendTyping(true)}
         />
       </div>
 

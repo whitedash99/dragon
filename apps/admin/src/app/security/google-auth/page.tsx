@@ -3,142 +3,70 @@
 import React from "react";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { Navbar } from "@/components/navbar/Navbar";
-import { ShieldCheck, Key, Globe, CheckCircle2, Lock, Cpu, Link2, ExternalLink } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { ShieldCheck, Key, Globe, CheckCircle2, Lock } from "lucide-react";
+import { GlassCard, GlassStat, GlassBadge } from "@/components/ui/glass";
 
 export default function GoogleAuthStatusPage() {
   const googleClientId = "519609865712-3mffbnb1d6d0etkbr28qc54eoqvnvugs.apps.googleusercontent.com";
-  const isConfigured = Boolean(googleClientId);
 
   return (
-    <div className="flex min-h-screen bg-[#050508] text-slate-100 font-sans">
+    <div className="flex min-h-screen w-full bg-[#02040A] text-slate-100 font-sans antialiased overflow-hidden select-none font-mono">
       <Sidebar />
 
-      <div className="flex-1 flex flex-col min-w-0 overflow-x-hidden">
+      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
         <Navbar />
 
-        <main className="p-6 sm:p-8 max-w-7xl mx-auto w-full space-y-8">
-          {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-6">
+        <main className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-6 max-w-7xl mx-auto w-full">
+          
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-cyan-500/20">
             <div>
-              <div className="flex items-center gap-3">
-                <span className="p-2 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20">
-                  <ShieldCheck className="size-6" />
+              <div className="flex items-center gap-2 mb-1">
+                <span className="size-2 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_8px_#00E5FF]" />
+                <span className="text-xs font-bold text-cyan-400/80 uppercase tracking-wider">
+                  Dragon Control • Authentication & Identity
                 </span>
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight uppercase font-mono">
-                  Google Enterprise Identity Gateway
-                </h1>
               </div>
-              <p className="text-sm text-slate-400 mt-1">
-                Real-time OAuth 2.0 Client Credentials & Single Sign-On Telemetry
+              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
+                Google Enterprise Identity Gateway
+              </h1>
+              <p className="text-xs sm:text-sm text-slate-400 font-mono">
+                OAuth 2.0 client credentials, staff single sign-on, and token verification telemetry.
               </p>
             </div>
+
             <div className="flex items-center gap-2">
-              <Badge variant="outline" className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30 px-3 py-1 font-mono text-xs">
-                <CheckCircle2 className="size-3.5 mr-1" />
-                OAUTH 2.0 ONLINE
-              </Badge>
+              <GlassBadge variant="published">
+                OAUTH 2.0 PROVISIONED
+              </GlassBadge>
             </div>
           </div>
 
-          {/* Key Metrics */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Card className="bg-[#0b0f19] border-slate-800">
-              <CardContent className="p-5">
-                <div className="flex items-center justify-between text-slate-400 mb-2">
-                  <span className="text-xs font-mono uppercase">Provider Status</span>
-                  <Key className="size-4 text-blue-400" />
-                </div>
-                <div className="text-lg font-bold text-white font-mono">Google OAuth 2.0</div>
-                <div className="text-xs text-emerald-400 font-mono mt-1">✓ Active & Provisioned</div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-[#0b0f19] border-slate-800">
-              <CardContent className="p-5">
-                <div className="flex items-center justify-between text-slate-400 mb-2">
-                  <span className="text-xs font-mono uppercase">Client ID</span>
-                  <Lock className="size-4 text-emerald-400" />
-                </div>
-                <div className="text-xs font-mono text-slate-200 truncate">{googleClientId}</div>
-                <div className="text-xs text-slate-400 font-mono mt-1">256-Bit Encrypted Secret</div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-[#0b0f19] border-slate-800">
-              <CardContent className="p-5">
-                <div className="flex items-center justify-between text-slate-400 mb-2">
-                  <span className="text-xs font-mono uppercase">PKCE Security</span>
-                  <Cpu className="size-4 text-purple-400" />
-                </div>
-                <div className="text-lg font-bold text-white font-mono">Enforced (SHA-256)</div>
-                <div className="text-xs text-slate-400 font-mono mt-1">HttpOnly / SameSite Lax</div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-[#0b0f19] border-slate-800">
-              <CardContent className="p-5">
-                <div className="flex items-center justify-between text-slate-400 mb-2">
-                  <span className="text-xs font-mono uppercase">User Auto-Sync</span>
-                  <Globe className="size-4 text-sky-400" />
-                </div>
-                <div className="text-lg font-bold text-white font-mono">Neon PostgreSQL</div>
-                <div className="text-xs text-emerald-400 font-mono mt-1">Prisma Adapter Active</div>
-              </CardContent>
-            </Card>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <GlassStat label="Provider" value="Google OAuth" icon={Key} trend="Production Active" />
+            <GlassStat label="Redirect URI" value="Auth.js v5" icon={Globe} trend="Standard Callback" />
+            <GlassStat label="Token Encryption" value="AES-256" icon={Lock} trend="Encrypted Cookies" />
+            <GlassStat label="Single Sign-On" value="Enforced" icon={ShieldCheck} trend="Studio Staff" />
           </div>
 
-          {/* Configuration Matrix */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Authorized Origins */}
-            <Card className="bg-[#0b0f19] border-slate-800">
-              <CardHeader className="border-b border-slate-800/60 pb-4">
-                <CardTitle className="text-sm font-mono uppercase text-slate-200 flex items-center gap-2">
-                  <Link2 className="size-4 text-blue-400" />
-                  Authorized JavaScript Origins
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-6 space-y-3 font-mono text-xs">
-                <div className="p-3 rounded-lg bg-[#050811] border border-slate-800 flex items-center justify-between">
-                  <span className="text-slate-300">http://localhost:3000</span>
-                  <span className="text-emerald-400 font-bold">LOCAL WEBSITE</span>
-                </div>
-                <div className="p-3 rounded-lg bg-[#050811] border border-slate-800 flex items-center justify-between">
-                  <span className="text-slate-300">http://localhost:4000</span>
-                  <span className="text-emerald-400 font-bold">LOCAL ADMIN OS</span>
-                </div>
-                <div className="p-3 rounded-lg bg-[#050811] border border-slate-800 flex items-center justify-between">
-                  <span className="text-slate-300">https://your-domain.vercel.app</span>
-                  <span className="text-purple-400 font-bold">VERCEL PRODUCTION</span>
-                </div>
-              </CardContent>
-            </Card>
+          <GlassCard className="p-6 space-y-4 max-w-3xl bg-[#03091D]/90 border border-cyan-500/30 shadow-[0_0_30px_rgba(0,229,255,0.15)]">
+            <h3 className="text-sm font-bold text-white font-mono uppercase tracking-wider">OAuth 2.0 Production Credentials</h3>
+            <div className="space-y-3 text-xs font-mono">
+              <div className="space-y-1">
+                <span className="text-cyan-400 font-bold block">Client ID:</span>
+                <code className="p-2.5 bg-[#02050E] border border-cyan-500/25 rounded-xl text-slate-200 font-mono block break-all">
+                  {googleClientId}
+                </code>
+              </div>
 
-            {/* Authorized Redirect URIs */}
-            <Card className="bg-[#0b0f19] border-slate-800">
-              <CardHeader className="border-b border-slate-800/60 pb-4">
-                <CardTitle className="text-sm font-mono uppercase text-slate-200 flex items-center gap-2">
-                  <ExternalLink className="size-4 text-purple-400" />
-                  Authorized Callback URIs
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-6 space-y-3 font-mono text-xs">
-                <div className="p-3 rounded-lg bg-[#050811] border border-slate-800 flex items-center justify-between">
-                  <span className="text-slate-300">http://localhost:3000/api/auth/callback/google</span>
-                  <span className="text-emerald-400 font-bold">WEBSITE REDIRECT</span>
-                </div>
-                <div className="p-3 rounded-lg bg-[#050811] border border-slate-800 flex items-center justify-between">
-                  <span className="text-slate-300">http://localhost:4000/api/auth/callback/google</span>
-                  <span className="text-emerald-400 font-bold">ADMIN REDIRECT</span>
-                </div>
-                <div className="p-3 rounded-lg bg-[#050811] border border-slate-800 flex items-center justify-between">
-                  <span className="text-slate-300">https://your-domain.vercel.app/api/auth/callback/google</span>
-                  <span className="text-purple-400 font-bold">VERCEL REDIRECT</span>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+              <div className="space-y-1 pt-2">
+                <span className="text-cyan-400 font-bold block">Authorized Callback URL:</span>
+                <code className="p-2.5 bg-[#02050E] border border-cyan-500/25 rounded-xl text-cyan-300 font-mono block">
+                  https://dragoncontrol.vercel.app/api/auth/callback/google
+                </code>
+              </div>
+            </div>
+          </GlassCard>
+
         </main>
       </div>
     </div>

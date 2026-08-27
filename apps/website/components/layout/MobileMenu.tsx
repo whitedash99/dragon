@@ -9,25 +9,22 @@ import {
   Gamepad2, 
   Download, 
   Users, 
-  Building2, 
   Briefcase, 
   Headphones, 
   LayoutDashboard,
   LogOut,
   ChevronRight,
-  Zap,
   Newspaper,
   Crown,
-  Sparkles,
-  User,
+  Home,
   LogIn,
   UserPlus
 } from "lucide-react";
 import { DragonLogoIcon } from "@/components/ui/dragon-logo";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { OFFICIAL_SOCIALS } from "@/lib/site";
-import { WhatsAppIcon, ThreadsIcon, XIcon } from "@/components/ui/social-icons";
-import { Instagram, Youtube, MessageSquare } from "lucide-react";
+import { WhatsAppIcon, ThreadsIcon, XIcon, DiscordIcon } from "@/components/ui/social-icons";
+import { Instagram, Youtube } from "lucide-react";
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -72,14 +69,24 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
     onCloseRef.current();
   }, [pathname]);
 
-  const navLinks = [
-    { label: "PLAYER DASHBOARD", href: "/dashboard", icon: LayoutDashboard, badge: "VIP DECK", color: "text-purple-400" },
-    { label: "GAMES CATALOG", href: "/games", icon: Gamepad2, badge: "3D & 2D", color: "text-cyan-400" },
-    { label: "NEWS & DISPATCHES", href: "/news", icon: Newspaper, color: "text-blue-400" },
-    { label: "COMMUNITY FORUMS", href: "/community", icon: Users, badge: "LIVE", color: "text-amber-400" },
-    { label: "CAREERS & TEAM", href: "/careers", icon: Briefcase, badge: "HIRING", color: "text-rose-400" },
-    { label: "SUPPORT & HELPDESK", href: "/contact", icon: Headphones, color: "text-teal-400" },
+  const publicNavLinks = [
+    { label: "HOME", href: "/", icon: Home, color: "text-cyan-400" },
+    { label: "GAMES", href: "/games", icon: Gamepad2, badge: "3D & 2D", color: "text-blue-400" },
+    { label: "DOWNLOADS", href: "/downloads", icon: Download, badge: "BUILDS", color: "text-amber-400" },
+    { label: "CAREERS", href: "/careers", icon: Briefcase, color: "text-rose-400" },
+    { label: "COMMUNITY", href: "/community", icon: Users, color: "text-purple-400" },
+    { label: "CONTACT", href: "/contact", icon: Headphones, color: "text-teal-400" },
   ];
+
+  const portalNavLinks = [
+    { label: "PLAYER DASHBOARD", href: "/dashboard", icon: LayoutDashboard, badge: "VIP", color: "text-purple-400" },
+    { label: "GAMES CATALOG", href: "/games", icon: Gamepad2, color: "text-cyan-400" },
+    { label: "DOWNLOADS", href: "/downloads", icon: Download, color: "text-amber-400" },
+    { label: "COMMUNITY", href: "/community", icon: Users, color: "text-blue-400" },
+    { label: "CONTACT SUPPORT", href: "/contact", icon: Headphones, color: "text-teal-400" },
+  ];
+
+  const navLinks = isAuth ? portalNavLinks : publicNavLinks;
 
   return (
     <AnimatePresence>
@@ -90,12 +97,12 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-[#02050E]/85 backdrop-blur-xl"
+            className="fixed inset-0 bg-[#020512]/90 backdrop-blur-2xl"
             onClick={onClose}
             aria-hidden="true"
           />
 
-          {/* Slide-in Drawer from the LEFT SIDE (Left to Right) */}
+          {/* Slide-in Drawer from the LEFT SIDE */}
           <motion.div
             role="dialog"
             aria-modal="true"
@@ -103,25 +110,24 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             initial={{ x: "-100%" }}
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
-            transition={{ type: "spring", damping: 28, stiffness: 260 }}
-            className="fixed inset-y-0 left-0 z-[1000] flex w-[85%] max-w-sm flex-col justify-between overflow-y-auto border-r border-cyan-500/40 bg-gradient-to-b from-[#060D24] via-[#030716] to-[#02040A] p-5 shadow-[0_0_80px_rgba(0,240,255,0.35)] select-none"
+            transition={{ type: "spring", damping: 30, stiffness: 280 }}
+            className="fixed inset-y-0 left-0 z-[1000] flex w-[88%] max-w-sm flex-col justify-between overflow-y-auto border-r border-cyan-500/30 bg-gradient-to-b from-[#050D24] via-[#030818] to-[#020512] p-5 pb-[env(safe-area-inset-bottom,20px)] pt-[env(safe-area-inset-top,20px)] shadow-[0_0_80px_rgba(0,229,255,0.3)] select-none"
           >
-            {/* Background Neon Halo */}
+            {/* Background Atmosphere Lights */}
             <div aria-hidden="true" className="absolute -left-20 top-20 h-56 w-56 rounded-full bg-cyan-500/15 blur-3xl pointer-events-none" />
             <div aria-hidden="true" className="absolute -right-20 bottom-20 h-56 w-56 rounded-full bg-purple-600/15 blur-3xl pointer-events-none" />
 
             <div className="space-y-5">
-              {/* Header */}
-              <div className="relative flex items-center justify-between pb-4 border-b border-cyan-500/20">
+              {/* Header Bar */}
+              <div className="relative flex items-center justify-between pb-4 border-b border-white/10">
                 <div className="flex items-center gap-2.5">
-                  <DragonLogoIcon size="sm" className="shadow-[0_0_15px_rgba(0,240,255,0.5)] border-cyan-400/50" />
+                  <DragonLogoIcon size="sm" className="shadow-[0_0_15px_rgba(0,229,255,0.4)] border-cyan-400/40" />
                   <div className="flex flex-col">
                     <span className="font-heading font-black text-sm uppercase tracking-wider text-white">
                       DRAGON STUDIOS
                     </span>
-                    <span className="text-[9px] font-mono text-cyan-400 uppercase tracking-widest font-bold flex items-center gap-1">
-                      <span className="size-1.5 rounded-full bg-emerald-400 animate-ping" />
-                      <span>SYSTEM ONLINE</span>
+                    <span className="text-[9px] font-mono text-cyan-400 uppercase tracking-widest font-bold">
+                      AETHER MOBILE
                     </span>
                   </div>
                 </div>
@@ -129,20 +135,20 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                 <button
                   type="button"
                   onClick={onClose}
-                  className="flex size-9 items-center justify-center rounded-xl bg-[#07132B] border border-cyan-500/30 text-slate-300 hover:text-white hover:border-cyan-400 transition-all cursor-pointer shadow-md active:scale-90"
+                  className="flex size-11 items-center justify-center rounded-2xl bg-[#050D24] border border-cyan-500/30 text-slate-300 hover:text-white hover:border-cyan-400 transition-all cursor-pointer shadow-md active:scale-95"
                   aria-label="Close menu"
                 >
-                  <X className="size-4" />
+                  <X className="size-5" />
                 </button>
               </div>
 
               {/* Authenticated User Banner or Quick Sign-in Buttons */}
               <div className="relative">
                 {isAuth ? (
-                  <div className="p-3.5 rounded-2xl bg-[#07132B]/90 border border-purple-500/40 space-y-2.5 shadow-lg">
+                  <div className="p-3.5 rounded-2xl bg-[#050D24]/90 border border-purple-500/40 space-y-2.5 shadow-lg">
                     <div className="flex items-center gap-3">
                       <div className="size-10 rounded-xl bg-gradient-to-tr from-purple-600 via-indigo-500 to-cyan-400 flex items-center justify-center font-bold text-white text-sm font-heading shadow-md">
-                        {(session?.user?.name || session?.user?.email || "U")[0].toUpperCase()}
+                        {((session?.user?.name || session?.user?.email || "U")[0] || "U").toUpperCase()}
                       </div>
                       <div className="flex flex-col min-w-0">
                         <span className="text-xs font-bold text-white truncate font-heading flex items-center gap-1">
@@ -158,19 +164,19 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                     <Link
                       href="/dashboard"
                       onClick={onClose}
-                      className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-500 to-cyan-500 text-white text-xs font-mono font-black uppercase tracking-wider flex items-center justify-center gap-2 shadow-md shadow-purple-500/30 active:scale-95 transition-all"
+                      className="w-full min-h-[44px] py-2.5 px-3 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-500 to-cyan-500 text-white text-xs font-mono font-black uppercase tracking-wider flex items-center justify-center gap-2 shadow-md shadow-purple-500/30 active:scale-95 transition-all"
                     >
-                      <LayoutDashboard className="size-3.5" />
+                      <LayoutDashboard className="size-4" />
                       <span>OPEN PLAYER DASHBOARD</span>
                     </Link>
                   </div>
                 ) : (
-                  <div className="space-y-2">
+                  <div className="space-y-2.5">
                     {/* Google One-Click Auth */}
                     <button
                       type="button"
                       onClick={() => signIn("google", { callbackUrl: "/dashboard?welcome=true" })}
-                      className="w-full flex items-center justify-center gap-2.5 py-3 px-4 bg-white hover:bg-slate-100 text-slate-950 font-bold text-xs font-mono rounded-xl shadow-lg transition-all border border-slate-200 cursor-pointer active:scale-95"
+                      className="w-full min-h-[44px] flex items-center justify-center gap-2.5 py-3 px-4 bg-white hover:bg-slate-100 text-slate-950 font-bold text-xs font-mono rounded-2xl shadow-lg transition-all border border-slate-200 cursor-pointer active:scale-95"
                     >
                       <svg className="size-4" viewBox="0 0 24 24">
                         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -181,22 +187,22 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                       <span>SIGN IN WITH GOOGLE</span>
                     </button>
 
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-2 gap-2.5">
                       <Link
                         href="/login"
                         onClick={onClose}
-                        className="py-2.5 px-3 rounded-xl bg-[#07132B] hover:bg-[#0c1f44] border border-cyan-500/30 text-cyan-300 text-xs font-mono font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all text-center"
+                        className="min-h-[44px] py-2.5 px-3 rounded-2xl bg-[#050D24] hover:bg-[#0B1A3A] border border-cyan-500/35 text-cyan-300 text-xs font-mono font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all text-center active:scale-95"
                       >
-                        <LogIn className="size-3.5" />
+                        <LogIn className="size-4" />
                         <span>Sign In</span>
                       </Link>
 
                       <Link
                         href="/register"
                         onClick={onClose}
-                        className="py-2.5 px-3 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-black text-xs font-mono font-black uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all text-center"
+                        className="min-h-[44px] py-2.5 px-3 rounded-2xl bg-gradient-to-r from-[#00E5FF] via-[#338BFF] to-[#8B5CF6] text-white text-xs font-mono font-black uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all text-center active:scale-95 shadow-[0_0_20px_rgba(0,229,255,0.4)]"
                       >
-                        <UserPlus className="size-3.5" />
+                        <UserPlus className="size-4" />
                         <span>Join Now</span>
                       </Link>
                     </div>
@@ -205,9 +211,9 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
               </div>
 
               {/* Navigation Links */}
-              <nav className="space-y-1.5 pt-2">
-                <div className="text-[10px] font-mono font-bold uppercase tracking-widest text-slate-500 px-3 pb-1">
-                  NAVIGATION ECOSYSTEM
+              <nav aria-label="Mobile Navigation" className="space-y-1.5 pt-2">
+                <div className="text-[10px] font-mono font-bold uppercase tracking-widest text-slate-400 px-3 pb-1">
+                  MAIN NAVIGATION
                 </div>
 
                 {navLinks.map((item) => {
@@ -219,14 +225,14 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                       key={item.href}
                       href={item.href}
                       onClick={onClose}
-                      className={`group flex items-center justify-between rounded-2xl px-3.5 py-3 transition-all ${
+                      className={`group flex min-h-[48px] items-center justify-between rounded-2xl px-3.5 py-3 transition-all ${
                         isActive
-                          ? "bg-cyan-500/20 text-white font-bold border border-cyan-400/50 shadow-md shadow-cyan-500/20"
-                          : "text-slate-300 hover:bg-[#07132B] hover:text-white hover:border-cyan-500/30 border border-transparent"
+                          ? "bg-cyan-500/20 text-white font-bold border border-cyan-400/60 shadow-[0_0_20px_rgba(0,229,255,0.25)]"
+                          : "text-slate-300 hover:bg-[#050D24] hover:text-white hover:border-cyan-500/30 border border-transparent active:bg-[#0B1A3A]"
                       }`}
                     >
                       <div className="flex items-center gap-3">
-                        <div className={`p-1.5 rounded-xl bg-[#040816] border border-white/10 ${item.color} group-hover:scale-110 transition-transform`}>
+                        <div className={`p-2 rounded-xl bg-[#020512] border border-white/10 ${item.color} group-hover:scale-105 transition-transform`}>
                           <Icon className="size-4" />
                         </div>
                         <span className="font-heading text-xs font-bold uppercase tracking-wider">
@@ -236,11 +242,11 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
 
                       <div className="flex items-center gap-2">
                         {item.badge && (
-                          <span className="rounded-full bg-cyan-500/10 px-2 py-0.5 text-[9px] font-mono font-bold uppercase tracking-wider text-cyan-400 border border-cyan-500/30">
+                          <span className="rounded-full bg-cyan-500/15 px-2.5 py-0.5 text-[9px] font-mono font-bold uppercase tracking-wider text-cyan-300 border border-cyan-500/30">
                             {item.badge}
                           </span>
                         )}
-                        <ChevronRight className="size-3.5 text-slate-500 group-hover:text-cyan-400 group-hover:translate-x-0.5 transition-all" />
+                        <ChevronRight className="size-4 text-slate-500 group-hover:text-cyan-400 group-hover:translate-x-0.5 transition-all" />
                       </div>
                     </Link>
                   );
@@ -249,96 +255,97 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             </div>
 
             {/* Footer / Socials & Sign Out Section */}
-            <div className="pt-4 border-t border-cyan-500/20 space-y-3">
+            <div className="pt-4 border-t border-white/10 space-y-3">
               {/* Verified Broadcast Channels */}
               <div className="flex items-center justify-between px-1">
-                <span className="text-[9px] font-mono font-bold uppercase tracking-wider text-slate-400">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400">
                   OFFICIAL CHANNELS
                 </span>
-                <span className="text-[9px] font-mono font-bold text-emerald-400">
-                  ● VERIFIED
+                <span className="text-[10px] font-mono font-bold text-cyan-400">
+                  VERIFIED
                 </span>
               </div>
 
               <div className="grid grid-cols-6 gap-2">
+                {/* Discord */}
+                <a
+                  href="https://discord.gg/23nyUsPG5"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Discord Community"
+                  className="flex min-h-[44px] items-center justify-center p-2.5 rounded-2xl bg-[#050D24] border border-[#5865F2]/40 text-[#5865F2] hover:text-white hover:bg-[#5865F2]/20 transition-all active:scale-95"
+                >
+                  <DiscordIcon className="size-4.5 fill-current" />
+                </a>
+
+                {/* WhatsApp */}
                 <a
                   href={OFFICIAL_SOCIALS.whatsapp.href}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="WhatsApp Channel"
-                  className="flex items-center justify-center p-2.5 rounded-xl bg-[#07132B] border border-emerald-500/30 text-emerald-400 hover:text-white hover:bg-emerald-500/20 transition-all"
+                  className="flex min-h-[44px] items-center justify-center p-2.5 rounded-2xl bg-[#050D24] border border-[#25D366]/40 text-[#25D366] hover:text-white hover:bg-[#25D366]/20 transition-all active:scale-95"
                 >
-                  <WhatsAppIcon className="size-4" />
+                  <WhatsAppIcon className="size-4.5" />
                 </a>
 
+                {/* YouTube */}
                 <a
-                  href={OFFICIAL_SOCIALS.threads.href}
+                  href={OFFICIAL_SOCIALS.youtube.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label="Threads Official"
-                  className="flex items-center justify-center p-2.5 rounded-xl bg-[#07132B] border border-cyan-500/30 text-cyan-400 hover:text-white hover:bg-cyan-500/20 transition-all"
+                  aria-label="YouTube Channel"
+                  className="flex min-h-[44px] items-center justify-center p-2.5 rounded-2xl bg-[#050D24] border border-[#FF0000]/40 text-[#FF0000] hover:text-white hover:bg-[#FF0000]/20 transition-all active:scale-95"
                 >
-                  <ThreadsIcon className="size-4" />
+                  <Youtube className="size-4.5" />
                 </a>
 
+                {/* Instagram */}
                 <a
                   href={OFFICIAL_SOCIALS.instagram.href}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Instagram Official"
-                  className="flex items-center justify-center p-2.5 rounded-xl bg-[#07132B] border border-pink-500/30 text-pink-400 hover:text-white hover:bg-pink-500/20 transition-all"
+                  className="flex min-h-[44px] items-center justify-center p-2.5 rounded-2xl bg-[#050D24] border border-[#E4405F]/40 text-[#E4405F] hover:text-white hover:bg-[#E4405F]/20 transition-all active:scale-95"
                 >
-                  <Instagram className="size-4" />
+                  <Instagram className="size-4.5" />
                 </a>
 
-                <a
-                  href={OFFICIAL_SOCIALS.youtube.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="YouTube Official"
-                  className="flex items-center justify-center p-2.5 rounded-xl bg-[#07132B] border border-red-500/30 text-red-400 hover:text-white hover:bg-red-500/20 transition-all"
-                >
-                  <Youtube className="size-4" />
-                </a>
-
+                {/* X */}
                 <a
                   href={OFFICIAL_SOCIALS.x.href}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="X Official"
-                  className="flex items-center justify-center p-2.5 rounded-xl bg-[#07132B] border border-white/20 text-white hover:bg-white/10 transition-all"
+                  className="flex min-h-[44px] items-center justify-center p-2.5 rounded-2xl bg-[#050D24] border border-[#1DA1F2]/40 text-[#1DA1F2] hover:text-white hover:bg-[#1DA1F2]/20 transition-all active:scale-95"
                 >
-                  <XIcon className="size-4" />
+                  <XIcon className="size-4.5" />
                 </a>
 
+                {/* Threads */}
                 <a
-                  href={OFFICIAL_SOCIALS.reddit.href}
+                  href={OFFICIAL_SOCIALS.threads.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label="Reddit Official"
-                  className="flex items-center justify-center p-2.5 rounded-xl bg-[#07132B] border border-orange-500/30 text-orange-400 hover:text-white hover:bg-orange-500/20 transition-all"
+                  aria-label="Threads Official"
+                  className="flex min-h-[44px] items-center justify-center p-2.5 rounded-2xl bg-[#050D24] border border-[#A855F7]/40 text-[#C084FC] hover:text-white hover:bg-[#A855F7]/20 transition-all active:scale-95"
                 >
-                  <MessageSquare className="size-4" />
+                  <ThreadsIcon className="size-4.5" />
                 </a>
               </div>
 
-              {isAuth ? (
+              {isAuth && (
                 <button
                   type="button"
                   onClick={() => {
                     onClose();
                     signOut({ callbackUrl: "/" });
                   }}
-                  className="w-full flex items-center justify-center gap-2 rounded-2xl bg-red-950/40 p-3 text-xs font-mono font-bold uppercase tracking-wider text-red-400 hover:bg-red-900/60 border border-red-500/30 transition-all cursor-pointer active:scale-95"
+                  className="w-full min-h-[44px] flex items-center justify-center gap-2 rounded-2xl bg-red-950/40 p-3 text-xs font-mono font-bold uppercase tracking-wider text-red-400 hover:bg-red-900/60 border border-red-500/30 transition-all cursor-pointer active:scale-95"
                 >
                   <LogOut className="size-4" />
                   <span>SIGN OUT OF DRAGONID</span>
                 </button>
-              ) : (
-                <div className="p-3 rounded-2xl bg-[#040816] border border-white/10 flex items-center justify-between text-[10px] font-mono text-slate-400">
-                  <span>TLS 1.3 SECURE</span>
-                  <span className="text-emerald-400 font-bold">● 14ms LOW LATENCY</span>
-                </div>
               )}
             </div>
           </motion.div>

@@ -17,6 +17,12 @@ import {
   User,
   Ticket,
   FileText,
+  Gamepad2,
+  LayoutGrid,
+  HardDrive,
+  BarChart3,
+  Lock,
+  Terminal as TerminalIcon
 } from "lucide-react";
 
 interface CommandItem {
@@ -80,18 +86,50 @@ export function GlobalCommandPalette({ isOpen, onClose }: GlobalCommandPalettePr
       {
         id: "nav-dashboard",
         category: "Navigation",
-        title: "Dashboard Workspace",
-        subtitle: "Overview & Attention Center",
+        title: "Command Center",
+        subtitle: "Real-time telemetry, node latency & executive metrics",
         icon: LayoutDashboard,
         action: () => { router.push("/dashboard"); onClose(); },
       },
       {
-        id: "nav-team",
+        id: "nav-health",
         category: "Navigation",
-        title: "Team Directory",
-        subtitle: "Manage staff, roles & permissions",
+        title: "Live System Health",
+        subtitle: "PostgreSQL, Backblaze B2, Resend & Edge diagnostic probes",
+        icon: Activity,
+        action: () => { router.push("/health"); onClose(); },
+      },
+      {
+        id: "nav-games",
+        category: "Navigation",
+        title: "Games Catalog & Engine",
+        subtitle: "Uncharted Drive: Beyond, metadata & release distribution",
+        icon: Gamepad2,
+        action: () => { router.push("/games"); onClose(); },
+      },
+      {
+        id: "nav-identity",
+        category: "Navigation",
+        title: "Dragon ID Center",
+        subtitle: "Player handles, banners, avatars & identity resolution",
+        icon: Key,
+        action: () => { router.push("/identity"); onClose(); },
+      },
+      {
+        id: "nav-users",
+        category: "Navigation",
+        title: "Team & Player Workforce",
+        subtitle: "Manage studio staff, players, permissions & status",
         icon: Users,
         action: () => { router.push("/users"); onClose(); },
+      },
+      {
+        id: "nav-media",
+        category: "Navigation",
+        title: "Media & Asset Library",
+        subtitle: "B2 object storage, game assets & CMS media",
+        icon: FileText,
+        action: () => { router.push("/media"); onClose(); },
       },
       {
         id: "nav-recruitment",
@@ -110,28 +148,28 @@ export function GlobalCommandPalette({ isOpen, onClose }: GlobalCommandPalettePr
         action: () => { router.push("/crm"); onClose(); },
       },
       {
-        id: "nav-studio",
-        category: "Navigation",
-        title: "Studio Content Editor",
-        subtitle: "CMS games, DLCs & media publishing",
-        icon: Sparkles,
-        action: () => { router.push("/cms"); onClose(); },
-      },
-      {
         id: "nav-security",
         category: "Navigation",
-        title: "Security Center",
-        subtitle: "DIP posture, WebAuthn & active sessions",
+        title: "Security & Identity Posture",
+        subtitle: "SAIF audit, WebAuthn & active sessions",
         icon: ShieldCheck,
         action: () => { router.push("/security"); onClose(); },
       },
       {
-        id: "nav-audit",
+        id: "nav-data-control",
         category: "Navigation",
-        title: "Audit Center",
-        subtitle: "Immutable system activity logs",
-        icon: Activity,
-        action: () => { router.push("/audit"); onClose(); },
+        title: "Owner Data Control & Retention",
+        subtitle: "Privacy, compliance & database exports",
+        icon: Lock,
+        action: () => { router.push("/data-control"); onClose(); },
+      },
+      {
+        id: "nav-terminal",
+        category: "Navigation",
+        title: "Command Terminal",
+        subtitle: "Interactive studio CLI & maintenance",
+        icon: TerminalIcon,
+        action: () => { router.push("/terminal"); onClose(); },
       },
       {
         id: "nav-settings",
@@ -269,26 +307,26 @@ export function GlobalCommandPalette({ isOpen, onClose }: GlobalCommandPalettePr
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-start justify-center pt-[12vh] px-4">
+    <div className="fixed inset-0 z-50 bg-[#02040A]/85 backdrop-blur-md flex items-start justify-center pt-[12vh] px-4">
       <div
-        className="w-full max-w-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col font-sans animate-in fade-in zoom-in-95 duration-150"
+        className="w-full max-w-2xl bg-[#03091D]/98 border border-cyan-500/35 rounded-2xl shadow-[0_15px_50px_rgba(0,0,0,0.9)] overflow-hidden flex flex-col font-mono animate-in fade-in zoom-in-95 duration-150"
         onKeyDown={handleKeyDown}
       >
         {/* Search Header */}
-        <div className="relative flex items-center px-4 border-b border-slate-100 dark:border-slate-800">
-          <Search className="size-4 text-slate-400 shrink-0 mr-3" />
+        <div className="relative flex items-center px-4 border-b border-cyan-500/20 bg-gradient-to-b from-cyan-950/25 to-transparent">
+          <Search className="size-4 text-cyan-400 shrink-0 mr-3 animate-pulse" />
           <input
             ref={inputRef}
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Type a command, candidate, ticket, or team member... (Esc to cancel)"
-            className="w-full h-14 bg-transparent text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none"
+            placeholder="Search command, player, title, ticket, or API... (Esc to cancel)"
+            className="w-full h-14 bg-transparent text-sm text-white placeholder:text-slate-500 focus:outline-none font-mono"
           />
           {query && (
             <button
               onClick={() => setQuery("")}
-              className="p-1 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
+              className="p-1 rounded-md hover:bg-cyan-500/20 text-slate-400 hover:text-white transition-colors"
             >
               <X className="size-4" />
             </button>
@@ -298,13 +336,13 @@ export function GlobalCommandPalette({ isOpen, onClose }: GlobalCommandPalettePr
         {/* Results Stream */}
         <div className="max-h-[60vh] overflow-y-auto p-2 space-y-1">
           {loading && (
-            <div className="px-4 py-3 text-xs text-slate-400 font-mono animate-pulse">
-              Searching database...
+            <div className="px-4 py-3 text-xs text-cyan-400 font-mono animate-pulse">
+              Querying database telemetry...
             </div>
           )}
 
           {!loading && results.length === 0 && (
-            <div className="px-6 py-12 text-center text-slate-500 dark:text-slate-400 text-xs">
+            <div className="px-6 py-12 text-center text-slate-400 text-xs font-mono">
               No matching commands or database records found for &quot;{query}&quot;
             </div>
           )}
@@ -318,28 +356,28 @@ export function GlobalCommandPalette({ isOpen, onClose }: GlobalCommandPalettePr
                 key={item.id}
                 onClick={item.action}
                 onMouseEnter={() => setSelectedIndex(index)}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-left transition-all ${
+                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-left transition-all cursor-pointer ${
                   isSelected
-                    ? "bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 shadow-xs font-medium"
-                    : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800 border border-transparent"
+                    ? "bg-cyan-500/20 text-white border border-cyan-400/50 shadow-[0_0_15px_rgba(0,229,255,0.25)] font-bold"
+                    : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
                 }`}
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <div
                     className={`size-8 rounded-lg flex items-center justify-center shrink-0 border ${
                       isSelected
-                        ? "bg-slate-800 dark:bg-slate-200 border-slate-700 dark:border-slate-300 text-white dark:text-slate-900"
-                        : "bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400"
+                        ? "bg-cyan-500/30 border-cyan-400/60 text-cyan-300 shadow-[0_0_10px_rgba(0,229,255,0.4)]"
+                        : "bg-[#02050E] border-cyan-500/20 text-slate-400"
                     }`}
                   >
                     <Icon className="size-4" />
                   </div>
                   <div className="min-w-0">
-                    <div className={`text-xs font-semibold truncate ${isSelected ? "text-white dark:text-slate-900" : "text-slate-900 dark:text-slate-100"}`}>
+                    <div className={`text-xs font-mono font-bold truncate ${isSelected ? "text-cyan-200" : "text-slate-200"}`}>
                       {item.title}
                     </div>
                     {item.subtitle && (
-                      <div className={`text-[11px] truncate ${isSelected ? "text-slate-300 dark:text-slate-600" : "text-slate-500 dark:text-slate-400"}`}>
+                      <div className={`text-[10.5px] truncate font-mono ${isSelected ? "text-cyan-300/80" : "text-slate-500"}`}>
                         {item.subtitle}
                       </div>
                     )}
@@ -347,10 +385,10 @@ export function GlobalCommandPalette({ isOpen, onClose }: GlobalCommandPalettePr
                 </div>
 
                 <div className="flex items-center gap-2 shrink-0">
-                  <span className={`text-[10px] font-mono uppercase px-2 py-0.5 rounded-md border ${isSelected ? "bg-slate-800 dark:bg-slate-200 border-slate-700 dark:border-slate-300 text-slate-300 dark:text-slate-700" : "bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400"}`}>
+                  <span className={`text-[9px] font-mono font-bold uppercase px-2 py-0.5 rounded-md border ${isSelected ? "bg-cyan-500/25 border-cyan-400/40 text-cyan-300" : "bg-[#02050E] border-cyan-500/20 text-slate-500"}`}>
                     {item.category}
                   </span>
-                  <ChevronRight className={`size-3.5 ${isSelected ? "text-slate-400 dark:text-slate-600" : "text-slate-400"}`} />
+                  <ChevronRight className={`size-3.5 ${isSelected ? "text-cyan-300" : "text-slate-600"}`} />
                 </div>
               </button>
             );
@@ -358,13 +396,13 @@ export function GlobalCommandPalette({ isOpen, onClose }: GlobalCommandPalettePr
         </div>
 
         {/* Footer shortcuts */}
-        <div className="px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 font-mono">
+        <div className="px-4 py-2.5 bg-[#02050E] border-t border-cyan-500/20 flex items-center justify-between text-[11px] text-slate-400 font-mono">
           <div className="flex items-center gap-3">
-            <span><kbd className="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">↑↓</kbd> Navigate</span>
-            <span><kbd className="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">↵</kbd> Select</span>
-            <span><kbd className="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">Esc</kbd> Close</span>
+            <span><kbd className="px-1.5 py-0.5 rounded bg-[#040C20] text-cyan-300 border border-cyan-500/30">↑↓</kbd> Navigate</span>
+            <span><kbd className="px-1.5 py-0.5 rounded bg-[#040C20] text-cyan-300 border border-cyan-500/30">↵</kbd> Select</span>
+            <span><kbd className="px-1.5 py-0.5 rounded bg-[#040C20] text-cyan-300 border border-cyan-500/30">Esc</kbd> Close</span>
           </div>
-          <div>Dragon OS Command Center</div>
+          <div className="text-cyan-400/80 font-bold">Dragon Control Studio OS</div>
         </div>
       </div>
     </div>

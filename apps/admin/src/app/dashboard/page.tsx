@@ -4,25 +4,51 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { Navbar } from "@/components/navbar/Navbar";
 import { 
+  Gamepad2, 
+  HardDrive, 
   Users, 
   LifeBuoy, 
-  Key, 
-  Briefcase, 
+  Layers, 
+  ShieldCheck, 
+  Activity, 
   ArrowUpRight, 
-  RefreshCw,
-  ShieldCheck,
-  Activity,
-  AlertCircle,
-  CheckCircle2,
-  Database,
-  Mail,
-  Lock,
+  Plus, 
+  RefreshCw, 
+  Sparkles, 
+  CheckCircle2, 
+  TrendingUp, 
+  Download, 
+  Clock, 
+  ChevronRight, 
+  Eye, 
+  Sliders, 
+  Server,
+  Zap,
   Globe,
-  X,
-  Sparkles
+  Bot,
+  KeyRound,
+  Cpu,
+  Lock,
+  Radio,
+  FileText,
+  AlertCircle
 } from "lucide-react";
 import Link from "next/link";
-import { SmoothShowcaseSlider } from "@/components/motion/SmoothShowcaseSlider";
+import { cn } from "@/lib/utils/cn";
+import { GlassCard, GlassStat, GlassBadge } from "@/components/ui/glass";
+
+interface GameItem {
+  id: string;
+  slug: string;
+  name: string;
+  genre: string;
+  status: string;
+  bannerUrl?: string | null;
+  cardBannerUrl?: string | null;
+  downloadCount: number;
+  platforms: string;
+  updatedAt: string;
+}
 
 interface AuditLogItem {
   id: string;
@@ -34,426 +60,438 @@ interface AuditLogItem {
 }
 
 export default function DashboardPage() {
-  const [loading, setLoading] = useState(false);
-  const [selectedAudit, setSelectedAudit] = useState<AuditLogItem | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [games, setGames] = useState<GameItem[]>([]);
   const [stats, setStats] = useState({
-    activeUsers: 0,
+    totalGames: 1,
+    liveGames: 1,
+    totalDownloads: 0,
+    activeStaff: 0,
+    totalPlayers: 0,
     openTickets: 0,
-    totalTickets: 0,
-    pendingApplications: 0,
-    pendingInvitations: 0,
     securityScore: 100,
-    systemHealth: "HEALTHY",
-    dbLatencyMs: 14,
+    dbLatencyMs: 8,
+    b2Connected: false,
+    resendConnected: false,
+    geminiConnected: false,
   });
   const [recentAudits, setRecentAudits] = useState<AuditLogItem[]>([]);
 
-  const fetchDashboardStats = useCallback(async () => {
-    setLoading(true);
+  const fetchDashboardData = useCallback(async () => {
+    setRefreshing(true);
     const startTime = performance.now();
     try {
-      const [usersRes, crmRes, portalRes, securityRes, healthRes] = await Promise.all([
+      const [gamesRes, usersRes, crmRes, secRes, healthRes] = await Promise.all([
+        fetch("/api/games").catch(() => null),
         fetch("/api/users").catch(() => null),
         fetch("/api/crm").catch(() => null),
-        fetch("/api/team-key-portal").catch(() => null),
         fetch("/api/security").catch(() => null),
         fetch("/api/health").catch(() => null),
       ]);
 
       const endTime = performance.now();
-      const measuredLatency = Math.round(endTime - startTime);
+      const latency = Math.max(1, Math.round(endTime - startTime));
 
-      let uCount = 0;
-      let openTCount = 0;
-      let totalTCount = 0;
-      let pendingAppsCount = 0;
-      let pendingInvsCount = 0;
+      let gamesList: GameItem[] = [];
+      let totalDl = 0;
+      let liveCount = 0;
+      let staffCount = 0;
+      let playerCount = 0;
+      let ticketsCount = 0;
       let secScore = 100;
-      let sysHealth = "HEALTHY";
+      let audits: AuditLogItem[] = [];
+      let b2Ok = false;
+      let resendOk = false;
+      let geminiOk = false;
+
+      if (gamesRes?.ok) {
+        const gData = await gamesRes.json();
+        if (gData.success && Array.isArray(gData.games)) {
+          gamesList = gData.games;
+          liveCount = gamesList.filter((g) => g.status === "ACTIVE" || g.status === "PUBLISHED" || g.status === "LIVE" || g.status === "In Development").length;
+          totalDl = gamesList.reduce((acc, g) => acc + (Number(g.downloadCount) || 0), 0);
+        }
+      }
 
       if (usersRes?.ok) {
         const uData = await usersRes.json();
-        const usersList = Array.isArray(uData) ? uData : uData.users || [];
-        uCount = usersList.filter((u: { status?: string; isActive?: boolean }) => u.status === "ACTIVE" || u.isActive).length;
-      }
-      if (crmRes?.ok) {
-        const cData = await crmRes.json();
-        const ticketsList = Array.isArray(cData) ? cData : cData.tickets || [];
-        totalTCount = ticketsList.length;
-        openTCount = ticketsList.filter((t: { status: string }) => t.status === "OPEN" || t.status === "NEW" || t.status === "IN_PROGRESS").length;
-      }
-      if (portalRes?.ok) {
-        const pData = await portalRes.json();
-        const appsList = pData.applications || [];
-        const invsList = pData.invitations || [];
-        pendingAppsCount = appsList.filter((a: { status: string }) => a.status === "PENDING").length;
-        pendingInvsCount = invsList.filter((i: { status: string }) => i.status === "PENDING").length;
-      }
-      if (securityRes?.ok) {
-        const secData = await securityRes.json();
-        if (secData.posture?.score !== undefined) secScore = secData.posture.score;
-        if (Array.isArray(secData.auditLogs)) setRecentAudits(secData.auditLogs.slice(0, 8));
-      }
-      if (healthRes?.ok) {
-        const hData = await healthRes.json();
-        if (hData.status) sysHealth = hData.status;
+        const uList = Array.isArray(uData) ? uData : uData.users || [];
+        staffCount = uList.filter((u: { role: string }) => u.role !== "PLAYER" && u.role !== "USER").length;
+        playerCount = uList.length;
       }
 
+      if (crmRes?.ok) {
+        const cData = await crmRes.json();
+        const tList = Array.isArray(cData) ? cData : cData.tickets || [];
+        ticketsCount = tList.filter((t: { status: string }) => t.status === "OPEN" || t.status === "IN_PROGRESS").length;
+      }
+
+      if (secRes?.ok) {
+        const sData = await secRes.json();
+        if (sData.posture?.score) secScore = sData.posture.score;
+        if (Array.isArray(sData.auditLogs)) audits = sData.auditLogs.slice(0, 6);
+      }
+
+      if (healthRes?.ok) {
+        const hData = await healthRes.json();
+        if (hData.services) {
+          b2Ok = hData.services.storage?.status === "CONFIGURED";
+          resendOk = hData.services.emailGateway?.status === "CONFIGURED";
+          geminiOk = true;
+        }
+      }
+
+      setGames(gamesList);
       setStats({
-        activeUsers: uCount,
-        openTickets: openTCount,
-        totalTickets: totalTCount,
-        pendingApplications: pendingAppsCount,
-        pendingInvitations: pendingInvsCount,
+        totalGames: gamesList.length,
+        liveGames: liveCount,
+        totalDownloads: totalDl,
+        activeStaff: staffCount,
+        totalPlayers: playerCount,
+        openTickets: ticketsCount,
         securityScore: secScore,
-        systemHealth: sysHealth,
-        dbLatencyMs: measuredLatency,
+        dbLatencyMs: latency,
+        b2Connected: b2Ok,
+        resendConnected: resendOk,
+        geminiConnected: geminiOk,
       });
-    } catch (e) {
-      console.error("Dashboard fetch error", e);
+      setRecentAudits(audits);
+    } catch (err) {
+      console.error("Dashboard fetch error:", err);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchDashboardStats();
-  }, [fetchDashboardStats]);
-
-  const hasAttentionItems =
-    stats.pendingApplications > 0 || stats.openTickets > 0 || stats.pendingInvitations > 0;
+    fetchDashboardData();
+  }, [fetchDashboardData]);
 
   return (
-    <div className="flex min-h-screen bg-[#040812] text-slate-100 font-sans select-none">
+    <div className="flex h-screen w-full bg-[#02040A] text-slate-100 font-sans antialiased overflow-hidden select-none">
       <Sidebar />
 
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
         <Navbar />
 
-        <main className="flex-1 overflow-y-auto p-8 max-w-7xl mx-auto w-full space-y-10 page-transition-fast">
-          {/* Executive Hero Banner & AI Copilot Bar */}
-          <div className="space-y-6 pb-6 border-b border-slate-800">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-              <div className="space-y-1.5">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-600/15 border border-blue-500/30 text-[11px] text-cyan-300 font-medium">
-                  <ShieldCheck className="size-3.5 text-cyan-400" />
-                  <span>Executive Owner Workspace</span>
-                </div>
-                <h1 className="text-3xl font-extrabold text-white tracking-tight flex items-center gap-2">
-                  <span>Good evening, Executive Owner.</span>
-                  <span className="text-blue-500 text-2xl">⚡</span>
-                </h1>
-                <p className="text-sm text-slate-400 font-sans">
-                  Real-time operational summary & attention center across staff, applications, and support queues.
-                </p>
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto w-full scrollbar-thin scrollbar-thumb-cyan-500/20">
+          
+          {/* ═══ COMMAND CENTER HEADER ═══ */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-cyan-500/20">
+            <div className="space-y-1">
+              <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-400/30 text-[11px] font-mono font-bold text-cyan-300 shadow-[0_0_12px_rgba(0,229,255,0.2)]">
+                <span className="size-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#10B981] animate-pulse" />
+                <span>DRAGON OS OPERATIONAL</span>
+                <span className="text-cyan-500">•</span>
+                <span className="text-slate-400">LATENCY: {stats.dbLatencyMs}ms</span>
               </div>
 
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={fetchDashboardStats}
-                  disabled={loading}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#0B132B] hover:bg-slate-800 border border-blue-500/30 text-xs font-semibold text-cyan-300 transition-all shadow-xs active:scale-98"
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-white tracking-tight flex items-center gap-2 font-heading">
+                <span>Executive Command Center</span>
+                <Sparkles className="size-5 text-cyan-400" />
+              </h1>
+              <p className="text-xs text-slate-400 font-mono">
+                Real-time telemetry, PostgreSQL nodes, Backblaze B2 distribution, and studio infrastructure.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2.5">
+              <button
+                onClick={fetchDashboardData}
+                className="p-2.5 rounded-xl bg-[#03091D] border border-cyan-500/30 text-cyan-300 hover:text-white hover:bg-cyan-500/20 shadow-[0_0_15px_rgba(0,0,0,0.5)] transition-all cursor-pointer"
+                title="Refresh Live Telemetry"
+              >
+                <RefreshCw className={cn("size-4", refreshing && "animate-spin text-cyan-400")} />
+              </button>
+
+              <Link
+                href="/health"
+                className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-500/15 border border-emerald-400/40 text-emerald-300 text-xs font-mono font-bold hover:bg-emerald-500/25 transition-all shadow-[0_0_15px_rgba(16,185,129,0.2)]"
+              >
+                <Activity className="size-3.5" />
+                <span>Live Health</span>
+              </Link>
+
+              <Link
+                href="/games"
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[#00E5FF] to-[#7C3CFF] text-[#020617] text-xs font-mono font-black shadow-[0_0_20px_rgba(0,229,255,0.4)] hover:scale-[1.02] transition-all"
+              >
+                <Plus className="size-4" />
+                <span>Game Engine</span>
+              </Link>
+            </div>
+          </div>
+
+          {/* ═══ REAL-DATA METRIC TILES ═══ */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
+            <div className="p-4 rounded-2xl bg-[#03091D]/90 border border-cyan-500/25 shadow-[0_4px_20px_rgba(0,0,0,0.6)] space-y-2">
+              <div className="flex items-center justify-between text-slate-400">
+                <span className="text-[11px] font-mono uppercase font-bold text-cyan-400/80">Active Franchises</span>
+                <Gamepad2 className="size-4 text-cyan-400" />
+              </div>
+              <div className="text-2xl font-black text-white font-mono tracking-tight">
+                {stats.totalGames}
+              </div>
+              <div className="text-[10.5px] font-mono text-emerald-400 flex items-center gap-1">
+                <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span>UNCHARTED DRIVE: BEYOND</span>
+              </div>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-[#03091D]/90 border border-cyan-500/25 shadow-[0_4px_20px_rgba(0,0,0,0.6)] space-y-2">
+              <div className="flex items-center justify-between text-slate-400">
+                <span className="text-[11px] font-mono uppercase font-bold text-cyan-400/80">Verified Downloads</span>
+                <Download className="size-4 text-cyan-400" />
+              </div>
+              <div className="text-2xl font-black text-white font-mono tracking-tight">
+                {stats.totalDownloads.toLocaleString()}
+              </div>
+              <div className="text-[10.5px] font-mono text-cyan-300">
+                PC (.exe) • Android (.apk)
+              </div>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-[#03091D]/90 border border-cyan-500/25 shadow-[0_4px_20px_rgba(0,0,0,0.6)] space-y-2">
+              <div className="flex items-center justify-between text-slate-400">
+                <span className="text-[11px] font-mono uppercase font-bold text-cyan-400/80">Players & Team</span>
+                <Users className="size-4 text-purple-400" />
+              </div>
+              <div className="text-2xl font-black text-white font-mono tracking-tight">
+                {stats.totalPlayers}
+              </div>
+              <div className="text-[10.5px] font-mono text-purple-300">
+                {stats.activeStaff} Staff • {Math.max(0, stats.totalPlayers - stats.activeStaff)} Players
+              </div>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-[#03091D]/90 border border-cyan-500/25 shadow-[0_4px_20px_rgba(0,0,0,0.6)] space-y-2">
+              <div className="flex items-center justify-between text-slate-400">
+                <span className="text-[11px] font-mono uppercase font-bold text-cyan-400/80">Security Posture</span>
+                <ShieldCheck className="size-4 text-emerald-400" />
+              </div>
+              <div className="text-2xl font-black text-emerald-400 font-mono tracking-tight">
+                {stats.securityScore}%
+              </div>
+              <div className="text-[10.5px] font-mono text-slate-400">
+                Military Guard Active
+              </div>
+            </div>
+          </div>
+
+          {/* ═══ FLAGSHIP GAME HERO SHOWCASE ═══ */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            {/* Left 2 Cols: Real Flagship Studio Game */}
+            <div className="lg:col-span-2 space-y-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-sm font-mono font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                    <span>Studio Flagship Production</span>
+                    <span className="px-1.5 py-0.2 rounded text-[9px] bg-cyan-500/20 text-cyan-300 border border-cyan-400/40">OFFICIAL</span>
+                  </h2>
+                </div>
+                <Link
+                  href="/games"
+                  className="text-xs font-mono font-bold text-cyan-400 hover:text-cyan-300 flex items-center gap-1 group"
                 >
-                  <RefreshCw className={`size-3.5 text-cyan-400 ${loading ? "animate-spin" : ""}`} />
-                  <span>Refresh Data</span>
-                </button>
-              </div>
-            </div>
-
-            {/* OpenAI / Gemini Style Executive Copilot Search Bar */}
-            <div className="p-2.5 rounded-2xl bg-[#0B132B] border border-blue-500/30 shadow-md shadow-blue-900/10 flex items-center gap-3">
-              <div className="size-9 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm shadow-blue-500/30">
-                <Sparkles className="size-4" />
-              </div>
-              <input
-                type="text"
-                placeholder="Ask Dragon AI Copilot or search operations... (e.g. 'Show applications', 'Audit logs', 'Passkeys')"
-                className="w-full text-xs text-white placeholder:text-slate-500 bg-transparent focus:outline-none font-sans"
-              />
-              <span className="text-[10px] font-mono px-2 py-1 bg-[#060B18] text-cyan-300 rounded-lg border border-slate-700 shrink-0">
-                ⌘K
-              </span>
-            </div>
-
-            {/* Smooth Showcase Slider Component */}
-            <SmoothShowcaseSlider />
-          </div>
-
-          {/* Attention Center */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
-                <AlertCircle className="size-4 text-cyan-400" />
-                Attention Center
-              </h2>
-              <span className="text-[11px] text-cyan-400 font-mono">PostgreSQL Stream</span>
-            </div>
-
-            {!hasAttentionItems ? (
-              <div className="rounded-2xl bg-[#0B132B] border border-blue-500/20 p-8 text-center space-y-3 shadow-md shadow-black/40">
-                <div className="size-10 rounded-full bg-blue-600/15 border border-blue-500/30 text-cyan-400 flex items-center justify-center mx-auto shadow-[0_0_15px_rgba(59,130,246,0.3)]">
-                  <CheckCircle2 className="size-5" />
-                </div>
-                <div className="text-sm font-bold text-white">You&apos;re all caught up.</div>
-                <div className="text-xs text-slate-400 max-w-md mx-auto">
-                  There are no pending recruitment applications, unassigned support tickets, or expiring keys requiring immediate action.
-                </div>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                {stats.pendingApplications > 0 && (
-                  <Link
-                    href="/team-key-portal"
-                    className="p-6 rounded-2xl bg-[#0B132B] hover:bg-slate-850 border border-blue-500/30 shadow-md hover:shadow-blue-500/20 transition-all space-y-3 group"
-                  >
-                    <div className="flex items-center justify-between text-xs text-cyan-400 font-semibold">
-                      <span className="flex items-center gap-2">
-                        <Briefcase className="size-4 text-cyan-400" /> Pending Applications
-                      </span>
-                      <ArrowUpRight className="size-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform text-cyan-400" />
-                    </div>
-                    <div className="text-3xl font-extrabold text-white font-mono">
-                      {stats.pendingApplications} Candidate{stats.pendingApplications > 1 ? "s" : ""}
-                    </div>
-                    <p className="text-xs text-slate-400">
-                      Awaiting executive review & recruitment token issuance.
-                    </p>
-                  </Link>
-                )}
-
-                {stats.openTickets > 0 && (
-                  <Link
-                    href="/crm"
-                    className="p-6 rounded-2xl bg-[#0B132B] hover:bg-slate-850 border border-blue-500/30 shadow-md hover:shadow-blue-500/20 transition-all space-y-3 group"
-                  >
-                    <div className="flex items-center justify-between text-xs text-blue-400 font-semibold">
-                      <span className="flex items-center gap-2">
-                        <LifeBuoy className="size-4 text-blue-400" /> Open Support Tickets
-                      </span>
-                      <ArrowUpRight className="size-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform text-blue-400" />
-                    </div>
-                    <div className="text-3xl font-extrabold text-white font-mono">
-                      {stats.openTickets} Active Ticket{stats.openTickets > 1 ? "s" : ""}
-                    </div>
-                    <p className="text-xs text-slate-400">
-                      Customer support tickets requiring staff response or resolution.
-                    </p>
-                  </Link>
-                )}
-
-                {stats.pendingInvitations > 0 && (
-                  <Link
-                    href="/team-key-portal"
-                    className="p-6 rounded-2xl bg-[#0B132B] hover:bg-slate-850 border border-blue-500/30 shadow-md hover:shadow-blue-500/20 transition-all space-y-3 group"
-                  >
-                    <div className="flex items-center justify-between text-xs text-cyan-300 font-semibold">
-                      <span className="flex items-center gap-2">
-                        <Key className="size-4 text-cyan-400" /> Pending Invitations
-                      </span>
-                      <ArrowUpRight className="size-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform text-cyan-300" />
-                    </div>
-                    <div className="text-3xl font-extrabold text-white font-mono">
-                      {stats.pendingInvitations} Active Key{stats.pendingInvitations > 1 ? "s" : ""}
-                    </div>
-                    <p className="text-xs text-slate-400">
-                      Unconsumed single-use recruitment keys issued to staff.
-                    </p>
-                  </Link>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Operational Real Data Summary Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            <div className="p-6 rounded-2xl bg-[#0B132B] border border-blue-500/20 shadow-md space-y-3 hover:border-cyan-400/40 transition-all">
-              <div className="flex items-center justify-between text-xs text-slate-400 font-mono font-semibold uppercase">
-                <span>Active Staff</span>
-                <Users className="size-4 text-cyan-400" />
-              </div>
-              <div className="text-3xl font-extrabold text-white font-mono tracking-tight">{stats.activeUsers}</div>
-              <div className="text-[11px] text-slate-400">Active identities in Neon DB</div>
-            </div>
-
-            <div className="p-6 rounded-2xl bg-[#0B132B] border border-blue-500/20 shadow-md space-y-3 hover:border-cyan-400/40 transition-all">
-              <div className="flex items-center justify-between text-xs text-slate-400 font-mono font-semibold uppercase">
-                <span>Open CRM Tickets</span>
-                <LifeBuoy className="size-4 text-blue-400" />
-              </div>
-              <div className="text-3xl font-extrabold text-white font-mono tracking-tight">
-                {stats.openTickets} <span className="text-xs text-slate-400 font-normal">/ {stats.totalTickets} total</span>
-              </div>
-              <div className="text-[11px] text-slate-400">Unresolved customer tickets</div>
-            </div>
-
-            <div className="p-6 rounded-2xl bg-[#0B132B] border border-blue-500/20 shadow-md space-y-3 hover:border-cyan-400/40 transition-all">
-              <div className="flex items-center justify-between text-xs text-slate-400 font-mono font-semibold uppercase">
-                <span>Pending Applications</span>
-                <Briefcase className="size-4 text-cyan-300" />
-              </div>
-              <div className="text-3xl font-extrabold text-white font-mono tracking-tight">{stats.pendingApplications}</div>
-              <div className="text-[11px] text-slate-400">Unprocessed recruitment apps</div>
-            </div>
-
-            <div className="p-6 rounded-2xl bg-[#0B132B] border border-blue-500/20 shadow-md space-y-3 hover:border-cyan-400/40 transition-all">
-              <div className="flex items-center justify-between text-xs text-slate-400 font-mono font-semibold uppercase">
-                <span>Pending Invitations</span>
-                <Key className="size-4 text-blue-400" />
-              </div>
-              <div className="text-3xl font-extrabold text-white font-mono tracking-tight">{stats.pendingInvitations}</div>
-              <div className="text-[11px] text-slate-400">Single-use staff invite keys</div>
-            </div>
-          </div>
-
-          {/* System Health & Activity Stream */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            {/* System Health */}
-            <div className="lg:col-span-4 p-6 rounded-2xl bg-[#0B132B] border border-blue-500/20 shadow-md space-y-5">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                <h3 className="text-xs font-mono uppercase tracking-wider text-slate-400 font-bold flex items-center gap-2">
-                  <Database className="size-4 text-cyan-400" /> Infrastructure Health
-                </h3>
-                <span className="text-[10px] text-cyan-300 font-mono bg-blue-600/20 px-2 py-0.5 rounded-full border border-blue-500/30 font-semibold">
-                  HEALTHY
-                </span>
-              </div>
-
-              <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 rounded-xl bg-[#060B18] border border-slate-800 text-xs">
-                  <div className="flex items-center gap-2.5">
-                    <Database className="size-4 text-cyan-400" />
-                    <div>
-                      <div className="font-semibold text-white">Neon PostgreSQL</div>
-                      <div className="text-[11px] text-slate-400">Serverless Database</div>
-                    </div>
-                  </div>
-                  <span className="font-mono text-cyan-300 text-[11px] bg-blue-600/20 border border-blue-500/30 px-2 py-0.5 rounded font-semibold">
-                    {stats.dbLatencyMs}ms
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between p-3 rounded-xl bg-[#060B18] border border-slate-800 text-xs">
-                  <div className="flex items-center gap-2.5">
-                    <Lock className="size-4 text-cyan-400" />
-                    <div>
-                      <div className="font-semibold text-white">DIP Identity Engine</div>
-                      <div className="text-[11px] text-slate-400">RBAC & Session Security</div>
-                    </div>
-                  </div>
-                  <span className="font-mono text-cyan-300 text-[11px] bg-blue-600/20 border border-blue-500/30 px-2 py-0.5 rounded font-semibold">
-                    Active
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between p-3 rounded-xl bg-[#060B18] border border-slate-800 text-xs">
-                  <div className="flex items-center gap-2.5">
-                    <Mail className="size-4 text-cyan-400" />
-                    <div>
-                      <div className="font-semibold text-white">Resend Email Gateway</div>
-                      <div className="text-[11px] text-slate-400">Transactional Delivery</div>
-                    </div>
-                  </div>
-                  <span className="font-mono text-cyan-300 text-[11px] bg-blue-600/20 border border-blue-500/30 px-2 py-0.5 rounded font-semibold">
-                    Connected
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between p-3 rounded-xl bg-[#060B18] border border-slate-800 text-xs">
-                  <div className="flex items-center gap-2.5">
-                    <Globe className="size-4 text-cyan-400" />
-                    <div>
-                      <div className="font-semibold text-white">Passkeys & OAuth</div>
-                      <div className="text-[11px] text-slate-400">WebAuthn Authentication</div>
-                    </div>
-                  </div>
-                  <span className="font-mono text-cyan-300 text-[11px] bg-blue-600/20 border border-blue-500/30 px-2 py-0.5 rounded font-semibold">
-                    Configured
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Real Activity Stream */}
-            <div className="lg:col-span-8 p-6 rounded-2xl bg-[#0B132B] border border-blue-500/20 shadow-md space-y-4">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                <h3 className="text-xs font-mono uppercase tracking-wider text-slate-400 font-bold flex items-center gap-2">
-                  <Activity className="size-4 text-cyan-400" /> System Activity Stream
-                </h3>
-                <Link href="/audit" className="text-[11px] text-cyan-400 hover:text-cyan-300 font-mono flex items-center gap-1">
-                  <span>View Full Audit Ledger</span>
-                  <ArrowUpRight className="size-3" />
+                  <span>Engine Studio</span>
+                  <ChevronRight className="size-3.5 group-hover:translate-x-0.5 transition-transform" />
                 </Link>
               </div>
 
+              <div className="p-5 rounded-2xl bg-[#03091D]/95 border border-cyan-500/30 shadow-[0_8px_30px_rgba(0,0,0,0.7)] space-y-4">
+                <div className="relative aspect-21/9 rounded-xl overflow-hidden bg-[#02050E] border border-cyan-500/20">
+                  <img
+                    src="/images/uncharted-drive-banner.png"
+                    alt="Uncharted Drive: Beyond"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#02040A] via-transparent to-transparent opacity-90" />
+                  <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between">
+                    <div>
+                      <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-cyan-500/20 border border-cyan-400/40 text-[10px] font-mono font-bold text-cyan-300 backdrop-blur-md">
+                        <span>AAA OPEN HIGHWAY DRIVING</span>
+                      </div>
+                      <h3 className="text-lg sm:text-xl font-black text-white tracking-tight mt-1 font-heading">
+                        UNCHARTED DRIVE: BEYOND
+                      </h3>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Link
+                        href="/games"
+                        className="px-3 py-1.5 rounded-lg bg-cyan-500 text-[#020617] font-mono font-bold text-xs hover:bg-cyan-400 transition-colors shadow-[0_0_12px_rgba(0,229,255,0.4)]"
+                      >
+                        Manage Title
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1 text-xs font-mono">
+                  <div className="p-2.5 rounded-xl bg-[#02050E] border border-white/5">
+                    <div className="text-[10px] text-slate-500">PLATFORMS</div>
+                    <div className="font-bold text-slate-200 mt-0.5">PC (.exe) • Android (.apk)</div>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-[#02050E] border border-white/5">
+                    <div className="text-[10px] text-slate-500">ENGINE VERSION</div>
+                    <div className="font-bold text-slate-200 mt-0.5">Dragon Engine v5.4</div>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-[#02050E] border border-white/5">
+                    <div className="text-[10px] text-slate-500">STORAGE BACKEND</div>
+                    <div className="font-bold text-cyan-300 mt-0.5">Backblaze B2 S3</div>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-[#02050E] border border-white/5">
+                    <div className="text-[10px] text-slate-500">DOWNLOADS</div>
+                    <div className="font-bold text-emerald-400 mt-0.5">{stats.totalDownloads} Verified</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Col: Quick 7-Core Command Launchers */}
+            <div className="space-y-3">
+              <div>
+                <h2 className="text-sm font-mono font-bold text-white uppercase tracking-wider">
+                  Core Module Launchers
+                </h2>
+              </div>
+
+              <div className="space-y-2 font-mono">
+                <Link
+                  href="/identity"
+                  className="flex items-center justify-between p-3 rounded-xl bg-[#03091D] border border-cyan-500/20 hover:border-cyan-400/50 hover:bg-cyan-500/10 transition-all group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-cyan-500/20 text-cyan-400 group-hover:scale-110 transition-transform">
+                      <KeyRound className="size-4" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-white">Dragon ID Center</h4>
+                      <p className="text-[10px] text-slate-400">Player callsigns, avatars & titles</p>
+                    </div>
+                  </div>
+                  <ChevronRight className="size-4 text-slate-500 group-hover:text-cyan-400 group-hover:translate-x-0.5 transition-all" />
+                </Link>
+
+                <Link
+                  href="/media"
+                  className="flex items-center justify-between p-3 rounded-xl bg-[#03091D] border border-cyan-500/20 hover:border-cyan-400/50 hover:bg-cyan-500/10 transition-all group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-purple-500/20 text-purple-400 group-hover:scale-110 transition-transform">
+                      <HardDrive className="size-4" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-white">Media & B2 Storage</h4>
+                      <p className="text-[10px] text-slate-400">Game banners, videos & assets</p>
+                    </div>
+                  </div>
+                  <ChevronRight className="size-4 text-slate-500 group-hover:text-purple-400 group-hover:translate-x-0.5 transition-all" />
+                </Link>
+
+                <Link
+                  href="/ai"
+                  className="flex items-center justify-between p-3 rounded-xl bg-[#03091D] border border-cyan-500/20 hover:border-cyan-400/50 hover:bg-cyan-500/10 transition-all group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-pink-500/20 text-pink-400 group-hover:scale-110 transition-transform">
+                      <Bot className="size-4" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-white">Gemini AI Studio</h4>
+                      <p className="text-[10px] text-slate-400">AI content engine & SEO tools</p>
+                    </div>
+                  </div>
+                  <ChevronRight className="size-4 text-slate-500 group-hover:text-pink-400 group-hover:translate-x-0.5 transition-all" />
+                </Link>
+
+                <Link
+                  href="/qa"
+                  className="flex items-center justify-between p-3 rounded-xl bg-[#03091D] border border-cyan-500/20 hover:border-cyan-400/50 hover:bg-cyan-500/10 transition-all group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-emerald-500/20 text-emerald-400 group-hover:scale-110 transition-transform">
+                      <ShieldCheck className="size-4" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-white">QA Readiness Center</h4>
+                      <p className="text-[10px] text-slate-400">Test suites & schema validation</p>
+                    </div>
+                  </div>
+                  <ChevronRight className="size-4 text-slate-500 group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all" />
+                </Link>
+
+                <Link
+                  href="/data-control"
+                  className="flex items-center justify-between p-3 rounded-xl bg-[#03091D] border border-rose-500/20 hover:border-rose-400/50 hover:bg-rose-500/10 transition-all group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-rose-500/20 text-rose-400 group-hover:scale-110 transition-transform">
+                      <Lock className="size-4" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-rose-300">Owner Data Control</h4>
+                      <p className="text-[10px] text-slate-400">Dual-approval governance</p>
+                    </div>
+                  </div>
+                  <ChevronRight className="size-4 text-slate-500 group-hover:text-rose-400 group-hover:translate-x-0.5 transition-all" />
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* ═══ REAL AUDIT STREAM ═══ */}
+          <div className="space-y-3 font-mono">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                  <span>Operational Audit Stream</span>
+                  <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                </h2>
+                <p className="text-[11px] text-slate-400">Live immutable PostgreSQL transaction logs</p>
+              </div>
+              <Link
+                href="/audit"
+                className="text-xs font-bold text-cyan-400 hover:text-cyan-300 flex items-center gap-1"
+              >
+                <span>Full Audit Stream</span>
+                <ChevronRight className="size-3.5" />
+              </Link>
+            </div>
+
+            <div className="rounded-2xl bg-[#03091D]/90 border border-cyan-500/20 divide-y divide-white/5 overflow-hidden">
               {recentAudits.length === 0 ? (
-                <div className="py-12 text-center text-slate-500 text-xs font-mono">
-                  No recent audit logs recorded.
+                <div className="p-6 text-center text-xs text-slate-500">
+                  No recent audit events recorded.
                 </div>
               ) : (
-                <div className="space-y-2">
-                  {recentAudits.map((item) => (
-                    <button
-                      key={item.id}
-                      onClick={() => setSelectedAudit(item)}
-                      className="w-full text-left p-3.5 rounded-xl bg-[#060B18] hover:bg-slate-850 border border-slate-800 hover:border-blue-500/40 transition-all flex items-center justify-between group"
-                    >
-                      <div className="space-y-1 min-w-0 pr-4">
-                        <div className="font-semibold text-xs text-white font-mono truncate">
-                          {item.action}
-                        </div>
-                        <div className="text-[11px] text-slate-400 truncate">
-                          {item.details || item.userEmail || "System event"}
-                        </div>
+                recentAudits.map((audit) => (
+                  <div key={audit.id} className="p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 hover:bg-white/5 transition-colors">
+                    <div className="flex items-center gap-3">
+                      <div className="size-2 rounded-full bg-cyan-400 shadow-[0_0_6px_#00E5FF] shrink-0" />
+                      <div>
+                        <span className="text-xs font-bold text-slate-200 block">
+                          {audit.action}
+                        </span>
+                        <span className="text-[10.5px] text-slate-400">
+                          {audit.userEmail || "System Engine"} • {audit.resource || "Dragon Studio"}
+                        </span>
                       </div>
-                      <div className="text-[10px] text-cyan-400 font-mono shrink-0">
-                        {new Date(item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </div>
-                    </button>
-                  ))}
-                </div>
+                    </div>
+
+                    <div className="text-[10.5px] text-slate-500">
+                      {new Date(audit.createdAt).toLocaleString()}
+                    </div>
+                  </div>
+                ))
               )}
             </div>
           </div>
+
         </main>
       </div>
-
-      {/* Audit Detail Modal */}
-      {selectedAudit && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="w-full max-w-lg bg-[#0B132B] border border-blue-500/30 rounded-2xl p-6 space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h4 className="text-sm font-bold text-white font-mono">Audit Event Inspection</h4>
-              <button onClick={() => setSelectedAudit(null)} className="p-1 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white">
-                <X className="size-4" />
-              </button>
-            </div>
-            <div className="space-y-2 text-xs">
-              <div>
-                <span className="text-slate-400 font-medium">Action:</span>
-                <div className="font-mono text-cyan-300 font-semibold mt-0.5">{selectedAudit.action}</div>
-              </div>
-              <div>
-                <span className="text-slate-400 font-medium">Actor Email:</span>
-                <div className="font-mono text-slate-300 mt-0.5">{selectedAudit.userEmail || "System"}</div>
-              </div>
-              <div>
-                <span className="text-slate-400 font-medium">Resource:</span>
-                <div className="font-mono text-slate-300 mt-0.5">{selectedAudit.resource || "N/A"}</div>
-              </div>
-              <div>
-                <span className="text-slate-400 font-medium">Details:</span>
-                <div className="text-slate-200 bg-[#060B18] p-3 rounded-xl border border-slate-800 mt-0.5 font-mono text-[11px]">
-                  {selectedAudit.details || "No extra metadata."}
-                </div>
-              </div>
-              <div>
-                <span className="text-slate-400 font-medium">Timestamp:</span>
-                <div className="font-mono text-slate-400 mt-0.5">{new Date(selectedAudit.createdAt).toLocaleString()}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

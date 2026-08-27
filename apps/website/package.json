@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "postinstall": "prisma generate --schema=../../packages/shared-db/schema.prisma",
     "build": "prisma generate --schema=../../packages/shared-db/schema.prisma && next build",
     "start": "next start",
     "lint": "eslint .",
@@ -16,6 +17,7 @@
     "@dragon/config": "workspace:*",
     "@dragon/email": "workspace:*",
     "@dragon/shared-db": "workspace:*",
+    "@dragon/storage": "workspace:*",
     "@dragon/types": "workspace:*",
     "@dragon/ui": "workspace:*",
     "@dragon/utils": "workspace:*",

@@ -79,7 +79,7 @@ export const siteConfig = {
   email: "hello@dragonstudios.com",
   supportEmail: "support@dragonstudios.com",
   founded: 2023,
-  location: "Bengaluru, India",
+  location: "Global Remote",
   mission:
     "To create breathtaking interactive experiences that transport players to worlds beyond imagination.",
   sameAs: [

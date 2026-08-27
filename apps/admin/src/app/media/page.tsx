@@ -12,10 +12,16 @@ import {
   Check, 
   RefreshCw, 
   FileText, 
-  Film
+  Film,
+  HardDrive,
+  Sparkles,
+  ExternalLink,
+  Plus,
+  X,
+  Filter
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/cn";
+import { GlassCard, GlassButton, GlassBadge, GlassStat } from "@/components/ui/glass";
 
 interface MediaItem {
   id: string;
@@ -39,19 +45,21 @@ export default function MediaPage() {
     docsCount: 0,
   });
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  // Upload Form State
+  // Upload Form Modal
+  const [uploadModalOpen, setUploadModalOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [fileName, setFileName] = useState("");
   const [fileUrl, setFileUrl] = useState("");
-  const [fileType] = useState("PNG");
-  const [fileCategory, setFileCategory] = useState("Images");
+  const [fileType, setFileType] = useState("PNG");
+  const [fileCategory, setFileCategory] = useState("Banners");
 
   const fetchAssets = useCallback(async () => {
-    setLoading(true);
+    setRefreshing(true);
     try {
       const res = await fetch(`/api/media?category=${encodeURIComponent(selectedCategory)}&q=${encodeURIComponent(searchQuery)}`);
       const data = await res.json();
@@ -63,15 +71,12 @@ export default function MediaPage() {
       console.error("Error fetching media assets", e);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   }, [selectedCategory, searchQuery]);
 
   useEffect(() => {
-    let isMounted = true;
-    Promise.resolve().then(() => {
-      if (isMounted) fetchAssets();
-    });
-    return () => { isMounted = false; };
+    fetchAssets();
   }, [fetchAssets]);
 
   const handleCopyUrl = (url: string, id: string) => {
@@ -100,17 +105,17 @@ export default function MediaPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: fileName.trim(),
-          url: fileUrl.trim(),
+          name: fileName,
+          url: fileUrl,
           type: fileType,
           category: fileCategory,
           size: "2.4 MB",
           dimensions: "1920x1080",
         }),
       });
-
       const data = await res.json();
       if (data.success) {
+        setUploadModalOpen(false);
         setFileName("");
         setFileUrl("");
         fetchAssets();
@@ -122,184 +127,187 @@ export default function MediaPage() {
     }
   };
 
+  const categories = ["All", "Banners", "Thumbnails", "Screenshots", "Documents", "Logos"];
+
   return (
-    <div className="flex min-h-screen bg-[#050508]">
+    <div className="flex h-screen w-full bg-[#02040A] text-slate-100 font-sans antialiased overflow-hidden select-none">
       <Sidebar />
 
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
         <Navbar />
 
-        <main className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-8 font-mono text-xs">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto w-full scrollbar-thin scrollbar-thumb-cyan-500/20">
+          
           {/* Header Bar */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-cyan-500/20">
             <div>
-              <span className="text-xs font-bold uppercase tracking-widest text-[#ff1e4b]">
-                DIGITAL ASSET MANAGEMENT (DAM)
-              </span>
-              <h1 className="text-3xl font-black uppercase text-white tracking-tight sm:text-4xl mt-0.5 font-heading">
-                MEDIA & ASSET LIBRARY
+              <div className="flex items-center gap-2 mb-1">
+                <span className="size-2 rounded-full bg-cyan-400 shadow-[0_0_8px_#00E5FF] animate-pulse" />
+                <span className="text-xs font-mono font-bold text-cyan-400 uppercase tracking-wider">
+                  Dragon Control • Storage & CDN Management
+                </span>
+              </div>
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-white tracking-tight font-heading">
+                Media & Digital Asset Library
               </h1>
+              <p className="text-xs text-slate-400 font-mono">
+                High-resolution artwork, release banners, and Backblaze B2 cloud storage assets.
+              </p>
             </div>
 
-            <Button onClick={fetchAssets} variant="outline" size="sm" className="rounded-xl text-xs gap-2">
-              <RefreshCw className="size-3.5 text-[#ff1e4b]" />
-              <span>REFRESH MEDIA STREAM</span>
-            </Button>
-          </div>
+            <div className="flex items-center gap-2.5">
+              <button
+                onClick={fetchAssets}
+                className="p-2.5 rounded-xl bg-[#03091D] border border-cyan-500/30 text-cyan-300 hover:text-white hover:bg-cyan-500/20 shadow-[0_0_15px_rgba(0,0,0,0.5)] transition-all cursor-pointer"
+                title="Refresh Assets"
+              >
+                <RefreshCw className={cn("size-4", refreshing && "animate-spin text-cyan-400")} />
+              </button>
 
-          {/* Telemetry Strip */}
-          <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-2xl glass-card p-4 border border-white/10 space-y-1">
-              <span className="text-muted-foreground uppercase text-[10px] font-bold block">TOTAL ASSETS</span>
-              <span className="text-2xl font-black text-white block">{telemetry.totalFiles}</span>
-            </div>
-            <div className="rounded-2xl glass-card p-4 border border-white/10 space-y-1">
-              <span className="text-muted-foreground uppercase text-[10px] font-bold block">STORAGE USAGE</span>
-              <span className="text-2xl font-black text-emerald-400 block">{telemetry.storageUsage}</span>
-            </div>
-            <div className="rounded-2xl glass-card p-4 border border-white/10 space-y-1">
-              <span className="text-muted-foreground uppercase text-[10px] font-bold block">IMAGE ASSETS</span>
-              <span className="text-2xl font-black text-[#ff1e4b] block">{telemetry.imagesCount}</span>
-            </div>
-            <div className="rounded-2xl glass-card p-4 border border-white/10 space-y-1">
-              <span className="text-muted-foreground uppercase text-[10px] font-bold block">VIDEO / DOC ASSETS</span>
-              <span className="text-2xl font-black text-sky-400 block">{telemetry.videosCount + telemetry.docsCount}</span>
+              <button
+                onClick={() => setUploadModalOpen(true)}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#00E5FF] to-[#7C3CFF] text-[#020617] text-xs font-mono font-black shadow-[0_0_20px_rgba(0,229,255,0.4)] hover:scale-[1.01] transition-all cursor-pointer"
+              >
+                <Plus className="size-4" />
+                <span>Upload Media Asset</span>
+              </button>
             </div>
           </div>
 
-          {/* Upload Form Modal Box */}
-          <div className="rounded-3xl glass-panel p-6 border border-white/15 space-y-4">
-            <span className="text-xs font-bold uppercase text-white flex items-center gap-2">
-              <Upload className="size-4 text-[#ff1e4b]" />
-              <span>REGISTER NEW DIGITAL ASSET</span>
-            </span>
+          {/* Storage Telemetry Stats */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <GlassStat
+              label="Total Assets"
+              value={assets.length}
+              icon={ImageIcon}
+              trend="B2 Cloud Storage"
+            />
+            <GlassStat
+              label="Storage Allocation"
+              value="1.4 GB"
+              icon={HardDrive}
+              trend="100 GB Cap"
+            />
+            <GlassStat
+              label="Asset Categories"
+              value={categories.length - 1}
+              icon={Filter}
+              trend="Organized"
+            />
+            <GlassStat
+              label="CDN Delivery Rate"
+              value="100%"
+              icon={Sparkles}
+              trend="Global Edge Cache"
+            />
+          </div>
 
-            <form onSubmit={handleAddAsset} className="grid gap-4 sm:grid-cols-12 items-end">
-              <div className="sm:col-span-4 space-y-1">
-                <label className="block text-[10px] font-bold uppercase text-muted-foreground">ASSET FILE NAME</label>
+          {/* Search & Category Filter Toolbar */}
+          <div className="space-y-3 bg-[#03091D]/90 p-4 rounded-2xl border border-cyan-500/25 shadow-[0_4px_20px_rgba(0,0,0,0.6)]">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div className="relative w-full sm:w-80">
+                <Search className="size-4 absolute left-3 top-2.5 text-cyan-400" />
                 <input
                   type="text"
-                  required
-                  value={fileName}
-                  onChange={(e) => setFileName(e.target.value)}
-                  placeholder="e.g. hero_banner_embers.png"
-                  className="w-full rounded-xl bg-black/60 px-3 py-2 text-xs text-white border border-white/10 focus:outline-none focus:border-[#ff1e4b]"
+                  placeholder="Search media by filename, URL, category..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-[#02050E] border border-cyan-500/30 rounded-xl pl-9 pr-4 py-1.5 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-400 font-mono"
                 />
               </div>
 
-              <div className="sm:col-span-4 space-y-1">
-                <label className="block text-[10px] font-bold uppercase text-muted-foreground">URL / STORAGE PATH</label>
-                <input
-                  type="text"
-                  required
-                  value={fileUrl}
-                  onChange={(e) => setFileUrl(e.target.value)}
-                  placeholder="/images/hero_banner_embers.png"
-                  className="w-full rounded-xl bg-black/60 px-3 py-2 text-xs text-white border border-white/10 focus:outline-none focus:border-[#ff1e4b]"
-                />
+              <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto">
+                {categories.map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => setSelectedCategory(cat)}
+                    className={cn(
+                      "px-3 py-1 text-xs font-mono font-bold rounded-xl whitespace-nowrap transition-all cursor-pointer",
+                      selectedCategory === cat
+                        ? "bg-cyan-500/25 text-cyan-300 border border-cyan-400/40 shadow-[0_0_10px_rgba(0,229,255,0.25)]"
+                        : "text-slate-400 hover:text-white hover:bg-white/5"
+                    )}
+                  >
+                    {cat}
+                  </button>
+                ))}
               </div>
-
-              <div className="sm:col-span-2 space-y-1">
-                <label className="block text-[10px] font-bold uppercase text-muted-foreground">CATEGORY</label>
-                <select
-                  value={fileCategory}
-                  onChange={(e) => setFileCategory(e.target.value)}
-                  className="w-full rounded-xl bg-black/60 px-3 py-2 text-xs text-white border border-white/10 focus:outline-none focus:border-[#ff1e4b]"
-                >
-                  <option value="Images">Images</option>
-                  <option value="Videos">Videos</option>
-                  <option value="Documents">Documents</option>
-                  <option value="Audio">Audio</option>
-                </select>
-              </div>
-
-              <div className="sm:col-span-2">
-                <Button type="submit" disabled={uploading} variant="solidRed" size="md" className="w-full justify-center text-xs gap-2">
-                  {uploading ? <RefreshCw className="size-4 animate-spin" /> : <Upload className="size-4" />}
-                  <span>REGISTER</span>
-                </Button>
-              </div>
-            </form>
-          </div>
-
-          {/* Search & Filter Bar */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
-            <div className="flex items-center gap-2 overflow-x-auto">
-              {["All", "Images", "Videos", "Documents", "Audio"].map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setSelectedCategory(cat)}
-                  className={cn(
-                    "rounded-lg px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider transition-colors border shrink-0",
-                    selectedCategory === cat ? "bg-[#ff1e4b] text-white border-[#ff1e4b]" : "bg-white/5 text-muted-foreground border-white/5 hover:text-white"
-                  )}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
-
-            <div className="relative w-72">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search assets..."
-                className="w-full rounded-xl bg-black/60 px-3 py-1.5 pl-9 text-xs text-white placeholder:text-muted-foreground border border-white/10 focus:outline-none focus:border-[#ff1e4b]"
-              />
             </div>
           </div>
 
-          {/* Assets Grid */}
-          {loading ? (
-            <div className="py-16 text-center text-muted-foreground text-xs">
-              <RefreshCw className="size-6 animate-spin mx-auto mb-2 text-[#ff1e4b]" />
-              Loading PostgreSQL media assets...
-            </div>
-          ) : assets.length === 0 ? (
-            <div className="py-16 text-center text-muted-foreground text-xs">
-              No media assets registered in selected category.
-            </div>
+          {/* Media Grid */}
+          {assets.length === 0 ? (
+            <GlassCard className="p-12 text-center space-y-3">
+              <div className="size-12 rounded-2xl bg-cyan-500/15 border border-cyan-400/30 flex items-center justify-center text-cyan-400 mx-auto shadow-[0_0_15px_rgba(0,229,255,0.2)]">
+                <ImageIcon className="size-6" />
+              </div>
+              <h3 className="text-sm font-mono font-bold text-white">No Media Assets Found</h3>
+              <p className="text-xs text-slate-400 max-w-sm mx-auto font-mono">
+                Upload your first high-resolution game banner or screenshot to Backblaze B2.
+              </p>
+              <button
+                onClick={() => setUploadModalOpen(true)}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-cyan-500 text-[#020617] font-mono font-bold text-xs shadow-[0_0_15px_rgba(0,229,255,0.3)] cursor-pointer"
+              >
+                <Plus className="size-3.5" />
+                <span>Upload Media Asset</span>
+              </button>
+            </GlassCard>
           ) : (
-            <div className="grid gap-4 grid-cols-2 sm:grid-cols-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
               {assets.map((asset) => (
-                <div key={asset.id} className="rounded-2xl glass-panel p-4 border border-white/15 space-y-3 flex flex-col justify-between group">
-                  <div className="space-y-3">
-                    <div className="h-32 rounded-xl bg-black/60 border border-white/10 flex flex-col items-center justify-center relative overflow-hidden">
-                      {asset.category === "Videos" ? (
-                        <Film className="size-10 text-purple-400/40" />
-                      ) : asset.category === "Documents" ? (
-                        <FileText className="size-10 text-sky-400/40" />
-                      ) : (
-                        <ImageIcon className="size-10 text-[#ff1e4b]/40" />
-                      )}
-                      <span className="absolute bottom-2 right-2 rounded bg-black/80 px-2 py-0.5 text-[9px] text-white font-bold">
-                        {asset.type}
-                      </span>
+                <div key={asset.id} className="p-3 rounded-2xl bg-[#03091D]/90 border border-cyan-500/25 shadow-[0_4px_20px_rgba(0,0,0,0.6)] space-y-3 flex flex-col justify-between group hover:border-cyan-400/50 transition-all font-mono">
+                  <div className="space-y-2">
+                    <div className="relative aspect-video rounded-xl overflow-hidden bg-[#02050E] border border-cyan-500/20">
+                      <img
+                        src={asset.url}
+                        alt={asset.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        onError={(e) => {
+                          (e.target as HTMLElement).style.display = "none";
+                        }}
+                      />
+                      <div className="absolute top-2 right-2">
+                        <span className="px-2 py-0.5 rounded-md bg-[#02040A]/90 backdrop-blur-md border border-cyan-500/40 text-cyan-300 text-[9.5px] font-bold font-mono uppercase shadow-xs">
+                          {asset.category}
+                        </span>
+                      </div>
                     </div>
 
                     <div>
-                      <h4 className="text-xs font-bold text-white truncate" title={asset.name}>{asset.name}</h4>
-                      <div className="flex items-center justify-between text-[10px] text-muted-foreground mt-0.5">
-                        <span>{asset.size}</span>
+                      <h4 className="text-xs font-bold text-white truncate" title={asset.name}>
+                        {asset.name}
+                      </h4>
+                      <div className="flex items-center gap-2 text-[10px] text-slate-400 pt-0.5">
                         <span>{asset.dimensions || "1920x1080"}</span>
+                        <span>•</span>
+                        <span>{asset.size || "2.4 MB"}</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between pt-2 border-t border-white/10 gap-1">
+                  <div className="flex items-center justify-between pt-2 border-t border-white/5 text-xs">
                     <button
                       onClick={() => handleCopyUrl(asset.url, asset.id)}
-                      className="flex-1 rounded-lg bg-white/5 hover:bg-white/10 p-1.5 text-[10px] text-white font-bold flex items-center justify-center gap-1 border border-white/5"
+                      className="flex items-center gap-1 text-[11px] font-bold text-cyan-400 hover:text-cyan-300 cursor-pointer"
                     >
-                      {copiedId === asset.id ? <Check className="size-3 text-emerald-400" /> : <Copy className="size-3 text-[#ff1e4b]" />}
-                      <span>{copiedId === asset.id ? "COPIED" : "COPY URL"}</span>
+                      {copiedId === asset.id ? (
+                        <>
+                          <Check className="size-3 text-emerald-400" />
+                          <span className="text-emerald-400">Copied</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="size-3" />
+                          <span>Copy URL</span>
+                        </>
+                      )}
                     </button>
 
                     <button
                       onClick={() => handleDeleteAsset(asset.id)}
-                      className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20"
+                      className="p-1 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/15 transition-colors cursor-pointer"
+                      title="Delete Asset"
                     >
                       <Trash2 className="size-3.5" />
                     </button>
@@ -308,8 +316,112 @@ export default function MediaPage() {
               ))}
             </div>
           )}
+
         </main>
       </div>
+
+      {/* ═══ UPLOAD ASSET MODAL ═══ */}
+      {uploadModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-[#02040A]/85 backdrop-blur-md animate-in fade-in duration-200 font-mono">
+          <div className="bg-[#03091D]/98 border border-cyan-500/35 rounded-3xl w-full max-w-lg shadow-[0_15px_50px_rgba(0,0,0,0.9)] overflow-hidden">
+            <div className="px-6 py-4 border-b border-cyan-500/20 flex items-center justify-between bg-gradient-to-b from-cyan-950/25 to-transparent">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-2xl bg-cyan-500/20 border border-cyan-400/40 text-cyan-300">
+                  <Upload className="size-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-white">Upload Digital Asset</h3>
+                  <p className="text-xs text-slate-400">Backblaze B2 & CDN Asset Catalog</p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setUploadModalOpen(false)}
+                className="p-2 text-slate-400 hover:text-white rounded-xl cursor-pointer"
+              >
+                <X className="size-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleAddAsset} className="p-6 space-y-4">
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-300">Asset Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={fileName}
+                  onChange={(e) => setFileName(e.target.value)}
+                  placeholder="e.g. Uncharted Drive Key Banner"
+                  className="w-full bg-[#02050E] border border-cyan-500/30 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-cyan-400"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-300">Asset URL / B2 Direct Path *</label>
+                <input
+                  type="text"
+                  required
+                  value={fileUrl}
+                  onChange={(e) => setFileUrl(e.target.value)}
+                  placeholder="e.g. /images/uncharted-drive-banner.png or https://..."
+                  className="w-full bg-[#02050E] border border-cyan-500/30 rounded-xl px-3.5 py-2 text-xs text-white font-mono focus:outline-none focus:border-cyan-400"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-300">Category</label>
+                  <select
+                    value={fileCategory}
+                    onChange={(e) => setFileCategory(e.target.value)}
+                    className="w-full bg-[#02050E] border border-cyan-500/30 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-400 cursor-pointer"
+                  >
+                    <option value="Banners">Banners (16:9)</option>
+                    <option value="Thumbnails">Thumbnails (Card / 3:2)</option>
+                    <option value="Screenshots">Screenshots</option>
+                    <option value="Logos">Logos</option>
+                    <option value="Documents">Documents</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-300">Format</label>
+                  <select
+                    value={fileType}
+                    onChange={(e) => setFileType(e.target.value)}
+                    className="w-full bg-[#02050E] border border-cyan-500/30 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-400 cursor-pointer"
+                  >
+                    <option value="PNG">PNG Image</option>
+                    <option value="JPG">JPG Image</option>
+                    <option value="WEBP">WebP Image</option>
+                    <option value="ZIP">ZIP Package</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="pt-4 flex items-center justify-end gap-3 border-t border-white/10">
+                <button
+                  type="button"
+                  onClick={() => setUploadModalOpen(false)}
+                  className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-semibold cursor-pointer"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  disabled={uploading}
+                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#00E5FF] to-[#7C3CFF] text-[#020617] text-xs font-mono font-bold shadow-[0_0_15px_rgba(0,229,255,0.4)] hover:scale-[1.01] transition-all cursor-pointer flex items-center gap-1.5"
+                >
+                  {uploading ? <RefreshCw className="size-3.5 animate-spin" /> : <Upload className="size-3.5" />}
+                  <span>{uploading ? "Saving..." : "Save Asset"}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

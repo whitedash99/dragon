@@ -33,7 +33,7 @@ import { WhatsAppIcon, ThreadsIcon, XIcon } from "@/components/ui/social-icons";
 
 export default function CommunityHubPage() {
   return (
-    <SceneBackground gradient noise orbs vignette>
+    <SceneBackground world3D="neural" gradient noise orbs vignette>
       <Navbar />
 
       <main className="cinematic-page relative min-h-screen overflow-x-hidden pb-32 pt-20 lg:pt-24">

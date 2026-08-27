@@ -4,244 +4,264 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { Navbar } from "@/components/navbar/Navbar";
 import { 
-  Cloud, 
-  GitCommit, 
-  Globe, 
+  Rocket, 
   RefreshCw, 
+  ExternalLink, 
   CheckCircle2, 
-  Server, 
-  ArrowUpRight
+  AlertCircle, 
+  Layers, 
+  ShieldCheck, 
+  Cloud, 
+  Server 
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/cn";
+import { GlassCard, GlassButton, GlassBadge } from "@/components/ui/glass";
 
 interface DeploymentItem {
   id: string;
-  version: string;
-  branch: string;
-  commit: string;
+  app: string;
+  environment: string;
   status: string;
-  deployedBy: string;
-  createdAt: string;
-}
-
-interface DomainItem {
-  name: string;
-  domain: string;
-  port: string;
-  status: string;
+  url?: string;
+  commit?: string;
+  branch?: string;
+  updatedAt: string;
 }
 
 export default function DeploymentsPage() {
-  const [telemetry, setTelemetry] = useState<{
-    productionStatus?: string;
-    activeVersion?: string;
-    liveDomains?: number;
-    pipelineStatus?: string;
-  }>({});
-
-  const [domains, setDomains] = useState<DomainItem[]>([]);
   const [deployments, setDeployments] = useState<DeploymentItem[]>([]);
+  const [connected, setConnected] = useState(false);
+  const [provider, setProvider] = useState<string>("Vercel");
+  const [message, setMessage] = useState<string>("");
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [deploying, setDeploying] = useState(false);
-  const [deploySuccess, setDeploySuccess] = useState(false);
-  const [viewMode, setViewMode] = useState<"pipeline" | "domains" | "health">("pipeline");
 
-  const fetchDeployData = useCallback(async () => {
-    setLoading(true);
+  const fetchDeployments = useCallback(async () => {
+    setRefreshing(true);
     try {
       const res = await fetch("/api/deployments");
       const data = await res.json();
       if (data.success) {
-        if (data.telemetry) setTelemetry(data.telemetry);
-        if (Array.isArray(data.domains)) setDomains(data.domains);
-        if (Array.isArray(data.cloudDeployments)) setDeployments(data.cloudDeployments);
+        setConnected(data.connected);
+        setProvider(data.provider || "Vercel");
+        setMessage(data.message || "");
+        if (Array.isArray(data.deployments)) {
+          setDeployments(data.deployments);
+        }
       }
     } catch (e) {
-      console.error("Error fetching deployment data", e);
+      console.error("Error fetching deployments", e);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   }, []);
 
   useEffect(() => {
-    let isMounted = true;
-    Promise.resolve().then(() => {
-      if (isMounted) fetchDeployData();
-    });
-    return () => { isMounted = false; };
-  }, [fetchDeployData]);
+    fetchDeployments();
+  }, [fetchDeployments]);
 
   const handleTriggerDeploy = async () => {
+    if (!confirm("Are you sure you want to trigger a manual production deployment?")) return;
     setDeploying(true);
     try {
       const res = await fetch("/api/deployments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "trigger_deploy" }),
+        body: JSON.stringify({ target: "production" }),
       });
       const data = await res.json();
       if (data.success) {
-        setDeploySuccess(true);
-        setTimeout(() => setDeploySuccess(false), 2500);
-        fetchDeployData();
+        alert("Deployment triggered successfully: " + (data.message || "Pipeline active"));
+        fetchDeployments();
+      } else {
+        alert(data.error || "Deployment failed to trigger");
       }
-    } catch (e) {
-      console.error("Trigger deploy error", e);
+    } catch (err) {
+      alert("Error triggering deployment: " + (err instanceof Error ? err.message : String(err)));
     } finally {
       setDeploying(false);
     }
   };
 
   return (
-    <div className="flex min-h-screen bg-[#050508]">
+    <div className="flex min-h-screen w-full bg-[#02040A] text-slate-100 font-sans antialiased overflow-hidden select-none font-mono">
       <Sidebar />
 
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
         <Navbar />
 
-        <main className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-8 font-mono text-xs">
-          {/* Header Bar */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <main className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-6 max-w-7xl mx-auto w-full">
+          
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-cyan-500/20">
             <div>
-              <span className="text-xs font-bold uppercase tracking-widest text-[#ff1e4b]">
-                PRODUCTION DEPLOYMENT & CLOUD INFRASTRUCTURE
-              </span>
-              <h1 className="text-3xl font-black uppercase text-white tracking-tight sm:text-4xl mt-0.5 font-heading">
-                CLOUD DEPLOYMENT CONSOLE
+              <div className="flex items-center gap-2 mb-1">
+                <span className={cn("size-2 rounded-full", connected ? "bg-cyan-400 animate-pulse shadow-[0_0_8px_#00E5FF]" : "bg-amber-500")} />
+                <span className="text-xs font-bold text-cyan-400/80 uppercase tracking-wider">
+                  Dragon Control • {connected ? "Production Cloud Fleet" : "Deployment Center"}
+                </span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
+                Vercel Deployments & Edge Infrastructure
               </h1>
+              <p className="text-xs sm:text-sm text-slate-400 font-mono">
+                Live micro-frontends, serverless API routes, and deployment pipelines.
+              </p>
             </div>
 
             <div className="flex items-center gap-3">
-              <Button onClick={fetchDeployData} variant="outline" size="sm" className="rounded-xl text-xs gap-2">
-                <RefreshCw className="size-3.5 text-[#ff1e4b]" />
-                <span>REFRESH PIPELINE</span>
-              </Button>
-              <Button onClick={handleTriggerDeploy} disabled={deploying} variant="solidRed" size="sm" className="rounded-xl text-xs gap-2">
-                {deploying ? <RefreshCw className="size-3.5 animate-spin" /> : <Cloud className="size-3.5" />}
-                <span>DEPLOY TO PRODUCTION</span>
-              </Button>
+              <button
+                onClick={fetchDeployments}
+                className="p-2.5 rounded-xl bg-[#03091D] border border-cyan-500/30 text-cyan-300 hover:text-white hover:border-cyan-400 shadow-[0_0_15px_rgba(0,0,0,0.6)] transition-all cursor-pointer"
+                title="Refresh Deployments"
+              >
+                <RefreshCw className={cn("size-4", refreshing && "animate-spin text-cyan-400")} />
+              </button>
+
+              {connected && (
+                <button
+                  onClick={handleTriggerDeploy}
+                  disabled={deploying}
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 text-black font-black text-xs font-mono shadow-[0_0_20px_rgba(0,229,255,0.4)] hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer disabled:opacity-50"
+                >
+                  <Rocket className={cn("size-4", deploying && "animate-spin")} />
+                  <span>{deploying ? "Deploying..." : "Trigger Deployment"}</span>
+                </button>
+              )}
             </div>
           </div>
 
-          {deploySuccess && (
-            <div className="p-4 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold flex items-center gap-2">
-              <CheckCircle2 className="size-4" /> PRODUCTION BUILD & DEPLOYMENT PIPELINE COMPLETED CLEANLY
+          {/* Connection Status Card */}
+          {!connected ? (
+            <div className="p-5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-200 flex items-start gap-3 shadow-[0_0_20px_rgba(245,158,11,0.15)] font-mono">
+              <AlertCircle className="size-5 text-amber-400 shrink-0 mt-0.5" />
+              <div className="space-y-1 text-xs">
+                <span className="font-bold block text-sm text-amber-300">Deployment Provider Not Connected</span>
+                <p className="text-amber-200/80 leading-relaxed font-sans">
+                  {message || "Set VERCEL_TOKEN and VERCEL_PROJECT_ID or VERCEL_DEPLOY_HOOK_URL in environment variables to enable direct deployment management and live build logs from Dragon Control."}
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-400/40 text-emerald-300 flex items-center justify-between shadow-[0_0_20px_rgba(16,185,129,0.15)] text-xs font-mono">
+              <div className="flex items-center gap-2.5">
+                <CheckCircle2 className="size-4.5 text-emerald-400" />
+                <span className="font-bold">Provider Connected: {provider}</span>
+              </div>
+              <span className="text-[11px] text-emerald-300">Production Fleet Active</span>
             </div>
           )}
 
-          {/* Telemetry Strip */}
-          <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-2xl glass-card p-4 border border-white/10 space-y-1">
-              <span className="text-muted-foreground uppercase text-[10px] font-bold block">PRODUCTION STATUS</span>
-              <span className="text-2xl font-black text-emerald-400 block">{telemetry.productionStatus || "ONLINE"}</span>
-            </div>
-            <div className="rounded-2xl glass-card p-4 border border-white/10 space-y-1">
-              <span className="text-muted-foreground uppercase text-[10px] font-bold block">ACTIVE ENGINE VERSION</span>
-              <span className="text-2xl font-black text-white block">{telemetry.activeVersion || "v2.5.0-ENTERPRISE"}</span>
-            </div>
-            <div className="rounded-2xl glass-card p-4 border border-white/10 space-y-1">
-              <span className="text-muted-foreground uppercase text-[10px] font-bold block">REGISTERED DOMAINS</span>
-              <span className="text-2xl font-black text-sky-400 block">{telemetry.liveDomains || 3} ACTIVE</span>
-            </div>
-            <div className="rounded-2xl glass-card p-4 border border-white/10 space-y-1">
-              <span className="text-muted-foreground uppercase text-[10px] font-bold block">CI/CD PIPELINE STATUS</span>
-              <span className="text-2xl font-black text-purple-400 block">{telemetry.pipelineStatus || "HEALTHY"}</span>
-            </div>
-          </div>
-
-          {/* View Filter Pills */}
-          <div className="flex items-center gap-2 overflow-x-auto border-b border-white/10 pb-3">
-            {[
-              { id: "pipeline" as const, label: "Deployments & Pipelines", icon: Cloud },
-              { id: "domains" as const, label: "Domain Infrastructure", icon: Globe },
-              { id: "health" as const, label: "Production Health Check", icon: Server },
-            ].map((tab) => {
-              const Icon = tab.icon;
-              const isSelected = viewMode === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setViewMode(tab.id)}
-                  className={cn(
-                    "rounded-xl px-4 py-2 text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all border shrink-0",
-                    isSelected
-                      ? "bg-[#ff1e4b] text-white border-[#ff1e4b] shadow-lg shadow-[#ff1e4b]/20"
-                      : "bg-white/5 text-muted-foreground border-white/5 hover:text-white"
-                  )}
-                >
-                  <Icon className="size-3.5" />
-                  <span>{tab.label}</span>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Domain Infrastructure Grid */}
-          <div className="rounded-3xl glass-panel p-6 sm:p-8 border border-white/15 space-y-4">
-            <span className="text-xs font-bold uppercase text-white flex items-center gap-2 border-b border-white/10 pb-3">
-              <Globe className="size-4 text-[#ff1e4b]" />
-              <span>LIVE ENTERPRISE DOMAIN ROUTING TABLE</span>
-            </span>
-
-            <div className="grid gap-4 sm:grid-cols-3">
-              {domains.map((dom) => (
-                <div key={dom.domain} className="p-4 rounded-2xl bg-black/40 border border-white/10 space-y-2">
-                  <div className="flex items-center justify-between text-muted-foreground">
-                    <span className="text-[10px] font-bold uppercase">{dom.name}</span>
-                    <ArrowUpRight className="size-3.5 text-[#ff1e4b]" />
-                  </div>
-                  <strong className="text-sm font-sans text-white block truncate">{dom.domain}</strong>
-                  <div className="flex items-center justify-between text-[10px]">
-                    <span className="text-muted-foreground">Port: :{dom.port}</span>
-                    <span className="text-emerald-400 font-bold">{dom.status}</span>
-                  </div>
+          {/* Live Micro-Frontends & Apps Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <GlassCard className="p-6 space-y-4 bg-[#03091D]/90 border border-cyan-500/30">
+              <div className="flex items-start justify-between">
+                <div className="space-y-1">
+                  <GlassBadge variant="published">
+                    Production
+                  </GlassBadge>
+                  <h3 className="text-base font-bold text-white font-mono">Dragon Studios Public Website</h3>
+                  <code className="text-xs font-mono text-cyan-300 block">dragongamingstudios.vercel.app</code>
                 </div>
-              ))}
-            </div>
+
+                <div className="flex items-center gap-1 text-emerald-400 text-xs font-bold font-mono">
+                  <CheckCircle2 className="size-4" />
+                  <span>ONLINE</span>
+                </div>
+              </div>
+
+              <div className="p-3 bg-[#02050E] rounded-xl border border-cyan-500/20 text-xs text-slate-300 font-mono">
+                <span className="text-cyan-400/70 text-[10px] block uppercase font-bold">CANONICAL DESTINATION:</span>
+                <span className="font-medium">Production Public Gaming Presentation Plane</span>
+              </div>
+
+              <div className="flex items-center justify-between pt-2 border-t border-cyan-500/20 text-xs font-mono">
+                <span className="text-slate-400 text-[11px]">Target: Vercel Edge</span>
+                <a
+                  href="https://dragongamingstudios.vercel.app"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-bold text-cyan-300 hover:text-white flex items-center gap-1"
+                >
+                  <span>Launch Website</span>
+                  <ExternalLink className="size-3.5" />
+                </a>
+              </div>
+            </GlassCard>
+
+            <GlassCard className="p-6 space-y-4 bg-[#03091D]/90 border border-cyan-500/30">
+              <div className="flex items-start justify-between">
+                <div className="space-y-1">
+                  <GlassBadge variant="info">
+                    Control Plane
+                  </GlassBadge>
+                  <h3 className="text-base font-bold text-white font-mono">Dragon Control Admin OS</h3>
+                  <code className="text-xs font-mono text-cyan-300 block">localhost:4000 / Production</code>
+                </div>
+
+                <div className="flex items-center gap-1 text-emerald-400 text-xs font-bold font-mono">
+                  <CheckCircle2 className="size-4" />
+                  <span>ACTIVE</span>
+                </div>
+              </div>
+
+              <div className="p-3 bg-[#02050E] rounded-xl border border-cyan-500/20 text-xs text-slate-300 font-mono">
+                <span className="text-cyan-400/70 text-[10px] block uppercase font-bold">OPERATIONAL SCOPE:</span>
+                <span className="font-medium">Studio Control Plane & Content Management</span>
+              </div>
+
+              <div className="flex items-center justify-between pt-2 border-t border-cyan-500/20 text-xs font-mono">
+                <span className="text-slate-400 text-[11px]">Target: Next.js Runtime</span>
+                <span className="font-bold text-emerald-400 flex items-center gap-1">
+                  <span>Current Active Session</span>
+                </span>
+              </div>
+            </GlassCard>
           </div>
 
-          {/* Deployments History Grid */}
-          <div className="rounded-3xl glass-panel p-6 sm:p-8 border border-white/15 space-y-4">
-            <div className="flex items-center justify-between border-b border-white/10 pb-3">
-              <span className="text-xs font-bold uppercase text-white flex items-center gap-2">
-                <GitCommit className="size-4 text-emerald-400" />
-                <span>PRODUCTION BUILD DEPLOYMENT LOG ({deployments.length})</span>
-              </span>
+          {/* Deployment History Table */}
+          {deployments.length > 0 && (
+            <div className="space-y-3 pt-4">
+              <h2 className="text-base font-bold text-white font-mono">Deployment History & Releases</h2>
+              <div className="rounded-2xl border border-cyan-500/30 bg-[#03091D]/90 overflow-hidden shadow-[0_0_25px_rgba(0,0,0,0.7)]">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs font-mono">
+                    <thead className="bg-[#02050E] text-cyan-400 font-mono uppercase tracking-wider text-[10px] border-b border-cyan-500/20">
+                      <tr>
+                        <th className="px-4 py-3">Environment</th>
+                        <th className="px-4 py-3">Application</th>
+                        <th className="px-4 py-3">Status</th>
+                        <th className="px-4 py-3">Release Details</th>
+                        <th className="px-4 py-3">Date</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-cyan-500/10">
+                      {deployments.map((d) => (
+                        <tr key={d.id} className="hover:bg-cyan-500/5">
+                          <td className="px-4 py-3">
+                            <span className="px-2 py-0.5 rounded font-mono font-bold text-[10px] bg-[#02050E] text-cyan-300 border border-cyan-500/20">
+                              {d.environment}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 font-semibold text-white">{d.app}</td>
+                          <td className="px-4 py-3">
+                            <span className="inline-flex items-center gap-1 font-bold text-emerald-400">
+                              <CheckCircle2 className="size-3.5" />
+                              <span>{d.status}</span>
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 font-mono text-slate-300">{d.commit || "Production Build"}</td>
+                          <td className="px-4 py-3 text-slate-400">{d.updatedAt}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
+          )}
 
-            {loading ? (
-              <div className="py-12 text-center text-muted-foreground text-xs">
-                <RefreshCw className="size-5 animate-spin mx-auto mb-2 text-[#ff1e4b]" />
-                Loading production deployment logs...
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {deployments.map((dep) => (
-                  <div key={dep.id} className="p-4 rounded-2xl bg-black/40 border border-white/10 flex items-center justify-between gap-4 text-xs">
-                    <div className="space-y-0.5">
-                      <div className="flex items-center gap-2">
-                        <strong className="text-white font-sans text-sm">{dep.version}</strong>
-                        <span className="rounded bg-white/10 px-2 py-0.5 text-[9px] font-bold text-white">
-                          {dep.branch} ({dep.commit})
-                        </span>
-                      </div>
-                      <span className="text-[10px] text-muted-foreground block">Deployed by {dep.deployedBy}</span>
-                    </div>
-
-                    <div className="text-right shrink-0">
-                      <span className="rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2.5 py-1 font-bold text-[10px]">
-                        {dep.status}
-                      </span>
-                      <span className="block text-[10px] text-muted-foreground mt-0.5">
-                        {new Date(dep.createdAt).toLocaleTimeString()}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
         </main>
       </div>
     </div>

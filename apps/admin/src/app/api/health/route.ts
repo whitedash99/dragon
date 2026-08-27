@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     let dbStatus = "HEALTHY";
@@ -8,7 +10,7 @@ export async function GET() {
     const startDb = Date.now();
 
     try {
-      await prisma.$queryRaw`SELECT 1`.catch(() => prisma.$queryRaw`SELECT 1`);
+      await prisma.$queryRaw`SELECT 1`;
       dbLatencyMs = Math.max(1, Date.now() - startDb);
     } catch {
       dbStatus = "UNHEALTHY";
@@ -16,10 +18,10 @@ export async function GET() {
 
     const resendConfigured = Boolean(process.env.RESEND_API_KEY && process.env.RESEND_API_KEY.startsWith("re_"));
     const googleOauthConfigured = Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET);
-    const webauthnConfigured = Boolean(process.env.WEBAUTHN_RP_ID || process.env.NEXTAUTH_URL);
+    const b2Configured = Boolean(process.env.B2_APPLICATION_KEY || process.env.AWS_SECRET_ACCESS_KEY);
+    const vercelConfigured = Boolean(process.env.VERCEL_TOKEN || process.env.VERCEL_DEPLOY_HOOK_URL);
 
     const isDegraded = dbStatus === "HEALTHY" && (!resendConfigured || !googleOauthConfigured);
-
     const overallStatus = dbStatus === "UNHEALTHY" ? "UNHEALTHY" : isDegraded ? "DEGRADED" : "HEALTHY";
 
     const health = {
@@ -32,15 +34,20 @@ export async function GET() {
           provider: "Neon PostgreSQL",
           latencyMs: dbLatencyMs,
         },
+        storage: {
+          status: b2Configured ? "CONFIGURED" : "NOT_CONFIGURED",
+          provider: "Backblaze B2 S3",
+        },
+        deployment: {
+          status: vercelConfigured ? "CONFIGURED" : "NOT_CONFIGURED",
+          provider: "Vercel Edge",
+        },
         emailGateway: {
           status: resendConfigured ? "CONFIGURED" : "NOT_CONFIGURED",
           provider: "Resend",
         },
         googleOAuth: {
           status: googleOauthConfigured ? "CONFIGURED" : "NOT_CONFIGURED",
-        },
-        webauthnPasskeys: {
-          status: webauthnConfigured ? "CONFIGURED" : "DEFAULT",
         },
         application: {
           status: "HEALTHY",

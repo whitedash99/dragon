@@ -100,7 +100,7 @@ export async function GET() {
     if (!resendConfigured) recommendations.push("Configure RESEND_API_KEY to enable invitation and alert email dispatches.");
 
     const recentAudits = await prisma.auditLog.findMany({
-      take: 25,
+      take: 100,
       orderBy: { createdAt: "desc" },
     });
 

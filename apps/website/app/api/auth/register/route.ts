@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { sendEnterpriseEmail } from "@/lib/email";
+import { serializeProfileMetadata, DEFAULT_DRAGON_ID_METADATA, generateCanonicalDragonId } from "@/lib/user-profile";
 
 export async function POST(req: NextRequest) {
   try {
@@ -11,22 +13,65 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: "Valid email and password (min 6 chars) required." }, { status: 400 });
     }
 
+    const normalizedEmail = email.toLowerCase().trim();
+
     const existingUser = await prisma.user.findUnique({
-      where: { email: email.toLowerCase().trim() },
+      where: { email: normalizedEmail },
     });
 
     if (existingUser) {
       return NextResponse.json({ success: false, error: "An account with this email address already exists." }, { status: 400 });
     }
 
-    // Create user in PostgreSQL
-    const newUser = await prisma.user.create({
-      data: {
-        name: name || email.split("@")[0],
-        email: email.toLowerCase().trim(),
-        role: "PLAYER",
+    const defaultGamerTag = (name || normalizedEmail.split("@")[0]).trim().replace(/\s+/g, "_");
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const dragonId = generateCanonicalDragonId();
+
+    // Create user in PostgreSQL with unique Golden DragonID and resilient fallback
+    let newUser;
+    try {
+      newUser = await prisma.user.create({
+        data: {
+          name: name || normalizedEmail.split("@")[0],
+          email: normalizedEmail,
+          password: hashedPassword,
+          dragonId,
+          role: "PLAYER",
+        },
+      });
+    } catch (createErr: any) {
+      console.warn("Primary user creation warning, attempting schema fallback:", createErr?.message);
+      newUser = await prisma.user.create({
+        data: {
+          name: name || normalizedEmail.split("@")[0],
+          email: normalizedEmail,
+          password: hashedPassword,
+          role: "PLAYER",
+        },
+      });
+    }
+
+    // Create default UserProfile with onboarding flags = false
+    const initialSettings = serializeProfileMetadata(
+      {
+        ...DEFAULT_DRAGON_ID_METADATA,
+        gamerTag: defaultGamerTag,
       },
-    });
+      {
+        hasCompletedWelcome: false,
+        hasCompletedDragonId: false,
+      }
+    );
+
+    await prisma.userProfile.create({
+      data: {
+        userId: newUser.id,
+        country: "United States",
+        language: "en-US",
+        theme: "dark",
+        notificationSettings: initialSettings,
+      },
+    }).catch((err) => console.warn("UserProfile initial creation warning:", err));
 
     // Create session token
     const sessionToken = `dragon_sess_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
@@ -54,6 +99,7 @@ export async function POST(req: NextRequest) {
 
     const response = NextResponse.json({
       success: true,
+      redirectUrl: "/welcome",
       message: "DragonID account created successfully.",
       user: {
         id: newUser.id,
@@ -79,3 +125,4 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }
+

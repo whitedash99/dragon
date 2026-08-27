@@ -1,3 +1,4 @@
+import nodemailer from "nodemailer";
 import { getResendClient } from "./resend";
 import { 
   renderCustomerResendEmail, 
@@ -35,6 +36,25 @@ function getFromEmail(): string {
     process.env.DEFAULT_FROM_EMAIL?.trim() ||
     "onboarding@resend.dev"
   );
+}
+
+/**
+ * Optional SMTP Transporter (for Gmail App Password or custom SMTP)
+ */
+function getSmtpTransporter() {
+  const host = process.env.SMTP_HOST?.trim() || "smtp.gmail.com";
+  const port = parseInt(process.env.SMTP_PORT?.trim() || "465", 10);
+  const user = process.env.SMTP_USER?.trim() || process.env.GMAIL_USER?.trim() || "dragonstudiosofficial01@gmail.com";
+  const pass = process.env.SMTP_PASS?.trim() || process.env.GMAIL_APP_PASSWORD?.trim() || "";
+
+  if (!pass) return null;
+
+  return nodemailer.createTransport({
+    host,
+    port,
+    secure: port === 465,
+    auth: { user, pass },
+  });
 }
 
 /**
@@ -92,6 +112,8 @@ export async function sendEnterpriseEmail(params: TicketEmailParams): Promise<{
   let internalSent = false;
   const errors: string[] = [];
 
+  const smtp = getSmtpTransporter();
+
   // ─────────────────────────────────────────────────────
   // 1. ADMIN/OWNER NOTIFICATION EMAIL (INDIVIDUAL RECIPIENT DISPATCH)
   // ─────────────────────────────────────────────────────
@@ -100,57 +122,7 @@ export async function sendEnterpriseEmail(params: TicketEmailParams): Promise<{
     try {
       console.log(`\n📨 Sending ADMIN notification to: ${recipient}`);
       
-      const adminRes = await resend.emails.send({
-        from: formattedFrom,
-        to: [recipient],
-        replyTo: params.email.trim(),
-        subject: `🚨 [${params.ticketId}] ${params.category || "General"} | ${params.subject.trim()}`,
-        html: renderAdminResendEmail({
-          ticketId: params.ticketId,
-          name: params.name,
-          email: params.email,
-          company: params.company,
-          phone: params.phone,
-          category: params.category,
-          subject: params.subject,
-          message: params.message,
-          priority: params.priority,
-          status: params.status || "OPEN",
-          estimatedResponse: params.slaTarget,
-          trackingUrl,
-          clientIp: params.clientIp,
-          clientCountry: params.clientCountry,
-          browser: params.browser,
-          createdAt: params.createdAt || new Date(),
-        }),
-      });
-
-      if (adminRes.data?.id) {
-        internalSent = true;
-        console.log(`✅ ADMIN email DELIVERED to ${recipient} — Resend ID: ${adminRes.data.id}`);
-      } else if (adminRes.error) {
-        const errMsg = `Resend API error for ${recipient}: ${adminRes.error.name} — ${adminRes.error.message}`;
-        console.error(`❌ ADMIN email to ${recipient} FAILED: ${errMsg}`);
-        errors.push(errMsg);
-      }
-    } catch (e: unknown) {
-      const errMsg = e instanceof Error ? e.message : String(e);
-      console.error(`❌ ADMIN email EXCEPTION for ${recipient}: ${errMsg}`);
-      errors.push(`Admin dispatch exception for ${recipient}: ${errMsg}`);
-    }
-  }
-
-  // ─────────────────────────────────────────────────────
-  // 2. CUSTOMER CONFIRMATION EMAIL
-  // ─────────────────────────────────────────────────────
-  try {
-    console.log(`\n📨 Sending CUSTOMER confirmation to: ${params.email}`);
-
-    const customerRes = await resend.emails.send({
-      from: formattedFrom,
-      to: [params.email.trim()],
-      subject: `Support Request Received [${params.ticketId}] — Dragon Studios`,
-      html: renderCustomerResendEmail({
+      const adminHtml = renderAdminResendEmail({
         ticketId: params.ticketId,
         name: params.name,
         email: params.email,
@@ -167,21 +139,133 @@ export async function sendEnterpriseEmail(params: TicketEmailParams): Promise<{
         clientCountry: params.clientCountry,
         browser: params.browser,
         createdAt: params.createdAt || new Date(),
-      }),
+      });
+
+      const adminRes = await resend.emails.send({
+        from: formattedFrom,
+        to: [recipient],
+        replyTo: params.email.trim(),
+        subject: `🚨 [${params.ticketId}] ${params.category || "General"} | ${params.subject.trim()}`,
+        html: adminHtml,
+      });
+
+      if (adminRes.data?.id) {
+        internalSent = true;
+        console.log(`✅ ADMIN email DELIVERED to ${recipient} — Resend ID: ${adminRes.data.id}`);
+      } else if (adminRes.error) {
+        const errMsg = `Resend error for ${recipient}: ${adminRes.error.message}`;
+        console.warn(`⚠️ Resend failed (${errMsg}). Attempting SMTP fallback...`);
+        
+        if (smtp) {
+          await smtp.sendMail({
+            from: `Dragon Studios <${process.env.SMTP_USER || "dragonstudiosofficial01@gmail.com"}>`,
+            to: recipient,
+            replyTo: params.email.trim(),
+            subject: `🚨 [${params.ticketId}] ${params.category || "General"} | ${params.subject.trim()}`,
+            html: adminHtml,
+          });
+          internalSent = true;
+          console.log(`✅ ADMIN email DELIVERED to ${recipient} via SMTP Fallback.`);
+        } else {
+          errors.push(errMsg);
+        }
+      }
+    } catch (e: unknown) {
+      const errMsg = e instanceof Error ? e.message : String(e);
+      console.error(`❌ ADMIN email EXCEPTION for ${recipient}: ${errMsg}`);
+      if (smtp) {
+        try {
+          await smtp.sendMail({
+            from: `Dragon Studios <${process.env.SMTP_USER || "dragonstudiosofficial01@gmail.com"}>`,
+            to: recipient,
+            replyTo: params.email.trim(),
+            subject: `🚨 [${params.ticketId}] ${params.category || "General"} | ${params.subject.trim()}`,
+            html: renderInternalEmailHtml(params),
+          });
+          internalSent = true;
+          console.log(`✅ ADMIN email DELIVERED to ${recipient} via SMTP Fallback.`);
+        } catch (smtpErr) {
+          errors.push(`Admin SMTP dispatch error: ${smtpErr}`);
+        }
+      } else {
+        errors.push(`Admin dispatch exception for ${recipient}: ${errMsg}`);
+      }
+    }
+  }
+
+  // ─────────────────────────────────────────────────────
+  // 2. CUSTOMER CONFIRMATION EMAIL
+  // ─────────────────────────────────────────────────────
+  try {
+    console.log(`\n📨 Sending CUSTOMER confirmation to: ${params.email}`);
+
+    const customerHtml = renderCustomerResendEmail({
+      ticketId: params.ticketId,
+      name: params.name,
+      email: params.email,
+      company: params.company,
+      phone: params.phone,
+      category: params.category,
+      subject: params.subject,
+      message: params.message,
+      priority: params.priority,
+      status: params.status || "OPEN",
+      estimatedResponse: params.slaTarget,
+      trackingUrl,
+      clientIp: params.clientIp,
+      clientCountry: params.clientCountry,
+      browser: params.browser,
+      createdAt: params.createdAt || new Date(),
+    });
+
+    const customerRes = await resend.emails.send({
+      from: formattedFrom,
+      to: [params.email.trim()],
+      subject: `Support Request Received [${params.ticketId}] — Dragon Studios`,
+      html: customerHtml,
     });
 
     if (customerRes.data?.id) {
       customerSent = true;
       console.log(`✅ CUSTOMER email DELIVERED — Resend ID: ${customerRes.data.id}`);
     } else if (customerRes.error) {
-      const errMsg = `Resend API error: ${customerRes.error.name} — ${customerRes.error.message}`;
-      console.error(`❌ CUSTOMER email FAILED: ${errMsg}`);
-      errors.push(errMsg);
+      const errMsg = `Resend error: ${customerRes.error.message}`;
+      console.warn(`⚠️ Resend failed (${errMsg}). Attempting SMTP fallback...`);
+
+      if (smtp) {
+        await smtp.sendMail({
+          from: `Dragon Studios <${process.env.SMTP_USER || "dragonstudiosofficial01@gmail.com"}>`,
+          to: params.email.trim(),
+          replyTo: getOwnerEmail(),
+          subject: `Support Request Received [${params.ticketId}] — Dragon Studios`,
+          html: customerHtml,
+        });
+        customerSent = true;
+        console.log(`✅ CUSTOMER email DELIVERED via SMTP Fallback.`);
+      } else {
+        errors.push(errMsg);
+      }
     }
   } catch (e: unknown) {
     const errMsg = e instanceof Error ? e.message : String(e);
     console.error(`❌ CUSTOMER email EXCEPTION: ${errMsg}`);
-    errors.push(`Customer dispatch exception: ${errMsg}`);
+    if (smtp) {
+      try {
+        await smtp.sendMail({
+          from: `Dragon Studios <${process.env.SMTP_USER || "dragonstudiosofficial01@gmail.com"}>`,
+          to: params.email.trim(),
+          replyTo: getOwnerEmail(),
+          subject: `Support Request Received [${params.ticketId}] — Dragon Studios`,
+          html: renderCustomerEmailHtml(params),
+        });
+        customerSent = true;
+        console.log(`✅ CUSTOMER email DELIVERED via SMTP Fallback.`);
+      } catch (smtpErr) {
+        errors.push(`Customer SMTP dispatch error: ${smtpErr}`);
+      }
+    } else {
+      errors.push(`Customer dispatch exception: ${errMsg}`);
+    }
   }
 
   // ─────────────────────────────────────────────────────

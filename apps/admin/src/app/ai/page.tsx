@@ -72,21 +72,22 @@ export default function AIPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-slate-50 text-slate-900 font-sans select-none overflow-hidden">
+    <div className="flex min-h-screen bg-[#02040A] text-slate-100 font-sans select-none overflow-hidden font-mono">
       <Sidebar />
 
       <div className="flex-1 flex flex-col min-w-0">
         <Navbar />
 
         {/* WORKSPACE LAYOUT */}
-        <main className="flex-1 flex overflow-hidden font-sans">
+        <main className="flex-1 flex overflow-hidden">
           {/* LEFT PANEL — Mode Selector */}
-          <aside className="w-64 bg-white border-r border-slate-200 flex flex-col shrink-0 p-4 space-y-4 font-mono">
-            <div className="text-xs font-mono font-bold text-slate-500 uppercase tracking-wider">
-              AI Module Mode
+          <aside className="w-64 bg-[#03091D]/95 border-r border-cyan-500/20 flex flex-col shrink-0 p-4 space-y-4 font-mono shadow-[0_0_30px_rgba(0,0,0,0.8)]">
+            <div className="text-xs font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-2">
+              <Sparkles className="size-3.5 text-cyan-400 animate-pulse" />
+              <span>Gemini AI Engine</span>
             </div>
 
-            <div className="space-y-1">
+            <div className="space-y-1.5">
               {[
                 { id: "chat" as ToolMode, label: "Studio Assistant", icon: Bot },
                 { id: "content" as ToolMode, label: "Content Generator", icon: FileText },
@@ -101,8 +102,10 @@ export default function AIPage() {
                     key={tmpl.id}
                     onClick={() => setToolMode(tmpl.id)}
                     className={cn(
-                      "w-full text-left p-3 rounded-xl border text-xs transition-all space-y-1 font-bold",
-                      isSelected ? "bg-slate-900 text-white border-slate-900 shadow-xs" : "bg-slate-50 border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                      "w-full text-left p-3 rounded-xl border text-xs transition-all space-y-1 font-bold cursor-pointer",
+                      isSelected
+                        ? "bg-cyan-500/20 text-cyan-300 border-cyan-400/50 shadow-[0_0_15px_rgba(0,229,255,0.25)]"
+                        : "bg-[#02050E] border-cyan-500/20 text-slate-400 hover:text-white hover:border-cyan-500/40"
                     )}
                   >
                     <div className="flex items-center gap-2">
@@ -116,8 +119,8 @@ export default function AIPage() {
           </aside>
 
           {/* CENTER CHAT CANVAS */}
-          <section className="flex-1 flex flex-col min-w-0 bg-slate-50 relative">
-            <div className="flex-1 overflow-y-auto p-8 space-y-6 max-w-4xl mx-auto w-full">
+          <section className="flex-1 flex flex-col min-w-0 bg-[#02040A] relative">
+            <div className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-6 max-w-4xl mx-auto w-full scrollbar-thin scrollbar-thumb-cyan-500/20">
               {chatHistory.map((msg, idx) => (
                 <div
                   key={idx}
@@ -127,17 +130,17 @@ export default function AIPage() {
                   )}
                 >
                   {msg.role === "assistant" && (
-                    <div className="size-8 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
+                    <div className="size-8 rounded-xl bg-gradient-to-br from-[#00E5FF] to-[#7C3CFF] text-[#020617] flex items-center justify-center font-black text-xs shrink-0 shadow-[0_0_12px_rgba(0,229,255,0.4)]">
                       AI
                     </div>
                   )}
 
                   <div
                     className={cn(
-                      "p-4 rounded-2xl text-xs leading-relaxed border font-sans shadow-xs",
+                      "p-4 rounded-2xl text-xs leading-relaxed border shadow-[0_4px_20px_rgba(0,0,0,0.6)] font-mono",
                       msg.role === "user"
-                        ? "bg-slate-900 border-slate-900 text-white font-medium max-w-xl"
-                        : "bg-white border-slate-200 text-slate-900 max-w-2xl font-sans"
+                        ? "bg-cyan-500/20 border-cyan-400/40 text-cyan-200 max-w-xl"
+                        : "bg-[#03091D]/90 border-cyan-500/25 text-slate-200 max-w-2xl"
                     )}
                   >
                     <div className="whitespace-pre-wrap">{msg.text}</div>
@@ -146,15 +149,15 @@ export default function AIPage() {
               ))}
 
               {loading && (
-                <div className="flex gap-3 items-center text-slate-500 text-xs font-mono">
-                  <RefreshCw className="size-3.5 animate-spin text-slate-700" />
-                  <span>Gemini AI processing...</span>
+                <div className="flex gap-3 items-center text-cyan-400 text-xs font-mono animate-pulse">
+                  <RefreshCw className="size-3.5 animate-spin" />
+                  <span>Google Gemini 1.5 Flash synthesizing intelligence...</span>
                 </div>
               )}
             </div>
 
             {/* Input Console */}
-            <form onSubmit={handleGenerate} className="p-6 border-t border-slate-200 bg-white max-w-4xl mx-auto w-full font-sans">
+            <form onSubmit={handleGenerate} className="p-4 sm:p-6 border-t border-cyan-500/20 bg-[#03091D]/95 max-w-4xl mx-auto w-full">
               <div className="relative">
                 <textarea
                   rows={3}
@@ -166,13 +169,13 @@ export default function AIPage() {
                       handleGenerate(e);
                     }
                   }}
-                  placeholder="Ask Gemini AI or input text..."
-                  className="w-full rounded-2xl bg-slate-50 p-4 pr-12 text-xs text-slate-900 placeholder:text-slate-400 border border-slate-200 focus:outline-none focus:border-slate-400 resize-none font-sans"
+                  placeholder="Ask Gemini AI or input studio copy to generate, analyze, or translate..."
+                  className="w-full rounded-2xl bg-[#02050E] p-4 pr-12 text-xs text-white placeholder:text-slate-500 border border-cyan-500/30 focus:outline-none focus:border-cyan-400 resize-none font-mono"
                 />
                 <button
                   type="submit"
                   disabled={loading || !prompt.trim()}
-                  className="absolute right-3 bottom-3.5 p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white disabled:opacity-30 transition-all shadow-xs"
+                  className="absolute right-3 bottom-3.5 p-2.5 rounded-xl bg-gradient-to-r from-[#00E5FF] to-[#7C3CFF] text-[#020617] font-bold disabled:opacity-30 transition-all shadow-[0_0_15px_rgba(0,229,255,0.4)] cursor-pointer"
                 >
                   <Send className="size-4" />
                 </button>

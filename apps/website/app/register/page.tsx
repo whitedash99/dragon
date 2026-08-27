@@ -4,13 +4,13 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Lock, Mail, User, ArrowRight, AlertCircle } from "lucide-react";
+import { Lock, Mail, User, ArrowRight, RefreshCw, Sparkles, ShieldCheck } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { SceneBackground } from "@/components/background/SceneBackground";
-import { Button } from "@/components/ui/button";
-
+import { DragonLogoIcon } from "@/components/ui/dragon-logo";
 import { signIn } from "next-auth/react";
+import { soundFx } from "@/lib/sound-effects";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -25,6 +25,7 @@ export default function RegisterPage() {
     e.preventDefault();
     setError(null);
     setLoading(true);
+    soundFx.playClick();
 
     try {
       const res = await fetch("/api/auth/register", {
@@ -42,9 +43,11 @@ export default function RegisterPage() {
         throw new Error(data.error || "Registration failed.");
       }
 
-      router.push("/dashboard?welcome=true");
-    } catch (err: any) {
-      setError(err.message || "Registration failed.");
+      soundFx.playForgeComplete();
+      window.location.href = data.redirectUrl || "/welcome";
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Registration failed.";
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -54,30 +57,30 @@ export default function RegisterPage() {
     <SceneBackground gradient noise orbs vignette>
       <Navbar />
 
-      <main className="cinematic-page relative flex min-h-screen items-center justify-center pb-32 pt-28 font-mono">
-        <div className="container-site relative z-10 flex justify-center">
+      <main className="cinematic-page relative flex min-h-screen items-center justify-center pb-32 pt-28 font-mono select-none">
+        <div className="container-site relative z-10 flex justify-center w-full px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="w-full max-w-md rounded-3xl glass-heavy p-8 sm:p-10 border border-white/15 shadow-2xl overflow-hidden relative"
+            transition={{ duration: 0.4 }}
+            className="w-full max-w-md rounded-3xl bg-[#03091D]/90 backdrop-blur-2xl p-8 sm:p-10 border border-cyan-500/35 shadow-[0_0_50px_rgba(0,229,255,0.18)] overflow-hidden relative"
           >
-            {/* Top Accent Line */}
-            <div 
-              aria-hidden="true" 
-              className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-[#ff1e4b] via-purple-600 to-sky-400" 
+            {/* Top Multi-Neon Accent Line */}
+            <div
+              aria-hidden="true"
+              className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-[#00E5FF] via-[#7C3CFF] to-[#FF2BD6]"
             />
 
             {/* Header */}
-            <div className="text-center">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#ff1e4b] to-purple-600 text-lg font-black text-white shadow-lg border border-white/20 mb-4 font-heading">
-                DS
+            <div className="text-center space-y-3">
+              <div className="flex justify-center mb-2">
+                <DragonLogoIcon size="md" />
               </div>
-              <h1 className="text-2xl font-black uppercase tracking-tight text-white font-heading">
-                CREATE DRAGONID
+              <h1 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-white font-heading">
+                CREATE DRAGON<span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00E5FF] to-[#7C3CFF]">ID</span>
               </h1>
-              <p className="mt-1 text-xs text-muted-foreground font-sans">
-                One identity for all Dragon Studios games, launchers & support portal.
+              <p className="text-xs text-slate-400 font-mono leading-relaxed">
+                One unified credential for studio games, downloads & player command center.
               </p>
             </div>
 
@@ -88,7 +91,7 @@ export default function RegisterPage() {
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="mt-4 rounded-xl bg-red-500/20 border border-red-500/40 p-3 text-xs text-red-300 flex items-center justify-between"
+                  className="mt-5 rounded-xl bg-red-500/20 border border-red-500/40 p-3 text-xs text-red-300 flex items-center justify-between"
                 >
                   <span>{error}</span>
                 </motion.div>
@@ -99,8 +102,11 @@ export default function RegisterPage() {
             <div className="mt-6">
               <button
                 type="button"
-                onClick={() => signIn("google", { callbackUrl: "/dashboard?welcome=true" })}
-                className="w-full flex items-center justify-center gap-3 py-3 px-4 bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs rounded-xl shadow-lg transition-all border border-slate-200"
+                onClick={() => {
+                  soundFx.playClick();
+                  signIn("google", { callbackUrl: "/dashboard?welcome=true" });
+                }}
+                className="w-full flex items-center justify-center gap-3 py-3 px-4 bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs rounded-xl shadow-lg transition-all border border-slate-200 active:scale-95 cursor-pointer"
               >
                 <svg className="w-4 h-4" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -114,7 +120,7 @@ export default function RegisterPage() {
 
             <div className="relative my-6 flex items-center justify-center">
               <div className="absolute inset-0 border-t border-white/10" />
-              <span className="relative bg-[#0c121e] px-3 text-[10px] uppercase text-muted-foreground font-mono">
+              <span className="relative bg-[#03091D] px-3 text-[10px] uppercase text-slate-400 font-mono">
                 OR REGISTER WITH EMAIL
               </span>
             </div>
@@ -122,45 +128,45 @@ export default function RegisterPage() {
             {/* Register Form */}
             <form onSubmit={handleRegister} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-white mb-2">
-                  Player Username / Display Name
+                <label className="block text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1.5">
+                  Operative Callsign / Display Name
                 </label>
                 <div className="relative">
-                  <User className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-cyan-400" />
                   <input
                     type="text"
                     required
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    placeholder="kaelen_voss"
-                    className="w-full rounded-xl bg-black/60 px-4 py-3 pl-11 text-xs text-white placeholder:text-muted-foreground border border-white/10 focus:outline-none focus:border-[#ff1e4b]"
+                    placeholder="dragon_operative"
+                    className="w-full rounded-xl bg-[#02050E] px-4 py-3 pl-11 text-xs text-white placeholder:text-slate-500 border border-cyan-500/30 focus:outline-none focus:border-[#00E5FF] focus:shadow-[0_0_15px_rgba(0,229,255,0.3)] transition-all font-mono"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-white mb-2">
-                  Email Address
+                <label className="block text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1.5">
+                  DragonID Email Address
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-cyan-400" />
                   <input
                     type="email"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="you@domain.com"
-                    className="w-full rounded-xl bg-black/60 px-4 py-3 pl-11 text-xs text-white placeholder:text-muted-foreground border border-white/10 focus:outline-none focus:border-[#ff1e4b]"
+                    placeholder="player@dragonstudios.com"
+                    className="w-full rounded-xl bg-[#02050E] px-4 py-3 pl-11 text-xs text-white placeholder:text-slate-500 border border-cyan-500/30 focus:outline-none focus:border-[#00E5FF] focus:shadow-[0_0_15px_rgba(0,229,255,0.3)] transition-all font-mono"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-white mb-2">
+                <label className="block text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1.5">
                   Password (Min 6 Characters)
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-cyan-400" />
                   <input
                     type="password"
                     required
@@ -168,47 +174,42 @@ export default function RegisterPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••••••"
-                    className="w-full rounded-xl bg-black/60 px-4 py-3 pl-11 text-xs text-white placeholder:text-muted-foreground border border-white/10 focus:outline-none focus:border-[#ff1e4b]"
+                    className="w-full rounded-xl bg-[#02050E] px-4 py-3 pl-11 text-xs text-white placeholder:text-slate-500 border border-cyan-500/30 focus:outline-none focus:border-[#00E5FF] focus:shadow-[0_0_15px_rgba(0,229,255,0.3)] transition-all font-mono"
                   />
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 text-xs font-sans pt-1">
+              <div className="flex items-center gap-2 text-xs font-mono pt-1">
                 <input
                   type="checkbox"
                   id="agree"
                   required
                   checked={agreeTerms}
                   onChange={(e) => setAgreeTerms(e.target.checked)}
-                  className="rounded bg-black/40 border-white/20 text-[#ff1e4b] focus:ring-[#ff1e4b]"
+                  className="rounded bg-black/40 border-white/20 text-cyan-400 focus:ring-cyan-400"
                 />
-                <label htmlFor="agree" className="text-muted-foreground select-none">
-                  I agree to the <Link href="/terms" className="text-white underline">Terms</Link> & <Link href="/privacy" className="text-white underline">Privacy Policy</Link>.
+                <label htmlFor="agree" className="text-slate-400 text-[11px] select-none">
+                  I agree to the <Link href="/terms" className="text-cyan-400 underline">Terms</Link> & <Link href="/privacy" className="text-cyan-400 underline">Privacy Policy</Link>.
                 </label>
               </div>
 
-              <Button
+              <button
                 type="submit"
                 disabled={loading}
-                variant="solidRed"
-                size="lg"
-                className="w-full rounded-xl gap-2 mt-4 text-xs font-bold uppercase"
+                className="w-full min-h-[48px] rounded-xl bg-gradient-to-r from-[#00E5FF] via-[#1677FF] to-[#7C3CFF] text-[#020617] text-xs font-mono font-black uppercase tracking-wider shadow-lg shadow-cyan-500/30 hover:shadow-cyan-500/50 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 mt-4"
               >
                 {loading ? (
-                  <span>PROVISIONING DRAGONID...</span>
+                  <RefreshCw className="size-4 animate-spin" />
                 ) : (
-                  <>
-                    <span>CREATE DRAGONID ACCOUNT</span>
-                    <ArrowRight className="size-4" />
-                  </>
+                  <ArrowRight className="size-4" />
                 )}
-              </Button>
+                <span>PROVISION DRAGONID ACCOUNT</span>
+              </button>
             </form>
 
-            {/* Footer Prompt */}
-            <div className="mt-8 text-center text-xs text-muted-foreground pt-6 border-t border-white/10 font-sans">
+            <div className="mt-8 text-center text-xs text-slate-400 pt-6 border-t border-white/10 font-mono">
               Already have a DragonID?{" "}
-              <Link href="/login" className="font-bold text-white hover:text-[#ff1e4b] transition-colors">
+              <Link href="/login" className="font-bold text-cyan-400 hover:text-cyan-300 transition-colors">
                 Sign In →
               </Link>
             </div>

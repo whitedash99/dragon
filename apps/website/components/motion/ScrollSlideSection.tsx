@@ -16,9 +16,9 @@ export function ScrollSlideSection({
   delay = 0,
   className = "",
 }: ScrollSlideSectionProps) {
-  const initialX = direction === "left" ? -90 : direction === "right" ? 90 : 0;
-  const initialY = direction === "up" ? 45 : 0;
-  const initialRotateY = direction === "left" ? -4 : direction === "right" ? 4 : 0;
+  const initialX = direction === "left" ? -60 : direction === "right" ? 60 : 0;
+  const initialY = direction === "up" ? 35 : 0;
+  const initialRotateY = direction === "left" ? -2 : direction === "right" ? 2 : 0;
 
   return (
     <motion.div
@@ -27,7 +27,7 @@ export function ScrollSlideSection({
         x: initialX,
         y: initialY,
         rotateY: initialRotateY,
-        scale: 0.97,
+        scale: 0.98,
       }}
       whileInView={{
         opacity: 1,
@@ -36,7 +36,7 @@ export function ScrollSlideSection({
         rotateY: 0,
         scale: 1,
       }}
-      viewport={{ once: true, amount: 0.12 }}
+      viewport={{ once: true, amount: 0.08 }}
       transition={{
         type: "spring",
         stiffness: 110,
@@ -44,7 +44,7 @@ export function ScrollSlideSection({
         mass: 0.85,
         delay,
       }}
-      className={`transform-gpu will-change-transform ${className}`}
+      className={`transform-gpu will-change-transform [content-visibility:auto] [contain-intrinsic-size:auto_650px] ${className}`}
     >
       {children}
     </motion.div>

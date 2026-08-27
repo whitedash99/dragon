@@ -19,11 +19,13 @@ import {
   Shield,
   Activity,
   Compass,
-  Cpu
+  Cpu,
+  Award,
+  AlertCircle
 } from "lucide-react";
 import { DragonLogoIcon } from "@/components/ui/dragon-logo";
-import { DragonTridentCanvas } from "@/components/cinematic/DragonTridentCanvas";
 import { soundFx } from "@/lib/sound-effects";
+import { validateDragonIdHandle } from "@/lib/user-profile";
 
 export interface GodLevelBanner {
   id: string;
@@ -41,11 +43,11 @@ export const GOD_LEVEL_BANNERS: GodLevelBanner[] = [
     id: "lightning-cyan",
     name: "Obsidian Lightning Overdrive",
     subtitle: "High-Voltage Electric Cyan Dragon Storm",
-    bgClass: "bg-gradient-to-r from-[#00f0ff] via-[#0284c7] to-[#020617]",
-    borderGlow: "rgba(0, 240, 255, 0.8)",
+    bgClass: "bg-gradient-to-r from-[#00E5FF] via-[#0284c7] to-[#020617]",
+    borderGlow: "rgba(0, 229, 255, 0.8)",
     tag: "LIGHTNING APEX",
     icon: Zap,
-    accentColor: "#00f0ff",
+    accentColor: "#00E5FF",
   },
   {
     id: "valyria-fire",
@@ -61,21 +63,21 @@ export const GOD_LEVEL_BANNERS: GodLevelBanner[] = [
     id: "neon-cyber",
     name: "Neo-Tokyo Cyberpulse",
     subtitle: "Anti-Gravity Drift & High-Voltage Neon",
-    bgClass: "bg-gradient-to-r from-[#06b6d4] via-[#4338ca] to-[#020617]",
-    borderGlow: "rgba(6, 182, 212, 0.8)",
+    bgClass: "bg-gradient-to-r from-[#00E5FF] via-[#7C3CFF] to-[#020617]",
+    borderGlow: "rgba(0, 229, 255, 0.8)",
     tag: "CYBERPUNK OVERDRIVE",
     icon: Activity,
-    accentColor: "#06b6d4",
+    accentColor: "#00E5FF",
   },
   {
     id: "void-space",
     name: "Aetheria Cosmic Void",
     subtitle: "Deep Nebula Plasma & Stellar Rifts",
-    bgClass: "bg-gradient-to-r from-[#9333ea] via-[#3b0764] to-[#030712]",
-    borderGlow: "rgba(168, 85, 247, 0.8)",
+    bgClass: "bg-gradient-to-r from-[#7C3CFF] via-[#3b0764] to-[#030712]",
+    borderGlow: "rgba(124, 60, 255, 0.8)",
     tag: "COSMIC VOID",
     icon: Compass,
-    accentColor: "#c084fc",
+    accentColor: "#A855F7",
   },
   {
     id: "gold-royalty",
@@ -101,41 +103,11 @@ export const GOD_LEVEL_BANNERS: GodLevelBanner[] = [
     id: "emerald-venom",
     name: "Toxic Emerald Matrix",
     subtitle: "Nanotech Bio-Plasma Kinetic Energy",
-    bgClass: "bg-gradient-to-r from-[#10b981] via-[#064e3b] to-[#021f18]",
-    borderGlow: "rgba(16, 185, 129, 0.8)",
+    bgClass: "bg-gradient-to-r from-[#00FFC6] via-[#064e3b] to-[#021f18]",
+    borderGlow: "rgba(0, 255, 198, 0.8)",
     tag: "TOXIC MATRIX",
     icon: Shield,
-    accentColor: "#34d399",
-  },
-  {
-    id: "bloodmoon-crimson",
-    name: "Bloodmoon Eclipse",
-    subtitle: "Dark Scarlet Assassin Blood Moon",
-    bgClass: "bg-gradient-to-r from-[#e11d48] via-[#881337] to-[#120206]",
-    borderGlow: "rgba(225, 29, 72, 0.8)",
-    tag: "BLOODMOON ECLIPSE",
-    icon: Flame,
-    accentColor: "#f43f5e",
-  },
-  {
-    id: "solar-flare",
-    name: "Solar Supernova Surge",
-    subtitle: "Molten Solar Flare Core Reactor",
-    bgClass: "bg-gradient-to-r from-[#ea580c] via-[#7c2d12] to-[#140602]",
-    borderGlow: "rgba(234, 88, 12, 0.8)",
-    tag: "SOLAR SUPERNOVA",
-    icon: Sparkles,
-    accentColor: "#fb923c",
-  },
-  {
-    id: "shadow-phantom",
-    name: "Phantom Shadow Katana",
-    subtitle: "Ultra-Violet Blade Assassin Dynasty",
-    bgClass: "bg-gradient-to-r from-[#6366f1] via-[#1e1b4b] to-[#050508]",
-    borderGlow: "rgba(99, 102, 241, 0.8)",
-    tag: "SHADOW KATANA",
-    icon: Cpu,
-    accentColor: "#818cf8",
+    accentColor: "#00FFC6",
   },
 ];
 
@@ -155,7 +127,7 @@ export const GOD_LEVEL_AVATARS: GodLevelAvatar[] = [
     title: "High-Voltage Sovereign",
     imageSrc: "/images/dragon_hero_mobile.jpg",
     borderClass: "border-cyan-400",
-    glowColor: "#00f0ff",
+    glowColor: "#00E5FF",
   },
   {
     id: "dragonfire-berserker",
@@ -171,15 +143,15 @@ export const GOD_LEVEL_AVATARS: GodLevelAvatar[] = [
     title: "Anti-Gravity Mecha Ace",
     imageSrc: "/images/cyber_drift_card.jpg",
     borderClass: "border-cyan-400",
-    glowColor: "#06b6d4",
+    glowColor: "#00E5FF",
   },
   {
     id: "neo-ninja",
     name: "Shadow Ninja",
     title: "Plasma Blade Assassin",
     imageSrc: "/images/shadow_ninja_card.jpg",
-    borderClass: "border-indigo-400",
-    glowColor: "#818cf8",
+    borderClass: "border-purple-400",
+    glowColor: "#A855F7",
   },
   {
     id: "diamond-archon",
@@ -211,24 +183,18 @@ export const GOD_LEVEL_AVATARS: GodLevelAvatar[] = [
     title: "Cosmic Nebula Mage",
     imageSrc: "/images/avatar_void_sorcerer.jpg",
     borderClass: "border-purple-400",
-    glowColor: "#c084fc",
+    glowColor: "#A855F7",
   },
-  {
-    id: "glacial-dragon",
-    name: "Sub-Zero Frostbite Dragon",
-    title: "Glacial Dragon Monarch",
-    imageSrc: "/images/flying_ice_fire_dragon.jpg",
-    borderClass: "border-blue-400",
-    glowColor: "#60a5fa",
-  },
-  {
-    id: "bloodmoon-slayer",
-    name: "Bloodmoon Slayer",
-    title: "Crimson Eclipse Vanguard",
-    imageSrc: "/images/dragon_slayer_card.jpg",
-    borderClass: "border-rose-500",
-    glowColor: "#f43f5e",
-  },
+];
+
+export const AVAILABLE_TITLES = [
+  "Dragon Operative",
+  "Apex Dragon Champion",
+  "Vulkan Architect",
+  "Cyber Phantom",
+  "Valyrian Knight",
+  "Shadow Sovereign",
+  "Grandmaster Vanguard",
 ];
 
 interface PlayerIdentitySetupModalProps {
@@ -239,515 +205,499 @@ interface PlayerIdentitySetupModalProps {
   initialTitle?: string;
   initialBanner?: string;
   initialAvatar?: string;
-  initialBio?: string;
   onSaved?: (updatedProfile: any) => void;
 }
-
-const STEPS = [
-  { id: 1, label: "GAMER NAME", sub: "Choose your callsign", icon: User },
-  { id: 2, label: "10 DRAGON AVATARS", sub: "Select your legend", icon: Zap },
-  { id: 3, label: "10 BATTLE BANNERS", sub: "Select your aura", icon: Layers },
-];
 
 export function PlayerIdentitySetupModal({
   isOpen,
   onClose,
   initialName = "Dragon Slayer",
-  initialGamerTag = "DragonWarrior",
+  initialGamerTag = "operative",
+  initialTitle = "Dragon Operative",
   initialBanner = "lightning-cyan",
   initialAvatar = "obsidian-lightning-dragon",
   onSaved,
 }: PlayerIdentitySetupModalProps) {
-  const [currentStep, setCurrentStep] = useState(1);
   const [gamerTag, setGamerTag] = useState(initialGamerTag);
   const [displayName, setDisplayName] = useState(initialName);
-  const [selectedBannerId, setSelectedBannerId] = useState(initialBanner);
+  const [primaryTitle, setPrimaryTitle] = useState(initialTitle);
   const [selectedAvatarId, setSelectedAvatarId] = useState(initialAvatar);
+  const [selectedBannerId, setSelectedBannerId] = useState(initialBanner);
+  const [activeTab, setActiveTab] = useState<"IDENTITY" | "AVATARS" | "BANNERS">("IDENTITY");
   const [saving, setSaving] = useState(false);
-  const [showGrandReveal, setShowGrandReveal] = useState(false);
+  const [validationError, setValidationError] = useState<string | null>(null);
+  
+  // 9-Step Cinematic Activation Sequence
+  const [activationStage, setActivationStage] = useState<
+    "IDLE" | "DIMMING" | "EMBLEM" | "ENERGY_RING" | "CARD_ASSEMBLY" | "ACTIVATED" | "COMPLETE"
+  >("IDLE");
 
   useEffect(() => {
     if (initialGamerTag) setGamerTag(initialGamerTag);
     if (initialName) setDisplayName(initialName);
+    if (initialTitle) setPrimaryTitle(initialTitle);
     if (initialBanner) setSelectedBannerId(initialBanner);
     if (initialAvatar) setSelectedAvatarId(initialAvatar);
-  }, [initialGamerTag, initialName, initialBanner, initialAvatar]);
+  }, [initialGamerTag, initialName, initialTitle, initialBanner, initialAvatar]);
 
-  useEffect(() => {
-    if (isOpen) {
-      soundFx.playLightningSpark();
+  const activeAvatar =
+    GOD_LEVEL_AVATARS.find((a) => a.id === selectedAvatarId) || GOD_LEVEL_AVATARS[0];
+  const activeBanner =
+    GOD_LEVEL_BANNERS.find((b) => b.id === selectedBannerId) || GOD_LEVEL_BANNERS[0];
+
+  const handleSaveAndActivate = async () => {
+    const cleanTag = gamerTag.replace(/^@/, "").trim();
+    const validation = validateDragonIdHandle(cleanTag);
+    if (!validation.valid) {
+      setValidationError(validation.error || "Invalid Dragon ID format");
+      return;
     }
-  }, [isOpen]);
 
-  const activeBanner = GOD_LEVEL_BANNERS.find((b) => b.id === selectedBannerId) || GOD_LEVEL_BANNERS[0];
-  const activeAvatar = GOD_LEVEL_AVATARS.find((a) => a.id === selectedAvatarId) || GOD_LEVEL_AVATARS[0];
-
-  // Autosave helper
-  const triggerAutoSave = (updatedFields: { gamerTag?: string; displayName?: string; bannerId?: string; avatarId?: string }) => {
-    const nextTag = updatedFields.gamerTag ?? gamerTag;
-    const nextName = updatedFields.displayName ?? displayName;
-    const nextBanner = updatedFields.bannerId ?? selectedBannerId;
-    const nextAvatarObj = GOD_LEVEL_AVATARS.find((a) => a.id === (updatedFields.avatarId ?? selectedAvatarId)) || activeAvatar;
-
-    const payload = {
-      name: nextName.trim() || nextTag.trim(),
-      gamerTag: nextTag.trim() || nextName.trim(),
-      bannerTheme: nextBanner,
-      avatar: nextAvatarObj.imageSrc,
-      image: nextAvatarObj.imageSrc,
-    };
-
-    fetch("/api/user/profile", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    }).catch((err) => console.error("Autosave error:", err));
-
-    if (onSaved) {
-      onSaved(payload);
-    }
-  };
-
-  const goToStep = (targetStep: number) => {
-    soundFx.playSlideWhoosh();
-    setCurrentStep(targetStep);
-  };
-
-  const handleSaveAndComplete = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
+    setValidationError(null);
     setSaving(true);
-    soundFx.playForgeComplete();
-
-    const profileData = {
-      name: displayName.trim() || gamerTag.trim(),
-      gamerTag: gamerTag.trim() || displayName.trim(),
-      bannerTheme: selectedBannerId,
-      avatar: activeAvatar.imageSrc,
-      image: activeAvatar.imageSrc,
-    };
+    soundFx.playClick();
 
     try {
-      await fetch("/api/user/profile", {
-        method: "PUT",
+      const payload = {
+        step: "DRAGON_ID_COMPLETE",
+        name: displayName.trim() || cleanTag,
+        displayName: displayName.trim() || cleanTag,
+        gamerTag: cleanTag,
+        primaryTitle: primaryTitle || "Dragon Operative",
+        bannerTheme: selectedBannerId,
+        avatar: activeAvatar.imageSrc,
+        image: activeAvatar.imageSrc,
+      };
+
+      const res = await fetch("/api/user/onboarding", {
+        method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(profileData),
+        body: JSON.stringify(payload),
       });
 
-      if (onSaved) {
-        onSaved(profileData);
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Failed to initialize Dragon ID.");
       }
-    } catch (err) {
-      console.error("Save identity error:", err);
-    } finally {
-      setSaving(false);
-      setShowGrandReveal(true);
-    }
-  };
 
-  const handleFinishReveal = () => {
-    soundFx.playClick();
-    setShowGrandReveal(false);
-    onClose();
+      // Step 1: DIMMING & EMBLEM
+      setActivationStage("DIMMING");
+      soundFx.playCinematicSubDrop();
+
+      setTimeout(() => {
+        setActivationStage("EMBLEM");
+        soundFx.playLightningSpark();
+      }, 350);
+
+      // Step 2: ENERGY_RING
+      setTimeout(() => {
+        setActivationStage("ENERGY_RING");
+        soundFx.playSlideWhoosh();
+      }, 750);
+
+      // Step 3: CARD_ASSEMBLY
+      setTimeout(() => {
+        setActivationStage("CARD_ASSEMBLY");
+        soundFx.playForgeComplete();
+      }, 1250);
+
+      // Step 4: ACTIVATED
+      setTimeout(() => {
+        setActivationStage("ACTIVATED");
+      }, 1750);
+
+      // Step 5: COMPLETE & Enter Dashboard
+      setTimeout(() => {
+        setActivationStage("COMPLETE");
+        if (onSaved) onSaved(data.metadata || data.user);
+        onClose();
+      }, 2400);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Error saving Dragon ID";
+      setValidationError(msg);
+      setSaving(false);
+      setActivationStage("IDLE");
+    }
   };
 
   if (!isOpen) return null;
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-[9999] h-screen w-screen bg-[#01040D] overflow-y-auto overflow-x-hidden flex flex-col overscroll-contain">
-        {/* Ambient Dragon Lightning Canvas */}
-        <div className="fixed inset-0 pointer-events-none z-0">
-          <DragonTridentCanvas />
-        </div>
-
-        {/* Top Electric Cyan Glowing Accent */}
-        <div className="fixed top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_30px_#00f0ff] z-40 pointer-events-none" />
-
-        {/* ═══ GRAND 3D REVEAL SHOWCASE SCREEN ═══ */}
-        {showGrandReveal ? (
-          <div className="relative z-30 min-h-screen flex flex-col items-center justify-center p-4 text-center space-y-8 max-w-2xl mx-auto my-auto">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-[250] flex items-center justify-center bg-[#02040A]/95 backdrop-blur-2xl p-4 sm:p-6 overflow-y-auto select-none font-sans"
+      >
+        {/* ═══════════════════════════════════════════════════════════════════ */}
+        {/* 9-STAGE CINEMATIC ACTIVATION SEQUENCE OVERLAY                       */}
+        {/* ═══════════════════════════════════════════════════════════════════ */}
+        <AnimatePresence>
+          {activationStage !== "IDLE" && (
             <motion.div
-              initial={{ scale: 0.6, opacity: 0, rotateX: 20 }}
-              animate={{ scale: 1, opacity: 1, rotateX: 0 }}
-              transition={{ type: "spring", stiffness: 120, damping: 15 }}
-              className="space-y-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[400] flex flex-col items-center justify-center bg-[#02040A] text-white p-6 space-y-6 overflow-hidden"
             >
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/20 border border-cyan-400/50 text-cyan-300 font-mono text-xs font-black uppercase tracking-widest shadow-[0_0_30px_rgba(0,240,255,0.6)]">
-                <CheckCircle2 className="size-4 text-cyan-400" />
-                <span>DRAGONID FORGED SUCCESSFULLY</span>
+              {/* Converging Neon Grid Aura */}
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,229,255,0.25)_0%,rgba(124,60,255,0.15)_40%,#02040A_80%)] pointer-events-none" />
+
+              {/* Stage 1-2: Emblem Glow */}
+              {(activationStage === "DIMMING" || activationStage === "EMBLEM") && (
+                <motion.div
+                  initial={{ scale: 0.6, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 1.2, opacity: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="p-8 rounded-full bg-[#03091D]/90 border-2 border-cyan-400 shadow-[0_0_80px_#00E5FF] relative z-10"
+                >
+                  <DragonLogoIcon size="xl" className="w-28 h-28 drop-shadow-[0_0_35px_#00E5FF]" />
+                </motion.div>
+              )}
+
+              {/* Stage 3: Rotating Energy Ring */}
+              {activationStage === "ENERGY_RING" && (
+                <motion.div
+                  initial={{ rotate: -180, scale: 0.7, opacity: 0 }}
+                  animate={{ rotate: 0, scale: 1.1, opacity: 1 }}
+                  exit={{ scale: 1.3, opacity: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="relative p-12 rounded-full border-4 border-dashed border-cyan-400 shadow-[0_0_100px_#00E5FF] z-10 flex items-center justify-center"
+                >
+                  <DragonLogoIcon size="xl" className="w-24 h-24 text-cyan-300" />
+                </motion.div>
+              )}
+
+              {/* Stage 4-5: Card Assembly & "DRAGON ID ACTIVATED" */}
+              {(activationStage === "CARD_ASSEMBLY" || activationStage === "ACTIVATED") && (
+                <motion.div
+                  initial={{ y: 30, opacity: 0, scale: 0.9 }}
+                  animate={{ y: 0, opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.4 }}
+                  className="space-y-5 text-center relative z-10 max-w-md w-full"
+                >
+                  <div
+                    className={`w-full rounded-3xl p-6 border-2 border-cyan-400 shadow-[0_0_60px_rgba(0,229,255,0.7)] ${activeBanner.bgClass}`}
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="relative w-20 h-20 rounded-2xl overflow-hidden border-2 border-white shadow-2xl shrink-0">
+                        <Image src={activeAvatar.imageSrc} alt={activeAvatar.name} fill className="object-cover" />
+                      </div>
+                      <div className="text-left space-y-1 overflow-hidden">
+                        <div className="text-[10px] font-mono font-bold text-cyan-300 uppercase">
+                          ✦ {activeBanner.tag}
+                        </div>
+                        <div className="text-xl font-black uppercase text-white font-heading truncate">
+                          {displayName || "Dragon Slayer"}
+                        </div>
+                        <div className="text-xs font-mono font-bold text-cyan-200 truncate">
+                          @{gamerTag.replace(/^@/, "")}
+                        </div>
+                        <div className="text-[11px] text-amber-300 font-mono font-bold">
+                          {primaryTitle}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <motion.div
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    className="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-cyan-500/20 border border-cyan-400 text-xs font-mono font-black text-cyan-300 tracking-widest uppercase shadow-[0_0_30px_#00E5FF]"
+                  >
+                    <CheckCircle2 className="size-4 text-cyan-400" />
+                    <span>DRAGON ID ACTIVATED</span>
+                  </motion.div>
+                </motion.div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Ambient Multi-Neon Backdrop Glows */}
+        <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#00E5FF]/10 rounded-full blur-[160px] pointer-events-none" />
+        <div className="absolute bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 w-[500px] h-[500px] bg-[#FF2BD6]/10 rounded-full blur-[160px] pointer-events-none" />
+
+        <motion.div
+          initial={{ opacity: 0, y: 20, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.4 }}
+          className="relative w-full max-w-4xl rounded-3xl bg-[#03091D]/95 border-2 border-cyan-500/40 p-6 sm:p-10 space-y-8 shadow-[0_0_60px_rgba(0,229,255,0.25)] overflow-hidden"
+        >
+          {/* Top Multi-Neon Line */}
+          <div
+            aria-hidden="true"
+            className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-[#00E5FF] via-[#7C3CFF] to-[#FF2BD6]"
+          />
+
+          {/* Modal Header */}
+          <div className="flex items-center justify-between border-b border-white/10 pb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-cyan-500/10 border border-cyan-400/40">
+                <Crown className="size-5 text-cyan-400" />
+              </div>
+              <div>
+                <h2 className="text-xl sm:text-2xl font-black uppercase text-white font-heading tracking-tight">
+                  DRAGON ID FORGE
+                </h2>
+                <p className="text-xs text-slate-400 font-mono">
+                  Configure your universal gaming identity, callsign, and combat banner.
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={onClose}
+              className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+            >
+              <X className="size-5" />
+            </button>
+          </div>
+
+          {/* Validation Feedback */}
+          {validationError && (
+            <div className="rounded-xl bg-red-500/15 border border-red-500/40 p-3 text-xs text-red-300 flex items-center gap-2 font-mono">
+              <AlertCircle className="size-4 text-red-400 shrink-0" />
+              <span>{validationError}</span>
+            </div>
+          )}
+
+          {/* ═══════════════════════════════════════════════════════════════════ */}
+          {/* CENTER 3D DRAGON IDENTITY CARD (HERO PREVIEW)                       */}
+          {/* ═══════════════════════════════════════════════════════════════════ */}
+          <div className="flex justify-center">
+            <div
+              className={`w-full max-w-md rounded-2xl p-6 relative overflow-hidden border-2 border-cyan-400/60 shadow-[0_0_40px_rgba(0,229,255,0.35)] transition-all duration-300 ${activeBanner.bgClass}`}
+            >
+              {/* Card Holographic Watermark */}
+              <div className="absolute right-3 top-3 opacity-15 pointer-events-none">
+                <DragonLogoIcon size="lg" />
               </div>
 
-              <h2 className="text-3xl sm:text-5xl font-black uppercase text-white font-heading tracking-tight drop-shadow-[0_0_40px_rgba(0,240,255,0.8)]">
-                WELCOME, {gamerTag || displayName}!
-              </h2>
-            </motion.div>
-
-            {/* 3D Floating DragonID Card Showcase */}
-            <motion.div
-              initial={{ y: 40, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.2, duration: 0.6 }}
-              className={`w-full rounded-3xl ${activeBanner.bgClass} p-6 sm:p-8 border-2 border-cyan-400 shadow-[0_0_80px_rgba(0,240,255,0.5)] relative overflow-hidden`}
-            >
-              <div className="flex items-center gap-5">
-                <div className={`relative size-24 rounded-2xl overflow-hidden border-2 ${activeAvatar.borderClass} shadow-2xl shrink-0`}>
+              <div className="relative z-10 flex items-center gap-4">
+                {/* 3D Avatar Frame with Neon Ring */}
+                <div
+                  className={`relative w-20 h-20 rounded-2xl overflow-hidden border-2 shrink-0 ${activeAvatar.borderClass} shadow-[0_0_20px_rgba(0,229,255,0.5)]`}
+                >
                   <Image
                     src={activeAvatar.imageSrc}
                     alt={activeAvatar.name}
-                    width={96}
-                    height={96}
-                    className="size-full object-cover"
+                    fill
+                    className="object-cover"
                   />
                 </div>
-                <div className="text-left space-y-1">
-                  <div className="inline-block px-3 py-0.5 rounded-full bg-black/60 text-cyan-300 font-mono text-[10px] font-black uppercase tracking-wider">
-                    {activeBanner.tag}
+
+                {/* Identity Text */}
+                <div className="space-y-1 overflow-hidden">
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-black/60 border border-white/20 text-[10px] font-mono font-bold text-cyan-300 uppercase">
+                    <Sparkles className="size-3 text-cyan-400" />
+                    <span>{activeBanner.tag}</span>
                   </div>
-                  <h3 className="text-2xl sm:text-3xl font-black uppercase text-white font-heading">
-                    {gamerTag || displayName}
+
+                  <h3 className="text-lg font-black uppercase text-white font-heading truncate">
+                    {displayName || "Dragon Operative"}
                   </h3>
-                  <p className="text-xs font-mono text-cyan-200">
-                    DRAGON STUDIOS VIP PLAYER
+
+                  <p className="text-xs font-mono text-cyan-300 font-bold truncate">
+                    @{gamerTag.replace(/^@/, "") || "operative"}
+                  </p>
+
+                  <p className="text-[11px] font-mono text-amber-300 font-bold truncate">
+                    {primaryTitle}
                   </p>
                 </div>
               </div>
-            </motion.div>
-
-            <motion.button
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.4 }}
-              onClick={handleFinishReveal}
-              className="px-10 py-4 rounded-2xl bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-500 text-black font-heading font-black text-xs uppercase tracking-widest shadow-[0_0_40px_rgba(0,240,255,0.7)] hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-2"
-            >
-              <span>ENTER PLAYER DASHBOARD</span>
-              <ArrowRight className="size-4" />
-            </motion.button>
+            </div>
           </div>
-        ) : (
-          <>
-            {/* ═══ CLEAN STICKY HEADER BAR ═══ */}
-            <header className="sticky top-0 z-30 w-full px-4 sm:px-8 py-4 border-b border-cyan-500/25 bg-[#03091D]/90 backdrop-blur-2xl flex items-center justify-between shadow-2xl shrink-0">
-              <div className="flex items-center gap-3">
-                <div className="size-10 rounded-2xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-purple-600 p-[1.5px]">
-                  <div className="size-full rounded-2xl bg-[#020614] flex items-center justify-center">
-                    <DragonLogoIcon size="sm" className="border-none text-cyan-400 drop-shadow-[0_0_10px_#00f0ff]" />
-                  </div>
-                </div>
-                <div>
-                  <h1 className="text-lg sm:text-xl font-black uppercase text-white font-heading tracking-tight">
-                    SETUP YOUR DRAGONID
-                  </h1>
-                </div>
-              </div>
 
-              <button
-                type="button"
-                onClick={() => {
-                  soundFx.playClick();
-                  onClose();
-                }}
-                className="flex size-9 items-center justify-center rounded-xl bg-[#061026] border border-cyan-500/30 text-slate-300 hover:text-white hover:border-cyan-400 hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-lg"
-                aria-label="Close setup"
-              >
-                <X className="size-4" />
-              </button>
-            </header>
+          {/* Navigation Tabs (IDENTITY / AVATARS / BANNERS) */}
+          <div className="flex items-center justify-center gap-2 border-b border-white/10 pb-4">
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab("IDENTITY");
+                soundFx.playClick();
+              }}
+              className={`px-4 py-2 rounded-xl text-xs font-mono font-bold uppercase transition-all ${
+                activeTab === "IDENTITY"
+                  ? "bg-cyan-500/20 text-cyan-300 border border-cyan-400/50 shadow-[0_0_15px_rgba(0,229,255,0.3)]"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              1. Identity & Title
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab("AVATARS");
+                soundFx.playClick();
+              }}
+              className={`px-4 py-2 rounded-xl text-xs font-mono font-bold uppercase transition-all ${
+                activeTab === "AVATARS"
+                  ? "bg-purple-500/20 text-purple-300 border border-purple-400/50 shadow-[0_0_15px_rgba(168,85,247,0.3)]"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              2. 8 Avatars
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab("BANNERS");
+                soundFx.playClick();
+              }}
+              className={`px-4 py-2 rounded-xl text-xs font-mono font-bold uppercase transition-all ${
+                activeTab === "BANNERS"
+                  ? "bg-pink-500/20 text-pink-300 border border-pink-400/50 shadow-[0_0_15px_rgba(255,43,214,0.3)]"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              3. 7 Combat Banners
+            </button>
+          </div>
 
-            {/* ═══ MAIN INTERACTIVE SCROLLABLE FORM ═══ */}
-            <main className="relative z-20 w-full max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-36 flex flex-col gap-6">
-              {/* LIVE DRAGONID PREVIEW CARD */}
+          {/* Tab 1: Real Form Input Fields */}
+          {activeTab === "IDENTITY" && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
               <div>
-                <div className="text-[10px] font-mono font-bold uppercase tracking-widest text-slate-400 px-1 mb-2 flex items-center gap-1.5 text-cyan-400">
-                  <Radio className="size-3 animate-pulse text-cyan-400" />
-                  <span>LIVE DRAGONID CARD PREVIEW (AUTOSAVED)</span>
+                <label className="block text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1.5">
+                  Dragon ID / Callsign
+                </label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-cyan-400 font-mono text-xs font-bold">
+                    @
+                  </span>
+                  <input
+                    type="text"
+                    required
+                    value={gamerTag.replace(/^@/, "")}
+                    onChange={(e) => setGamerTag(e.target.value.replace(/[^a-zA-Z0-9_-]/g, ""))}
+                    placeholder="operative"
+                    className="w-full rounded-xl bg-[#02050E] px-4 py-3 pl-8 text-xs text-white placeholder:text-slate-500 border border-cyan-500/30 focus:outline-none focus:border-[#00E5FF] focus:shadow-[0_0_15px_rgba(0,229,255,0.4)] font-mono transition-all"
+                  />
                 </div>
+                <span className="text-[10px] text-slate-500 font-mono mt-1 block">
+                  3–20 alphanumeric chars.
+                </span>
+              </div>
 
-                <div className={`relative rounded-3xl ${activeBanner.bgClass} p-5 sm:p-6 border-2 border-cyan-400/40 shadow-[0_0_50px_rgba(0,240,255,0.35)] overflow-hidden text-white transition-all duration-500`}>
-                  <div className="relative z-10 flex items-center gap-4 sm:gap-6">
-                    <div className={`relative size-16 sm:size-20 rounded-2xl overflow-hidden border-2 ${activeAvatar.borderClass} shadow-2xl shrink-0`}>
-                      <Image
-                        src={activeAvatar.imageSrc}
-                        alt={activeAvatar.name}
-                        width={80}
-                        height={80}
-                        className="size-full object-cover"
-                      />
+              <div>
+                <label className="block text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1.5">
+                  Display Name
+                </label>
+                <div className="relative">
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-cyan-400" />
+                  <input
+                    type="text"
+                    required
+                    value={displayName}
+                    onChange={(e) => setDisplayName(e.target.value)}
+                    placeholder="Dragon Slayer"
+                    className="w-full rounded-xl bg-[#02050E] px-4 py-3 pl-11 text-xs text-white placeholder:text-slate-500 border border-cyan-500/30 focus:outline-none focus:border-[#00E5FF] focus:shadow-[0_0_15px_rgba(0,229,255,0.4)] font-mono transition-all"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1.5">
+                  Player Title
+                </label>
+                <div className="relative">
+                  <Award className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-amber-400" />
+                  <select
+                    value={primaryTitle}
+                    onChange={(e) => setPrimaryTitle(e.target.value)}
+                    className="w-full rounded-xl bg-[#02050E] px-4 py-3 pl-11 text-xs text-white border border-cyan-500/30 focus:outline-none focus:border-[#00E5FF] focus:shadow-[0_0_15px_rgba(0,229,255,0.4)] font-mono transition-all cursor-pointer"
+                  >
+                    {AVAILABLE_TITLES.map((title) => (
+                      <option key={title} value={title} className="bg-[#02050E] text-white">
+                        {title}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Tab 2: 8 Mythic Avatars */}
+          {activeTab === "AVATARS" && (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl mx-auto max-h-60 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-cyan-500/20">
+              {GOD_LEVEL_AVATARS.map((av) => {
+                const isSelected = av.id === selectedAvatarId;
+                return (
+                  <button
+                    key={av.id}
+                    type="button"
+                    onClick={() => {
+                      setSelectedAvatarId(av.id);
+                      soundFx.playClick();
+                    }}
+                    className={`relative p-2.5 rounded-2xl bg-[#02050E] border transition-all text-left group cursor-pointer ${
+                      isSelected
+                        ? "border-cyan-400 shadow-[0_0_20px_rgba(0,229,255,0.5)] scale-105"
+                        : "border-white/10 hover:border-white/30"
+                    }`}
+                  >
+                    <div className="relative w-full aspect-square rounded-xl overflow-hidden mb-2">
+                      <Image src={av.imageSrc} alt={av.name} fill className="object-cover" />
                     </div>
+                    <div className="text-[10px] font-bold text-white truncate font-mono">{av.name}</div>
+                    <div className="text-[9px] text-cyan-400 truncate font-mono">{av.title}</div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
-                    <div className="space-y-1">
-                      <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-black/60 border border-cyan-400/30 text-[9px] font-mono font-black uppercase tracking-wider text-cyan-300">
-                        <activeBanner.icon className="size-3 text-cyan-400" />
-                        <span>{activeBanner.tag}</span>
-                      </div>
-
-                      <h2 className="text-xl sm:text-3xl font-black uppercase font-heading tracking-tight text-white">
-                        {gamerTag || displayName || "DragonWarrior"}
-                      </h2>
+          {/* Tab 3: 7 Battle Banners */}
+          {activeTab === "BANNERS" && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-3xl mx-auto max-h-60 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-cyan-500/20">
+              {GOD_LEVEL_BANNERS.map((b) => {
+                const isSelected = b.id === selectedBannerId;
+                return (
+                  <button
+                    key={b.id}
+                    type="button"
+                    onClick={() => {
+                      setSelectedBannerId(b.id);
+                      soundFx.playClick();
+                    }}
+                    className={`p-3.5 rounded-2xl border transition-all text-left cursor-pointer ${b.bgClass} ${
+                      isSelected
+                        ? "border-white shadow-[0_0_25px_rgba(255,255,255,0.4)] scale-[1.02]"
+                        : "border-white/15 opacity-80 hover:opacity-100"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-black uppercase text-white font-heading">{b.name}</span>
+                      <span className="text-[9px] font-mono font-bold text-cyan-200 px-2 py-0.5 rounded bg-black/60">
+                        {b.tag}
+                      </span>
                     </div>
-                  </div>
-                </div>
-              </div>
+                    <div className="text-[10px] text-slate-300 font-sans mt-0.5">{b.subtitle}</div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
-              {/* STEP TABS (3 SIMPLE STEPS) */}
-              <div className="grid grid-cols-3 gap-2">
-                {STEPS.map((s) => {
-                  const isCurrent = currentStep === s.id;
-                  const isPast = currentStep > s.id;
-
-                  return (
-                    <button
-                      key={s.id}
-                      type="button"
-                      onClick={() => goToStep(s.id)}
-                      className={`p-3 rounded-2xl border text-left flex items-center gap-2.5 transition-all cursor-pointer relative overflow-hidden ${
-                        isCurrent
-                          ? "bg-cyan-500/20 border-cyan-400 shadow-[0_0_25px_rgba(0,240,255,0.35)] text-white"
-                          : isPast
-                          ? "bg-[#03091D]/80 border-cyan-500/30 text-cyan-300"
-                          : "bg-[#02050E]/60 border-white/10 text-slate-500 hover:border-white/20"
-                      }`}
-                    >
-                      <div className={`size-7 rounded-xl flex items-center justify-center font-bold text-xs shrink-0 ${
-                        isCurrent ? "bg-cyan-400 text-black font-heading font-black" : "bg-white/10 text-slate-400"
-                      }`}>
-                        {isPast ? <Check className="size-3.5" /> : s.id}
-                      </div>
-                      <div className="min-w-0">
-                        <div className="text-[11px] font-heading font-black uppercase tracking-wider truncate">
-                          {s.label}
-                        </div>
-                        <div className="text-[9px] font-mono text-slate-400 hidden sm:block truncate">
-                          {s.sub}
-                        </div>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* STEP CONTENT CONTAINER */}
-              <div className="bg-[#03091D]/90 border border-cyan-500/30 rounded-3xl p-5 sm:p-8 backdrop-blur-2xl shadow-2xl">
-                <AnimatePresence mode="wait">
-                  {/* STEP 1: GAMER NAME */}
-                  {currentStep === 1 && (
-                    <motion.div
-                      key="step-1"
-                      initial={{ opacity: 0, x: -30, rotateY: 5 }}
-                      animate={{ opacity: 1, x: 0, rotateY: 0 }}
-                      exit={{ opacity: 0, x: 30, rotateY: -5 }}
-                      transition={{ duration: 0.3 }}
-                      className="space-y-4"
-                    >
-                      <div className="space-y-1">
-                        <h3 className="text-lg font-heading font-black uppercase text-white tracking-wide">
-                          1. CHOOSE YOUR GAMERTAG
-                        </h3>
-                        <p className="text-xs text-slate-300 font-sans">
-                          Enter your callsign to represent you across all Dragon Studios games.
-                        </p>
-                      </div>
-
-                      <div className="space-y-3 pt-2">
-                        <div>
-                          <label className="block text-xs font-mono font-bold uppercase tracking-wider text-slate-300 mb-1.5">
-                            WARRIOR GAMERTAG / CALLSIGN
-                          </label>
-                          <div className="relative">
-                            <input
-                              type="text"
-                              required
-                              value={gamerTag}
-                              onFocus={() => soundFx.playClick()}
-                              onChange={(e) => {
-                                setGamerTag(e.target.value);
-                                triggerAutoSave({ gamerTag: e.target.value });
-                              }}
-                              placeholder="e.g. DragonSlayer, ShadowBlade"
-                              className="w-full rounded-2xl bg-[#02050E] px-4 py-3.5 text-sm text-white font-mono font-bold border border-cyan-500/30 focus:outline-none focus:border-cyan-400 shadow-inner"
-                            />
-                            <User className="absolute right-4 top-1/2 -translate-y-1/2 size-4 text-cyan-400" />
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-
-                  {/* STEP 2: 10 AVATAR FORGE */}
-                  {currentStep === 2 && (
-                    <motion.div
-                      key="step-2"
-                      initial={{ opacity: 0, x: -30, rotateY: 5 }}
-                      animate={{ opacity: 1, x: 0, rotateY: 0 }}
-                      exit={{ opacity: 0, x: 30, rotateY: -5 }}
-                      transition={{ duration: 0.3 }}
-                      className="space-y-4"
-                    >
-                      <div className="space-y-1">
-                        <h3 className="text-lg font-heading font-black uppercase text-white tracking-wide">
-                          2. SELECT FROM 10 GOD-LEVEL AVATARS
-                        </h3>
-                        <p className="text-xs text-slate-300 font-sans">
-                          Click any avatar to instantly equip it and preview on your DragonID.
-                        </p>
-                      </div>
-
-                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 pt-2">
-                        {GOD_LEVEL_AVATARS.map((av) => {
-                          const isSelected = selectedAvatarId === av.id;
-                          return (
-                            <button
-                              key={av.id}
-                              type="button"
-                              onClick={() => {
-                                soundFx.playClick();
-                                setSelectedAvatarId(av.id);
-                                triggerAutoSave({ avatarId: av.id });
-                              }}
-                              className={`p-3 rounded-2xl border text-left space-y-2 transition-all cursor-pointer relative overflow-hidden ${
-                                isSelected
-                                  ? "bg-cyan-500/25 border-cyan-400 shadow-[0_0_30px_rgba(0,240,255,0.4)] scale-105"
-                                  : "bg-[#02050E]/80 border-white/10 hover:border-cyan-500/40 hover:scale-[1.02]"
-                              }`}
-                            >
-                              <div className={`relative aspect-square w-full rounded-xl overflow-hidden border-2 ${
-                                isSelected ? av.borderClass : "border-white/15"
-                              }`}>
-                                <Image
-                                  src={av.imageSrc}
-                                  alt={av.name}
-                                  fill
-                                  className="object-cover"
-                                />
-                                {isSelected && (
-                                  <div className="absolute top-1.5 right-1.5 size-5 rounded-full bg-cyan-400 text-black flex items-center justify-center shadow-lg font-black text-xs">
-                                    <Check className="size-3" />
-                                  </div>
-                                )}
-                              </div>
-                              <div>
-                                <div className="text-[11px] font-heading font-black uppercase text-white truncate">
-                                  {av.name}
-                                </div>
-                                <div className="text-[9px] font-mono text-slate-400 truncate">
-                                  {av.title}
-                                </div>
-                              </div>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </motion.div>
-                  )}
-
-                  {/* STEP 3: 10 BATTLE BANNERS */}
-                  {currentStep === 3 && (
-                    <motion.div
-                      key="step-3"
-                      initial={{ opacity: 0, x: -30, rotateY: 5 }}
-                      animate={{ opacity: 1, x: 0, rotateY: 0 }}
-                      exit={{ opacity: 0, x: 30, rotateY: -5 }}
-                      transition={{ duration: 0.3 }}
-                      className="space-y-4"
-                    >
-                      <div className="space-y-1">
-                        <h3 className="text-lg font-heading font-black uppercase text-white tracking-wide">
-                          3. CHOOSE FROM 10 GOD-LEVEL BATTLE BANNERS
-                        </h3>
-                        <p className="text-xs text-slate-300 font-sans">
-                          Click any banner to equip it on your card with instant visual aura.
-                        </p>
-                      </div>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                        {GOD_LEVEL_BANNERS.map((bn) => {
-                          const isSelected = selectedBannerId === bn.id;
-                          const Icon = bn.icon;
-                          return (
-                            <button
-                              key={bn.id}
-                              type="button"
-                              onClick={() => {
-                                soundFx.playClick();
-                                setSelectedBannerId(bn.id);
-                                triggerAutoSave({ bannerId: bn.id });
-                              }}
-                              className={`p-4 rounded-2xl border text-left transition-all cursor-pointer relative overflow-hidden ${
-                                isSelected
-                                  ? "bg-cyan-500/20 border-cyan-400 shadow-[0_0_30px_rgba(0,240,255,0.4)] scale-102"
-                                  : "bg-[#02050E]/80 border-white/10 hover:border-cyan-500/30 hover:scale-[1.01]"
-                              }`}
-                            >
-                              <div className={`h-12 w-full rounded-xl ${bn.bgClass} mb-3 p-2.5 flex items-center justify-between shadow-lg`}>
-                                <div className="px-2.5 py-0.5 rounded-full bg-black/70 text-white font-mono text-[9px] font-black uppercase">
-                                  {bn.tag}
-                                </div>
-                                <Icon className="size-4 text-white drop-shadow-[0_0_8px_white]" />
-                              </div>
-
-                              <div className="text-xs font-heading font-black uppercase text-white">
-                                {bn.name}
-                              </div>
-                              <div className="text-[10px] font-mono text-slate-400">
-                                {bn.subtitle}
-                              </div>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                {/* STEP NAVIGATION BUTTONS */}
-                <div className="pt-6 mt-6 border-t border-white/10 flex items-center justify-between gap-4">
-                  <div>
-                    {currentStep > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => goToStep(currentStep - 1)}
-                        className="px-5 py-3 rounded-2xl bg-white/5 border border-white/15 text-slate-300 hover:text-white text-xs font-mono font-bold flex items-center gap-2 transition-all cursor-pointer"
-                      >
-                        <ArrowLeft className="size-4" />
-                        <span>PREVIOUS</span>
-                      </button>
-                    )}
-                  </div>
-
-                  <div>
-                    {currentStep < 3 ? (
-                      <button
-                        type="button"
-                        onClick={() => goToStep(currentStep + 1)}
-                        className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-500 text-black font-heading font-black text-xs uppercase tracking-wider flex items-center gap-2 shadow-lg shadow-cyan-500/30 hover:scale-105 active:scale-95 transition-all cursor-pointer"
-                      >
-                        <span>NEXT STEP</span>
-                        <ArrowRight className="size-4" />
-                      </button>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={handleSaveAndComplete}
-                        disabled={saving}
-                        className="px-8 py-3.5 rounded-2xl bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-600 text-black font-heading font-black text-xs uppercase tracking-wider flex items-center gap-2 shadow-[0_0_40px_rgba(0,240,255,0.6)] hover:scale-105 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
-                      >
-                        {saving ? (
-                          <span>SAVING DRAGONID...</span>
-                        ) : (
-                          <>
-                            <Zap className="size-4" />
-                            <span>SAVE & SHOW DRAGONID →</span>
-                          </>
-                        )}
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </main>
-          </>
-        )}
-      </div>
+          {/* Bottom Submit Action */}
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/10">
+            <button
+              type="button"
+              onClick={handleSaveAndActivate}
+              disabled={saving}
+              className="w-full sm:w-auto min-h-[48px] px-8 py-3.5 rounded-xl bg-gradient-to-r from-[#00E5FF] via-[#1685FF] to-[#7C3CFF] text-[#020617] text-xs font-mono font-black uppercase tracking-widest shadow-[0_0_30px_rgba(0,229,255,0.5)] hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2"
+            >
+              <span>{saving ? "FORGING IDENTITY..." : "INITIALIZE & ACTIVATE DRAGON ID →"}</span>
+              <ArrowRight className="size-4 text-[#020617]" />
+            </button>
+          </div>
+        </motion.div>
+      </motion.div>
     </AnimatePresence>
   );
 }

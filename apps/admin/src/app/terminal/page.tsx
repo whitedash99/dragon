@@ -489,7 +489,7 @@ function TerminalWorkspaceContent() {
   const promptRiskMeta = getRiskIndicator(currentInputRisk);
 
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans select-none">
+    <div className="flex min-h-screen w-full bg-[#02040A] text-slate-100 font-sans antialiased overflow-hidden select-none font-mono">
       <Sidebar />
 
       <div className="flex-1 flex flex-col min-w-0">

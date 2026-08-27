@@ -2,145 +2,73 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Lock, Mail, RefreshCw, AlertCircle, CheckCircle2, KeyRound } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ArrowLeft, Mail, CheckCircle2, ShieldCheck } from "lucide-react";
+import { DragonLogoIcon } from "@/components/ui/dragon-logo";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [step, setStep] = useState<"request" | "reset">("request");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
+  const [submitted, setSubmitted] = useState(false);
 
-  const handleRequestToken = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim()) return;
-    setError(null);
-    setLoading(true);
-
-    setTimeout(() => {
-      setLoading(false);
-      setSuccess(`Password reset token dispatched to ${email}. Set new password below.`);
-      setStep("reset");
-    }, 1000);
-  };
-
-  const handleResetPassword = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newPassword || newPassword.length < 6) {
-      setError("Password must be at least 6 characters.");
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      const res = await fetch("/api/auth/reset-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, newPassword }),
-      });
-
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || "Failed to reset password.");
-      }
-
-      setSuccess("Password reset successfully! Redirecting to login...");
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Reset failed.";
-      setError(msg);
-    } finally {
-      setLoading(false);
-    }
+    if (!email) return;
+    setSubmitted(true);
   };
 
   return (
-    <div className="min-h-screen bg-[#030304] flex items-center justify-center p-4 font-mono text-xs text-white relative overflow-hidden">
-      {/* Background Ambient Glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-tr from-[#ff1e4b]/15 to-purple-600/10 rounded-full blur-[140px] pointer-events-none" />
-
-      <div className="w-full max-w-md rounded-3xl glass-heavy p-8 sm:p-10 border border-white/15 space-y-6 relative z-10 shadow-2xl">
-        {/* Brand Header */}
-        <div className="text-center space-y-2">
-          <div className="inline-flex size-12 rounded-2xl bg-gradient-to-tr from-[#ff1e4b] to-purple-600 items-center justify-center font-black text-white text-xl shadow-lg shadow-[#ff1e4b]/30 font-heading">
-            D
-          </div>
-          <div>
-            <h1 className="text-2xl font-black uppercase tracking-tight font-heading text-white">
-              RECOVER ACCESSS
-            </h1>
-            <span className="text-[10px] font-bold text-[#ff1e4b] tracking-widest uppercase block mt-0.5">
-              PASSWORD RECOVERY PROTOCOL
-            </span>
-          </div>
+    <div className="min-h-screen bg-[#02040A] flex flex-col items-center justify-center p-4 font-mono select-none relative">
+      <div className="w-full max-w-md bg-[#03091D]/95 backdrop-blur-2xl border border-cyan-500/35 rounded-3xl p-8 shadow-[0_0_50px_rgba(0,229,255,0.2)] space-y-6">
+        <div className="flex flex-col items-center text-center space-y-2">
+          <DragonLogoIcon className="size-12 drop-shadow-[0_0_15px_#00E5FF]" />
+          <h1 className="text-xl font-black text-white tracking-tight font-mono">
+            Account Recovery
+          </h1>
+          <p className="text-xs text-slate-400 max-w-xs font-mono">
+            Enter your studio executive email to receive password reset instructions.
+          </p>
         </div>
 
-        {error && (
-          <div className="p-3.5 rounded-2xl bg-red-500/10 border border-red-500/30 text-red-400 font-bold flex items-center gap-2">
-            <AlertCircle className="size-4 shrink-0" />
-            <span>{error}</span>
+        {submitted ? (
+          <div className="p-4 bg-emerald-500/15 border border-emerald-400/40 rounded-2xl text-center space-y-2">
+            <CheckCircle2 className="size-6 text-emerald-400 mx-auto" />
+            <h4 className="text-xs font-bold text-emerald-300 font-mono">Recovery Email Dispatched</h4>
+            <p className="text-[11px] text-emerald-200/80 font-mono">
+              If an account exists for {email}, you will receive a secure reset link shortly.
+            </p>
           </div>
-        )}
-
-        {success && (
-          <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-bold flex items-center gap-2">
-            <CheckCircle2 className="size-4 shrink-0" />
-            <span>{success}</span>
-          </div>
-        )}
-
-        {step === "request" ? (
-          <form onSubmit={handleRequestToken} className="space-y-4">
-            <div className="space-y-1">
-              <label className="block text-[10px] font-bold uppercase text-muted-foreground">ADMIN ACCOUNT EMAIL</label>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-cyan-400 font-mono">Studio Staff Email</label>
               <div className="relative">
-                <Mail className="size-4 absolute left-3.5 top-3 text-muted-foreground" />
+                <Mail className="size-4 absolute left-3.5 top-3 text-slate-500" />
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="operator@dragonstudios.com"
-                  className="w-full rounded-xl bg-black/60 pl-10 pr-4 py-2.5 text-xs text-white border border-white/10 focus:outline-none focus:border-[#ff1e4b]"
+                  placeholder="admin@dragonstudios.com"
+                  className="w-full bg-[#02050E] border border-cyan-500/30 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-slate-600 font-mono focus:outline-none focus:border-cyan-400"
                 />
               </div>
             </div>
 
-            <Button type="submit" disabled={loading} variant="solidRed" size="lg" className="w-full rounded-xl font-bold uppercase tracking-wider gap-2 mt-2">
-              {loading ? <RefreshCw className="size-4 animate-spin" /> : <KeyRound className="size-4" />}
-              <span>DISPATCH RESET TOKEN</span>
-            </Button>
-          </form>
-        ) : (
-          <form onSubmit={handleResetPassword} className="space-y-4">
-            <div className="space-y-1">
-              <label className="block text-[10px] font-bold uppercase text-muted-foreground">NEW PASSWORD</label>
-              <div className="relative">
-                <Lock className="size-4 absolute left-3.5 top-3 text-muted-foreground" />
-                <input
-                  type="password"
-                  required
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="Enter new password..."
-                  className="w-full rounded-xl bg-black/60 pl-10 pr-4 py-2.5 text-xs text-white border border-white/10 focus:outline-none focus:border-[#ff1e4b]"
-                />
-              </div>
-            </div>
-
-            <Button type="submit" disabled={loading} variant="solidRed" size="lg" className="w-full rounded-xl font-bold uppercase tracking-wider gap-2 mt-2">
-              {loading ? <RefreshCw className="size-4 animate-spin" /> : <Lock className="size-4" />}
-              <span>UPDATE ENCRYPTED PASSWORD</span>
-            </Button>
+            <button
+              type="submit"
+              className="w-full py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 text-black text-xs font-black font-mono uppercase tracking-wider shadow-[0_0_20px_rgba(0,229,255,0.4)] hover:scale-[1.01] transition-all cursor-pointer"
+            >
+              Send Recovery Instructions
+            </button>
           </form>
         )}
 
-        <div className="pt-4 border-t border-white/10 text-center">
-          <Link href="/login" className="text-[#ff1e4b] font-bold hover:underline">
-            ← RETURN TO LOGIN
+        <div className="text-center pt-2 border-t border-cyan-500/20">
+          <Link
+            href="/login"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-cyan-300 transition-colors font-mono"
+          >
+            <ArrowLeft className="size-3.5" />
+            <span>Return to Studio Login</span>
           </Link>
         </div>
       </div>

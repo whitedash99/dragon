@@ -2,10 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Send, Check, Twitter, Youtube } from "lucide-react";
+import { Send, Check, Twitter, Youtube, ArrowUpRight } from "lucide-react";
 import { OFFICIAL_SOCIALS } from "@/lib/site";
 import { Button } from "@/components/ui/button";
-import { WhatsAppIcon, ThreadsIcon } from "@/components/ui/social-icons";
+import { WhatsAppIcon, ThreadsIcon, XIcon, DiscordIcon } from "@/components/ui/social-icons";
+
+import { getClientCmsBlocks } from "@/lib/client-cms-cache";
 
 export default function Community() {
   const [email, setEmail] = useState("");
@@ -14,28 +16,23 @@ export default function Community() {
   const [cmsText, setCmsText] = useState({
     eyebrow: "JOIN THE COMMUNITY",
     title: "SHAPE THE FUTURE OF GAMING WORLDS",
-    subheadline: "Connect with our engineering leads, participate in closed pre-alpha playtests, and help influence design decisions inside official Dragon Studios channels.",
+    subheadline: "Connect with our engineering leads, participate in closed playtests, and follow official Dragon Studios channels.",
     youtubeCta: "SUBSCRIBE ON YOUTUBE",
     xCta: "FOLLOW ON X",
   });
 
   useEffect(() => {
-    fetch("/api/admin/content")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success && Array.isArray(data.blocks)) {
-          const map: Record<string, string> = {};
-          data.blocks.forEach((b: any) => { map[b.key] = b.content; });
-          setCmsText({
-            eyebrow: map["community.eyebrow"] || "JOIN THE COMMUNITY",
-            title: map["community.title"] || "SHAPE THE FUTURE OF GAMING WORLDS",
-            subheadline: map["community.subheadline"] || "Connect with our engineering leads, participate in closed pre-alpha playtests.",
-            youtubeCta: map["community.youtube_cta"] || "SUBSCRIBE ON YOUTUBE",
-            xCta: map["community.x_cta"] || "FOLLOW ON X",
-          });
-        }
-      })
-      .catch(() => {});
+    getClientCmsBlocks().then((map) => {
+      if (Object.keys(map).length > 0) {
+        setCmsText({
+          eyebrow: map["community.eyebrow"] || "JOIN THE COMMUNITY",
+          title: map["community.title"] || "SHAPE THE FUTURE OF GAMING WORLDS",
+          subheadline: map["community.subheadline"] || "Connect with our engineering leads, participate in closed playtests.",
+          youtubeCta: map["community.youtube_cta"] || "SUBSCRIBE ON YOUTUBE",
+          xCta: map["community.x_cta"] || "FOLLOW ON X",
+        });
+      }
+    });
   }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -53,23 +50,23 @@ export default function Community() {
     <section
       id="community"
       aria-labelledby="community-cta-heading"
-      className="relative py-24 lg:py-36 overflow-hidden bg-[#040812]"
+      className="relative pt-4 pb-16 sm:pt-6 sm:pb-24 overflow-hidden bg-transparent"
     >
-      {/* Background glow */}
+      {/* Ambient Cyan + Emerald Section Lighting */}
       <div 
         aria-hidden="true" 
-        className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[800px] rounded-full bg-gradient-to-r from-blue-600/10 via-cyan-500/10 to-transparent blur-[200px]" 
+        className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[800px] rounded-full bg-gradient-to-r from-cyan-500/10 via-emerald-500/10 to-teal-500/10 blur-[200px]" 
       />
 
-      <div className="container-site relative z-10">
-        {/* Main CTA Banner */}
-        <div className="relative rounded-3xl border border-blue-500/20 p-10 sm:p-16 overflow-hidden text-center bg-gradient-to-br from-[#0B132B]/90 via-[#060B18]/95 to-[#040812] shadow-2xl space-y-8">
+      <div className="container-site relative z-10 px-4 sm:px-6">
+        {/* Main CTA Panel */}
+        <div className="relative rounded-3xl bg-[#03091D]/90 border border-cyan-500/30 p-6 sm:p-12 overflow-hidden text-center shadow-[0_0_40px_rgba(0,229,255,0.15)] space-y-6">
           <div 
             aria-hidden="true" 
-            className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_20px_#38bdf8]" 
+            className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-400/50 via-emerald-400/40 to-transparent" 
           />
 
-          <div className="max-w-3xl mx-auto space-y-4">
+          <div className="max-w-3xl mx-auto space-y-3">
             <span data-cms-key="community.eyebrow" className="text-xs font-mono font-bold uppercase tracking-[0.2em] text-cyan-400">
               {cmsText.eyebrow}
             </span>
@@ -77,10 +74,10 @@ export default function Community() {
             <h2
               id="community-cta-heading"
               data-cms-key="community.title"
-              className="text-4xl font-black uppercase tracking-tight sm:text-5xl lg:text-6xl text-white leading-[0.95]"
+              className="text-2xl sm:text-5xl font-black uppercase tracking-tight text-white leading-tight font-heading"
             >
               {cmsText.title.includes("GAMING") || cmsText.title.includes("Gaming") ? (
-                <>SHAPE THE FUTURE OF <br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-400 to-sky-300">GAMING WORLDS</span></>
+                <>SHAPE THE FUTURE OF <br className="hidden sm:inline" /><span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-teal-300 to-emerald-400">GAMING WORLDS</span></>
               ) : (
                 cmsText.title
               )}
@@ -90,14 +87,13 @@ export default function Community() {
               {cmsText.subheadline}
             </p>
 
-            {/* Actions */}
-            <div className="pt-6 flex flex-col items-center gap-6">
-              {/* Primary CTAs */}
-              <div className="flex flex-wrap items-center justify-center gap-3">
+            {/* Official Channel Actions */}
+            <div className="pt-4 flex flex-col items-center gap-6">
+              <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 w-full">
                 <Button
                   variant="default"
-                  size="lg"
-                  className="rounded-xl gap-2 px-6 text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-mono font-bold"
+                  size="sm"
+                  className="min-h-[44px] rounded-2xl gap-2 px-5 text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-mono font-bold shadow-md transition-all active:scale-95 w-full xs:w-auto"
                   asChild
                 >
                   <a href={OFFICIAL_SOCIALS.whatsapp.href} target="_blank" rel="noopener noreferrer">
@@ -108,8 +104,8 @@ export default function Community() {
 
                 <Button
                   variant="outline"
-                  size="lg"
-                  className="rounded-xl gap-2 px-6 text-xs border-cyan-500/40 hover:border-cyan-400 font-mono font-bold"
+                  size="sm"
+                  className="min-h-[44px] rounded-2xl gap-2 px-5 text-xs border-cyan-500/40 hover:border-cyan-300 text-cyan-300 hover:bg-cyan-500/10 font-mono font-bold transition-all active:scale-95 w-full xs:w-auto"
                   asChild
                 >
                   <a href={OFFICIAL_SOCIALS.threads.href} target="_blank" rel="noopener noreferrer">
@@ -120,58 +116,58 @@ export default function Community() {
 
                 <Button
                   variant="outline"
-                  size="lg"
-                  className="rounded-xl gap-2 px-6 text-xs border-slate-700/80 hover:border-red-500 font-mono font-bold"
+                  size="sm"
+                  className="min-h-[44px] rounded-2xl gap-2 px-5 text-xs border-rose-500/40 hover:border-rose-400 text-rose-300 hover:bg-rose-500/10 font-mono font-bold transition-all active:scale-95 w-full xs:w-auto"
                   asChild
                 >
                   <a href={OFFICIAL_SOCIALS.youtube.href} target="_blank" rel="noopener noreferrer">
-                    <Youtube className="size-4 text-red-400" />
+                    <Youtube className="size-4 text-rose-400" />
                     <span>YOUTUBE</span>
                   </a>
                 </Button>
 
                 <Button
                   variant="outline"
-                  size="lg"
-                  className="rounded-xl gap-2 px-6 text-xs border-slate-700/80 hover:border-sky-400 font-mono font-bold"
+                  size="sm"
+                  className="min-h-[44px] rounded-2xl gap-2 px-5 text-xs border-sky-500/40 hover:border-sky-300 text-sky-300 hover:bg-sky-500/10 font-mono font-bold transition-all active:scale-95 w-full xs:w-auto"
                   asChild
                 >
                   <a href={OFFICIAL_SOCIALS.x.href} target="_blank" rel="noopener noreferrer">
-                    <Twitter className="size-4 text-sky-400" />
+                    <XIcon className="size-4 text-sky-400" />
                     <span>X (TWITTER)</span>
                   </a>
                 </Button>
               </div>
 
-              {/* Newsletter */}
+              {/* Newsletter Form */}
               <div className="w-full max-w-md pt-2">
                 {submitted ? (
                   <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="flex items-center justify-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/15 p-3.5 text-emerald-300 font-mono text-xs font-bold"
+                    className="flex items-center justify-center gap-2 rounded-2xl border border-emerald-500/40 bg-emerald-500/20 p-3.5 text-emerald-300 font-mono text-xs font-bold"
                   >
                     <Check className="size-4 text-emerald-400" />
                     <span>SUBSCRIBED TO DRAGON DISPATCH!</span>
                   </motion.div>
                 ) : (
-                  <form onSubmit={handleSubmit} className="relative flex items-center">
+                  <form onSubmit={handleSubmit} className="relative flex items-center w-full">
                     <input
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Enter your email address..."
+                      placeholder="Enter email address..."
                       required
-                      className="w-full rounded-xl bg-[#060B18] px-5 py-3.5 pr-32 text-xs text-white placeholder:text-slate-500 border border-slate-700 focus:outline-none focus:border-blue-500 font-mono shadow-inner"
+                      className="w-full rounded-2xl bg-black/60 px-4 py-3.5 pr-28 sm:pr-32 text-xs text-white placeholder:text-slate-500 border border-cyan-500/30 focus:outline-none focus:border-cyan-400 font-mono shadow-inner min-h-[44px]"
                     />
                     <Button
                       type="submit"
                       disabled={loading}
                       variant="glow"
                       size="sm"
-                      className="absolute right-1.5 rounded-lg px-4 py-1.5 gap-1.5 text-xs h-9"
+                      className="absolute right-1.5 rounded-xl px-4 py-2 text-xs h-9 bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-black active:scale-95 cursor-pointer"
                     >
-                      {loading ? "Sending..." : "SUBSCRIBE"}
+                      {loading ? "..." : "SUBSCRIBE"}
                     </Button>
                   </form>
                 )}

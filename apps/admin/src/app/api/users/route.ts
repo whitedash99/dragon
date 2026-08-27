@@ -88,8 +88,33 @@ export async function GET(req: NextRequest) {
       const passkeys = passkeysByUserId.get(u.id) || [];
       const sessions = sessionsByUserId.get(u.id) || [];
       const userAuditLogs = auditByUserId.get(u.id) || [];
+      
+      let parsedProfile = null;
+      if (u.profile) {
+        let meta: any = {};
+        if (u.profile.notificationSettings) {
+          try {
+            meta = JSON.parse(u.profile.notificationSettings);
+          } catch {
+            meta = {};
+          }
+        }
+        parsedProfile = {
+          ...u.profile,
+          dragonId: meta.gamerTag || (u.name ? u.name.replace(/\s+/g, "_") : undefined),
+          title: meta.primaryTitle || (u.role === "OWNER" ? "Grand Master" : "Dragon Operative"),
+          tagline: u.profile.bio || meta.bio,
+          level: u.role === "OWNER" ? 99 : 1,
+          avatarUrl: meta.avatarUrl || meta.avatarId || u.avatar || u.image,
+          bannerUrl: meta.bannerUrl,
+          hasCompletedWelcome: Boolean(meta.hasCompletedWelcome),
+          hasForgedDragonId: Boolean(meta.hasCompletedDragonId || meta.gamerTag),
+        };
+      }
+
       return {
         ...u,
+        profile: parsedProfile,
         passkeys,
         sessions,
         auditLogs: userAuditLogs,

@@ -16,18 +16,14 @@ export default function TrackTicketPage() {
 
   const handleTrack = (e: React.FormEvent) => {
     e.preventDefault();
-    const cleanId = ticketIdInput.trim().toUpperCase();
-    if (!cleanId) {
-      setError("Please enter a valid Ticket Reference ID.");
+    const cleanQuery = ticketIdInput.trim();
+    if (!cleanQuery) {
+      setError("Please enter a valid Ticket Reference ID or Email.");
       return;
     }
 
-    if (!cleanId.startsWith("DRG-")) {
-      setError("Ticket ID format should start with DRG- (e.g. DRG-2026-000001)");
-      return;
-    }
-
-    router.push(`/support/${cleanId}`);
+    // Direct route to support tracking
+    router.push(`/support/${encodeURIComponent(cleanQuery)}`);
   };
 
   return (
@@ -36,25 +32,25 @@ export default function TrackTicketPage() {
 
       <main className="container-site relative z-10 py-32 max-w-3xl mx-auto space-y-8 font-sans">
         <div className="text-center space-y-3">
-          <div className="inline-flex items-center gap-2 rounded-full bg-dragon-500/10 px-4 py-1.5 text-xs font-mono font-bold text-dragon-300 border border-dragon-500/20">
+          <div className="inline-flex items-center gap-2 rounded-full bg-cyan-500/10 px-4 py-1.5 text-xs font-mono font-bold text-cyan-300 border border-cyan-500/30 shadow-[0_0_15px_rgba(0,229,255,0.2)]">
             <ShieldCheck className="size-3.5" />
-            <span>REAL-TIME CUSTOMER SUPPORT TRACKER</span>
+            <span>REAL-TIME SUPPORT TICKET TRACKER</span>
           </div>
-          <h1 className="text-4xl font-black uppercase text-white tracking-tight sm:text-5xl">
+          <h1 className="text-4xl font-black uppercase text-white tracking-tight sm:text-5xl font-heading">
             TRACK YOUR SUPPORT TICKET
           </h1>
-          <p className="text-sm text-muted-foreground max-w-lg mx-auto leading-relaxed">
-            Enter your unique support reference number to check live status updates, response timelines, and communicate directly with Dragon Studios engineers.
+          <p className="text-sm text-slate-300 max-w-lg mx-auto leading-relaxed">
+            Enter your ticket reference ID (e.g. <strong className="text-cyan-300 font-mono">DRG-2026-XXXXXX</strong>) or your registered email address to check live status updates, review response timelines, and communicate directly with the Dragon Studios engineering team.
           </p>
         </div>
 
-        <form onSubmit={handleTrack} className="rounded-3xl glass-heavy p-8 border border-white/15 space-y-6 shadow-2xl">
+        <form onSubmit={handleTrack} className="rounded-3xl bg-[#03091D]/90 p-8 border border-cyan-500/30 space-y-6 shadow-[0_0_50px_rgba(0,229,255,0.15)] backdrop-blur-2xl">
           <div className="space-y-2">
-            <label className="text-xs font-mono font-bold uppercase text-white tracking-wider block">
-              TICKET REFERENCE NUMBER
+            <label className="text-xs font-mono font-bold uppercase text-slate-200 tracking-wider block">
+              TICKET REFERENCE NUMBER OR EMAIL
             </label>
             <div className="relative">
-              <Ticket className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-dragon-400" />
+              <Ticket className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-cyan-400" />
               <input
                 type="text"
                 required
@@ -63,25 +59,25 @@ export default function TrackTicketPage() {
                   setTicketIdInput(e.target.value);
                   setError(null);
                 }}
-                placeholder="e.g. DRG-2026-000001"
-                className="w-full rounded-2xl bg-black/60 px-4 py-4 pl-12 font-mono text-sm text-white placeholder:text-muted-foreground border border-white/10 focus:outline-none focus:border-dragon-400 focus:ring-1 focus:ring-dragon-400"
+                placeholder="e.g. DRG-2026-123456 or operative@email.com"
+                className="w-full rounded-2xl bg-black/70 px-4 py-4 pl-12 font-mono text-sm text-white placeholder:text-slate-500 border border-cyan-500/30 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
               />
             </div>
-            {error && <p className="text-xs font-mono text-red-400 pt-1">{error}</p>}
+            {error && <p className="text-xs font-mono text-rose-400 pt-1">{error}</p>}
           </div>
 
-          <Button type="submit" variant="glow" size="lg" className="w-full rounded-2xl gap-2 font-bold tracking-wider uppercase">
+          <Button type="submit" variant="glow" size="lg" className="w-full rounded-2xl gap-2 font-bold tracking-wider uppercase bg-gradient-to-r from-cyan-400 to-blue-500 text-black shadow-[0_0_25px_rgba(0,229,255,0.4)]">
             <Search className="size-4" />
-            <span>LOCATE TICKET SPECIFICATIONS</span>
+            <span>LOCATE TICKET STATUS</span>
             <ArrowRight className="size-4" />
           </Button>
 
-          <div className="pt-4 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono text-muted-foreground">
+          <div className="pt-4 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono text-slate-400">
             <div className="flex items-center gap-2">
-              <HelpCircle className="size-4 text-dragon-400" />
-              <span>Lost your reference number? Check your confirmation email.</span>
+              <HelpCircle className="size-4 text-cyan-400" />
+              <span>Reference number sent to your inbox upon ticket submission.</span>
             </div>
-            <Link href="/contact" className="text-dragon-300 hover:underline">
+            <Link href="/contact" className="text-cyan-300 hover:underline">
               Submit New Inquiry →
             </Link>
           </div>

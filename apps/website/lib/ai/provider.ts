@@ -66,19 +66,19 @@ export class GeminiDragonAiProvider implements AiProviderInterface {
     const lower = lastUserMsg.toLowerCase();
 
     if (lower.includes("recommend") || lower.includes("play") || lower.includes("game")) {
-      reply = "Based on your playstyle metrics, I highly recommend **Embers of Valyria** if you enjoy rich ARPG combat and dragon lore, or **Neon Drift: Overdrive** for high-velocity cyberpunk racing.";
+      reply = "I highly recommend **UNCHARTED DRIVE: BEYOND**, our flagship next-generation open road driving simulation featuring majestic mountain horizons, golden sunsets, and ultra-responsive vehicle dynamics.";
       actions = [
-        { label: "View Embers of Valyria", action: "navigate", href: "/games/embers-of-valyria" },
-        { label: "View Neon Drift", action: "navigate", href: "/games/neon-drift" },
+        { label: "View Uncharted Drive: Beyond", action: "navigate", href: "/games/uncharted-drive-beyond" },
+        { label: "Download PC / Android Builds", action: "navigate", href: "/downloads" },
       ];
     } else if (lower.includes("engine") || lower.includes("dragon engine")) {
       reply = "Dragon Engine features proprietary low-latency netcode, real-time volumetric fog, dynamic global illumination, and 120 FPS high-refresh rate physics loops.";
       actions = [{ label: "Explore Engine Tech", action: "navigate", href: "/studio" }];
     } else if (lower.includes("download") || lower.includes("launcher")) {
-      reply = "You can download the official Dragon Launcher for Windows 11/10 to keep your games patched with optimized patch delivery.";
+      reply = "You can download UNCHARTED DRIVE: BEYOND directly for Windows (.exe) and Android (.apk) with secure edge streams.";
       actions = [{ label: "Open Downloads Center", action: "navigate", href: "/downloads" }];
     } else if (lower.includes("career") || lower.includes("job") || lower.includes("hiring")) {
-      reply = "Dragon Studios is currently hiring across our Bengaluru, Montreal, and London campuses for Principal Engine Engineers, Senior 3D Artists, and AI Gameplay Programmers.";
+      reply = "Dragon Studios is hiring 100% globally remote engineers, technical artists, and audio architects to build our next-generation gaming startup.";
       actions = [{ label: "View Open Positions", action: "navigate", href: "/careers" }];
     }
 

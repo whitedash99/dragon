@@ -50,20 +50,27 @@
   --color-dragon-900: #1e3a8a;
   --color-dragon-950: #0a1128;
 
-  /* ── Luminous Accents ── */
-  --color-neon-blue: #38bdf8;
-  --color-neon-purple: #818cf8;
-  --color-neon-pink: #38bdf8;
-  --color-neon-cyan: #22d3ee;
+  /* ── Luminous Neon Multi-Color Spectrum ── */
+  --color-neon-cyan: #00f0ff;
+  --color-neon-blue: #2979ff;
+  --color-neon-purple: #8b5cf6;
+  --color-neon-violet: #a855f7;
+  --color-neon-magenta: #ff007f;
+  --color-neon-pink: #ff2bd6;
+  --color-neon-gold: #ffb800;
+  --color-neon-amber: #ff9100;
+  --color-neon-emerald: #00ff88;
+  --color-neon-green: #10b981;
+  --color-neon-teal: #00f5d4;
 
-  /* ── Cyber Highlights (replacing gold/ember with radiant cyan & ice blue) ── */
-  --color-gold-400: #38bdf8;
-  --color-gold-500: #0ea5e9;
-  --color-gold-600: #0284c7;
+  /* ── Cyber Highlights ── */
+  --color-gold-400: #ffd54f;
+  --color-gold-500: #ffb800;
+  --color-gold-600: #ff8f00;
 
-  --color-ember-400: #60a5fa;
-  --color-ember-500: #3b82f6;
-  --color-ember-600: #2563eb;
+  --color-ember-400: #f43f5e;
+  --color-ember-500: #e11d48;
+  --color-ember-600: #be123c;
 
   /* ── Slate — neutral deep obsidian ── */
   --color-slate-700: #334155;

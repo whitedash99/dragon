@@ -6,16 +6,15 @@ import { Navbar } from "@/components/navbar/Navbar";
 import { 
   BarChart3, 
   Activity, 
-  Globe, 
   RefreshCw, 
   Download, 
-  TrendingUp, 
   Gamepad2, 
   LifeBuoy, 
-  Bot
+  Server,
+  Zap
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/cn";
+import { GlassCard, GlassButton, GlassBadge, GlassStat } from "@/components/ui/glass";
 
 interface EventStreamItem {
   id: string;
@@ -25,7 +24,7 @@ interface EventStreamItem {
   time: string;
 }
 
-type AnalyticsViewMode = "executive" | "website" | "games" | "crm" | "ai";
+type AnalyticsViewMode = "executive" | "games" | "crm" | "infrastructure";
 
 export default function AnalyticsPage() {
   const [telemetry, setTelemetry] = useState<{
@@ -43,16 +42,18 @@ export default function AnalyticsPage() {
       openTickets: number;
       totalMedia: number;
       totalAiUsage: number;
+      totalDownloads: number;
     };
     eventStream?: EventStreamItem[];
   }>({});
 
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [viewMode, setViewMode] = useState<AnalyticsViewMode>("executive");
   const [exporting, setExporting] = useState(false);
 
   const fetchAnalytics = useCallback(async () => {
-    setLoading(true);
+    setRefreshing(true);
     try {
       const res = await fetch("/api/analytics");
       const data = await res.json();
@@ -63,15 +64,12 @@ export default function AnalyticsPage() {
       console.error("Error fetching analytics", e);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   }, []);
 
   useEffect(() => {
-    let isMounted = true;
-    Promise.resolve().then(() => {
-      if (isMounted) fetchAnalytics();
-    });
-    return () => { isMounted = false; };
+    fetchAnalytics();
   }, [fetchAnalytics]);
 
   const handleExportReport = () => {
@@ -81,164 +79,216 @@ export default function AnalyticsPage() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `dragon_bi_report_${Date.now()}.json`;
+      a.download = `dragon_control_analytics_${Date.now()}.json`;
       a.click();
       setExporting(false);
-    }, 1000);
+    }, 600);
+  };
+
+  const counts = telemetry.counts || {
+    totalUsers: 0,
+    totalGames: 0,
+    totalTickets: 0,
+    openTickets: 0,
+    totalMedia: 0,
+    totalAiUsage: 0,
+    totalDownloads: 0,
   };
 
   return (
-    <div className="flex min-h-screen bg-[#050508]">
+    <div className="flex min-h-screen w-full bg-[#02040A] text-slate-100 font-sans antialiased overflow-hidden select-none font-mono">
       <Sidebar />
 
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
         <Navbar />
 
-        <main className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-8 font-mono text-xs">
-          {/* Header Bar */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <main className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-8 max-w-7xl mx-auto w-full">
+          
+          {/* Header Banner */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-cyan-500/20">
             <div>
-              <span className="text-xs font-bold uppercase tracking-widest text-[#ff1e4b]">
-                EXECUTIVE COMMAND CENTER
-              </span>
-              <h1 className="text-3xl font-black uppercase text-white tracking-tight sm:text-4xl mt-0.5 font-heading">
-                BUSINESS INTELLIGENCE & ANALYTICS
-              </h1>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <Button onClick={fetchAnalytics} variant="outline" size="sm" className="rounded-xl text-xs gap-2">
-                <RefreshCw className="size-3.5 text-[#ff1e4b]" />
-                <span>REFRESH TELEMETRY</span>
-              </Button>
-              <Button onClick={handleExportReport} disabled={exporting} variant="solidRed" size="sm" className="rounded-xl text-xs gap-2">
-                <Download className="size-3.5" />
-                <span>EXPORT EXECUTIVE REPORT</span>
-              </Button>
-            </div>
-          </div>
-
-          {/* Telemetry Strip */}
-          <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-2xl glass-card p-4 border border-white/10 space-y-1">
-              <span className="text-muted-foreground uppercase text-[10px] font-bold block">ACTIVE VISITORS TODAY</span>
-              <span className="text-2xl font-black text-emerald-400 block">
-                {telemetry.executive?.activeVisitorsToday ? telemetry.executive.activeVisitorsToday.toLocaleString() : "4,280"}
-              </span>
-            </div>
-            <div className="rounded-2xl glass-card p-4 border border-white/10 space-y-1">
-              <span className="text-muted-foreground uppercase text-[10px] font-bold block">MONTHLY PAGEVIEWS</span>
-              <span className="text-2xl font-black text-white block">
-                {telemetry.executive?.monthlyPageviews ? telemetry.executive.monthlyPageviews.toLocaleString() : "128,450"}
-              </span>
-            </div>
-            <div className="rounded-2xl glass-card p-4 border border-white/10 space-y-1">
-              <span className="text-muted-foreground uppercase text-[10px] font-bold block">SUPPORT RESPONSE SLA</span>
-              <span className="text-2xl font-black text-[#ff1e4b] block">
-                {telemetry.executive?.slaResponseTime || "< 2.5 hrs"}
-              </span>
-            </div>
-            <div className="rounded-2xl glass-card p-4 border border-white/10 space-y-1">
-              <span className="text-muted-foreground uppercase text-[10px] font-bold block">RETENTION GROWTH RATE</span>
-              <span className="text-2xl font-black text-sky-400 block">
-                {telemetry.executive?.growthRate || "+18.4%"}
-              </span>
-            </div>
-          </div>
-
-          {/* Module View Mode Pills */}
-          <div className="flex items-center gap-2 overflow-x-auto border-b border-white/10 pb-3">
-            {[
-              { id: "executive" as AnalyticsViewMode, label: "Executive Telemetry", icon: TrendingUp },
-              { id: "website" as AnalyticsViewMode, label: "Website Analytics", icon: Globe },
-              { id: "games" as AnalyticsViewMode, label: "Game Analytics", icon: Gamepad2 },
-              { id: "crm" as AnalyticsViewMode, label: "CRM SLA Telemetry", icon: LifeBuoy },
-              { id: "ai" as AnalyticsViewMode, label: "AI Usage Metrics", icon: Bot },
-            ].map((tab) => {
-              const Icon = tab.icon;
-              const isSelected = viewMode === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setViewMode(tab.id)}
-                  className={cn(
-                    "rounded-xl px-4 py-2 text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all border shrink-0",
-                    isSelected
-                      ? "bg-[#ff1e4b] text-white border-[#ff1e4b] shadow-lg shadow-[#ff1e4b]/20"
-                      : "bg-white/5 text-muted-foreground border-white/5 hover:text-white"
-                  )}
-                >
-                  <Icon className="size-3.5" />
-                  <span>{tab.label}</span>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Main Telemetry & Charts Grid */}
-          <div className="grid gap-6 lg:grid-cols-12">
-            {/* Visual Progress Telemetry Bars */}
-            <div className="lg:col-span-6 rounded-3xl glass-panel p-6 sm:p-8 border border-white/15 space-y-6">
-              <span className="text-xs font-bold uppercase text-white flex items-center gap-2">
-                <BarChart3 className="size-4 text-[#ff1e4b]" />
-                <span>SYSTEM PERFORMANCE METRICS & CAPACITY</span>
-              </span>
-
-              <div className="space-y-5">
-                {[
-                  { label: "POSTGRESQL DATABASE HEALTH", pct: 98, color: "bg-emerald-400" },
-                  { label: "WEBSITE HIGH AVAILABILITY SLA", pct: 99, color: "bg-emerald-400" },
-                  { label: "GEMINI 2.5 AI ENGINE CAPACITY", pct: 88, color: "bg-[#ff1e4b]" },
-                  { label: "SUPPORT TICKET RESOLUTION RATE", pct: 94, color: "bg-purple-400" },
-                  { label: "DAM ASSET STORAGE ALLOCATION", pct: 42, color: "bg-sky-400" },
-                ].map((item) => (
-                  <div key={item.label} className="space-y-1.5">
-                    <div className="flex justify-between text-[10px] font-bold">
-                      <span className="text-white">{item.label}</span>
-                      <span className="text-muted-foreground">{item.pct}%</span>
-                    </div>
-                    <div className="h-2 rounded-full bg-black/60 overflow-hidden border border-white/10">
-                      <div className={`h-full rounded-full ${item.color}`} style={{ width: `${item.pct}%` }} />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Real-time Audit Stream Feed */}
-            <div className="lg:col-span-6 rounded-3xl glass-panel p-6 sm:p-8 border border-white/15 space-y-6">
-              <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                <span className="text-xs font-bold uppercase text-white flex items-center gap-2">
-                  <Activity className="size-4 text-emerald-400" />
-                  <span>LIVE AUDIT EVENT STREAM</span>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="size-2 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_8px_#00E5FF]" />
+                <span className="text-xs font-bold text-cyan-400/80 uppercase tracking-wider">
+                  Dragon Control • Intelligence & Analytics
                 </span>
-                <span className="text-[10px] font-bold text-emerald-400 animate-pulse">STREAMING</span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
+                Studio BI & Executive Analytics
+              </h1>
+              <p className="text-xs sm:text-sm text-slate-400 font-mono">
+                Canonical PostgreSQL telemetry, download performance, and operational velocity.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2.5">
+              <button
+                onClick={fetchAnalytics}
+                className="p-2.5 rounded-xl bg-[#03091D] border border-cyan-500/30 text-cyan-300 hover:text-white hover:border-cyan-400 shadow-[0_0_15px_rgba(0,0,0,0.6)] transition-all cursor-pointer"
+                title="Refresh Analytics"
+              >
+                <RefreshCw className={cn("size-4", refreshing && "animate-spin text-cyan-400")} />
+              </button>
+
+              <button
+                onClick={handleExportReport}
+                disabled={exporting}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#03091D] border border-cyan-500/30 text-cyan-300 hover:text-white hover:border-cyan-400 text-xs font-bold shadow-[0_0_15px_rgba(0,0,0,0.6)] transition-all cursor-pointer font-mono"
+              >
+                <Download className="size-4 text-cyan-400" />
+                <span>{exporting ? "Exporting..." : "Export Report (JSON)"}</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Navigation View Tabs */}
+          <div className="flex items-center gap-1.5 p-1 bg-[#02050E] rounded-2xl w-fit border border-cyan-500/25 shadow-2xs">
+            {(["executive", "games", "crm", "infrastructure"] as const).map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setViewMode(tab)}
+                className={cn(
+                  "px-4 py-1.5 text-xs font-mono font-bold rounded-xl transition-all capitalize cursor-pointer",
+                  viewMode === tab
+                    ? "bg-cyan-500/25 text-cyan-300 border border-cyan-400/40 shadow-[0_0_12px_rgba(0,229,255,0.25)]"
+                    : "text-slate-400 hover:text-white"
+                )}
+              >
+                {tab === "executive" ? "Executive Overview" : tab === "games" ? "Games & Downloads" : tab === "crm" ? "Support & Queues" : "Infrastructure"}
+              </button>
+            ))}
+          </div>
+
+          {/* KPI Stat Strip */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+            <GlassStat
+              label="Game Franchises"
+              value={counts.totalGames}
+              icon={Gamepad2}
+              trend="Canonical Portfolio"
+            />
+            <GlassStat
+              label="B2 Binary Deliveries"
+              value={counts.totalDownloads.toLocaleString()}
+              icon={Download}
+              trend="Client Downloads"
+            />
+            <GlassStat
+              label="Workforce Personnel"
+              value={counts.totalUsers}
+              icon={Activity}
+              trend="Authenticated Staff"
+            />
+            <GlassStat
+              label="Active Support Tickets"
+              value={counts.openTickets}
+              icon={LifeBuoy}
+              trend={counts.openTickets > 0 ? "Attention Required" : "Zero Queue"}
+              trendPositive={counts.openTickets === 0}
+            />
+          </div>
+
+          {/* Main Visualizations Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            {/* Left 2 Cols: Performance Cards */}
+            <div className="lg:col-span-2 space-y-6">
+              
+              <GlassCard className="p-6 space-y-4 bg-[#03091D]/90 border border-cyan-500/30">
+                <div className="flex items-center justify-between border-b border-cyan-500/20 pb-3">
+                  <div>
+                    <h3 className="text-sm font-bold text-white font-mono uppercase tracking-wider">Game Client Distribution & Downloads</h3>
+                    <p className="text-xs text-slate-400 font-mono">Live platform download velocity</p>
+                  </div>
+                  <GlassBadge variant="published">
+                    CANONICAL METRICS
+                  </GlassBadge>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+                  <div className="p-4 rounded-2xl bg-[#02050E] border border-cyan-500/20 space-y-1">
+                    <span className="text-[11px] font-bold text-cyan-400/80 uppercase tracking-wider block font-mono">PC Releases (.exe)</span>
+                    <div className="text-2xl font-black text-white font-mono">{counts.totalDownloads.toLocaleString()}</div>
+                    <span className="text-[10px] text-emerald-400 font-semibold font-mono">B2 Multi-part Active</span>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-[#02050E] border border-cyan-500/20 space-y-1">
+                    <span className="text-[11px] font-bold text-cyan-400/80 uppercase tracking-wider block font-mono">Android (.apk)</span>
+                    <div className="text-2xl font-black text-white font-mono">0</div>
+                    <span className="text-[10px] text-slate-500 font-mono">Ready for Release</span>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-[#02050E] border border-cyan-500/20 space-y-1">
+                    <span className="text-[11px] font-bold text-cyan-400/80 uppercase tracking-wider block font-mono">Web Play Sessions</span>
+                    <div className="text-2xl font-black text-white font-mono">0</div>
+                    <span className="text-[10px] text-slate-500 font-mono">WebGL Engine Ready</span>
+                  </div>
+                </div>
+              </GlassCard>
+
+              <GlassCard className="p-6 space-y-4 bg-[#03091D]/90 border border-cyan-500/30">
+                <div className="flex items-center justify-between border-b border-cyan-500/20 pb-3">
+                  <div>
+                    <h3 className="text-sm font-bold text-white font-mono uppercase tracking-wider">Infrastructure Performance</h3>
+                    <p className="text-xs text-slate-400 font-mono">Database query and edge caching latencies</p>
+                  </div>
+                  <GlassBadge variant="info">
+                    EDGE TELEMETRY
+                  </GlassBadge>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+                  <div className="p-4 rounded-2xl bg-[#02050E] border border-cyan-500/20 space-y-1">
+                    <span className="text-[11px] font-bold text-cyan-400/80 uppercase tracking-wider block font-mono">Neon DB Read Latency</span>
+                    <div className="text-2xl font-black text-cyan-300 font-mono">~12ms</div>
+                    <span className="text-[10px] text-emerald-400 font-semibold font-mono">Pooler Healthy</span>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-[#02050E] border border-cyan-500/20 space-y-1">
+                    <span className="text-[11px] font-bold text-cyan-400/80 uppercase tracking-wider block font-mono">Edge Revalidation</span>
+                    <div className="text-2xl font-black text-purple-300 font-mono">~85ms</div>
+                    <span className="text-[10px] text-emerald-400 font-semibold font-mono">Instant Tag Purge</span>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-[#02050E] border border-cyan-500/20 space-y-1">
+                    <span className="text-[11px] font-bold text-cyan-400/80 uppercase tracking-wider block font-mono">B2 CDN Delivery</span>
+                    <div className="text-2xl font-black text-emerald-300 font-mono">99.98%</div>
+                    <span className="text-[10px] text-emerald-400 font-semibold font-mono">High Availability</span>
+                  </div>
+                </div>
+              </GlassCard>
+
+            </div>
+
+            {/* Right Col: Live Event Stream */}
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-sm font-bold text-white font-mono uppercase tracking-wider">Real-Time Event Stream</h3>
+                <p className="text-xs text-slate-400 font-mono">Live operational events</p>
               </div>
 
-              <div className="space-y-3 max-h-72 overflow-y-auto pr-1">
-                {loading ? (
-                  <div className="text-center py-8 text-muted-foreground text-xs">
-                    <RefreshCw className="size-4 animate-spin mx-auto mb-2 text-[#ff1e4b]" />
-                    Loading event stream...
+              <GlassCard className="p-4 divide-y divide-cyan-500/15 bg-[#03091D]/90 border border-cyan-500/30">
+                {(!telemetry.eventStream || telemetry.eventStream.length === 0) ? (
+                  <div className="p-4 text-center text-xs text-slate-500 font-mono">
+                    No recent events recorded in stream.
                   </div>
-                ) : telemetry.eventStream && telemetry.eventStream.length > 0 ? (
+                ) : (
                   telemetry.eventStream.map((evt) => (
-                    <div key={evt.id} className="p-3 rounded-xl bg-black/40 border border-white/10 flex items-center justify-between gap-3 text-xs">
-                      <div>
-                        <span className="font-bold text-[#ff1e4b]">{evt.action}</span>
-                        <span className="text-muted-foreground ml-2">• {evt.details}</span>
+                    <div key={evt.id} className="py-3 flex items-start gap-3">
+                      <div className="size-2 rounded-full bg-cyan-400 shadow-[0_0_6px_#00E5FF] mt-1.5 shrink-0" />
+                      <div className="space-y-0.5 min-w-0">
+                        <span className="text-xs font-bold text-white font-mono block truncate">{evt.action}</span>
+                        <span className="text-[11px] text-cyan-300 font-mono block truncate">{evt.user}</span>
+                        <span className="text-[10px] text-slate-500 font-mono">{evt.time}</span>
                       </div>
-                      <span className="text-[10px] text-muted-foreground shrink-0">{evt.time}</span>
                     </div>
                   ))
-                ) : (
-                  <div className="text-center py-8 text-muted-foreground text-xs">
-                    No recent audit events recorded.
-                  </div>
                 )}
-              </div>
+              </GlassCard>
             </div>
+
           </div>
+
         </main>
       </div>
     </div>

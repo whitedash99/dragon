@@ -129,8 +129,8 @@ export function MegaMenu() {
 
                   <div className="rounded-2xl bg-white/5 p-4 border border-white/10">
                     <ShieldCheck className="size-5 text-emerald-400 mb-2" />
-                    <strong className="block text-white text-sm">Global Studios</strong>
-                    <p className="text-[11px] text-muted-foreground mt-1">Campus hubs in Bengaluru, Montreal, London, and Tokyo.</p>
+                    <strong className="block text-white text-sm">Global Collective</strong>
+                    <p className="text-[11px] text-muted-foreground mt-1">100% remote-first startup engineering across the globe.</p>
                   </div>
                 </div>
               </div>

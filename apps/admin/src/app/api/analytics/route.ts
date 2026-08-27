@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
 import { getAuthenticatedUser } from "@/lib/auth/auth";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const totalUsers = await prisma.user.count();
@@ -21,6 +23,7 @@ export async function GET() {
     const totalMedia = await prisma.mediaAsset.count();
     const totalAiUsage = await prisma.aIUsage.count();
     const totalEmailLogs = await prisma.emailLog.count();
+    const totalAnalyticsEvents = await prisma.analyticsEvent.count();
 
     const recentAuditLogs = await prisma.auditLog.findMany({
       take: 8,
@@ -50,11 +53,11 @@ export async function GET() {
       success: true,
       telemetry: {
         executive: {
-          activeVisitorsToday: 4280,
-          monthlyPageviews: 128450,
-          avgSessionDuration: "4m 12s",
-          slaResponseTime: "< 2.5 hrs",
-          growthRate: "+18.4%",
+          totalRegisteredUsers: totalUsers,
+          totalDatabaseEvents: totalAnalyticsEvents,
+          totalSupportTickets: totalTickets,
+          totalMediaAssets: totalMedia,
+          slaStatus: "Operational",
         },
         counts: {
           totalUsers,
@@ -65,6 +68,7 @@ export async function GET() {
           totalMedia,
           totalAiUsage,
           totalEmailLogs,
+          totalAnalyticsEvents,
         },
         breakdowns: {
           categories: categoryMap,

@@ -3,364 +3,289 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { Navbar } from "@/components/navbar/Navbar";
-import {
-  Mail,
-  Send,
-  RefreshCw,
-  Search,
-  Filter,
-  CheckCircle2,
-  AlertTriangle,
-  Clock,
-  Sparkles,
-  Inbox,
-  FileText,
-  Radio,
-  Zap,
-  CheckCheck
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils/cn";
+import { MessageSquare, Mail, Send, CheckCircle2, RefreshCw, Radio, Users, ShieldCheck, Clock, AlertTriangle } from "lucide-react";
+import { GlassCard, GlassStat } from "@/components/ui/glass";
 
 interface EmailLogItem {
   id: string;
   recipient: string;
   subject: string;
   status: string;
-  template: string;
-  type: string;
-  providerResponse?: string;
-  errorMessage?: string;
+  providerResponse?: string | null;
   createdAt: string;
 }
 
-export default function DragonMailPage() {
-  const [telemetry, setTelemetry] = useState<{
-    totalCount?: number;
-    dispatchedCount?: number;
-    failedCount?: number;
-    deliveryRate?: string;
-    resendStatus?: string;
-  }>({});
+export default function CommunicationPage() {
+  const [subject, setSubject] = useState("");
+  const [body, setBody] = useState("");
+  const [targetGroup, setTargetGroup] = useState<"ALL" | "PLAYERS" | "STAFF">("ALL");
+  const [sending, setSending] = useState(false);
+  const [loadingLogs, setLoadingLogs] = useState(true);
+  const [statusMsg, setStatusMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
-  const [logs, setLogs] = useState<EmailLogItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [statusFilter, setStatusFilter] = useState("ALL");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [viewTab, setViewTab] = useState<"logs" | "templates" | "compose">("logs");
+  const [telemetry, setTelemetry] = useState({
+    totalRegisteredUsers: 0,
+    totalStaff: 0,
+    totalPlayers: 0,
+    totalCount: 0,
+    dispatchedCount: 0,
+    failedCount: 0,
+    deliveryRate: "100%",
+    resendStatus: "LIVE_CONNECTED",
+  });
+  const [emailLogs, setEmailLogs] = useState<EmailLogItem[]>([]);
 
-  const [testRecipient, setTestRecipient] = useState("founder@dragonstudios.com");
-  const [testSubject, setTestSubject] = useState("Dragon Mail Enterprise Verification Test");
-  const [sendingTest, setSendingTest] = useState(false);
-  const [testSuccess, setTestSuccess] = useState<string | null>(null);
-
-  const fetchEmailData = useCallback(async () => {
-    setLoading(true);
+  const fetchCommunicationData = useCallback(async () => {
     try {
-      const url = new URL("/api/communication", window.location.origin);
-      if (statusFilter !== "ALL") url.searchParams.set("status", statusFilter);
-      if (searchQuery.trim()) url.searchParams.set("query", searchQuery.trim());
-
-      const res = await fetch(url.toString());
-      const data = await res.json();
-      if (data.success) {
-        if (data.telemetry) setTelemetry(data.telemetry);
-        if (Array.isArray(data.emailLogs)) setLogs(data.emailLogs);
+      const res = await fetch("/api/communication");
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          if (data.telemetry) setTelemetry(data.telemetry);
+          if (Array.isArray(data.emailLogs)) setEmailLogs(data.emailLogs);
+        }
       }
     } catch (e) {
-      console.error("Error fetching email logs", e);
+      console.error("Failed to load communication telemetry:", e);
     } finally {
-      setLoading(false);
+      setLoadingLogs(false);
     }
-  }, [statusFilter, searchQuery]);
+  }, []);
 
   useEffect(() => {
-    let isMounted = true;
-    Promise.resolve().then(() => {
-      if (isMounted) fetchEmailData();
-    });
-    return () => { isMounted = false; };
-  }, [fetchEmailData]);
+    fetchCommunicationData();
+  }, [fetchCommunicationData]);
 
-  const handleSendTestEmail = async (e: React.FormEvent) => {
+  const handleBroadcast = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSendingTest(true);
-    setTestSuccess(null);
+    if (!subject.trim() || !body.trim()) return;
+
+    setSending(true);
+    setStatusMsg(null);
+
     try {
       const res = await fetch("/api/communication", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          action: "send_test_email",
-          recipient: testRecipient.trim(),
-          subject: testSubject.trim(),
+          action: "broadcast_dispatch",
+          subject: subject.trim(),
+          body: body.trim(),
+          targetGroup,
         }),
       });
 
       const data = await res.json();
-      if (data.success) {
-        setTestSuccess(`Email dispatched via Resend! Message ID: ${data.messageId || 'msg_ok'}`);
-        fetchEmailData();
+      if (res.ok && data.success) {
+        setStatusMsg({
+          type: "success",
+          text: `Broadcast successfully dispatched to ${data.totalRecipients || 0} real accounts (${data.dispatched || 0} delivered)!`,
+        });
+        setSubject("");
+        setBody("");
+        fetchCommunicationData();
+      } else {
+        setStatusMsg({
+          type: "error",
+          text: data.error || "Failed to dispatch broadcast.",
+        });
       }
-    } catch (e) {
-      console.error("Test email dispatch error", e);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Network error";
+      setStatusMsg({ type: "error", text: msg });
     } finally {
-      setSendingTest(false);
+      setSending(false);
     }
   };
 
   return (
-    <div className="flex min-h-screen bg-[#050508] text-white font-sans">
+    <div className="flex min-h-screen w-full bg-[#02040A] text-slate-100 font-sans antialiased overflow-hidden select-none font-mono">
       <Sidebar />
-
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
         <Navbar />
-
-        <main className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-8 font-mono text-xs">
-          {/* Header Bar */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <main className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-6 max-w-7xl mx-auto w-full scrollbar-thin scrollbar-thumb-cyan-500/20">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-cyan-500/20">
             <div>
-              <span className="text-xs font-bold uppercase tracking-widest text-[#ff1e4b] flex items-center gap-1.5">
-                <Mail className="size-3.5" />
-                <span>ENTERPRISE MAIL PLATFORM (RESEND INTEGRATED)</span>
-              </span>
-              <h1 className="text-3xl font-black uppercase text-white tracking-tight sm:text-4xl mt-0.5 font-heading">
-                DRAGON MAIL COMMAND CENTER
-              </h1>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="size-2 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_8px_#00E5FF]" />
+                <span className="text-xs font-bold text-cyan-400/80 uppercase tracking-wider">Dragon Control • Studio Communications</span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">Announcements & Dispatch Broadcast</h1>
+              <p className="text-xs sm:text-sm text-slate-400 font-mono">Broadcast live announcements to verified database accounts and inspect real delivery logs.</p>
             </div>
 
-            <div className="flex items-center gap-3">
-              <Button onClick={fetchEmailData} variant="outline" size="sm" className="rounded-xl text-xs gap-2 border-white/15">
-                <RefreshCw className="size-3.5 text-[#ff1e4b]" />
-                <span>REFRESH DISPATCH MATRIX</span>
-              </Button>
-              <Button onClick={() => setViewTab("compose")} variant="solidRed" size="sm" className="rounded-xl text-xs gap-2">
-                <Send className="size-3.5" />
-                <span>DISPATCH TEST MAIL</span>
-              </Button>
-            </div>
+            <button
+              onClick={fetchCommunicationData}
+              className="p-2.5 rounded-xl bg-[#03091D] border border-cyan-500/30 text-cyan-300 hover:text-white hover:border-cyan-400 shadow-[0_0_15px_rgba(0,0,0,0.6)] transition-all cursor-pointer self-start md:self-auto flex items-center gap-2 text-xs"
+              title="Refresh Live Data"
+            >
+              <RefreshCw className="size-3.5 text-cyan-400" />
+              <span>Refresh Metrics</span>
+            </button>
           </div>
 
-          {/* Telemetry Cards Strip */}
-          <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-2xl glass-card p-4 border border-white/10 space-y-1">
-              <span className="text-muted-foreground uppercase text-[10px] font-bold block">TOTAL EMAILS DISPATCHED</span>
-              <span className="text-2xl font-black text-white block">{telemetry.totalCount || 0} MESSAGES</span>
-            </div>
-            <div className="rounded-2xl glass-card p-4 border border-white/10 space-y-1">
-              <span className="text-muted-foreground uppercase text-[10px] font-bold block">DELIVERY SUCCESS RATE</span>
-              <span className="text-2xl font-black text-emerald-400 block">{telemetry.deliveryRate || "100%"}</span>
-            </div>
-            <div className="rounded-2xl glass-card p-4 border border-white/10 space-y-1">
-              <span className="text-muted-foreground uppercase text-[10px] font-bold block">RESEND API SERVICE</span>
-              <span className="text-2xl font-black text-purple-400 block uppercase">{telemetry.resendStatus || "LIVE_CONNECTED"}</span>
-            </div>
-            <div className="rounded-2xl glass-card p-4 border border-white/10 space-y-1">
-              <span className="text-muted-foreground uppercase text-[10px] font-bold block">FAILED DISPATCH QUEUE</span>
-              <span className="text-2xl font-black text-sky-400 block">{telemetry.failedCount || 0} QUEUED</span>
-            </div>
+          {/* Real Live Database Metrics */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <GlassStat
+              label="Real Registered Users"
+              value={telemetry.totalRegisteredUsers}
+              subtext={`${telemetry.totalPlayers} Players • ${telemetry.totalStaff} Staff`}
+              icon={Users}
+            />
+            <GlassStat
+              label="Delivery Gateway"
+              value={telemetry.resendStatus === "LIVE_CONNECTED" ? "ONLINE" : "READY"}
+              trend={telemetry.deliveryRate}
+              trendPositive={true}
+              subtext="Real SMTP & Email Logs"
+              icon={Radio}
+            />
+            <GlassStat
+              label="Dispatches Processed"
+              value={telemetry.totalCount}
+              subtext={`${telemetry.dispatchedCount} Dispatched • ${telemetry.failedCount} Failed`}
+              icon={MessageSquare}
+            />
           </div>
 
-          {/* View Mode Tabs */}
-          <div className="flex items-center gap-2 overflow-x-auto border-b border-white/10 pb-3">
-            {[
-              { id: "logs" as const, label: "Live Email Logs", icon: Inbox },
-              { id: "templates" as const, label: "Reusable Templates Directory", icon: FileText },
-              { id: "compose" as const, label: "Dispatch Test Mail", icon: Send },
-            ].map((tab) => {
-              const Icon = tab.icon;
-              const isSelected = viewTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setViewTab(tab.id)}
-                  className={cn(
-                    "rounded-xl px-4 py-2 text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all border shrink-0",
-                    isSelected
-                      ? "bg-[#ff1e4b] text-white border-[#ff1e4b] shadow-lg shadow-[#ff1e4b]/20"
-                      : "bg-white/5 text-muted-foreground border-white/5 hover:text-white"
-                  )}
-                >
-                  <Icon className="size-3.5" />
-                  <span>{tab.label}</span>
-                </button>
-              );
-            })}
-          </div>
+          {/* Broadcast Form */}
+          <GlassCard className="p-6 max-w-3xl space-y-5 bg-[#03091D]/90 border border-cyan-500/30 shadow-[0_0_30px_rgba(0,229,255,0.15)]">
+            <div className="flex items-center justify-between pb-2 border-b border-cyan-500/20">
+              <div className="flex items-center gap-2">
+                <Send className="size-4 text-cyan-400" />
+                <h3 className="text-sm font-bold text-white font-mono uppercase tracking-wider">Send Studio Dispatch Broadcast</h3>
+              </div>
+              <span className="text-[11px] text-cyan-400 font-mono">Canonical PostgreSQL Target</span>
+            </div>
 
-          {/* TAB 1: LIVE EMAIL LOGS */}
-          {viewTab === "logs" && (
-            <div className="space-y-4">
-              {/* Search & Status Filters */}
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-900/60 p-4 rounded-2xl border border-white/10">
-                <div className="relative w-full sm:w-80">
-                  <Search className="size-4 absolute left-3 top-3 text-slate-400" />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search by recipient or subject..."
-                    className="w-full rounded-xl bg-black/60 pl-9 pr-4 py-2 text-xs text-white border border-white/10 focus:outline-none focus:border-[#ff1e4b]"
-                  />
-                </div>
+            {statusMsg && (
+              <div className={`p-3.5 border rounded-xl flex items-center gap-2 text-xs font-mono font-bold shadow-lg ${
+                statusMsg.type === "success"
+                  ? "bg-emerald-500/15 border-emerald-400/40 text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.2)]"
+                  : "bg-rose-500/15 border-rose-400/40 text-rose-300 shadow-[0_0_15px_rgba(244,63,94,0.2)]"
+              }`}>
+                {statusMsg.type === "success" ? (
+                  <CheckCircle2 className="size-4 text-emerald-400 shrink-0" />
+                ) : (
+                  <AlertTriangle className="size-4 text-rose-400 shrink-0" />
+                )}
+                <span>{statusMsg.text}</span>
+              </div>
+            )}
 
-                <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto">
-                  {["ALL", "DISPATCHED", "PENDING", "FAILED"].map((st) => (
+            <form onSubmit={handleBroadcast} className="space-y-4 font-mono">
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-cyan-400">Target Audience *</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { id: "ALL" as const, label: `All Users (${telemetry.totalRegisteredUsers})` },
+                    { id: "PLAYERS" as const, label: `Players (${telemetry.totalPlayers})` },
+                    { id: "STAFF" as const, label: `Staff (${telemetry.totalStaff})` },
+                  ].map((group) => (
                     <button
-                      key={st}
-                      onClick={() => setStatusFilter(st)}
-                      className={cn(
-                        "px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase transition-all border",
-                        statusFilter === st
-                          ? "bg-white/20 text-white border-white/30"
-                          : "bg-black/40 text-slate-400 border-white/5 hover:text-white"
-                      )}
+                      key={group.id}
+                      type="button"
+                      onClick={() => setTargetGroup(group.id)}
+                      className={`p-2 rounded-xl text-xs font-bold border transition-all text-center cursor-pointer ${
+                        targetGroup === group.id
+                          ? "bg-cyan-500/20 border-cyan-400 text-cyan-300 shadow-[0_0_10px_rgba(0,229,255,0.2)]"
+                          : "bg-[#02050E] border-cyan-500/20 text-slate-400 hover:text-white"
+                      }`}
                     >
-                      {st}
+                      {group.label}
                     </button>
                   ))}
                 </div>
               </div>
 
-              {/* Logs Table */}
-              <div className="rounded-3xl glass-panel p-6 border border-white/15 space-y-4">
-                <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                  <span className="text-xs font-bold uppercase text-white flex items-center gap-2">
-                    <Radio className="size-4 text-[#ff1e4b] animate-pulse" />
-                    <span>RECENT EMAIL DISPATCHES ({logs.length})</span>
-                  </span>
-                  <span className="text-[10px] text-emerald-400 font-bold">RESEND VERIFIED</span>
-                </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-cyan-400">Broadcast Title / Subject *</label>
+                <input
+                  type="text"
+                  required
+                  value={subject}
+                  onChange={(e) => setSubject(e.target.value)}
+                  placeholder="e.g. Uncharted Drive: Beyond v2.0 Now Live!"
+                  className="w-full bg-[#02050E] border border-cyan-500/30 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 font-mono focus:outline-none focus:border-cyan-400"
+                />
+              </div>
 
-                <div className="space-y-3">
-                  {loading ? (
-                    <div className="py-12 text-center text-slate-400 text-xs">
-                      <RefreshCw className="size-5 animate-spin mx-auto mb-2 text-[#ff1e4b]" />
-                      Loading Neon PostgreSQL email logs...
-                    </div>
-                  ) : logs.length === 0 ? (
-                    <div className="py-12 text-center text-slate-400 text-xs">
-                      No email dispatches recorded in Neon PostgreSQL.
-                    </div>
-                  ) : (
-                    logs.map((log) => (
-                      <div key={log.id} className="p-4 rounded-2xl bg-black/40 border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2">
-                            <span className="font-bold text-white">{log.recipient}</span>
-                            <span className="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 font-mono text-[9px]">
-                              {log.template}
-                            </span>
-                          </div>
-                          <p className="text-slate-300 text-xs font-sans">{log.subject}</p>
-                          {log.providerResponse && (
-                            <span className="text-[10px] text-slate-500 font-mono block">
-                              Provider ID: {log.providerResponse}
-                            </span>
-                          )}
-                        </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-cyan-400">Dispatch Content *</label>
+                <textarea
+                  rows={5}
+                  required
+                  value={body}
+                  onChange={(e) => setBody(e.target.value)}
+                  placeholder="Enter dispatch notes, game download instructions, changelogs, and updates..."
+                  className="w-full bg-[#02050E] border border-cyan-500/30 rounded-xl p-3 text-xs text-white placeholder-slate-600 font-mono focus:outline-none focus:border-cyan-400 leading-relaxed"
+                />
+              </div>
 
-                        <div className="flex sm:flex-col items-end justify-between sm:justify-center gap-1 shrink-0 font-mono text-[10px]">
-                          <span
-                            className={cn(
-                              "px-2 py-1 rounded font-bold uppercase text-[9px]",
-                              log.status === "DISPATCHED" ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" : "bg-red-500/20 text-red-400 border border-red-500/30"
-                            )}
-                          >
+              <button
+                type="submit"
+                disabled={sending}
+                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 text-black font-mono font-black text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(0,229,255,0.4)] hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer flex items-center gap-2 disabled:opacity-50"
+              >
+                {sending ? <RefreshCw className="size-3.5 animate-spin" /> : <Send className="size-3.5" />}
+                <span>{sending ? "Dispatching to Database Accounts..." : "Send Live Broadcast"}</span>
+              </button>
+            </form>
+          </GlassCard>
+
+          {/* Real Dispatch Logs Table */}
+          <GlassCard className="p-6 space-y-4 bg-[#03091D]/90 border border-cyan-500/30 shadow-[0_0_30px_rgba(0,229,255,0.15)] font-mono">
+            <div className="flex items-center justify-between pb-2 border-b border-cyan-500/20">
+              <div className="flex items-center gap-2">
+                <Clock className="size-4 text-cyan-400" />
+                <h3 className="text-sm font-bold text-white uppercase tracking-wider">Real PostgreSQL Dispatch Logs</h3>
+              </div>
+              <span className="text-xs text-slate-400">{emailLogs.length} Records</span>
+            </div>
+
+            {loadingLogs ? (
+              <div className="py-8 text-center text-xs text-slate-500">Loading audit records...</div>
+            ) : emailLogs.length === 0 ? (
+              <div className="py-8 text-center text-xs text-slate-500">No dispatches logged yet. Broadcasts will be recorded here in real-time.</div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs font-mono">
+                  <thead>
+                    <tr className="border-b border-cyan-500/20 text-cyan-400">
+                      <th className="py-2.5 px-3">Recipient</th>
+                      <th className="py-2.5 px-3">Subject</th>
+                      <th className="py-2.5 px-3">Status</th>
+                      <th className="py-2.5 px-3">Gateway Details</th>
+                      <th className="py-2.5 px-3">Dispatched At</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-cyan-500/10 text-slate-300">
+                    {emailLogs.slice(0, 15).map((log) => (
+                      <tr key={log.id} className="hover:bg-cyan-500/5 transition-colors">
+                        <td className="py-2.5 px-3 text-white font-bold">{log.recipient}</td>
+                        <td className="py-2.5 px-3 text-slate-300 max-w-xs truncate">{log.subject}</td>
+                        <td className="py-2.5 px-3">
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                            log.status === "DISPATCHED"
+                              ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                              : "bg-rose-500/20 text-rose-300 border border-rose-500/30"
+                          }`}>
                             {log.status}
                           </span>
-                          <span className="text-slate-400">{new Date(log.createdAt).toLocaleString()}</span>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
+                        </td>
+                        <td className="py-2.5 px-3 text-[11px] text-slate-400 max-w-xs truncate">
+                          {log.providerResponse || "Processed"}
+                        </td>
+                        <td className="py-2.5 px-3 text-slate-400 text-[11px]">
+                          {new Date(log.createdAt).toLocaleString()}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-            </div>
-          )}
-
-          {/* TAB 2: REUSABLE TEMPLATES DIRECTORY */}
-          {viewTab === "templates" && (
-            <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-              {[
-                { name: "Customer Contact Confirmation", category: "Support", templateId: "CONTACT_CONFIRMATION", desc: "Sent instantly to customer after submitting contact form with ticket ID." },
-                { name: "New Contact Owner Notification", category: "Internal Alert", templateId: "OWNER_CONTACT_ALERT", desc: "Detailed breakdown to Founder personal email with client IP & user agent." },
-                { name: "Support Ticket Reply", category: "CRM Support", templateId: "TICKET_REPLY", desc: "Dispatched when support staff posts a reply to an open ticket." },
-                { name: "New Hardware Device Alert", category: "Security", templateId: "SECURITY_ALERT", desc: "Dispatched when an unrecognized hardware device logs into Admin OS." },
-                { name: "Staff Team Invitation", category: "IAM Auth", templateId: "TEAM_INVITATION", desc: "Tokenized 24-hour single-use invitation for new staff onboarding." },
-                { name: "Executive Account Seeded", category: "System", templateId: "EXECUTIVE_SEED", desc: "Dispatched when Founder or Co-Founder accounts are provisioned." },
-              ].map((tmpl, idx) => (
-                <div key={idx} className="rounded-3xl glass-panel p-6 border border-white/15 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold text-purple-400 uppercase">{tmpl.category}</span>
-                    <span className="text-[9px] font-mono text-slate-500">{tmpl.templateId}</span>
-                  </div>
-                  <h3 className="text-base font-bold text-white font-heading">{tmpl.name}</h3>
-                  <p className="text-xs text-slate-400 font-sans leading-relaxed">{tmpl.desc}</p>
-                  <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[10px] text-emerald-400">
-                    <span className="flex items-center gap-1"><CheckCheck className="size-3" /> RESEND VERIFIED</span>
-                    <span className="font-mono text-slate-500">HTML 5 READY</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* TAB 3: DISPATCH TEST MAIL */}
-          {viewTab === "compose" && (
-            <div className="w-full max-w-xl mx-auto rounded-3xl glass-panel p-8 border border-white/15 space-y-6">
-              <div className="space-y-1">
-                <h3 className="text-xl font-bold text-white uppercase font-heading">TEST RESEND DISPATCH</h3>
-                <p className="text-xs text-slate-400 font-sans">
-                  Send a test email through the centralized Dragon Mail Service to verify live Resend API delivery.
-                </p>
-              </div>
-
-              {testSuccess && (
-                <div className="p-4 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-xs font-bold flex items-center gap-2">
-                  <CheckCircle2 className="size-4" />
-                  <span>{testSuccess}</span>
-                </div>
-              )}
-
-              <form onSubmit={handleSendTestEmail} className="space-y-4 text-xs font-mono">
-                <div className="space-y-1.5">
-                  <label className="block text-[10px] font-bold uppercase text-slate-400">RECIPIENT EMAIL ADDRESS</label>
-                  <input
-                    type="email"
-                    required
-                    value={testRecipient}
-                    onChange={(e) => setTestRecipient(e.target.value)}
-                    placeholder="founder@dragonstudios.com"
-                    className="w-full rounded-2xl bg-black/60 px-4 py-3 text-xs text-white border border-white/10 focus:outline-none focus:border-[#ff1e4b]"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="block text-[10px] font-bold uppercase text-slate-400">SUBJECT LINE</label>
-                  <input
-                    type="text"
-                    required
-                    value={testSubject}
-                    onChange={(e) => setTestSubject(e.target.value)}
-                    placeholder="Dragon Mail Enterprise Verification"
-                    className="w-full rounded-2xl bg-black/60 px-4 py-3 text-xs text-white border border-white/10 focus:outline-none focus:border-[#ff1e4b]"
-                  />
-                </div>
-
-                <Button
-                  type="submit"
-                  disabled={sendingTest}
-                  variant="solidRed"
-                  size="lg"
-                  className="w-full rounded-2xl font-bold uppercase tracking-wider gap-2 py-3.5 text-xs shadow-xl shadow-[#ff1e4b]/20"
-                >
-                  {sendingTest ? <RefreshCw className="size-4 animate-spin" /> : <Send className="size-4" />}
-                  <span>DISPATCH RESEND EMAIL</span>
-                </Button>
-              </form>
-            </div>
-          )}
+            )}
+          </GlassCard>
         </main>
       </div>
     </div>

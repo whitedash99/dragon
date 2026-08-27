@@ -1,33 +1,32 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { 
   Star, 
   Plus, 
   ThumbsUp, 
   CheckCircle2, 
   X, 
-  Save, 
   Gamepad2, 
   MessageSquare 
 } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { SceneBackground } from "@/components/background/SceneBackground";
 import { CommunityNav } from "@/components/community/CommunityNav";
 import { verifiedReviews, VerifiedReview } from "@/data/communityData";
 import { games } from "@/data/content";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
+import { DragonAtmosphere } from "@/components/cinematic/DragonAtmosphere";
+import { useSession } from "next-auth/react";
 
 export default function CommunityReviewsPage() {
+  const { data: session } = useSession();
   const [reviews, setReviews] = useState<VerifiedReview[]>(verifiedReviews);
   const [selectedGame, setSelectedGame] = useState("All");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Form
-  const [gameSlug, setGameSlug] = useState("embers-of-valyria");
+  const [gameSlug, setGameSlug] = useState("uncharted-drive-beyond");
   const [headline, setHeadline] = useState("");
   const [content, setContent] = useState("");
   const [rating, setRating] = useState(5);
@@ -45,22 +44,24 @@ export default function CommunityReviewsPage() {
   const handleCreateReview = (e: React.FormEvent) => {
     e.preventDefault();
     const game = games.find((g) => g.slug === gameSlug);
+    const authorName = session?.user?.name || session?.user?.email?.split("@")[0] || "Dragon Operative";
+
     const newRev: VerifiedReview = {
       id: `rev-${Date.now()}`,
       gameSlug,
-      gameTitle: game?.title || "Embers of Valyria",
+      gameTitle: game?.title || "UNCHARTED DRIVE: BEYOND",
       author: {
-        name: "Kaelen Voss",
-        avatar: "KV",
+        name: authorName,
+        avatar: "DO",
         verified: true,
-        playtimeHours: 184,
+        playtimeHours: 1,
       },
       rating,
       headline,
       content,
-      pros: ["High Performance", "Cinematic Graphics"],
-      cons: ["Challenging Boss Mechanics"],
-      helpfulCount: 1,
+      pros: ["Realistic Vehicle Dynamics", "Atmospheric Sunset Lighting"],
+      cons: ["High Precision Steering Required"],
+      helpfulCount: 0,
       timestamp: "Just now",
     };
 
@@ -71,195 +72,160 @@ export default function CommunityReviewsPage() {
   };
 
   return (
-    <SceneBackground gradient noise orbs vignette>
+    <div className="min-h-screen bg-[#020512] text-slate-100 font-sans antialiased overflow-x-hidden select-none relative font-mono">
       <Navbar />
-      <CommunityNav />
+      <DragonAtmosphere world="core" />
 
-      <main className="cinematic-page relative min-h-screen overflow-x-hidden pb-32 pt-12">
-        <section className="container-site relative z-10">
+      <main className="cinematic-page relative min-h-screen overflow-x-hidden pb-32 pt-20 lg:pt-24 z-10">
+        <CommunityNav />
+
+        <section className="container-site relative z-10 my-8 px-4 sm:px-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
             <div>
-              <span className="text-xs font-bold uppercase tracking-widest text-dragon-400">
-                Verified Player Insights
+              <span className="text-xs font-bold uppercase tracking-widest text-cyan-400 font-mono">
+                VERIFIED PLAYER INSIGHTS
               </span>
-              <h1 className="text-3xl font-black uppercase text-white tracking-tight sm:text-4xl mt-0.5">
+              <h1 className="text-3xl font-black uppercase text-white tracking-tight font-heading mt-0.5">
                 Player Game Reviews
               </h1>
             </div>
 
-            <Button onClick={() => setIsModalOpen(true)} variant="glow" size="sm" className="rounded-full gap-2 text-xs">
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 text-black font-black text-xs uppercase tracking-wider flex items-center gap-2 cursor-pointer shadow-[0_0_20px_rgba(0,229,255,0.3)]"
+            >
               <Plus className="size-4" />
               <span>Write Verified Review</span>
-            </Button>
-          </div>
-
-          {/* Game Selector */}
-          <div className="rounded-2xl glass-heavy p-4 border border-white/15 flex items-center gap-2 overflow-x-auto mb-8">
-            <button
-              onClick={() => setSelectedGame("All")}
-              className={cn(
-                "rounded-lg px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-colors whitespace-nowrap",
-                selectedGame === "All" ? "bg-primary text-white" : "bg-white/5 text-muted-foreground hover:text-white"
-              )}
-            >
-              All Titles
             </button>
-            {games.map((g) => (
-              <button
-                key={g.id}
-                onClick={() => setSelectedGame(g.slug)}
-                className={cn(
-                  "rounded-lg px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-colors whitespace-nowrap",
-                  selectedGame === g.slug ? "bg-primary text-white" : "bg-white/5 text-muted-foreground hover:text-white"
-                )}
-              >
-                {g.title}
-              </button>
-            ))}
           </div>
 
           {/* Reviews List */}
-          <div className="grid gap-6 md:grid-cols-2">
-            {filteredReviews.map((rev) => (
-              <div key={rev.id} className="rounded-3xl glass-heavy p-8 border border-white/15 flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between gap-2 mb-4">
-                    <div>
-                      <span className="text-xs font-bold uppercase tracking-wider text-dragon-400 block mb-1">
-                        {rev.gameTitle}
-                      </span>
-                      <div className="flex items-center gap-1 text-amber-400">
-                        {[...Array(rev.rating)].map((_, i) => (
-                          <Star key={i} className="size-4 fill-current" />
-                        ))}
+          {filteredReviews.length === 0 ? (
+            <div className="py-20 text-center rounded-3xl bg-[#03091D]/90 border border-cyan-500/20 p-8 space-y-3 shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+              <MessageSquare className="size-8 text-cyan-400/40 mx-auto" />
+              <div className="text-sm font-bold text-white uppercase">No Reviews Yet</div>
+              <p className="text-xs text-slate-400 max-w-md mx-auto">
+                Be the first verified operative to test UNCHARTED DRIVE: BEYOND and publish your telemetry review!
+              </p>
+            </div>
+          ) : (
+            <div className="grid gap-6 md:grid-cols-2">
+              {filteredReviews.map((rev) => (
+                <div key={rev.id} className="rounded-3xl bg-[#03091D]/90 p-8 border border-cyan-500/30 flex flex-col justify-between shadow-[0_0_30px_rgba(0,229,255,0.1)]">
+                  <div>
+                    <div className="flex items-center justify-between gap-2 mb-4">
+                      <div>
+                        <span className="text-xs font-bold uppercase tracking-wider text-cyan-400 block mb-1">
+                          {rev.gameTitle}
+                        </span>
+                        <div className="flex items-center gap-1 text-amber-400">
+                          {[...Array(rev.rating)].map((_, i) => (
+                            <Star key={i} className="size-4 fill-current" />
+                          ))}
+                        </div>
                       </div>
+
+                      <span className="rounded-full bg-cyan-500/20 px-2.5 py-0.5 text-[10px] font-bold text-cyan-300 border border-cyan-500/30 font-mono">
+                        Verified Operative
+                      </span>
                     </div>
 
-                    <span className="rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-[10px] font-bold text-emerald-300 border border-emerald-500/30">
-                      Verified ({rev.author.playtimeHours}h played)
-                    </span>
+                    <h3 className="text-lg font-bold text-white mb-2 font-heading">{rev.headline}</h3>
+                    <p className="text-xs text-slate-300 leading-relaxed mb-4 font-sans">{rev.content}</p>
                   </div>
 
-                  <h3 className="text-xl font-bold text-white mb-2">{rev.headline}</h3>
-                  <p className="text-xs text-muted-foreground leading-relaxed mb-4">{rev.content}</p>
-
-                  <div className="grid grid-cols-2 gap-3 text-xs pt-4 border-t border-white/10">
-                    <div>
-                      <span className="block font-bold text-emerald-400 text-[10px] uppercase">PROS</span>
-                      <ul className="mt-1 space-y-1 text-[11px] text-muted-foreground">
-                        {rev.pros.map((p, i) => <li key={i}>✓ {p}</li>)}
-                      </ul>
-                    </div>
-                    <div>
-                      <span className="block font-bold text-amber-400 text-[10px] uppercase">CONS</span>
-                      <ul className="mt-1 space-y-1 text-[11px] text-muted-foreground">
-                        {rev.cons.map((c, i) => <li key={i}>• {c}</li>)}
-                      </ul>
-                    </div>
+                  <div className="flex items-center justify-between pt-4 border-t border-cyan-500/20 text-xs">
+                    <span className="text-slate-400">@{rev.author.name}</span>
+                    <button
+                      onClick={() => handleHelpful(rev.id)}
+                      className="flex items-center gap-1.5 text-cyan-400 hover:text-white"
+                    >
+                      <ThumbsUp className="size-3.5" />
+                      <span>{rev.helpfulCount}</span>
+                    </button>
                   </div>
-
-                  {rev.developerReply && (
-                    <div className="mt-6 rounded-2xl bg-dragon-500/10 p-4 border border-dragon-500/20 text-xs">
-                      <span className="font-bold text-dragon-300 block">{rev.developerReply.author}</span>
-                      <p className="text-[11px] text-muted-foreground mt-1">{rev.developerReply.message}</p>
-                    </div>
-                  )}
                 </div>
-
-                <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between text-xs text-muted-foreground">
-                  <span className="font-bold text-white">{rev.author.name}</span>
-                  <button
-                    onClick={() => handleHelpful(rev.id)}
-                    className="flex items-center gap-1.5 rounded-lg bg-white/5 px-2.5 py-1 text-xs text-white hover:bg-white/10"
-                  >
-                    <ThumbsUp className="size-3.5 text-dragon-400" />
-                    <span>Helpful ({rev.helpfulCount})</span>
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </section>
       </main>
 
       {/* Review Modal */}
-      <AnimatePresence>
-        {isModalOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl"
-          >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="relative w-full max-w-lg rounded-2xl glass-heavy p-8 border border-white/20"
-            >
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="absolute top-6 right-6 p-2 rounded-full bg-white/10 text-white hover:bg-white/20"
-              >
-                <X className="size-5" />
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-[#03091D] border border-cyan-500/35 rounded-3xl w-full max-w-md p-6 space-y-4 shadow-[0_0_50px_rgba(0,229,255,0.25)] font-mono animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between border-b border-cyan-500/20 pb-3">
+              <span className="font-bold text-white text-sm uppercase">
+                Write Verified Review
+              </span>
+              <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-white">
+                <X className="size-4" />
               </button>
+            </div>
 
-              <h2 className="text-2xl font-black uppercase text-white">Write Verified Game Review</h2>
+            <form onSubmit={handleCreateReview} className="space-y-3 text-xs">
+              <div>
+                <label className="text-cyan-400 block mb-1 font-bold">Review Headline *</label>
+                <input
+                  type="text"
+                  required
+                  value={headline}
+                  onChange={(e) => setHeadline(e.target.value)}
+                  placeholder="e.g. Incredible highway driving physics"
+                  className="w-full rounded-xl bg-[#02050E] p-2.5 text-white border border-cyan-500/30 focus:outline-none focus:border-cyan-400"
+                />
+              </div>
 
-              <form onSubmit={handleCreateReview} className="mt-6 space-y-4">
-                <div>
-                  <label className="block text-xs font-semibold text-white mb-1">Select Title</label>
-                  <select
-                    value={gameSlug}
-                    onChange={(e) => setGameSlug(e.target.value)}
-                    className="w-full rounded-xl bg-black/40 px-4 py-3 text-sm text-white border border-white/10 focus:outline-none"
-                  >
-                    {games.map((g) => (
-                      <option key={g.id} value={g.slug}>{g.title}</option>
-                    ))}
-                  </select>
+              <div>
+                <label className="text-cyan-400 block mb-1 font-bold">Rating</label>
+                <div className="flex gap-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setRating(star)}
+                      className="p-1 cursor-pointer"
+                    >
+                      <Star className={cn("size-5", star <= rating ? "text-amber-400 fill-current" : "text-slate-600")} />
+                    </button>
+                  ))}
                 </div>
+              </div>
 
-                <div>
-                  <label className="block text-xs font-semibold text-white mb-1">Headline</label>
-                  <input
-                    type="text"
-                    required
-                    value={headline}
-                    onChange={(e) => setHeadline(e.target.value)}
-                    placeholder="Review headline..."
-                    className="w-full rounded-xl bg-black/40 px-4 py-3 text-sm text-white border border-white/10 focus:outline-none"
-                  />
-                </div>
+              <div>
+                <label className="text-cyan-400 block mb-1 font-bold">Feedback Details *</label>
+                <textarea
+                  required
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  placeholder="Share your driving experience, frame pacing, and controls feel..."
+                  rows={4}
+                  className="w-full rounded-xl bg-[#02050E] p-2.5 text-white border border-cyan-500/30 focus:outline-none focus:border-cyan-400 resize-none font-sans"
+                />
+              </div>
 
-                <div>
-                  <label className="block text-xs font-semibold text-white mb-1">Detailed Review</label>
-                  <textarea
-                    rows={4}
-                    required
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                    placeholder="Share your detailed gameplay review..."
-                    className="w-full rounded-xl bg-black/40 px-4 py-3 text-sm text-white border border-white/10 focus:outline-none"
-                  />
-                </div>
-
-                <div className="pt-4 flex items-center justify-end gap-3">
-                  <Button type="button" onClick={() => setIsModalOpen(false)} variant="ghost" size="sm">
-                    Cancel
-                  </Button>
-                  <Button type="submit" variant="glow" size="sm" className="rounded-full gap-2">
-                    <Save className="size-3.5" />
-                    <span>Submit Review</span>
-                  </Button>
-                </div>
-              </form>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              <div className="flex justify-end gap-2 pt-2 border-t border-cyan-500/20">
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="px-4 py-2 rounded-xl bg-[#02050E] border border-cyan-500/20 text-slate-400"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-black font-black uppercase tracking-wider shadow-[0_0_15px_rgba(0,229,255,0.35)] cursor-pointer"
+                >
+                  Publish Review
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       <Footer />
-    </SceneBackground>
+    </div>
   );
 }

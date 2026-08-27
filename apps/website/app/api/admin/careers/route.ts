@@ -20,7 +20,7 @@ export async function POST(request: Request) {
       data: {
         title: body.title,
         department: body.department || "Engineering",
-        location: body.location || "Bengaluru / Remote",
+        location: body.location || "100% Global Remote",
         type: body.type || "Full-Time",
         description: body.description || "",
         requirements: body.requirements || "",

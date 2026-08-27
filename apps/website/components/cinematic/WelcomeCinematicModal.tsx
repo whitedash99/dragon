@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight,
@@ -8,9 +9,18 @@ import {
   X,
   Flame,
   Zap,
-  Compass,
+  Sparkles,
+  Gamepad2,
+  Volume2,
+  VolumeX,
   Crown,
-  Sparkles
+  Layers,
+  ChevronRight,
+  Compass,
+  Play,
+  Tv,
+  CheckCircle2,
+  Info
 } from "lucide-react";
 import { DragonLogoIcon } from "@/components/ui/dragon-logo";
 import { soundFx } from "@/lib/sound-effects";
@@ -18,116 +28,135 @@ import { soundFx } from "@/lib/sound-effects";
 interface WelcomeCinematicModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onProceedToIdentity?: () => void;
   userName?: string;
   userEmail?: string;
 }
 
-const FLASHBACK_SLIDES = [
+// ═══════════════════════════════════════════════════════════════════════
+// THE REAL STUDIO FLAGSHIP CAR GAME (UNCHARTED DRIVE: BEYOND)
+// ═══════════════════════════════════════════════════════════════════════
+const REAL_STUDIO_GAMES = [
   {
-    id: "embers-of-valyria",
-    title: "EMBERS OF VALYRIA",
-    subtitle: "Open-World Dark Fantasy Action RPG",
-    statusBadge: "✦ THIS IS OUR NEWEST GAME",
-    flashbackHeading: "THIS IS OUR NEWEST REVOLUTION",
-    tagline: "Carve your legend in ancient dragonfire. Unscripted world events & fluid physical melee combat.",
-    palette: "from-blue-900/90 via-[#0a1838]/80 to-[#02040A]/95",
-    glow: "rgba(0, 140, 255, 0.7)",
-    accentColor: "#00d4ff",
-    icon: Flame,
-    releaseInfo: "3D Action RPG • PC (.exe) & Android (.apk)",
-  },
-  {
-    id: "neon-drift-overdrive",
-    title: "NEON DRIFT: OVERDRIVE",
-    subtitle: "Cyberpunk Anti-Gravity Tactical Racing",
-    statusBadge: "✦ HIGH-OCTANE CYBER ACTION",
-    flashbackHeading: "BREAK THE SOUND BARRIER AT MACH 5",
-    tagline: "Defy gravity on vertical highways of Neo-Tokyo with plasma weapons & synthwave reactive audio.",
-    palette: "from-cyan-900/90 via-[#051630]/80 to-[#02040A]/95",
-    glow: "rgba(0, 240, 255, 0.7)",
-    accentColor: "#00f0ff",
+    id: "uncharted-drive-beyond",
+    slug: "uncharted-drive-beyond",
+    title: "UNCHARTED DRIVE: BEYOND",
+    subtitle: "Next-Gen Open Highway Driving & Vehicle Dynamics",
+    dimension: "3D VOLUMETRIC HIGHWAY ENGINE",
+    statusBadge: "✦ STUDIO ORIGINAL FLAGSHIP",
+    heading: "HORIZONS, COASTAL HIGHWAYS & HYPER-CAR DRIFTS",
+    tagline:
+      "Experience high-speed highway journeys across majestic mountain horizons, golden sunsets, and uncharted asphalt curves with ultra-responsive vehicle dynamics.",
+    palette: "from-cyan-950/90 via-[#031526]/85 to-[#02040A]/95",
+    glow: "rgba(0, 229, 255, 0.75)",
+    accentColor: "#00E5FF",
     icon: Zap,
-    releaseInfo: "Early Access Live • DLSS 3.5 Ready",
+    platforms: "PC (.exe) • Android (.apk)",
+    coverUrl: "/images/uncharted-drive-banner.png",
+    neonBorder: "border-cyan-400/60 shadow-[0_0_40px_rgba(0,229,255,0.35)]",
+    badgeBg: "bg-cyan-500/15 border-cyan-400/50 text-cyan-300",
   },
-  {
-    id: "aetheria-void",
-    title: "AETHERIA: CHRONICLES OF THE VOID",
-    subtitle: "Deep Space Sci-Fi Exploration & Combat",
-    statusBadge: "✦ THIS IS YOUR PRE-ORDERED GAME",
-    flashbackHeading: "THIS IS YOUR PRE-ORDERED EXPEDITION",
-    tagline: "Traverse forbidden rifts, command starfleets, and conquer planetary frontiers in the deep void.",
-    palette: "from-indigo-950/90 via-[#080d24]/80 to-[#02040A]/95",
-    glow: "rgba(99, 102, 241, 0.7)",
-    accentColor: "#818cf8",
-    icon: Compass,
-    releaseInfo: "Upcoming Masterpiece • Pre-Orders Unlocked",
-  },
+];
+
+const UNIVERSE_STATEMENTS = [
+  "YOUR GAMES.",
+  "YOUR IDENTITY.",
+  "YOUR DRAGON.",
+  "YOUR UNIVERSE.",
 ];
 
 export function WelcomeCinematicModal({
   isOpen,
   onClose,
-  userName = "Dragon Warrior",
+  onProceedToIdentity,
+  userName = "Dragon Operative",
   userEmail = "",
 }: WelcomeCinematicModalProps) {
-  const [slideIndex, setSlideIndex] = useState(0);
-  const [stage, setStage] = useState<"INTRO_3D" | "SLIDESHOW">("INTRO_3D");
-  const [flicker, setFlicker] = useState(false);
+  const [scene, setScene] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
+  const [gameIndex, setGameIndex] = useState(0);
+  const [statementIndex, setStatementIndex] = useState(0);
+  const [isMuted, setIsMuted] = useState(false);
+  const [isPersisting, setIsPersisting] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const hasFinishedRef = useRef(false);
 
-  const firstName = (userName || userEmail || "Commander").split(" ")[0].split("@")[0];
+  const firstName = (userName || userEmail || "Operative").split(" ")[0].split("@")[0];
 
-  // Stage 1: 3D Emblem Reveal & Welcome Title for 2.8s
+  // ═══════════════════════════════════════════════════════════════════════
+  // SCENE TIMELINE CONTROLLER
+  // ═══════════════════════════════════════════════════════════════════════
   useEffect(() => {
     if (!isOpen) {
-      hasFinishedRef.current = false;
+      setScene(1);
+      setGameIndex(0);
+      setStatementIndex(0);
       return;
     }
-    setStage("INTRO_3D");
-    setSlideIndex(0);
-    hasFinishedRef.current = false;
 
-    // Cinematic Audio Sub-bass and Lightning Strike on Video Open
-    soundFx.playCinematicSubDrop();
-    soundFx.playLightningSpark();
+    if (!isMuted) {
+      soundFx.playCinematicSubDrop();
+      soundFx.playLightningSpark();
+    }
 
-    const timer = setTimeout(() => {
-      soundFx.playSlideWhoosh();
-      setStage("SLIDESHOW");
-    }, 2800);
+    const t1 = setTimeout(() => {
+      setScene(2);
+      if (!isMuted) soundFx.playLightningSpark();
+    }, 1800);
 
-    return () => clearTimeout(timer);
-  }, [isOpen]);
+    const t2 = setTimeout(() => {
+      setScene(3);
+      if (!isMuted) soundFx.playSlideWhoosh();
+    }, 3400);
 
-  // Stage 2: Play EXACTLY ONCE (Slide 0 -> 1 -> 2 -> Teleport to Dashboard)
+    const t3 = setTimeout(() => {
+      setScene(4);
+      if (!isMuted) soundFx.playSlideWhoosh();
+    }, 5200);
+
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+    };
+  }, [isOpen, isMuted]);
+
+  // Scene 04: Alternate games or progress
   useEffect(() => {
-    if (!isOpen || stage !== "SLIDESHOW" || hasFinishedRef.current) return;
+    if (!isOpen || scene !== 4) return;
 
-    const interval = setInterval(() => {
-      setSlideIndex((prevIndex) => {
-        if (prevIndex >= FLASHBACK_SLIDES.length - 1) {
-          clearInterval(interval);
-          hasFinishedRef.current = true;
-          // Finish and teleport automatically to dashboard
-          setTimeout(() => {
-            soundFx.playForgeComplete();
-            onClose();
-          }, 2600);
-          return prevIndex;
-        }
+    const gameTimer = setTimeout(() => {
+      if (gameIndex === 0) {
+        setGameIndex(1);
+        if (!isMuted) soundFx.playSlideWhoosh();
+      } else {
+        setScene(5);
+        setStatementIndex(0);
+        if (!isMuted) soundFx.playSlideWhoosh();
+      }
+    }, 3600);
 
-        soundFx.playSlideWhoosh();
-        setFlicker(true);
-        setTimeout(() => setFlicker(false), 200);
-        return prevIndex + 1;
-      });
-    }, 2800);
+    return () => clearTimeout(gameTimer);
+  }, [isOpen, scene, gameIndex, isMuted]);
 
-    return () => clearInterval(interval);
-  }, [isOpen, stage, onClose]);
+  // Scene 05: Universe Statements
+  useEffect(() => {
+    if (!isOpen || scene !== 5) return;
 
-  // 3D Dark Blue & Deep Black Particle Warp Field Engine
+    const stmtTimer = setTimeout(() => {
+      if (statementIndex < UNIVERSE_STATEMENTS.length - 1) {
+        setStatementIndex((prev) => prev + 1);
+        if (!isMuted) soundFx.playClick();
+      } else {
+        setScene(6);
+        if (!isMuted) soundFx.playForgeComplete();
+      }
+    }, 1200);
+
+    return () => clearTimeout(stmtTimer);
+  }, [isOpen, scene, statementIndex, isMuted]);
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // 3D COSMIC PARTICLE WARP CANVAS
+  // ═══════════════════════════════════════════════════════════════════════
   useEffect(() => {
     if (!isOpen || !canvasRef.current) return;
     const canvas = canvasRef.current;
@@ -143,16 +172,19 @@ export function WelcomeCinematicModal({
       width = canvas.width = window.innerWidth;
       height = canvas.height = window.innerHeight;
     };
-    window.addEventListener("resize", handleResize);
+    window.addEventListener("resize", handleResize, { passive: true });
 
-    const stars: { x: number; y: number; z: number; o: number }[] = [];
-    const numStars = 300;
+    const stars: { x: number; y: number; z: number; o: number; color: string }[] = [];
+    const colors = ["#00E5FF", "#1685FF", "#7C3CFF", "#A855F7", "#FF2BD6", "#00FFC6"];
+    const numStars = width < 768 ? 120 : 240;
+
     for (let i = 0; i < numStars; i++) {
       stars.push({
         x: (Math.random() - 0.5) * width * 2,
         y: (Math.random() - 0.5) * height * 2,
         z: Math.random() * width,
-        o: Math.random() * 0.9 + 0.1,
+        o: Math.random() * 0.8 + 0.2,
+        color: colors[Math.floor(Math.random() * colors.length)],
       });
     }
 
@@ -165,23 +197,25 @@ export function WelcomeCinematicModal({
 
       for (let i = 0; i < numStars; i++) {
         const star = stars[i];
-        star.z -= 6.5;
+        star.z -= 6.0;
         if (star.z <= 0) {
           star.z = width;
           star.x = (Math.random() - 0.5) * width * 2;
           star.y = (Math.random() - 0.5) * height * 2;
         }
 
-        const k = 280 / star.z;
+        const k = 260 / star.z;
         const px = star.x * k + cx;
         const py = star.y * k + cy;
 
         if (px >= 0 && px <= width && py >= 0 && py <= height) {
-          const size = Math.max(0.7, (1 - star.z / width) * 3.8);
+          const size = Math.max(0.6, (1 - star.z / width) * 3.4);
           ctx.beginPath();
           ctx.arc(px, py, size, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(0, 240, 255, ${star.o * (1 - star.z / width)})`;
+          ctx.fillStyle = star.color;
+          ctx.globalAlpha = star.o * (1 - star.z / width);
           ctx.fill();
+          ctx.globalAlpha = 1;
         }
       }
 
@@ -198,8 +232,36 @@ export function WelcomeCinematicModal({
 
   if (!isOpen) return null;
 
-  const currentSlide = FLASHBACK_SLIDES[slideIndex] || FLASHBACK_SLIDES[0];
-  const IconComponent = currentSlide.icon;
+  const currentGame = REAL_STUDIO_GAMES[gameIndex] || REAL_STUDIO_GAMES[0];
+  const GameIcon = currentGame.icon;
+
+  const handleProceed = async () => {
+    if (isPersisting) return;
+    setIsPersisting(true);
+
+    if (!isMuted) {
+      soundFx.playClick();
+      soundFx.playForgeComplete();
+    }
+
+    // Persist Welcome completion to PostgreSQL
+    try {
+      await fetch("/api/user/onboarding", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ step: "WELCOME_COMPLETE" }),
+      });
+    } catch (err) {
+      console.warn("Non-fatal onboarding sync warning:", err);
+    } finally {
+      setIsPersisting(false);
+      if (onProceedToIdentity) {
+        onProceedToIdentity();
+      } else {
+        onClose();
+      }
+    }
+  };
 
   return (
     <AnimatePresence>
@@ -209,218 +271,368 @@ export function WelcomeCinematicModal({
         exit={{ opacity: 0 }}
         className="fixed inset-0 z-[300] flex items-center justify-center bg-[#02040A] overflow-hidden font-sans select-none"
       >
-        {/* 3D Particle Space Warp */}
+        {/* 3D Particle Space Canvas */}
         <canvas ref={canvasRef} className="absolute inset-0 z-0 pointer-events-none" />
 
-        {/* Volumetric Dark Blue & Black Cosmic Atmosphere */}
-        <div
-          className="absolute inset-0 opacity-60 transition-all duration-700 pointer-events-none z-0"
-          style={{
-            background: `radial-gradient(circle at 50% 35%, ${currentSlide.glow} 0%, rgba(3, 10, 28, 0.85) 45%, rgba(2, 4, 10, 0.98) 75%)`,
-          }}
-        />
+        {/* Ambient Volumetric Multi-Neon Auroras */}
+        <div className="absolute -top-48 -left-48 w-[650px] h-[650px] bg-[#00E5FF]/15 rounded-full blur-[180px] pointer-events-none z-0 animate-pulse" />
+        <div className="absolute -bottom-48 -right-48 w-[650px] h-[650px] bg-[#FF2BD6]/15 rounded-full blur-[180px] pointer-events-none z-0 animate-pulse" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[750px] h-[750px] bg-[#7C3CFF]/15 rounded-full blur-[200px] pointer-events-none z-0" />
 
-        {/* Laser Light Sweeps */}
-        <div className="absolute -top-40 -left-40 w-[600px] h-[600px] bg-blue-600/15 rounded-full blur-[180px] pointer-events-none z-0" />
-        <div className="absolute -bottom-40 -right-40 w-[600px] h-[600px] bg-cyan-500/15 rounded-full blur-[180px] pointer-events-none z-0" />
+        {/* Holographic Scanline Grid */}
+        <div className="absolute inset-0 pointer-events-none z-10 bg-[linear-gradient(rgba(0,229,255,0.03)_1px,transparent_1px)] bg-[size:100%_4px] opacity-40" />
 
-        {/* Holographic Scanline & Flickering Overlay */}
-        <div
-          className={`absolute inset-0 pointer-events-none z-10 bg-[linear-gradient(rgba(0,240,255,0.03)_1px,transparent_1px)] bg-[size:100%_4px] transition-opacity duration-100 ${
-            flicker ? "opacity-90" : "opacity-35"
-          }`}
-        />
-
-        {/* Top Control Bar with Official Dragon Crest Logo */}
-        <div className="absolute top-6 inset-x-6 sm:inset-x-12 z-30 flex items-center justify-between">
-          <div className="flex items-center gap-3.5">
-            <div className="relative group">
-              <DragonLogoIcon size="md" className="shadow-[0_0_25px_rgba(0,240,255,0.5)] border-cyan-400/60" />
+        {/* ═══════════════════════════════════════════════════════════════════ */}
+        {/* TOP CONTROL BAR                                                     */}
+        {/* ═══════════════════════════════════════════════════════════════════ */}
+        <div className="absolute top-6 inset-x-6 sm:inset-x-12 z-40 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="p-1 rounded-xl bg-[#03091D]/80 border border-cyan-500/30 shadow-[0_0_20px_rgba(0,229,255,0.3)]">
+              <DragonLogoIcon size="sm" />
             </div>
             <div>
-              <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-cyan-400 block drop-shadow-[0_0_8px_rgba(0,240,255,0.6)]">
-                DRAGON STUDIOS CINEMATICS
+              <span className="text-[10px] font-mono font-black uppercase tracking-[0.2em] text-transparent bg-clip-text bg-gradient-to-r from-[#00E5FF] via-[#A855F7] to-[#FF2BD6] block">
+                DRAGON GAMING STUDIOS
               </span>
-              <span className="text-xs text-white font-bold tracking-tight">
-                3D & 2D Interactive Showcase
-              </span>
+              <span className="text-[11px] text-slate-300 font-mono">Cinematic Portal Experience</span>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <button
               type="button"
-              onClick={onClose}
-              className="px-4 py-2 rounded-xl bg-[#060D20]/80 hover:bg-blue-900/40 text-white text-xs font-mono font-bold transition-all cursor-pointer backdrop-blur-md border border-cyan-500/30 flex items-center gap-1.5 shadow-lg shadow-blue-950/50"
+              onClick={() => setIsMuted(!isMuted)}
+              className="p-2.5 rounded-xl bg-[#03091D]/85 hover:bg-cyan-950/60 text-cyan-300 text-xs transition-all cursor-pointer backdrop-blur-xl border border-cyan-500/30 shadow-lg"
+              title={isMuted ? "Unmute Sound" : "Mute Sound"}
             >
-              <span>Skip Intro</span>
-              <X className="size-3.5" />
+              {isMuted ? <VolumeX className="size-4" /> : <Volume2 className="size-4" />}
+            </button>
+
+            <button
+              type="button"
+              onClick={handleProceed}
+              disabled={isPersisting}
+              className="px-4 py-2 rounded-xl bg-[#03091D]/90 hover:bg-white/10 text-slate-200 hover:text-white text-xs font-mono font-bold transition-all cursor-pointer backdrop-blur-xl border border-white/20 flex items-center gap-1.5 shadow-lg active:scale-95"
+            >
+              <span>{isPersisting ? "CONNECTING..." : "ENTER FORGE"}</span>
+              <ChevronRight className="size-3.5 text-cyan-400" />
             </button>
           </div>
         </div>
 
-        {/* ========================================================================= */}
-        {/* STAGE 1: 3D DRAGON CREST & TITLE REVEAL (DARK BLUE & DEEP BLACK)          */}
-        {/* ========================================================================= */}
-        {stage === "INTRO_3D" && (
+        {/* ═══════════════════════════════════════════════════════════════════ */}
+        {/* SCENE 01: FULL SCREEN DARKNESS & NEON ENERGY CONVERGENCE            */}
+        {/* ═══════════════════════════════════════════════════════════════════ */}
+        {scene === 1 && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.8, filter: "blur(14px)" }}
-            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-            exit={{ opacity: 0, scale: 1.15, filter: "blur(12px)" }}
-            transition={{ duration: 0.7 }}
-            className="text-center space-y-6 max-w-4xl px-6 relative z-20"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="relative z-20 flex flex-col items-center justify-center space-y-6 text-center max-w-lg px-6"
           >
-            {/* Center Giant 3D Dragon Logo Reveal */}
-            <motion.div
-              initial={{ scale: 0.5, rotateY: -30, opacity: 0 }}
-              animate={{ scale: 1, rotateY: 0, opacity: 1 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-              className="flex justify-center"
+            <div className="relative w-72 h-1 overflow-hidden rounded-full bg-white/5">
+              <motion.div
+                initial={{ x: "-100%" }}
+                animate={{ x: "100%" }}
+                transition={{ repeat: Infinity, duration: 1.2, ease: "easeInOut" }}
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-[#00E5FF] to-transparent"
+              />
+              <motion.div
+                initial={{ x: "100%" }}
+                animate={{ x: "-100%" }}
+                transition={{ repeat: Infinity, duration: 1.4, ease: "easeInOut" }}
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-[#FF2BD6] to-transparent"
+              />
+              <motion.div
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: 1.6, ease: "easeOut" }}
+                className="absolute inset-0 bg-gradient-to-r from-[#00E5FF] via-[#7C3CFF] to-[#FF2BD6] shadow-[0_0_20px_#00E5FF]"
+              />
+            </div>
+
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="text-xs font-mono uppercase tracking-[0.3em] text-cyan-400/80 drop-shadow-[0_0_10px_#00E5FF]"
             >
-              <div className="p-3 rounded-3xl bg-gradient-to-b from-[#0e214d] via-[#05112e] to-[#02050f] border-2 border-cyan-400 shadow-[0_0_50px_rgba(0,240,255,0.7)]">
-                <DragonLogoIcon size="xl" className="w-24 h-24 sm:w-28 sm:h-28" />
-              </div>
-            </motion.div>
+              INITIALIZING DRAGON UNIVERSE...
+            </motion.p>
+          </motion.div>
+        )}
+
+        {/* ═══════════════════════════════════════════════════════════════════ */}
+        {/* SCENE 02: 3D DRAGON CREST REVEAL                                   */}
+        {/* ═══════════════════════════════════════════════════════════════════ */}
+        {scene === 2 && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, filter: "blur(10px)" }}
+            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+            exit={{ opacity: 0, scale: 1.08, filter: "blur(8px)" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="relative z-20 flex flex-col items-center justify-center space-y-6 text-center max-w-xl px-6"
+          >
+            <div className="relative p-6 rounded-3xl bg-gradient-to-b from-[#08183d]/90 via-[#03091D]/95 to-[#02040A] border-2 border-cyan-400/60 shadow-[0_0_80px_rgba(0,229,255,0.4),0_0_120px_rgba(255,43,214,0.2)]">
+              <DragonLogoIcon size="xl" className="w-28 h-28 sm:w-36 sm:h-36 drop-shadow-[0_0_35px_#00E5FF]" />
+            </div>
 
             <motion.div
-              initial={{ y: 20, opacity: 0 }}
+              initial={{ y: 15, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.3, duration: 0.5 }}
-              className="inline-flex items-center gap-2 rounded-full border border-cyan-500/60 bg-[#05102a]/80 px-5 py-2 text-xs font-mono font-bold uppercase tracking-widest text-cyan-300 backdrop-blur-xl shadow-[0_0_30px_rgba(0,240,255,0.4)]"
+              transition={{ delay: 0.3 }}
+              className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-gradient-to-r from-cyan-500/20 via-purple-500/20 to-pink-500/20 border border-cyan-400/40 text-xs font-mono font-black text-cyan-300 tracking-widest shadow-[0_0_25px_rgba(0,229,255,0.3)]"
             >
-              <Crown className="size-4 text-amber-400 animate-pulse" />
-              <span>DRAGONID SECURE AUTHENTICATION CONFIRMED</span>
-            </motion.div>
-
-            <motion.div
-              initial={{ y: 30, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.5, duration: 0.8 }}
-              className="space-y-3"
-            >
-              <h1 className="text-4xl sm:text-7xl font-black uppercase tracking-tight text-white font-heading drop-shadow-[0_15px_40px_rgba(0,0,0,0.95)]">
-                WELCOME TO <br />
-                <span className="bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-400 bg-clip-text text-transparent drop-shadow-[0_0_45px_rgba(0,240,255,0.8)]">
-                  DRAGON STUDIOS
-                </span>
-              </h1>
-              <p className="text-base sm:text-xl text-slate-300 font-sans max-w-2xl mx-auto leading-relaxed">
-                Welcome back, <span className="text-cyan-300 font-bold">{firstName}</span>! Initializing your player command deck...
-              </p>
+              <Crown className="size-4 text-amber-400" />
+              <span>DRAGON GAMING STUDIOS</span>
             </motion.div>
           </motion.div>
         )}
 
-        {/* ========================================================================= */}
-        {/* STAGE 2: 3D SLIDESHOW & FLASHBACK GAME SHOWCASE (PLAYS ONCE)              */}
-        {/* ========================================================================= */}
-        {stage === "SLIDESHOW" && (
+        {/* ═══════════════════════════════════════════════════════════════════ */}
+        {/* SCENE 03: MAJESTIC TITLE REVEAL                                     */}
+        {/* ═══════════════════════════════════════════════════════════════════ */}
+        {scene === 3 && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6 }}
-            className="w-full max-w-5xl px-6 relative z-20 space-y-6"
+            initial={{ opacity: 0, y: 30, filter: "blur(12px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            exit={{ opacity: 0, y: -20, filter: "blur(10px)" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="relative z-20 text-center space-y-5 max-w-4xl px-6"
           >
-            {/* Slide Progress Indicator Bar */}
-            <div className="flex items-center justify-between gap-3 pb-2">
-              <div className="flex items-center gap-2 text-xs font-mono font-bold text-cyan-400 uppercase tracking-widest">
-                <Sparkles className="size-4 text-amber-400 animate-spin" style={{ animationDuration: "6s" }} />
-                <span>DRAGON STUDIOS GAMES SHOWCASE</span>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="text-xs sm:text-sm font-mono font-black uppercase tracking-[0.3em] text-cyan-300"
+            >
+              WELCOME TO
+            </motion.p>
+
+            <h1 className="text-4xl sm:text-7xl lg:text-8xl font-black uppercase tracking-tight text-white font-heading drop-shadow-[0_20px_50px_rgba(0,0,0,0.95)]">
+              <span className="bg-gradient-to-r from-[#00E5FF] via-[#1685FF] via-[#7C3CFF] to-[#FF2BD6] bg-clip-text text-transparent drop-shadow-[0_0_50px_rgba(0,229,255,0.6)]">
+                DRAGON GAMING
+              </span>
+              <br />
+              <span className="text-white">STUDIOS</span>
+            </h1>
+
+            <p className="text-sm sm:text-lg text-slate-300 font-sans max-w-2xl mx-auto leading-relaxed">
+              Welcome back, <span className="text-cyan-300 font-bold">{firstName}</span>. Connecting to verified studio game systems...
+            </p>
+          </motion.div>
+        )}
+
+        {/* ───────────────────────────────────────────────────────────────── */}
+        {/* SCENE 04: STUDIO FLAGSHIP GAME (UNCHARTED DRIVE: BEYOND)         */}
+        {/* ───────────────────────────────────────────────────────────────── */}
+        {scene === 4 && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.96 }}
+            transition={{ duration: 0.6 }}
+            className="w-full max-w-4xl px-6 relative z-20 space-y-5"
+          >
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <div className="flex items-center gap-2 text-xs font-mono font-bold text-cyan-300 uppercase tracking-widest">
+                <Sparkles className="size-4 text-cyan-400" />
+                <span>STUDIO ORIGINAL REPERTOIRE (2 REAL GAMES)</span>
               </div>
 
-              {/* Progress Bars */}
               <div className="flex items-center gap-2">
-                {FLASHBACK_SLIDES.map((slide, idx) => (
-                  <div
-                    key={slide.id}
-                    className={`h-1.5 rounded-full transition-all duration-500 ${
-                      idx === slideIndex
-                        ? "w-10 bg-cyan-400 shadow-[0_0_12px_#00f0ff]"
-                        : idx < slideIndex
-                        ? "w-4 bg-emerald-400/80"
-                        : "w-4 bg-white/20"
+                {REAL_STUDIO_GAMES.map((g, idx) => (
+                  <button
+                    key={g.id}
+                    onClick={() => {
+                      setGameIndex(idx);
+                      if (!isMuted) soundFx.playSlideWhoosh();
+                    }}
+                    className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                      idx === gameIndex
+                        ? "w-10 bg-gradient-to-r from-[#00E5FF] to-[#FF2BD6] shadow-[0_0_12px_#00E5FF]"
+                        : "w-4 bg-white/20 hover:bg-white/40"
                     }`}
                   />
                 ))}
               </div>
             </div>
 
-            {/* Main 3D Slideshow Banner Card */}
             <AnimatePresence mode="wait">
               <motion.div
-                key={currentSlide.id}
-                initial={{ opacity: 0, x: 60, rotateY: 8, filter: "blur(6px)" }}
-                animate={{ opacity: 1, x: 0, rotateY: 0, filter: "blur(0px)" }}
-                exit={{ opacity: 0, x: -60, rotateY: -8, filter: "blur(6px)" }}
-                transition={{ duration: 0.5, ease: "easeOut" }}
-                className="rounded-3xl bg-gradient-to-b from-[#05112e]/95 via-[#030a1c]/98 to-[#02040A] border-2 border-cyan-500/40 p-5 sm:p-10 shadow-[0_20px_90px_rgba(0,10,35,0.9)] backdrop-blur-2xl relative overflow-hidden"
+                key={currentGame.id}
+                initial={{ opacity: 0, x: 40, filter: "blur(6px)" }}
+                animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+                exit={{ opacity: 0, x: -40, filter: "blur(6px)" }}
+                transition={{ duration: 0.45 }}
+                className={`rounded-3xl bg-gradient-to-b from-[#061230]/95 via-[#03091D]/98 to-[#02040A] border-2 ${currentGame.neonBorder} p-6 sm:p-8 backdrop-blur-2xl relative overflow-hidden`}
               >
-                {/* Dynamic Dark Blue Atmosphere Glow */}
-                <div
-                  className="absolute -top-32 -right-32 w-96 h-96 rounded-full blur-[140px] pointer-events-none opacity-70"
-                  style={{ background: currentSlide.glow }}
-                />
-
-                <div className="relative z-10 space-y-4 sm:space-y-6">
-                  {/* Flashback Badge */}
-                  <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/40 bg-cyan-500/10 px-3 sm:px-4 py-1 sm:py-1.5 text-[10px] sm:text-xs font-mono font-black uppercase tracking-widest text-cyan-300 backdrop-blur-md shadow-lg shadow-cyan-500/20">
-                    <IconComponent className="size-3.5 sm:size-4" style={{ color: currentSlide.accentColor }} />
-                    <span>{currentSlide.statusBadge}</span>
-                  </div>
-
-                  {/* Title & Flashback Headline */}
-                  <div className="space-y-1.5 sm:space-y-2">
-                    <h3 className="text-[11px] sm:text-sm font-mono font-bold text-cyan-300 uppercase tracking-widest">
-                      {currentSlide.subtitle}
-                    </h3>
-                    <h2 className="text-2xl sm:text-6xl font-black uppercase text-white tracking-tight font-heading drop-shadow-[0_10px_30px_rgba(0,0,0,0.9)] break-words">
-                      {currentSlide.title}
-                    </h2>
-                    <p className="text-sm sm:text-xl font-black text-cyan-300 font-heading uppercase pt-0.5 drop-shadow-[0_0_20px_rgba(0,240,255,0.6)]">
-                      &ldquo;{currentSlide.flashbackHeading}&rdquo;
-                    </p>
-                    <p className="text-xs sm:text-base text-slate-300 font-sans max-w-2xl pt-1 leading-relaxed">
-                      {currentSlide.tagline}
-                    </p>
-                  </div>
-
-                  {/* Badges & Meta */}
-                  <div className="flex flex-wrap items-center gap-2 sm:gap-3 pt-1">
-                    <div className="px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-[10px] sm:text-xs font-mono font-bold flex items-center gap-1.5">
-                      <ShieldCheck className="size-3.5 sm:size-4 text-emerald-400" />
-                      <span>{currentSlide.releaseInfo}</span>
+                <div className="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                  <div className="md:col-span-8 space-y-4">
+                    <div className={`inline-flex items-center gap-2 rounded-full border px-3.5 py-1 text-xs font-mono font-black uppercase tracking-wider ${currentGame.badgeBg}`}>
+                      <GameIcon className="size-3.5" style={{ color: currentGame.accentColor }} />
+                      <span>{currentGame.statusBadge}</span>
                     </div>
-                    <div className="px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-xl bg-blue-950/40 border border-blue-500/30 text-cyan-200 text-[10px] sm:text-xs font-mono font-bold">
-                      PC (.exe) • Mobile (.apk)
+
+                    <div className="space-y-1">
+                      <div className="text-[10px] font-mono uppercase text-slate-400 tracking-wider">
+                        {currentGame.dimension}
+                      </div>
+                      <h2 className="text-3xl sm:text-4xl font-black uppercase text-white font-heading tracking-tight drop-shadow-[0_10px_30px_rgba(0,0,0,0.9)]">
+                        {currentGame.title}
+                      </h2>
+                      <p className="text-xs font-mono font-bold uppercase" style={{ color: currentGame.accentColor }}>
+                        &ldquo;{currentGame.heading}&rdquo;
+                      </p>
+                      <p className="text-xs sm:text-sm text-slate-300 font-sans pt-1 leading-relaxed">
+                        {currentGame.tagline}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2 pt-1">
+                      <div className="px-3 py-1 rounded-xl bg-cyan-500/15 border border-cyan-400/30 text-cyan-200 text-[11px] font-mono font-bold">
+                        {currentGame.platforms}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="md:col-span-4 flex justify-center">
+                    <div className="relative w-full max-w-[220px] aspect-[4/3] rounded-2xl overflow-hidden border-2 border-cyan-400/50 shadow-[0_0_30px_rgba(0,229,255,0.3)]">
+                      <Image
+                        src={currentGame.coverUrl}
+                        alt={currentGame.title}
+                        fill
+                        className="object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                      <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between">
+                        <span className="text-[9px] font-mono font-bold text-cyan-300 uppercase px-2 py-0.5 rounded bg-black/80 border border-cyan-400/40">
+                          STUDIO RELEASE
+                        </span>
+                        <Gamepad2 className="size-4 text-cyan-400" />
+                      </div>
                     </div>
                   </div>
                 </div>
               </motion.div>
             </AnimatePresence>
+          </motion.div>
+        )}
 
-            {/* Bottom Teleport CTA Button */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 pt-2">
-              <div className="text-[11px] sm:text-xs font-mono text-slate-400 flex items-center gap-2">
-                <Zap className="size-3.5 sm:size-4 text-cyan-400" />
-                <span>Signed in as <strong className="text-white">{userName || userEmail}</strong></span>
+        {/* ═══════════════════════════════════════════════════════════════════ */}
+        {/* SCENE 05: UNIVERSE STATEMENTS                                       */}
+        {/* ═══════════════════════════════════════════════════════════════════ */}
+        {scene === 5 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="relative z-20 flex flex-col items-center justify-center space-y-6 text-center max-w-2xl px-6"
+          >
+            <AnimatePresence mode="wait">
+              <motion.h2
+                key={statementIndex}
+                initial={{ opacity: 0, scale: 0.85, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 1.15, y: -20 }}
+                transition={{ duration: 0.45 }}
+                className="text-4xl sm:text-7xl font-black uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-[#00E5FF] via-[#7C3CFF] to-[#FF2BD6] font-heading drop-shadow-[0_0_40px_rgba(0,229,255,0.8)]"
+              >
+                {UNIVERSE_STATEMENTS[statementIndex]}
+              </motion.h2>
+            </AnimatePresence>
+          </motion.div>
+        )}
+
+        {/* ═══════════════════════════════════════════════════════════════════ */}
+        {/* SCENE 06: OFFICIAL BRIEFING & DRAGON ID CALL TO ACTION              */}
+        {/* ═══════════════════════════════════════════════════════════════════ */}
+        {scene === 6 && (
+          <motion.div
+            initial={{ opacity: 0, y: 30, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.6 }}
+            className="relative z-20 flex flex-col items-center justify-center space-y-6 text-center max-w-2xl px-6"
+          >
+            {/* Official Transmission Player Box */}
+            <div className="w-full p-6 rounded-3xl bg-[#03091D]/90 border-2 border-cyan-400/60 shadow-[0_0_50px_rgba(0,229,255,0.4)] backdrop-blur-2xl space-y-4">
+              <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                <div className="flex items-center gap-2">
+                  <Tv className="size-4 text-cyan-400 animate-pulse" />
+                  <span className="text-[11px] font-mono font-bold text-cyan-300 tracking-widest uppercase">
+                    OFFICIAL UNIVERSE TRANSMISSION
+                  </span>
+                </div>
+                <div className="px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-[10px] font-mono font-bold text-amber-300 flex items-center gap-1.5">
+                  <Info className="size-3 text-amber-400" />
+                  <span>STUDIO PRODUCTION PIPELINE</span>
+                </div>
               </div>
 
+              <div className="space-y-2 text-left">
+                <h3 className="text-xl sm:text-2xl font-black uppercase text-white font-heading tracking-tight">
+                  YOUR DRAGON ID COMMAND CENTER IS READY
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-300 font-sans leading-relaxed">
+                  Forge your verified Dragon ID callsign, customize your legendary character badge, and unlock direct access to studio downloads, games arsenal, and support signals.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+                <div className="p-3 rounded-2xl bg-cyan-950/30 border border-cyan-500/25 text-left">
+                  <div className="text-[10px] font-mono text-cyan-300 font-bold uppercase">2 ORIGINAL</div>
+                  <div className="text-xs font-bold text-white">Active Games</div>
+                </div>
+                <div className="p-3 rounded-2xl bg-purple-950/30 border border-purple-500/25 text-left">
+                  <div className="text-[10px] font-mono text-purple-300 font-bold uppercase">SECURE B2</div>
+                  <div className="text-xs font-bold text-white">Fast Downloads</div>
+                </div>
+                <div className="p-3 rounded-2xl bg-pink-950/30 border border-pink-500/25 text-left">
+                  <div className="text-[10px] font-mono text-pink-300 font-bold uppercase">DRAGON ID</div>
+                  <div className="text-xs font-bold text-white">Universal Profile</div>
+                </div>
+                <div className="p-3 rounded-2xl bg-emerald-950/30 border border-emerald-500/25 text-left">
+                  <div className="text-[10px] font-mono text-emerald-300 font-bold uppercase">VIP SIGNALS</div>
+                  <div className="text-xs font-bold text-white">Player Support</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center gap-4 w-full justify-center pt-2">
               <button
                 type="button"
-                onClick={() => {
-                  soundFx.playClick();
-                  soundFx.playForgeComplete();
-                  onClose();
-                }}
-                className="w-full sm:w-auto px-8 py-3.5 sm:px-10 sm:py-4 rounded-2xl bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-500 text-black font-black text-xs font-mono uppercase tracking-widest shadow-[0_0_30px_rgba(0,240,255,0.4)] hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2"
+                onClick={handleProceed}
+                disabled={isPersisting}
+                className="w-full sm:w-auto min-h-[50px] px-8 py-3.5 rounded-2xl bg-gradient-to-r from-[#00E5FF] via-[#1685FF] to-[#7C3CFF] text-[#020617] font-black text-xs font-mono uppercase tracking-widest shadow-[0_0_35px_rgba(0,229,255,0.6)] hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2"
               >
-                <span>SETUP DRAGONID & ENTER DASHBOARD →</span>
-                <ArrowRight className="size-4 text-black" />
+                <span>{isPersisting ? "SAVING ONBOARDING..." : "FORGE YOUR DRAGON ID"}</span>
+                <ArrowRight className="size-4 text-[#020617]" />
               </button>
             </div>
           </motion.div>
         )}
+
+        {/* ═══════════════════════════════════════════════════════════════════ */}
+        {/* SCENE INDICATOR PILLS                                               */}
+        {/* ═══════════════════════════════════════════════════════════════════ */}
+        <div className="absolute bottom-6 inset-x-0 z-40 flex items-center justify-center gap-2">
+          {[1, 2, 3, 4, 5, 6].map((step) => (
+            <button
+              key={step}
+              onClick={() => {
+                setScene(step as any);
+                if (!isMuted) soundFx.playClick();
+              }}
+              className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                scene === step
+                  ? "w-8 bg-gradient-to-r from-[#00E5FF] to-[#FF2BD6] shadow-[0_0_10px_#00E5FF]"
+                  : "w-2.5 bg-white/20 hover:bg-white/40"
+              }`}
+            />
+          ))}
+        </div>
       </motion.div>
     </AnimatePresence>
   );
 }
+

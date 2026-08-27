@@ -1,45 +1,50 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { motion } from "framer-motion";
+import Link from "next/link";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { Navbar } from "@/components/navbar/Navbar";
-import { 
-  ShieldCheck, 
-  Database, 
-  RefreshCw, 
-  Activity, 
-  CheckCircle2,
+import {
+  ShieldCheck,
+  ShieldAlert,
   KeyRound,
-  Smartphone,
+  Database,
+  RefreshCw,
+  CheckCircle2,
   AlertTriangle,
+  Smartphone,
+  Activity,
   ArrowUpRight
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/cn";
-import Link from "next/link";
+import { GlassCard, GlassBadge, GlassButton, GlassStat } from "@/components/ui/glass";
 
-interface PostureComponent {
-  name: string;
-  status: string;
-  passed: boolean;
-  points: number;
-  explanation: string;
+interface SecurityPosture {
+  score?: number;
+  maxScore?: number;
+  warnings?: string[];
+  components?: { name: string; status: string; passed: boolean; points: number; explanation: string }[];
 }
 
-interface AuditLogItem {
+interface SecurityTelemetry {
+  activeSessions?: number;
+  passkeysCount?: number;
+  failedLogins?: number;
+}
+
+interface AuditLogRecord {
   id: string;
   action: string;
   user: string;
-  details?: string;
+  details: string;
   ip: string;
   time: string;
 }
 
-interface TrustedDeviceItem {
+interface TrustedDevice {
   id: string;
-  userEmail: string;
   userName: string;
+  userEmail: string;
   browser: string;
   os: string;
   ipAddress: string;
@@ -47,69 +52,55 @@ interface TrustedDeviceItem {
 }
 
 export default function SecurityPage() {
-  const [telemetry, setTelemetry] = useState<{
-    activeSessions?: number;
-    passkeysCount?: number;
-    trustedDevicesCount?: number;
-    dragonKeysActive?: number;
-    failedLogins?: number;
-    totalAuditsCount?: number;
-  }>({});
-
-  const [posture, setPosture] = useState<{
-    score?: number;
-    maxScore?: number;
-    components?: PostureComponent[];
-    warnings?: string[];
-    recommendations?: string[];
-  }>({});
-
-  const [auditLogs, setAuditLogs] = useState<AuditLogItem[]>([]);
-  const [trustedDevices, setTrustedDevices] = useState<TrustedDeviceItem[]>([]);
+  const [posture, setPosture] = useState<SecurityPosture>({});
+  const [telemetry, setTelemetry] = useState<SecurityTelemetry>({});
+  const [auditLogs, setAuditLogs] = useState<AuditLogRecord[]>([]);
+  const [trustedDevices, setTrustedDevices] = useState<TrustedDevice[]>([]);
   const [loading, setLoading] = useState(true);
   const [backingUp, setBackingUp] = useState(false);
   const [backupSuccess, setBackupSuccess] = useState(false);
-  const [categoryFilter, setCategoryFilter] = useState("ALL");
   const [viewMode, setViewMode] = useState<"posture" | "audits" | "devices">("posture");
+  const [categoryFilter, setCategoryFilter] = useState("ALL");
 
-  const fetchSecurityData = useCallback(async () => {
+  const fetchSecurity = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch("/api/security");
       const data = await res.json();
       if (data.success) {
-        if (data.telemetry) setTelemetry(data.telemetry);
-        if (data.posture) setPosture(data.posture);
-        if (Array.isArray(data.auditLogs)) setAuditLogs(data.auditLogs);
-        if (Array.isArray(data.trustedDevices)) setTrustedDevices(data.trustedDevices);
+        setPosture(data.posture || {});
+        setTelemetry(data.telemetry || {});
+        setAuditLogs(data.auditLogs || []);
+        setTrustedDevices(data.trustedDevices || []);
       }
     } catch (e) {
-      console.error("Error fetching security data", e);
+      console.error("Fetch security error", e);
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchSecurityData();
-  }, [fetchSecurityData]);
+    fetchSecurity();
+  }, [fetchSecurity]);
 
   const handleTriggerBackup = async () => {
     setBackingUp(true);
+    setBackupSuccess(false);
     try {
       const res = await fetch("/api/security", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "create_backup" }),
+        body: JSON.stringify({ action: "createSnapshot" }),
       });
       const data = await res.json();
       if (data.success) {
         setBackupSuccess(true);
+        fetchSecurity();
         setTimeout(() => setBackupSuccess(false), 3000);
-        fetchSecurityData();
       }
-    } catch (e) {
-      console.error("Trigger backup error", e);
+    } catch (err) {
+      console.error("Snapshot error", err);
     } finally {
       setBackingUp(false);
     }
@@ -125,71 +116,79 @@ export default function SecurityPage() {
   });
 
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans select-none">
+    <div className="flex min-h-screen w-full bg-[#02040A] text-slate-100 font-sans antialiased overflow-hidden select-none font-mono">
       <Sidebar />
 
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
         <Navbar />
 
-        <motion.main
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.25, ease: "easeOut" }}
-          className="flex-1 overflow-y-auto p-8 max-w-7xl mx-auto w-full space-y-8 page-transition-fast"
-        >
+        <main className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-6 max-w-7xl mx-auto w-full">
           {/* Header Bar */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 border-b border-slate-200 dark:border-slate-800 pb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-cyan-500/20">
             <div>
-              <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+              <div className="text-xs font-mono font-bold text-cyan-400/80 uppercase tracking-wider mb-1">
                 Dragon Security Governance
               </div>
-              <h1 className="text-2xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">Security Posture & Controls</h1>
+              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">Security Posture & Controls</h1>
             </div>
 
             <div className="flex items-center gap-3">
               <Link href="/secrets">
-                <Button variant="outline" size="sm" className="rounded-xl text-xs gap-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 shadow-xs">
-                  <KeyRound className="size-3.5 text-purple-600 dark:text-purple-400" />
+                <button className="px-4 py-2 rounded-xl text-xs font-mono font-bold flex items-center gap-2 border border-cyan-500/30 bg-[#03091D] text-cyan-300 hover:text-white hover:border-cyan-400 shadow-[0_0_15px_rgba(0,0,0,0.6)] cursor-pointer">
+                  <KeyRound className="size-3.5 text-cyan-400" />
                   <span>Dragon Secrets Vault</span>
                   <ArrowUpRight className="size-3" />
-                </Button>
+                </button>
               </Link>
-              <Button onClick={handleTriggerBackup} disabled={backingUp} variant="solidRed" size="sm" className="rounded-xl text-xs gap-2 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-white border-none shadow-xs">
+              <button
+                onClick={handleTriggerBackup}
+                disabled={backingUp}
+                className="px-4 py-2 rounded-xl text-xs font-mono font-black flex items-center gap-2 bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 text-black shadow-[0_0_20px_rgba(0,229,255,0.4)] cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50"
+              >
                 {backingUp ? <RefreshCw className="size-3.5 animate-spin" /> : <Database className="size-3.5" />}
                 <span>Snapshot DB Record</span>
-              </Button>
+              </button>
             </div>
           </div>
 
           {backupSuccess && (
-            <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-xs font-mono flex items-center gap-2">
-              <CheckCircle2 className="size-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+            <div className="p-4 rounded-xl bg-emerald-500/15 text-emerald-300 border border-emerald-400/40 text-xs font-mono flex items-center gap-2">
+              <CheckCircle2 className="size-4 shrink-0 text-emerald-400" />
               <span>PostgreSQL Snapshot record committed to Audit Trail.</span>
             </div>
           )}
 
           {/* Real Metrics Grid */}
           <div className="grid gap-5 grid-cols-2 lg:grid-cols-4">
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl space-y-2 shadow-xs">
-              <span className="text-slate-500 dark:text-slate-400 uppercase text-[11px] font-semibold block">Security Score</span>
-              <span className="text-3xl font-extrabold text-emerald-700 dark:text-emerald-400 block font-mono">{posture.score ?? 0} / {posture.maxScore ?? 100}</span>
-            </div>
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl space-y-2 shadow-xs">
-              <span className="text-slate-500 dark:text-slate-400 uppercase text-[11px] font-semibold block">Active HTTP Sessions</span>
-              <span className="text-3xl font-extrabold text-slate-900 dark:text-slate-100 block font-mono">{telemetry.activeSessions ?? 0}</span>
-            </div>
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl space-y-2 shadow-xs">
-              <span className="text-slate-500 dark:text-slate-400 uppercase text-[11px] font-semibold block">Hardware Passkeys</span>
-              <span className="text-3xl font-extrabold text-sky-700 dark:text-sky-400 block font-mono">{telemetry.passkeysCount ?? 0} Registered</span>
-            </div>
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl space-y-2 shadow-xs">
-              <span className="text-slate-500 dark:text-slate-400 uppercase text-[11px] font-semibold block">Failed Auth Events</span>
-              <span className="text-3xl font-extrabold text-amber-700 dark:text-amber-400 block font-mono">{telemetry.failedLogins ?? 0}</span>
-            </div>
+            <GlassStat
+              label="Security Score"
+              value={`${posture.score ?? 0} / ${posture.maxScore ?? 100}`}
+              icon={ShieldCheck}
+              trend="Audit Validated"
+            />
+            <GlassStat
+              label="Active HTTP Sessions"
+              value={telemetry.activeSessions ?? 0}
+              icon={Activity}
+              trend="Live DIP Tokens"
+            />
+            <GlassStat
+              label="Hardware Passkeys"
+              value={telemetry.passkeysCount ?? 0}
+              icon={Smartphone}
+              trend="Registered"
+            />
+            <GlassStat
+              label="Failed Auth Events"
+              value={telemetry.failedLogins ?? 0}
+              icon={ShieldAlert}
+              trend="Rate Guarded"
+              trendPositive={telemetry.failedLogins === 0}
+            />
           </div>
 
           {/* View Filter Tabs */}
-          <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-4">
+          <div className="flex items-center gap-2 border-b border-cyan-500/20 pb-4">
             {[
               { id: "posture" as const, label: "Security Posture Breakdown", icon: ShieldCheck },
               { id: "audits" as const, label: "Audit Log Trail", icon: Activity },
@@ -202,13 +201,13 @@ export default function SecurityPage() {
                   key={tab.id}
                   onClick={() => setViewMode(tab.id)}
                   className={cn(
-                    "px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all border",
+                    "px-4 py-2 rounded-xl text-xs font-mono font-bold flex items-center gap-2 transition-all border cursor-pointer",
                     isSelected
-                      ? "bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 border-slate-900 dark:border-slate-100 shadow-xs"
-                      : "bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800"
+                      ? "bg-cyan-500/25 text-cyan-300 border-cyan-400/50 shadow-[0_0_15px_rgba(0,229,255,0.25)]"
+                      : "bg-[#03091D] text-slate-400 border-cyan-500/20 hover:text-white hover:border-cyan-500/40"
                   )}
                 >
-                  <Icon className="size-3.5" />
+                  <Icon className="size-3.5 text-cyan-400" />
                   <span>{tab.label}</span>
                 </button>
               );
@@ -220,12 +219,12 @@ export default function SecurityPage() {
             <div className="space-y-6">
               {/* Warnings Box */}
               {posture.warnings && posture.warnings.length > 0 && (
-                <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-900/60 text-amber-800 dark:text-amber-300 space-y-2 text-xs">
-                  <div className="font-bold flex items-center gap-2 text-amber-900 dark:text-amber-200">
-                    <AlertTriangle className="size-4 text-amber-600 dark:text-amber-400" />
+                <div className="p-4 rounded-2xl bg-amber-500/15 border border-amber-400/40 text-amber-200 space-y-2 text-xs font-mono">
+                  <div className="font-bold flex items-center gap-2 text-amber-300">
+                    <AlertTriangle className="size-4 text-amber-400" />
                     <span>Active Posture Warnings</span>
                   </div>
-                  <ul className="list-disc pl-5 space-y-1 font-mono text-[11px] text-amber-800 dark:text-amber-300">
+                  <ul className="list-disc pl-5 space-y-1 text-[11px] text-amber-200">
                     {posture.warnings.map((w, idx) => (
                       <li key={idx}>{w}</li>
                     ))}
@@ -234,47 +233,44 @@ export default function SecurityPage() {
               )}
 
               {/* Component Cards */}
-              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl space-y-4 shadow-xs">
-                <div className="border-b border-slate-100 dark:border-slate-800 pb-3">
-                  <h3 className="font-bold text-slate-900 dark:text-slate-100 text-sm">Deterministic Security Controls</h3>
-                  <p className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">Explains how your security score is computed based on active controls.</p>
+              <GlassCard className="p-6 space-y-4 bg-[#03091D]/90 border border-cyan-500/30 shadow-[0_0_30px_rgba(0,229,255,0.15)]">
+                <div className="border-b border-cyan-500/20 pb-3">
+                  <h3 className="font-bold text-white font-mono uppercase tracking-wider text-sm">Deterministic Security Controls</h3>
+                  <p className="text-slate-400 text-xs font-mono mt-0.5">Explains how your security score is computed based on active controls.</p>
                 </div>
 
-                <div className="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
+                <div className="divide-y divide-cyan-500/15 text-xs font-mono">
                   {posture.components?.map((c, idx) => (
                     <div key={idx} className="py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <span className="font-semibold text-slate-900 dark:text-slate-100">{c.name}</span>
-                          <span className={cn(
-                            "px-2 py-0.5 rounded text-[10px] font-mono font-bold border",
-                            c.passed ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700"
-                          )}>
+                          <span className="font-bold text-white">{c.name}</span>
+                          <GlassBadge variant={c.passed ? "published" : "warning"}>
                             {c.status}
-                          </span>
+                          </GlassBadge>
                         </div>
-                        <p className="text-slate-500 dark:text-slate-400 text-[11px] font-sans">{c.explanation}</p>
+                        <p className="text-slate-400 text-[11px] font-sans">{c.explanation}</p>
                       </div>
-                      <span className="font-bold text-slate-900 dark:text-slate-100 font-mono shrink-0 sm:text-right">
+                      <span className="font-bold text-cyan-300 font-mono shrink-0 sm:text-right">
                         +{c.points} pts
                       </span>
                     </div>
                   ))}
                 </div>
-              </div>
+              </GlassCard>
             </div>
           )}
 
           {/* TAB 2: AUDIT LOG TRAIL */}
           {viewMode === "audits" && (
-            <div className="bg-white border border-slate-200 p-6 rounded-2xl space-y-6 shadow-xs">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+            <GlassCard className="p-6 space-y-6 bg-[#03091D]/90 border border-cyan-500/30 shadow-[0_0_30px_rgba(0,229,255,0.15)]">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-cyan-500/20 pb-4">
                 <div>
-                  <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-                    <Activity className="size-4 text-emerald-600" />
+                  <h3 className="font-bold text-white font-mono uppercase tracking-wider text-sm flex items-center gap-2">
+                    <Activity className="size-4 text-cyan-400" />
                     <span>Real PostgreSQL Audit Events ({filteredLogs.length})</span>
                   </h3>
-                  <p className="text-slate-500 text-xs mt-0.5">Immutable audit trail recorded directly in database.</p>
+                  <p className="text-slate-400 text-xs font-mono mt-0.5">Immutable audit trail recorded directly in database.</p>
                 </div>
 
                 {/* Category Pills */}
@@ -284,8 +280,8 @@ export default function SecurityPage() {
                       key={cat}
                       onClick={() => setCategoryFilter(cat)}
                       className={cn(
-                        "px-3 py-1 rounded-lg text-[11px] transition-all",
-                        categoryFilter === cat ? "bg-slate-900 text-white font-bold shadow-xs" : "bg-slate-50 border border-slate-200 text-slate-600 hover:text-slate-900"
+                        "px-3 py-1 rounded-lg text-[11px] font-mono font-bold transition-all cursor-pointer",
+                        categoryFilter === cat ? "bg-cyan-500/30 border border-cyan-400 text-cyan-200" : "bg-[#02050E] border border-cyan-500/20 text-slate-400 hover:text-white"
                       )}
                     >
                       {cat}
@@ -294,27 +290,27 @@ export default function SecurityPage() {
                 </div>
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-3 font-mono">
                 {loading ? (
                   <div className="py-12 text-center text-slate-500 text-xs font-mono">
-                    <RefreshCw className="size-4 animate-spin mx-auto mb-2 text-slate-400" />
+                    <RefreshCw className="size-4 animate-spin mx-auto mb-2 text-cyan-400" />
                     Loading audit trail from Neon PostgreSQL...
                   </div>
                 ) : filteredLogs.length === 0 ? (
-                  <div className="py-12 text-center text-slate-400 text-xs font-mono">
+                  <div className="py-12 text-center text-slate-500 text-xs font-mono">
                     No security events recorded.
                   </div>
                 ) : (
                   filteredLogs.map((log) => (
-                    <div key={log.id} className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-mono">
+                    <div key={log.id} className="p-4 rounded-xl bg-[#02050E] border border-cyan-500/20 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <span className="font-bold text-slate-900">{log.action}</span>
-                          <span className="text-[10px] text-slate-500">by {log.user}</span>
+                          <span className="font-bold text-white">{log.action}</span>
+                          <span className="text-[10px] text-cyan-400">by {log.user}</span>
                         </div>
-                        <p className="text-slate-600 text-xs font-sans">{log.details}</p>
+                        <p className="text-slate-300 text-xs font-sans">{log.details}</p>
                       </div>
-                      <div className="text-right shrink-0 text-[10px] text-slate-500 font-mono">
+                      <div className="text-right shrink-0 text-[10px] text-slate-400 font-mono">
                         <div>{log.ip}</div>
                         <div>{log.time}</div>
                       </div>
@@ -322,37 +318,37 @@ export default function SecurityPage() {
                   ))
                 )}
               </div>
-            </div>
+            </GlassCard>
           )}
 
           {/* TAB 3: TRUSTED DEVICES */}
           {viewMode === "devices" && (
-            <div className="bg-white border border-slate-200 p-6 rounded-2xl space-y-6 shadow-xs">
-              <div className="border-b border-slate-100 pb-4">
-                <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-                  <Smartphone className="size-4 text-sky-600" />
+            <GlassCard className="p-6 space-y-6 bg-[#03091D]/90 border border-cyan-500/30 shadow-[0_0_30px_rgba(0,229,255,0.15)]">
+              <div className="border-b border-cyan-500/20 pb-4">
+                <h3 className="font-bold text-white font-mono uppercase tracking-wider text-sm flex items-center gap-2">
+                  <Smartphone className="size-4 text-cyan-400" />
                   <span>Trusted Hardware Devices ({trustedDevices.length})</span>
                 </h3>
-                <p className="text-slate-500 text-xs mt-0.5">Hardware fingerprints registered and trusted by staff accounts.</p>
+                <p className="text-slate-400 text-xs font-mono mt-0.5">Hardware fingerprints registered and trusted by staff accounts.</p>
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-3 font-mono">
                 {loading ? (
-                  <div className="py-12 text-center text-slate-400 text-xs font-mono">
+                  <div className="py-12 text-center text-slate-500 text-xs font-mono">
                     Loading device records...
                   </div>
                 ) : trustedDevices.length === 0 ? (
-                  <div className="py-12 text-center text-slate-400 text-xs font-mono">
+                  <div className="py-12 text-center text-slate-500 text-xs font-mono">
                     No trusted hardware devices registered yet.
                   </div>
                 ) : (
                   trustedDevices.map((d) => (
-                    <div key={d.id} className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between text-xs font-mono">
+                    <div key={d.id} className="p-4 rounded-xl bg-[#02050E] border border-cyan-500/20 flex items-center justify-between text-xs">
                       <div>
-                        <div className="font-bold text-slate-900">{d.userName} ({d.userEmail})</div>
-                        <div className="text-[11px] text-slate-500">{d.browser} · {d.os}</div>
+                        <div className="font-bold text-white">{d.userName} ({d.userEmail})</div>
+                        <div className="text-[11px] text-slate-400">{d.browser} · {d.os}</div>
                       </div>
-                      <div className="text-right text-[10px] text-slate-500">
+                      <div className="text-right text-[10px] text-slate-400 font-mono">
                         <div>IP: {d.ipAddress}</div>
                         <div>Last Used: {new Date(d.lastUsedAt).toLocaleDateString()}</div>
                       </div>
@@ -360,9 +356,9 @@ export default function SecurityPage() {
                   ))
                 )}
               </div>
-            </div>
+            </GlassCard>
           )}
-        </motion.main>
+        </main>
       </div>
     </div>
   );

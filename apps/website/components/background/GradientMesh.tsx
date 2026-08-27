@@ -10,13 +10,13 @@ interface GradientMeshProps {
 
 export function GradientMesh({
   className,
-  colors = ['oklch(0.65 0.25 275)', 'oklch(0.55 0.28 300)', 'oklch(0.70 0.20 245)'],
-  opacity = 0.15,
+  colors = ["#00E5FF", "#338BFF", "#8B5CF6", "#1D4ED8"],
+  opacity = 0.22,
   animated = true,
 }: GradientMeshProps) {
   const gradientString = colors.map((color, i) => `radial-gradient(circle at ${[
-    '0% 0%', '100% 100%', '0% 100%', '100% 0%'
-  ][i % 4]}, ${color} 0%, transparent 60%)`).join(', ');
+    '15% 15%', '85% 85%', '15% 85%', '85% 15%'
+  ][i % 4]}, ${color} 0%, transparent 65%)`).join(', ');
 
   return (
     <div
@@ -29,7 +29,7 @@ export function GradientMesh({
         backgroundImage: gradientString,
         opacity,
         ...(animated ? {
-          animation: "gradient-shift 15s ease-in-out infinite alternate"
+          animation: "gradient-shift 18s ease-in-out infinite alternate"
         } : {})
       }}
     >
@@ -38,8 +38,8 @@ export function GradientMesh({
           @media (prefers-reduced-motion: no-preference) {
             @keyframes gradient-shift {
               0% { transform: scale(1) translate(0px, 0px); }
-              50% { transform: scale(1.05) translate(10px, 10px); }
-              100% { transform: scale(1) translate(-10px, -5px); }
+              50% { transform: scale(1.06) translate(15px, 10px); }
+              100% { transform: scale(1) translate(-15px, -10px); }
             }
           }
         `}} />

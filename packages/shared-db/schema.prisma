@@ -1,6 +1,7 @@
 generator client {
-  provider = "prisma-client-js"
-  output   = "./src/generated/client"
+  provider      = "prisma-client-js"
+  output        = "./src/generated/client"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
 datasource db {
@@ -19,6 +20,7 @@ model User {
   status                 String                  @default("ACTIVE")
   avatar                 String?
   employeeId             String?                 @unique
+  dragonId               String?                 @unique
   securityScore          Int                     @default(95)
   dragonKeyPrefix        String?
   dragonKeyHash          String?
@@ -59,6 +61,7 @@ model User {
   communityBan           CommunityBan?
   communityMutes         CommunityMute[]
   bookmarks              CommunityBookmark[]
+  verificationCodes      EmailVerificationCode[]
 
   @@index([email])
   @@index([role])
@@ -198,34 +201,121 @@ model SEOData {
 }
 
 model GameContent {
-  id           String         @id @default(cuid())
-  slug         String         @unique
-  name         String
-  subtitle     String?
-  genre        String
-  status       String         @default("In Development")
-  releaseDate  String
-  developer    String         @default("Dragon Studios")
-  publisher    String         @default("Dragon Interactive")
-  engine       String         @default("Dragon Engine v5.4")
-  platforms    String
-  description  String
-  logoUrl      String?
-  bannerUrl    String?
-  heroVideoUrl String?
-  features     String?
-  requirements String?
-  isPublished  Boolean        @default(true)
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  dlcList      DLC[]
-  gameFeatures GameFeature[]
-  mediaList    GameMedia[]
-  platformList GamePlatform[]
-  patchNotes   PatchNote[]
+  id                    String            @id @default(cuid())
+  slug                  String            @unique
+  name                  String
+  subtitle              String?
+  genre                 String
+  status                String            @default("In Development")
+  releaseDate           String
+  developer             String            @default("Dragon Studios")
+  publisher             String            @default("Dragon Interactive")
+  engine                String            @default("Dragon Engine v5.4")
+  platforms             String
+  description           String
+  fullDescription       String?
+  logoUrl               String?
+  bannerUrl             String?
+  cardBannerUrl         String?
+  heroVideoUrl          String?
+  screenshots           String?           @default("[]")
+  features              String?
+  requirements          String?
+  isPublished           Boolean           @default(true)
+  isFeatured            Boolean           @default(false)
+  featuredOrder         Int               @default(0)
+  
+  // AI Visual Intelligence & Presentation Controls
+  aiAnalysisStatus      String            @default("PENDING") // PENDING | COMPLETED | FAILED | SKIPPED
+  aiAnalysisVersion     Int               @default(1)
+  aiAnalyzedAt          DateTime?
+  assetHash             String?
+  aiFocalPoint          String?           // JSON: {"x": 0.5, "y": 0.5}
+  aiDesktopPosition     String?           @default("50% 50%")
+  aiMobilePosition      String?           @default("50% 50%")
+  aiCardPosition        String?           @default("50% 50%")
+  aiTextSafeArea        String?           @default("left")
+  aiConfidence          Float?            @default(1.0)
+  
+  // Manual Human Overrides
+  manualFocalPoint      String?
+  manualDesktopPosition String?
+  manualMobilePosition  String?
+  manualCardPosition    String?
+  presentationMode      String            @default("AUTO") // AUTO | MANUAL
+  zoomLevel             Float             @default(1.0)
+  overlayIntensity      Float             @default(0.4)
+  textPlacement         String            @default("bottom-left")
+  
+  // Versioning & Rollback Snapshot
+  publishedSnapshot     Json?
+  
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+  dlcList               DLC[]
+  gameFeatures          GameFeature[]
+  mediaList             GameMedia[]
+  platformList          GamePlatform[]
+  patchNotes            PatchNote[]
+  releases              GameRelease[]
+  downloadLogs          GameDownloadLog[]
 
   @@index([slug])
   @@index([status])
+  @@index([isPublished])
+  @@index([isFeatured])
+}
+
+model GameRelease {
+  id              String            @id @default(cuid())
+  gameId          String
+  version         String
+  buildNumber     Int               @default(1)
+  platform        String            // "WINDOWS" | "ANDROID"
+  targetArch      String?           @default("x64")
+  fileType        String            // "EXE" | "ZIP" | "INSTALLER" | "APK" | "AAB"
+  fileName        String
+  fileSizeBytes   BigInt            @default(0)
+  sha256Checksum  String
+  b2ObjectKey     String
+  b2Bucket        String            @default("dragon-games-production")
+  b2Region        String            @default("us-east-005")
+  contentType     String?           @default("application/octet-stream")
+  releaseNotes    String?
+  status          String            @default("DRAFT") // DRAFT | UPLOADING | UPLOADED | VERIFIED | PUBLISHED | DEPRECATED | ARCHIVED
+  isPublished     Boolean           @default(false)
+  publishedAt     DateTime?
+  verifiedAt      DateTime?
+  downloadCount   Int               @default(0)
+  uploadedById    String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  game            GameContent       @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  downloadLogs    GameDownloadLog[]
+
+  @@unique([gameId, version, platform])
+  @@index([gameId])
+  @@index([platform])
+  @@index([status])
+  @@index([isPublished])
+}
+
+model GameDownloadLog {
+  id          String       @id @default(cuid())
+  releaseId   String
+  gameId      String?
+  platform    String       // "WINDOWS" | "ANDROID"
+  ipAddress   String?
+  userAgent   String?
+  country     String?
+  status      String       @default("COMPLETED")
+  createdAt   DateTime     @default(now())
+  release     GameRelease  @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+  game        GameContent? @relation(fields: [gameId], references: [id], onDelete: SetNull)
+
+  @@index([releaseId])
+  @@index([gameId])
+  @@index([createdAt])
 }
 
 model GameMedia {
@@ -1341,6 +1431,22 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model EmailVerificationCode {
+  id         String    @id @default(cuid())
+  userId     String?
+  email      String
+  codeHash   String
+  expiresAt  DateTime
+  attempts   Int       @default(0)
+  consumedAt DateTime?
+  createdAt  DateTime  @default(now())
+  user       User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([email])
+  @@index([userId])
+  @@index([expiresAt])
 }
 
 model ContactVerificationToken {

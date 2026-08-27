@@ -19,6 +19,15 @@ export interface EnvConfig {
   SUPPORT_EMAIL: string;
   NEXT_PUBLIC_APP_URL: string;
   NEXT_PUBLIC_ADMIN_URL: string;
+  B2_ENDPOINT: string;
+  B2_REGION: string;
+  B2_BUCKET_NAME: string;
+  B2_KEY_ID: string;
+  B2_APPLICATION_KEY: string;
+  VERCEL_TOKEN?: string;
+  VERCEL_PROJECT_ID?: string;
+  VERCEL_DEPLOY_HOOK_URL?: string;
+  GEMINI_API_KEY?: string;
 }
 
 export function validateEnv(): EnvConfig {
@@ -44,6 +53,15 @@ export function validateEnv(): EnvConfig {
     SUPPORT_EMAIL: process.env.SUPPORT_EMAIL || ownerEmail,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL || "https://dragongamingstudios.vercel.app",
     NEXT_PUBLIC_ADMIN_URL: process.env.NEXT_PUBLIC_ADMIN_URL || "https://dragoncontrol.vercel.app",
+    B2_ENDPOINT: process.env.B2_ENDPOINT || "https://s3.us-east-005.backblazeb2.com",
+    B2_REGION: process.env.B2_REGION || "us-east-005",
+    B2_BUCKET_NAME: process.env.B2_BUCKET_NAME || "dragon-games-production",
+    B2_KEY_ID: process.env.B2_KEY_ID || process.env.BACKBLAZE_KEY_ID || "",
+    B2_APPLICATION_KEY: process.env.B2_APPLICATION_KEY || process.env.BACKBLAZE_APPLICATION_KEY || "",
+    VERCEL_TOKEN: process.env.VERCEL_TOKEN,
+    VERCEL_PROJECT_ID: process.env.VERCEL_PROJECT_ID,
+    VERCEL_DEPLOY_HOOK_URL: process.env.VERCEL_DEPLOY_HOOK_URL,
+    GEMINI_API_KEY: process.env.GEMINI_API_KEY,
   };
 
   if (isServer) {
@@ -63,3 +81,11 @@ export function validateEnv(): EnvConfig {
 }
 
 export const env = validateEnv();
+
+// Explicit Integration Health Check Helpers (Never exposes secret strings)
+export const isDatabaseConfigured = () => Boolean(env.DATABASE_URL);
+export const isB2Configured = () => Boolean(env.B2_KEY_ID && env.B2_APPLICATION_KEY);
+export const isEmailConfigured = () => Boolean(env.RESEND_API_KEY && env.RESEND_API_KEY.startsWith("re_"));
+export const isGoogleOAuthConfigured = () => Boolean(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET);
+export const isVercelConfigured = () => Boolean((env.VERCEL_TOKEN && env.VERCEL_PROJECT_ID) || env.VERCEL_DEPLOY_HOOK_URL);
+export const isGeminiConfigured = () => Boolean(env.GEMINI_API_KEY);

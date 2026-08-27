@@ -11,6 +11,7 @@ import { CommandPalette } from "@/components/navigation/CommandPalette";
 import { OFFICIAL_SOCIALS } from "@/lib/site";
 import { CMSLiveSync } from "@/components/shared/CMSLiveSync";
 import { WebsiteAnalyticsTracker } from "@/components/shared/WebsiteAnalyticsTracker";
+import { MobileShell } from "@/components/mobile/MobileShell";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -43,8 +44,8 @@ export const metadata: Metadata = {
     "2D Games",
     "PC Games",
     "Android Games",
-    "Embers of Valyria",
-    "Neon Drift",
+    "Uncharted Drive",
+    "Reflex Rush",
     "Game Development",
   ],
   openGraph: {
@@ -79,7 +80,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${rajdhani.variable} antialiased bg-background text-foreground selection:bg-dragon-500/30 selection:text-white`}
+        className={`${geistSans.variable} ${geistMono.variable} ${rajdhani.variable} antialiased bg-[#01040D] text-foreground selection:bg-cyan-500/30 selection:text-white`}
       >
         <SessionProvider>
           <AiProvider>
@@ -89,7 +90,7 @@ export default function RootLayout({
               <AiAssistant />
               <CMSLiveSync />
               <WebsiteAnalyticsTracker />
-              {children}
+              <MobileShell>{children}</MobileShell>
             </SmoothScrollProvider>
           </AiProvider>
         </SessionProvider>

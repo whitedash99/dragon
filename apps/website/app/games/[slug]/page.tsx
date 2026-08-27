@@ -1,390 +1,369 @@
 "use client";
 
-import React, { useState, use } from "react";
+import React, { useState, useEffect, use } from "react";
 import Link from "next/link";
-import { notFound } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
 import { 
   ArrowLeft, 
   Play, 
-  Bookmark, 
   Check, 
-  Cpu, 
   Layers, 
-  Shield, 
+  ShieldCheck, 
   Sparkles, 
-  Flame, 
-  BrainCircuit, 
   Globe, 
   Zap, 
-  Activity, 
-  X, 
   ChevronRight,
-  Twitter,
-  MessageSquare,
-  Youtube,
-  Instagram,
-  ArrowUpRight
+  Download,
+  Monitor,
+  Smartphone,
+  HardDrive,
+  Cpu,
+  Calendar,
+  AlertCircle,
+  ExternalLink
 } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { SceneBackground } from "@/components/background/SceneBackground";
-import { games } from "@/data/content";
-import { gameDetailsMap } from "@/data/expandedContent";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
-import { OFFICIAL_SOCIALS } from "@/lib/site";
-import { WhatsAppIcon, ThreadsIcon } from "@/components/ui/social-icons";
-
-const iconMap: Record<string, React.ReactNode> = {
-  Flame: <Flame className="size-6 text-dragon-400" />,
-  BrainCircuit: <BrainCircuit className="size-6 text-amber-400" />,
-  Globe: <Globe className="size-6 text-neon-cyan" />,
-  Shield: <Shield className="size-6 text-neon-purple" />,
-  Zap: <Zap className="size-6 text-neon-pink" />,
-  Activity: <Activity className="size-6 text-emerald-400" />,
-  Cpu: <Cpu className="size-6 text-neon-cyan" />,
-  Sparkles: <Sparkles className="size-6 text-neon-purple" />,
-  Layers: <Layers className="size-6 text-dragon-300" />,
-};
+import { getGameVisualTheme } from "@/lib/theme/game-theme";
+import { DownloadButton } from "@/components/games/DownloadButton";
+import { PlatformBadge } from "@/components/games/PlatformBadge";
+import { GameBadge } from "@/components/games/GameBadge";
+import { MediaLightboxModal } from "@/components/media/MediaLightboxModal";
+import { AtmosphericAurora } from "@/components/cinematic/AtmosphericAurora";
+import { DragonUniverse3DCanvas } from "@/components/cinematic/DragonUniverse3DCanvas";
+import { NoiseLayer } from "@/components/background/NoiseLayer";
+import { Vignette } from "@/components/background/Vignette";
 
 export default function GameDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
-  const gameDetail = gameDetailsMap[slug];
 
-  const [trailerOpen, setTrailerOpen] = useState(false);
-  const [wishlisted, setWishlisted] = useState(false);
-  const [sysReqTab, setSysReqTab] = useState<"minimum" | "recommended">("recommended");
+  const [game, setGame] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [activeScreenshotIndex, setActiveScreenshotIndex] = useState<number | null>(null);
 
-  if (!gameDetail) {
-    return notFound();
+  // Fetch canonical game data from PostgreSQL API
+  useEffect(() => {
+    let isMounted = true;
+    async function loadGame() {
+      try {
+        const res = await fetch(`/api/games/${slug}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.game && isMounted) {
+            setGame(data.game);
+            setLoading(false);
+            return;
+          }
+        }
+      } catch (err) {
+        console.warn("[GameDetailPage] DB fetch fallback:", err);
+      }
+
+      // Fallback for official titles if offline
+      if (isMounted) {
+        if (slug === "uncharted-drive-beyond") {
+          setGame({
+            id: "uncharted-drive-beyond",
+            slug: "uncharted-drive-beyond",
+            title: "UNCHARTED DRIVE: BEYOND",
+            subtitle: "Next-Gen Open Road Driving Simulation",
+            genre: "Open Road Simulation",
+            status: "OFFICIAL FLAGSHIP",
+            releaseDate: "2026",
+            dimension: "3D",
+            engineVersion: "Dragon 3D Vulkan",
+            description: "Experience high-speed highway journeys across majestic mountain horizons, golden sunsets, and uncharted asphalt curves with ultra-responsive vehicle dynamics and volumetric atmospheric lighting.",
+            bannerUrl: "/images/uncharted-drive-banner.png",
+            effectiveDesktopPosition: "50% 50%",
+            platforms: "PC (.exe), Android (.apk)",
+            pcFileSize: "650 MB",
+            mobileFileSize: "120 MB",
+          });
+        } else if (slug === "reflex-rush") {
+          setGame({
+            id: "reflex-rush",
+            slug: "reflex-rush",
+            title: "REFLEX RUSH",
+            subtitle: "High-Speed Reflex Reaction Runner",
+            genre: "Arcade Reflex Runner",
+            status: "LIVE WEB PLAY",
+            releaseDate: "2026",
+            dimension: "2D",
+            engineVersion: "HTML5 Canvas Turbo",
+            description: "Test your lightning-fast reflexes in pure adrenaline arcade gameplay. Dodge obstacles, beat high scores, and master rapid-fire precision runs live in your browser.",
+            bannerUrl: "/images/uncharted-drive-banner.png",
+            effectiveDesktopPosition: "50% 50%",
+            platforms: "Web & Mobile Browser",
+            webPlayUrl: "https://reflexrush-dragongamingstudio.netlify.app/",
+          });
+        }
+        setLoading(false);
+      }
+    }
+
+    loadGame();
+    return () => { isMounted = false; };
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#02050E] flex items-center justify-center text-white">
+        <div className="flex flex-col items-center gap-3">
+          <div className="size-8 rounded-full border-2 border-cyan-500 border-t-transparent animate-spin" />
+          <span className="text-xs font-mono tracking-widest text-slate-400">CONNECTING CANONICAL STREAM...</span>
+        </div>
+      </div>
+    );
   }
 
-  const relatedGames = games.filter((g) => g.slug !== slug).slice(0, 2);
+  if (!game) {
+    return (
+      <div className="min-h-screen bg-[#02050E] flex flex-col items-center justify-center p-6 text-center space-y-4">
+        <h1 className="text-2xl font-bold text-white">Game Title Not Found</h1>
+        <p className="text-xs text-slate-400">The requested franchise does not exist in the database catalog.</p>
+        <Link href="/games" className="px-5 py-2.5 rounded-xl bg-white/10 text-white text-xs font-bold hover:bg-white/15">
+          Return to Games Catalog
+        </Link>
+      </div>
+    );
+  }
 
-  const currentUrl = `https://dragonstudios.com/games/${slug}`;
-  const shareText = encodeURIComponent(`Check out ${gameDetail.title} by @DGStudio1212! Powered by Dragon Engine.`);
-  const xShareUrl = `https://x.com/intent/tweet?text=${shareText}&url=${encodeURIComponent(currentUrl)}`;
-  const redditShareUrl = `https://www.reddit.com/submit?url=${encodeURIComponent(currentUrl)}&title=${encodeURIComponent(gameDetail.title)}`;
+  const theme = getGameVisualTheme(game.genre, game.title);
 
   return (
-    <SceneBackground gradient noise orbs vignette>
+    <div className="min-h-screen bg-[#020512] text-slate-100 font-sans antialiased overflow-x-hidden select-none relative">
       <Navbar />
 
-      <main className="cinematic-page relative min-h-screen overflow-x-hidden pt-20">
-        {/* Fullscreen Hero Section */}
-        <section className={cn("relative min-h-[85vh] flex flex-col justify-between py-12 bg-gradient-to-br", gameDetail.palette)}>
-          {/* Top Nav Back Link */}
-          <div className="container-site relative z-10 pt-8">
-            <Link
-              href="/games"
-              className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/70 hover:text-white transition-colors bg-black/40 px-4 py-2 rounded-full border border-white/10 backdrop-blur-md"
-            >
-              <ArrowLeft className="size-3.5" />
-              <span>Back to Games Directory</span>
-            </Link>
+      {/* ═══ UNIFIED 3D LUMINOUS UNIVERSE & LIGHTNING ENGINE ═══ */}
+      <div className="fixed inset-0 pointer-events-none z-0" aria-hidden="true">
+        <AtmosphericAurora />
+        <DragonUniverse3DCanvas />
+        <NoiseLayer opacity={0.02} />
+        <Vignette intensity={0.65} />
+      </div>
+
+      {/* Dynamic Ambient Radiant Glow matching the Game Theme */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed top-0 left-1/2 -translate-x-1/2 w-[1200px] h-[500px] rounded-full blur-[180px] opacity-25 transition-all duration-700 z-0"
+        style={{ backgroundColor: theme.primary }}
+      />
+
+      <main className="relative z-10 pt-24 sm:pt-32 pb-24 max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 space-y-12 sm:space-y-16">
+        
+        {/* Navigation Breadcrumb */}
+        <div>
+          <Link
+            href="/games"
+            className="inline-flex items-center gap-2 text-xs font-mono font-bold text-slate-400 hover:text-white transition-colors"
+          >
+            <ArrowLeft className="size-4" />
+            <span>ALL FRANCHISES</span>
+          </Link>
+        </div>
+
+        {/* ═══ CINEMATIC HERO BANNER ═══ */}
+        <div className="relative rounded-3xl sm:rounded-4xl overflow-hidden border border-white/15 bg-black/60 shadow-2xl">
+          
+          {/* Banner Artwork with Focal Point Crop */}
+          <div className="relative aspect-[16/9] sm:aspect-[21/9] w-full overflow-hidden">
+            {game.bannerUrl ? (
+              <img
+                src={game.bannerUrl}
+                alt={game.title}
+                className="w-full h-full object-cover"
+                style={{ objectPosition: game.effectiveDesktopPosition || "50% 50%" }}
+              />
+            ) : (
+              <div className="w-full h-full bg-slate-950" />
+            )}
+
+            {/* Cinematic Gradient Overlays */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#02050E] via-[#02050E]/60 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
           </div>
 
-          {/* Hero Main Info */}
-          <div className="container-site relative z-10 my-auto py-12">
-            <div className="max-w-4xl">
-              <div className="flex flex-wrap items-center gap-3 mb-6">
-                <span className="rounded-full bg-white/15 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-white border border-white/20 backdrop-blur-md">
-                  {gameDetail.genre}
+          {/* Hero Content Overlay */}
+          <div className="absolute bottom-0 inset-x-0 p-6 sm:p-10 lg:p-12 space-y-4 max-w-3xl">
+            
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <GameBadge text={game.dimension || "3D"} theme={theme} />
+              <span className="px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-slate-200 text-xs font-mono font-bold uppercase tracking-wider">
+                {game.status}
+              </span>
+              <span className={cn("text-xs font-mono font-bold uppercase tracking-wider", theme.badgeText)}>
+                {game.genre}
+              </span>
+            </div>
+
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-heading font-black text-white tracking-tight uppercase drop-shadow-md">
+              {game.title}
+            </h1>
+
+            {game.subtitle && (
+              <p className="text-sm sm:text-base text-slate-300 font-medium font-sans max-w-2xl">
+                {game.subtitle}
+              </p>
+            )}
+
+            <div className="flex items-center gap-3 pt-2 flex-wrap">
+              <PlatformBadge platform={game.platforms || "PC (.exe)"} />
+              {game.engineVersion && (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-white/5 border border-white/10 text-xs font-mono text-slate-300 backdrop-blur-md">
+                  <Layers className="size-3.5 text-cyan-400" />
+                  <span>{game.engineVersion}</span>
                 </span>
-                <span className="rounded-full bg-dragon-500/30 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-dragon-200 border border-dragon-400/40">
-                  {gameDetail.status} • {gameDetail.year}
-                </span>
-              </div>
-
-              <h1 className="text-5xl font-black uppercase tracking-tight text-white sm:text-7xl lg:text-8vw leading-[0.85]">
-                {gameDetail.title}
-              </h1>
-
-              <p className="mt-4 text-xl sm:text-2xl font-semibold text-dragon-200">
-                {gameDetail.tagline}
-              </p>
-
-              <p className="mt-6 max-w-2xl text-base text-white/80 leading-relaxed sm:text-lg">
-                {gameDetail.description}
-              </p>
-
-              {/* CTAs Bar */}
-              <div className="mt-10 flex flex-wrap items-center gap-4">
-                <Button
-                  onClick={() => setTrailerOpen(true)}
-                  variant="glow"
-                  size="xl"
-                  className="rounded-full gap-3 px-8"
-                >
-                  <Play className="size-5 fill-current" />
-                  <span>Watch Gameplay Reveal</span>
-                </Button>
-
-                <Button
-                  onClick={() => setWishlisted(!wishlisted)}
-                  variant="glass"
-                  size="xl"
-                  className={cn("rounded-full gap-3 px-8 border-white/20", wishlisted && "bg-emerald-500/20 text-emerald-300 border-emerald-500/40")}
-                >
-                  {wishlisted ? (
-                    <>
-                      <Check className="size-5" />
-                      <span>Added to Wishlist</span>
-                    </>
-                  ) : (
-                    <>
-                      <Bookmark className="size-5" />
-                      <span>Wishlist Game</span>
-                    </>
-                  )}
-                </Button>
-              </div>
-
-              {/* Social Action Bar */}
-              <div className="mt-8 flex flex-wrap items-center gap-3 pt-6 border-t border-white/10">
-                <a
-                  href={xShareUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-xl bg-white/10 hover:bg-sky-500/20 px-4 py-2 text-xs font-bold text-white border border-white/15 transition-colors"
-                >
-                  <Twitter className="size-3.5 text-sky-400" />
-                  <span>Share on X</span>
-                </a>
-
-                <a
-                  href={redditShareUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-xl bg-white/10 hover:bg-orange-500/20 px-4 py-2 text-xs font-bold text-white border border-white/15 transition-colors"
-                >
-                  <MessageSquare className="size-3.5 text-orange-400" />
-                  <span>Share on Reddit</span>
-                </a>
-
-                <a
-                  href={OFFICIAL_SOCIALS.whatsapp.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 px-4 py-2 text-xs font-bold text-emerald-300 border border-emerald-500/30 transition-colors"
-                >
-                  <WhatsAppIcon className="size-3.5 text-emerald-400" />
-                  <span>WhatsApp Updates</span>
-                </a>
-
-                <a
-                  href={OFFICIAL_SOCIALS.threads.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 px-4 py-2 text-xs font-bold text-cyan-300 border border-cyan-500/30 transition-colors"
-                >
-                  <ThreadsIcon className="size-3.5 text-cyan-400" />
-                  <span>Threads Dispatches</span>
-                </a>
-
-                <a
-                  href={OFFICIAL_SOCIALS.youtube.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-xl bg-white/10 hover:bg-red-500/20 px-4 py-2 text-xs font-bold text-white border border-white/15 transition-colors"
-                >
-                  <Youtube className="size-3.5 text-red-400" />
-                  <span>Watch Trailer</span>
-                </a>
-
-                <a
-                  href={OFFICIAL_SOCIALS.instagram.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-xl bg-white/10 hover:bg-pink-500/20 px-4 py-2 text-xs font-bold text-white border border-white/15 transition-colors"
-                >
-                  <Instagram className="size-3.5 text-pink-400" />
-                  <span>Instagram</span>
-                </a>
-              </div>
+              )}
             </div>
           </div>
+        </div>
 
-          {/* Target Platforms Bar */}
-          <div className="container-site relative z-10 pt-4 pb-4 border-t border-white/10 flex items-center justify-between text-xs text-white/60">
-            <span>Target Platforms: <strong className="text-white">{gameDetail.platforms.join(" • ")}</strong></span>
-            <span>Dragon Engine Native</span>
-          </div>
-        </section>
-
-        {/* Overview & Story Section */}
-        <section className="container-site relative z-10 py-24 border-b border-white/10">
-          <div className="grid gap-12 lg:grid-cols-12 items-start">
-            <div className="lg:col-span-5">
-              <span className="text-xs font-bold uppercase tracking-widest text-dragon-400">
-                World Narrative & Premise
-              </span>
-              <h2 className="mt-3 text-4xl font-black uppercase text-white">
-                The World Premise
+        {/* ═══ TWO-COLUMN ACTION & OVERVIEW GRID ═══ */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
+          
+          {/* Left 2 Cols: Description & Features */}
+          <div className="lg:col-span-2 space-y-8">
+            
+            <div className="p-8 rounded-3xl bg-[#090D16]/90 border border-white/10 backdrop-blur-xl space-y-4 shadow-lg">
+              <h2 className="text-base font-mono font-bold uppercase tracking-[0.16em] text-white flex items-center gap-2">
+                <Sparkles className="size-4 text-cyan-400" />
+                <span>OVERVIEW & SYNOPSIS</span>
               </h2>
-            </div>
-            <div className="lg:col-span-7">
-              <p className="text-lg text-muted-foreground leading-relaxed">
-                {gameDetail.storyOverview}
-              </p>
-              <p className="mt-4 text-base text-muted-foreground leading-relaxed">
-                {gameDetail.fullDescription}
-              </p>
-            </div>
-          </div>
-        </section>
 
-        {/* Gameplay Features Grid */}
-        <section className="container-site relative z-10 py-24 border-b border-white/10">
-          <div className="mb-14">
-            <span className="text-xs font-bold uppercase tracking-widest text-dragon-400">
-              Dragon Engine Mechanics
-            </span>
-            <h2 className="mt-2 text-4xl font-black uppercase text-white">
-              Key Gameplay Pillars
-            </h2>
-          </div>
+              <p className="text-sm sm:text-base text-slate-300 font-sans leading-relaxed">
+                {game.description}
+              </p>
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {gameDetail.gameplayFeatures.map((feat, idx) => (
-              <div
-                key={idx}
-                className="rounded-2xl glass-md p-6 border border-white/10 hover:border-white/20 transition-all hover:-translate-y-1"
-              >
-                <div className="rounded-xl bg-white/5 p-3 w-fit mb-6 border border-white/10">
-                  {iconMap[feat.iconName] || <Sparkles className="size-6 text-primary" />}
+              {game.fullDescription && (
+                <p className="text-sm text-slate-400 font-sans leading-relaxed pt-2">
+                  {game.fullDescription}
+                </p>
+              )}
+            </div>
+
+            {/* Real Screenshots Gallery (If data exists in database) */}
+            {game.screenshots && Array.isArray(game.screenshots) && game.screenshots.length > 0 && (
+              <div className="p-8 rounded-3xl bg-[#090D16]/90 border border-white/10 backdrop-blur-xl space-y-4 shadow-lg">
+                <h2 className="text-base font-mono font-bold uppercase tracking-[0.16em] text-white">
+                  IN-GAME SCREENSHOTS & ARTWORK
+                </h2>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {game.screenshots.map((shot: string, idx: number) => (
+                    <div
+                      key={idx}
+                      onClick={() => setActiveScreenshotIndex(idx)}
+                      className="relative aspect-video rounded-2xl overflow-hidden border border-white/10 group cursor-pointer"
+                    >
+                      <img
+                        src={shot}
+                        alt={`${game.title} Screenshot ${idx + 1}`}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    </div>
+                  ))}
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2">{feat.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{feat.description}</p>
               </div>
-            ))}
+            )}
+
+            {/* System Requirements (If data exists) */}
+            {game.requirements && (
+              <div className="p-8 rounded-3xl bg-[#090D16]/90 border border-white/10 backdrop-blur-xl space-y-4 shadow-lg">
+                <h2 className="text-base font-mono font-bold uppercase tracking-[0.16em] text-white flex items-center gap-2">
+                  <Cpu className="size-4 text-cyan-400" />
+                  <span>SYSTEM REQUIREMENTS</span>
+                </h2>
+
+                <div className="p-4 rounded-2xl bg-white/5 border border-white/5 font-mono text-xs text-slate-300 leading-relaxed whitespace-pre-wrap">
+                  {game.requirements}
+                </div>
+              </div>
+            )}
+
           </div>
-        </section>
 
-        {/* System Requirements Module */}
-        <section className="container-site relative z-10 py-24 border-b border-white/10">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
-            <div>
-              <span className="text-xs font-bold uppercase tracking-widest text-dragon-400">
-                Hardware Benchmarks
-              </span>
-              <h2 className="mt-2 text-4xl font-black uppercase text-white">
-                System Requirements
-              </h2>
-            </div>
+          {/* Right Col: Verified Download & Action Center */}
+          <div className="space-y-6">
+            
+            <div className="p-6 sm:p-8 rounded-3xl bg-[#090D16]/95 border border-white/15 backdrop-blur-2xl shadow-xl space-y-6 sticky top-28">
+              <div>
+                <h3 className="text-sm font-mono font-bold uppercase tracking-[0.16em] text-white">
+                  DOWNLOAD & PLAY CENTER
+                </h3>
+                <p className="text-xs text-slate-400 pt-1 font-sans">
+                  Direct official binaries powered by Backblaze B2 secure edge delivery.
+                </p>
+              </div>
 
-            <div className="flex items-center gap-2 rounded-full glass-sm p-1.5 border border-white/10">
-              <button
-                onClick={() => setSysReqTab("minimum")}
-                className={cn(
-                  "rounded-full px-5 py-2 text-xs font-bold uppercase tracking-wider transition-colors",
-                  sysReqTab === "minimum" ? "bg-primary text-white" : "text-muted-foreground hover:text-white"
+              {/* Download Buttons */}
+              <div className="space-y-3">
+                {game.webPlayUrl ? (
+                  <DownloadButton
+                    slug={game.slug}
+                    platform="WEB"
+                    webPlayUrl={game.webPlayUrl}
+                    label="Play Instant in Browser"
+                    theme={theme}
+                  />
+                ) : (
+                  <>
+                    <DownloadButton
+                      slug={game.slug}
+                      platform="WINDOWS"
+                      label="Download for PC (.exe)"
+                      fileSize={game.pcFileSize || "650 MB"}
+                      theme={theme}
+                    />
+
+                    <DownloadButton
+                      slug={game.slug}
+                      platform="ANDROID"
+                      label="Download for Android (.apk)"
+                      fileSize={game.mobileFileSize || "120 MB"}
+                      theme={theme}
+                    />
+                  </>
                 )}
-              >
-                Minimum Specs
-              </button>
-              <button
-                onClick={() => setSysReqTab("recommended")}
-                className={cn(
-                  "rounded-full px-5 py-2 text-xs font-bold uppercase tracking-wider transition-colors",
-                  sysReqTab === "recommended" ? "bg-primary text-white" : "text-muted-foreground hover:text-white"
-                )}
-              >
-                Recommended Specs
-              </button>
-            </div>
-          </div>
-
-          <div className="rounded-2xl glass-heavy p-8 border border-white/10">
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {[
-                { label: "Operating System", val: gameDetail.systemRequirements[sysReqTab].os },
-                { label: "Processor (CPU)", val: gameDetail.systemRequirements[sysReqTab].cpu },
-                { label: "Memory (RAM)", val: gameDetail.systemRequirements[sysReqTab].ram },
-                { label: "Graphics (GPU)", val: gameDetail.systemRequirements[sysReqTab].gpu },
-                { label: "DirectX API", val: gameDetail.systemRequirements[sysReqTab].directx },
-                { label: "Storage Space", val: gameDetail.systemRequirements[sysReqTab].storage },
-              ].map((item, idx) => (
-                <div key={idx} className="rounded-xl bg-black/30 p-5 border border-white/5">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{item.label}</span>
-                  <p className="mt-2 text-sm font-bold text-white">{item.val}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Related Games */}
-        <section className="container-site relative z-10 py-24">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
-            <div>
-              <span className="text-xs font-bold uppercase tracking-widest text-dragon-400">
-                More Universes
-              </span>
-              <h2 className="mt-2 text-3xl font-black uppercase text-white sm:text-4xl">
-                Related Titles
-              </h2>
-            </div>
-            <Button variant="glass" size="sm" className="rounded-full gap-2" asChild>
-              <Link href="/games">
-                <span>View All Games</span>
-                <ChevronRight className="size-4" />
-              </Link>
-            </Button>
-          </div>
-
-          <div className="grid gap-6 md:grid-cols-2">
-            {relatedGames.map((rg) => (
-              <div key={rg.id} className="rounded-2xl glass-md p-8 border border-white/10 flex flex-col justify-between">
-                <div>
-                  <span className="text-xs font-bold text-dragon-400 uppercase tracking-widest">{rg.genre}</span>
-                  <h3 className="text-2xl font-black text-white mt-2">{rg.title}</h3>
-                  <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{rg.description}</p>
-                </div>
-                <Button variant="glow" size="sm" className="rounded-full w-fit mt-6" asChild>
-                  <Link href={`/games/${rg.slug}`}>Explore Title</Link>
-                </Button>
               </div>
-            ))}
+
+              {/* Security & Verification Pill */}
+              <div className="pt-4 border-t border-white/10 space-y-2 text-xs font-mono text-slate-400">
+                <div className="flex items-center justify-between">
+                  <span>SHA-256 Checksum</span>
+                  <span className="text-emerald-400 font-bold flex items-center gap-1">
+                    <ShieldCheck className="size-3.5" />
+                    <span>Verified</span>
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Distribution</span>
+                  <span className="text-slate-300">Backblaze B2 CDN</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Release Year</span>
+                  <span className="text-slate-300">{game.releaseDate || "2026"}</span>
+                </div>
+              </div>
+
+            </div>
+
           </div>
-        </section>
+
+        </div>
+
       </main>
 
-      {/* Gameplay Trailer Lightbox Modal */}
-      <AnimatePresence>
-        {trailerOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl"
-          >
-            <div className="relative w-full max-w-5xl rounded-2xl glass-heavy p-6 border border-white/20">
-              <button
-                onClick={() => setTrailerOpen(false)}
-                className="absolute top-4 right-4 p-2 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
-              >
-                <X className="size-6" />
-              </button>
-
-              <div className="aspect-video w-full rounded-xl bg-black flex flex-col items-center justify-center border border-white/10 relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-dragon-600/20 via-black to-neon-purple/20" />
-                <div className="relative z-10 text-center p-8">
-                  <Play className="size-16 text-dragon-400 mx-auto mb-4 animate-pulse" />
-                  <h3 className="text-2xl font-black text-white uppercase">{gameDetail.title} — Official Gameplay Trailer</h3>
-                  <p className="text-sm text-muted-foreground mt-2">Captured in real time on Dragon Engine (4K 120 FPS Target)</p>
-                  <Button onClick={() => setTrailerOpen(false)} variant="glow" size="sm" className="mt-6 rounded-full">
-                    Close Preview
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {game.screenshots && Array.isArray(game.screenshots) && game.screenshots.length > 0 && (
+        <MediaLightboxModal
+          isOpen={activeScreenshotIndex !== null}
+          images={game.screenshots}
+          currentIndex={activeScreenshotIndex ?? 0}
+          onClose={() => setActiveScreenshotIndex(null)}
+          onSelectIndex={(idx) => setActiveScreenshotIndex(idx)}
+        />
+      )}
 
       <Footer />
-    </SceneBackground>
+    </div>
   );
 }

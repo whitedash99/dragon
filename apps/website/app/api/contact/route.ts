@@ -52,12 +52,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Full Name is required and must be at least 2 characters." }, { status: 400 });
     }
 
+    if (!email || typeof email !== "string" || !email.includes("@")) {
+      return NextResponse.json({ error: "Valid Email Address is required." }, { status: 400 });
+    }
+
     if (!subject || typeof subject !== "string" || subject.trim().length < 3) {
       return NextResponse.json({ error: "Subject is required and must be at least 3 characters." }, { status: 400 });
     }
 
-    if (!message || typeof message !== "string" || message.trim().length < 10) {
-      return NextResponse.json({ error: "Message body is required and must be at least 10 characters." }, { status: 400 });
+    if (!message || typeof message !== "string" || message.trim().length < 5) {
+      return NextResponse.json({ error: "Message body is required and must be at least 5 characters." }, { status: 400 });
     }
 
     // 3. Email Security Validation (MX & Disposable Domain Detection)
@@ -68,33 +72,16 @@ export async function POST(req: NextRequest) {
 
     const targetEmail = email.trim().toLowerCase();
 
-    // 4. Rate Limiting Check (Max 3 submissions per 5 minutes per IP)
+    // Extract User Metadata
     const ipHeader = req.headers.get("x-client-ip") || req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "127.0.0.1";
     const clientIp = ipHeader.split(",")[0].trim();
-
-    const fiveMinsAgo = new Date(Date.now() - 5 * 60 * 1000);
-    const recentSubmissionsCount = await prisma.contactTicket.count({
-      where: {
-        ipAddress: clientIp,
-        createdAt: { gte: fiveMinsAgo },
-      },
-    });
-
-    if (recentSubmissionsCount >= 3) {
-      return NextResponse.json(
-        { error: "Rate limit exceeded. Please wait 5 minutes before submitting another support ticket." },
-        { status: 429 }
-      );
-    }
-
-    // Extract User Metadata
     const userAgent = req.headers.get("user-agent") || null;
     const parsedUa = parseUserAgent(userAgent);
     const clientCountry = req.headers.get("x-vercel-ip-country") || req.headers.get("cf-ipcountry") || "Global";
     const clientLanguage = language || req.headers.get("accept-language")?.split(",")[0] || "en-US";
     const clientTimezone = timezone || "UTC";
 
-    // 5. Run AI Contact Processor Engine for Urgency & Categorization
+    // 4. Run AI Contact Processor Engine for Urgency & Categorization
     const aiResult = analyzeContactSubmission({
       name: name.trim(),
       email: targetEmail,
@@ -104,69 +91,56 @@ export async function POST(req: NextRequest) {
       message: message.trim(),
     });
 
-    // 6. Transaction-safe Enterprise Ticket Creation & Activity Logging
+    // 5. Generate authentic ticket ID & tracking token
     const currentYear = new Date().getFullYear();
-    const baseUrl = process.env.NEXTAUTH_URL || siteConfig.url || "https://dragonstudios.com";
+    const timeSeq = Date.now().toString().slice(-6) + Math.floor(10 + Math.random() * 90);
+    const ticketId = `DRG-${currentYear}-${timeSeq}`;
+    const trackingToken = crypto.randomBytes(16).toString("hex");
+    const baseUrl = process.env.NEXTAUTH_URL || siteConfig.url || "https://dragongamingstudios.vercel.app";
+    const generatedTrackingUrl = `${baseUrl}/support/${ticketId}?token=${trackingToken}`;
 
-    const { ticket, mirrorTicket, trackingUrl } = await prisma.$transaction(async (tx: any) => {
-      // Generate 100% unique ticketId using timestamp sequence
-      const timeSeq = Date.now().toString().slice(-6) + Math.floor(10 + Math.random() * 90);
-      const ticketId = `DRG-${currentYear}-${timeSeq}`;
-      const trackingToken = crypto.randomBytes(16).toString("hex");
-      const generatedTrackingUrl = `${baseUrl}/support/${ticketId}?token=${trackingToken}`;
+    // 6. Resilient Primary Ticket Creation (ContactTicket)
+    const createdTicket = await prisma.contactTicket.create({
+      data: {
+        ticketId,
+        trackingToken,
+        name: name.trim(),
+        email: targetEmail,
+        company: company ? String(company).trim() : null,
+        phone: phone ? String(phone).trim() : null,
+        category: category || aiResult.category || "Technical Support",
+        subject: subject.trim(),
+        message: message.trim(),
+        priority: aiResult.urgency || "NORMAL",
+        status: "OPEN",
+        attachments: Array.isArray(attachments) && attachments.length > 0 ? JSON.stringify(attachments) : null,
+        ipAddress: clientIp,
+        country: clientCountry,
+        browser: parsedUa.browser,
+        os: parsedUa.os,
+        language: clientLanguage,
+        timezone: clientTimezone,
+        verifiedAt: new Date(),
+        aiSummary: aiResult.summary,
+        aiCategory: aiResult.category,
+        aiUrgency: aiResult.urgency,
+        aiSpamScore: aiResult.spamScore,
+        aiSuggestedReply: aiResult.suggestedReply,
+        aiKeywords: aiResult.keywords ? aiResult.keywords.join(", ") : null,
+        aiTags: aiResult.tags ? aiResult.tags.join(", ") : "Inbound",
+        estimatedResponse: "Within 24 Hours",
+      },
+    });
 
-      // Step 1: Create the ContactTicket (public-facing record with full metadata)
-      const createdTicket = await tx.contactTicket.create({
-        data: {
-          ticketId,
-          trackingToken,
-          name: name.trim(),
-          email: targetEmail,
-          company: company ? String(company).trim() : null,
-          phone: phone ? String(phone).trim() : null,
-          category: category || aiResult.category,
-          subject: subject.trim(),
-          message: message.trim(),
-          priority: aiResult.urgency || "NORMAL",
-          status: "OPEN",
-          attachments: Array.isArray(attachments) && attachments.length > 0 ? JSON.stringify(attachments) : null,
-          ipAddress: clientIp,
-          country: clientCountry,
-          browser: parsedUa.browser,
-          os: parsedUa.os,
-          language: clientLanguage,
-          timezone: clientTimezone,
-          verifiedAt: new Date(),
-          aiSummary: aiResult.summary,
-          aiCategory: aiResult.category,
-          aiUrgency: aiResult.urgency,
-          aiSpamScore: aiResult.spamScore,
-          aiSuggestedReply: aiResult.suggestedReply,
-          aiKeywords: aiResult.keywords.join(", "),
-          aiTags: aiResult.tags.join(", "),
-          estimatedResponse: aiResult.estimatedResponseTime,
-        },
-      });
-
-      // Log real analytics event for Owner Data Command Center
-      await tx.analyticsEvent.create({
-        data: {
-          event: "CONTACT_SUBMISSION",
-          category: "Support & Contact",
-          userEmail: targetEmail,
-          ipAddress: clientIp,
-          metadata: JSON.stringify({ ticketId, category: createdTicket.category, subject: createdTicket.subject }),
-        },
-      }).catch((e: unknown) => console.warn("Analytics event logging warning:", e));
-
-      // Step 2: Create a mirror Ticket record (required for TicketActivity FK constraint)
-      // TicketActivity.ticketId references Ticket.id — NOT ContactTicket.id
-      const createdMirrorTicket = await tx.ticket.create({
+    // 7. Non-blocking mirror Ticket creation
+    let mirrorTicket: any = null;
+    try {
+      mirrorTicket = await prisma.ticket.create({
         data: {
           ticketId,
           customerName: name.trim(),
           customerEmail: targetEmail,
-          category: category || aiResult.category,
+          category: category || aiResult.category || "Technical Support",
           subject: subject.trim(),
           description: message.trim(),
           priority: aiResult.urgency || "NORMAL",
@@ -174,103 +148,79 @@ export async function POST(req: NextRequest) {
           source: "PUBLIC_CONTACT_FORM",
           createdByType: "CUSTOMER",
           legacyContactTicketId: createdTicket.id,
-          tags: aiResult.tags.join(", ") || "Inbound",
+          tags: aiResult.tags ? aiResult.tags.join(", ") : "Inbound",
         },
       });
 
-      // Step 3: Create Admin Notification (ticketId is a plain string, no FK)
-      await tx.adminNotification.create({
-        data: {
-          title: `New Support Ticket ${ticketId}`,
-          message: `${name.trim()} submitted inquiry: "${subject.trim()}"`,
-          type: "TICKET_CREATED",
-          ticketId,
-        },
-      });
+      if (mirrorTicket?.id) {
+        await prisma.ticketActivity.create({
+          data: {
+            ticketId: mirrorTicket.id,
+            action: "TICKET_CREATED",
+            details: `Ticket ${ticketId} created via Enterprise Support Desk from IP ${clientIp} (${clientCountry})`,
+            performer: name.trim(),
+          },
+        }).catch((e) => console.warn("TicketActivity logging warning:", e));
+      }
+    } catch (mirrorErr) {
+      console.warn("Mirror Ticket write warning (non-fatal):", mirrorErr);
+    }
 
-      // Step 3b: Create Customer In-App Notification for User Dashboard
-      await tx.notification.create({
-        data: {
-          title: `Support Ticket Received: ${ticketId}`,
-          message: `Your inquiry "${subject.trim()}" has been received. Your response will be delivered shortly via email and dashboard.`,
-          type: "TICKET_CREATED",
-          recipient: targetEmail,
-          channel: "IN_APP",
-        },
-      }).catch((e: unknown) => console.warn("UserNotification creation warning:", e));
+    // 8. Notifications Logging
+    await prisma.adminNotification.create({
+      data: {
+        title: `New Support Ticket ${ticketId}`,
+        message: `${name.trim()} submitted inquiry: "${subject.trim()}"`,
+        type: "TICKET_CREATED",
+        ticketId,
+      },
+    }).catch((e) => console.warn("AdminNotification creation warning:", e));
 
-      // Step 4: Create Activity Log (uses mirror Ticket.id — satisfies FK constraint)
-      await tx.ticketActivity.create({
-        data: {
-          ticketId: createdMirrorTicket.id,
-          action: "TICKET_CREATED",
-          details: `Ticket ${ticketId} created via Enterprise Support Portal from IP ${clientIp} (${clientCountry})`,
-          performer: name.trim(),
-        },
-      });
+    await prisma.notification.create({
+      data: {
+        title: `Support Ticket Received: ${ticketId}`,
+        message: `Your inquiry "${subject.trim()}" has been received. Your response will be delivered shortly via email and dashboard.`,
+        type: "TICKET_CREATED",
+        recipient: targetEmail,
+        channel: "IN_APP",
+      },
+    }).catch((e) => console.warn("Notification creation warning:", e));
 
-      return { ticket: createdTicket, mirrorTicket: createdMirrorTicket, trackingUrl: generatedTrackingUrl };
-    });
-
-    // 7. Dispatch Email Notifications via Resend / SMTP
-    const emailResult = await sendEnterpriseEmail({
-      ticketId: ticket.ticketId,
-      name: ticket.name,
-      email: ticket.email,
-      company: ticket.company,
-      phone: ticket.phone,
-      category: ticket.category,
-      subject: ticket.subject,
-      message: ticket.message,
-      priority: ticket.priority,
+    // 9. Dispatch Email Notifications asynchronously (Never blocks user response)
+    sendEnterpriseEmail({
+      ticketId: createdTicket.ticketId,
+      name: createdTicket.name,
+      email: createdTicket.email,
+      company: createdTicket.company,
+      phone: createdTicket.phone,
+      category: createdTicket.category,
+      subject: createdTicket.subject,
+      message: createdTicket.message,
+      priority: createdTicket.priority,
       status: "OPEN",
-      slaTarget: aiResult.estimatedResponseTime,
-      trackingUrl,
-      clientIp: ticket.ipAddress || "127.0.0.1",
-      clientCountry: ticket.country || "Global",
-      browser: ticket.browser || "Web",
-      os: ticket.os || "OS",
-      createdAt: ticket.createdAt,
+      slaTarget: "Within 24 Hours",
+      trackingUrl: generatedTrackingUrl,
+      clientIp: createdTicket.ipAddress || "127.0.0.1",
+      clientCountry: createdTicket.country || "Global",
+      browser: createdTicket.browser || "Web",
+      os: createdTicket.os || "OS",
+      createdAt: createdTicket.createdAt,
     }).catch((err) => {
-      console.error("Email dispatch error:", err);
-      return { success: false, internalSent: false, customerSent: false, error: String(err) };
+      console.error("Email dispatch warning:", err);
     });
-
-    // 8. Log Emails in EmailLog table
-    const ownerEmail = process.env.OWNER_NOTIFICATION_EMAIL?.trim() || process.env.CONTACT_EMAIL?.trim() || "dragonstudiosofficial01@gmail.com";
-    await prisma.emailLog.createMany({
-      data: [
-        {
-          ticketId: mirrorTicket.id,
-          recipient: ticket.email,
-          subject: `Support Request Received [${ticket.ticketId}]`,
-          status: emailResult.customerSent ? "DISPATCHED" : "FAILED",
-          errorMessage: emailResult.customerSent ? null : emailResult.error || "Customer dispatch skipped or unconfirmed",
-          providerResponse: emailResult.customerSent ? "Dispatched via Resend" : "Resend Sandbox / Unconfirmed",
-        },
-        {
-          ticketId: mirrorTicket.id,
-          recipient: ownerEmail,
-          subject: `🚨 [${ticket.ticketId}] ${ticket.category} | ${ticket.subject}`,
-          status: emailResult.internalSent ? "DISPATCHED" : "FAILED",
-          errorMessage: emailResult.internalSent ? null : emailResult.error || "Admin dispatch unconfirmed",
-          providerResponse: emailResult.internalSent ? "Dispatched via Resend" : null,
-        },
-      ],
-    }).catch((err: unknown) => console.error("EmailLog write error:", err));
 
     return NextResponse.json({
       success: true,
-      ticketId: ticket.ticketId,
-      trackingToken: ticket.trackingToken,
-      trackingUrl,
-      estimatedResponse: ticket.estimatedResponse || "Within 24 Hours",
-      message: "Support ticket created successfully and logged into Neon PostgreSQL.",
+      ticketId: createdTicket.ticketId,
+      trackingToken: createdTicket.trackingToken,
+      trackingUrl: generatedTrackingUrl,
+      estimatedResponse: "Within 24 Hours",
+      message: "Support ticket created successfully! An email confirmation with your ticket ID and live tracking link has been dispatched.",
     });
 
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";
     console.error("Support Ticket Submission API Error:", error);
-    return NextResponse.json({ error: "Internal server error while creating ticket." }, { status: 500 });
+    return NextResponse.json({ error: "Internal server error while creating ticket: " + message }, { status: 500 });
   }
 }

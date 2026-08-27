@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { Navbar } from "@/components/navbar/Navbar";
 import { Plug, CheckCircle2, RefreshCw } from "lucide-react";
+import { GlassCard, GlassBadge, GlassButton, GlassStat } from "@/components/ui/glass";
 
 interface IntegrationItem {
   id: string;
@@ -37,59 +38,59 @@ export default function IntegrationsPage() {
   }, [fetchIntegrations]);
 
   return (
-    <div className="flex min-h-screen bg-slate-50 text-slate-900 font-sans select-none">
+    <div className="flex min-h-screen w-full bg-[#02040A] text-slate-100 font-sans antialiased overflow-hidden select-none font-mono">
       <Sidebar />
 
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
         <Navbar />
 
-        <main className="flex-1 overflow-y-auto p-8 max-w-7xl mx-auto w-full space-y-8 font-sans text-xs">
+        <main className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-6 max-w-7xl mx-auto w-full">
           {/* Header Bar */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-6 border-b border-slate-200">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-cyan-500/20">
             <div>
-              <div className="text-xs font-mono font-bold text-slate-500 uppercase tracking-wider mb-1 flex items-center gap-1.5">
-                <Plug className="size-3.5 text-slate-700" />
+              <div className="text-xs font-mono font-bold text-cyan-400/80 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                <Plug className="size-3.5 text-cyan-400" />
                 <span>Dragon Platform Connectors & Webhooks</span>
               </div>
-              <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Enterprise Service Integrations</h1>
+              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">Enterprise Service Integrations</h1>
             </div>
 
             <button
               onClick={fetchIntegrations}
               disabled={loading}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 transition-all shadow-xs"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#03091D] hover:border-cyan-400 border border-cyan-500/30 text-xs font-mono font-bold text-cyan-300 transition-all shadow-[0_0_15px_rgba(0,0,0,0.6)] cursor-pointer"
             >
-              <RefreshCw className={`size-3.5 text-slate-500 ${loading ? "animate-spin" : ""}`} />
+              <RefreshCw className={`size-3.5 text-cyan-400 ${loading ? "animate-spin" : ""}`} />
               <span>Refresh Status</span>
             </button>
           </div>
 
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {loading ? (
-              <div className="col-span-full py-16 text-center text-slate-400 text-xs font-mono">
+              <div className="col-span-full py-16 text-center text-slate-500 text-xs font-mono">
                 Querying integrations status...
               </div>
             ) : (
               integrations.map((integ) => (
-                <div key={integ.id} className="rounded-2xl bg-white p-6 border border-slate-200 space-y-4 shadow-xs">
+                <GlassCard key={integ.id} className="p-6 space-y-4 bg-[#03091D]/90 border border-cyan-500/30 shadow-[0_0_30px_rgba(0,229,255,0.15)]">
                   <div className="flex items-center justify-between font-mono">
-                    <span className="font-bold text-slate-900 text-sm">{integ.name}</span>
-                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${integ.enabled ? "bg-emerald-50 text-emerald-800 border-emerald-200" : "bg-slate-100 text-slate-600 border-slate-200"}`}>
+                    <span className="font-bold text-white text-sm">{integ.name}</span>
+                    <GlassBadge variant={integ.enabled ? "published" : "draft"}>
                       {integ.status}
-                    </span>
+                    </GlassBadge>
                   </div>
 
-                  <p className="text-slate-500 text-xs font-sans">
-                    Provider: <span className="font-mono font-semibold text-slate-700">{integ.provider}</span>
+                  <p className="text-slate-400 text-xs font-mono">
+                    Provider: <span className="text-cyan-300 font-semibold">{integ.provider}</span>
                   </p>
 
-                  <div className="pt-3 border-t border-slate-100 font-mono text-[11px] text-slate-500 flex items-center justify-between">
+                  <div className="pt-3 border-t border-cyan-500/20 font-mono text-[11px] text-slate-400 flex items-center justify-between">
                     <span>Connection:</span>
-                    <span className="text-emerald-700 font-bold flex items-center gap-1">
-                      <CheckCircle2 className="size-3 text-emerald-600" /> Active
+                    <span className="text-emerald-400 font-bold flex items-center gap-1">
+                      <CheckCircle2 className="size-3 text-emerald-400" /> Active
                     </span>
                   </div>
-                </div>
+                </GlassCard>
               ))
             )}
           </div>

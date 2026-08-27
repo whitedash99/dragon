@@ -8,17 +8,20 @@
     "build": "turbo build",
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
+    "test": "turbo test",
     "clean": "turbo clean",
     "prisma:generate": "pnpm --filter @dragon/shared-db generate",
     "prisma:push": "pnpm --filter @dragon/shared-db db:push",
     "prisma:validate": "pnpm --filter @dragon/shared-db validate",
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
-    "verify": "pnpm run prisma:generate && pnpm run typecheck && pnpm run lint && pnpm run build"
+    "verify": "pnpm run prisma:generate && pnpm run typecheck && pnpm run lint && pnpm run test && pnpm run build"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1116.0",
     "@prisma/client": "6.19.3"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.6",
     "next": "^15.2.4",
     "prettier": "^3.5.1",
     "prisma": "6.19.3",

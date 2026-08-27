@@ -1,245 +1,96 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React from "react";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { Navbar } from "@/components/navbar/Navbar";
 import { 
-  Code2, 
+  Code, 
   Terminal, 
-  CheckCircle2, 
-  RefreshCw, 
-  Play, 
-  Bug, 
-  GitBranch
+  Key, 
+  Copy, 
+  Check, 
+  ExternalLink, 
+  Server 
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils/cn";
-
-interface TestItem {
-  id: string;
-  testName: string;
-  category: string;
-  status: string;
-  duration: number;
-}
-
-interface DeploymentItem {
-  id: string;
-  version: string;
-  environment: string;
-  status: string;
-  deployedBy: string;
-  commitHash?: string;
-}
+import { GlassCard, GlassButton, GlassBadge, GlassStat } from "@/components/ui/glass";
 
 export default function DeveloperPage() {
-  const [telemetry, setTelemetry] = useState<{
-    buildStatus?: string;
-    qaPassRate?: string;
-    apiLatency?: string;
-    memoryAllocation?: string;
-  }>({});
-
-  const [testResults, setTestResults] = useState<TestItem[]>([]);
-  const [deployments, setDeployments] = useState<DeploymentItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [runningQA, setRunningQA] = useState(false);
-  const [qaSuccess, setQaSuccess] = useState(false);
-  const [viewMode, setViewMode] = useState<"qa" | "errors" | "deployments">("qa");
-
-  const fetchDevData = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/developer");
-      const data = await res.json();
-      if (data.success) {
-        if (data.telemetry) setTelemetry(data.telemetry);
-        if (Array.isArray(data.testResults)) setTestResults(data.testResults);
-        if (Array.isArray(data.deployments)) setDeployments(data.deployments);
-      }
-    } catch (e) {
-      console.error("Error fetching developer data", e);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    let isMounted = true;
-    Promise.resolve().then(() => {
-      if (isMounted) fetchDevData();
-    });
-    return () => { isMounted = false; };
-  }, [fetchDevData]);
-
-  const handleRunQA = async () => {
-    setRunningQA(true);
-    try {
-      const res = await fetch("/api/developer", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "run_qa_suite" }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setQaSuccess(true);
-        setTimeout(() => setQaSuccess(false), 2500);
-        fetchDevData();
-      }
-    } catch (e) {
-      console.error("Run QA error", e);
-    } finally {
-      setRunningQA(false);
-    }
-  };
-
   return (
-    <div className="flex min-h-screen bg-[#050508]">
+    <div className="flex min-h-screen w-full bg-[#02040A] text-slate-100 font-sans antialiased overflow-hidden select-none font-mono">
       <Sidebar />
 
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
         <Navbar />
 
-        <main className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-8 font-mono text-xs">
-          {/* Header Bar */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <main className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-6 max-w-7xl mx-auto w-full">
+          
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-cyan-500/20">
             <div>
-              <span className="text-xs font-bold uppercase tracking-widest text-[#ff1e4b]">
-                DEVELOPER TOOLKIT & QA CENTER
-              </span>
-              <h1 className="text-3xl font-black uppercase text-white tracking-tight sm:text-4xl mt-0.5 font-heading">
-                AUTOMATED TESTING & MONITORING
+              <div className="flex items-center gap-2 mb-1">
+                <span className="size-2 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_8px_#00E5FF]" />
+                <span className="text-xs font-bold text-cyan-400/80 uppercase tracking-wider">
+                  Dragon Control • Developer Platform & APIs
+                </span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
+                Developer SDKs & Platform Endpoints
               </h1>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <Button onClick={fetchDevData} variant="outline" size="sm" className="rounded-xl text-xs gap-2">
-                <RefreshCw className="size-3.5 text-[#ff1e4b]" />
-                <span>REFRESH QA METRICS</span>
-              </Button>
-              <Button onClick={handleRunQA} disabled={runningQA} variant="solidRed" size="sm" className="rounded-xl text-xs gap-2">
-                {runningQA ? <RefreshCw className="size-3.5 animate-spin" /> : <Play className="size-3.5 fill-current" />}
-                <span>EXECUTE QA SUITE</span>
-              </Button>
+              <p className="text-xs sm:text-sm text-slate-400 font-mono">
+                Prisma client schema, Neon PostgreSQL connection pool, and public REST API routes.
+              </p>
             </div>
           </div>
 
-          {qaSuccess && (
-            <div className="p-4 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold flex items-center gap-2">
-              <CheckCircle2 className="size-4" /> AUTOMATED QA SUITE EXECUTED WITH 100% PASS RATE
-            </div>
-          )}
-
-          {/* Telemetry Strip */}
-          <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-2xl glass-card p-4 border border-white/10 space-y-1">
-              <span className="text-muted-foreground uppercase text-[10px] font-bold block">QA SUITE PASS RATE</span>
-              <span className="text-2xl font-black text-emerald-400 block">{telemetry.qaPassRate || "100%"}</span>
-            </div>
-            <div className="rounded-2xl glass-card p-4 border border-white/10 space-y-1">
-              <span className="text-muted-foreground uppercase text-[10px] font-bold block">PRODUCTION BUILD STATUS</span>
-              <span className="text-2xl font-black text-white block">{telemetry.buildStatus || "SUCCESS"}</span>
-            </div>
-            <div className="rounded-2xl glass-card p-4 border border-white/10 space-y-1">
-              <span className="text-muted-foreground uppercase text-[10px] font-bold block">API RESPONSE LATENCY</span>
-              <span className="text-2xl font-black text-sky-400 block">{telemetry.apiLatency || "42ms"}</span>
-            </div>
-            <div className="rounded-2xl glass-card p-4 border border-white/10 space-y-1">
-              <span className="text-muted-foreground uppercase text-[10px] font-bold block">MEMORY ALLOCATION</span>
-              <span className="text-2xl font-black text-purple-400 block">{telemetry.memoryAllocation || "256 MB"}</span>
-            </div>
-          </div>
-
-          {/* View Mode Pills */}
-          <div className="flex items-center gap-2 overflow-x-auto border-b border-white/10 pb-3">
-            {[
-              { id: "qa" as const, label: "Automated QA Tests", icon: Code2 },
-              { id: "errors" as const, label: "Error Log Tracking", icon: Bug },
-              { id: "deployments" as const, label: "Deployment History", icon: GitBranch },
-            ].map((tab) => {
-              const Icon = tab.icon;
-              const isSelected = viewMode === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setViewMode(tab.id)}
-                  className={cn(
-                    "rounded-xl px-4 py-2 text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all border shrink-0",
-                    isSelected
-                      ? "bg-[#ff1e4b] text-white border-[#ff1e4b] shadow-lg shadow-[#ff1e4b]/20"
-                      : "bg-white/5 text-muted-foreground border-white/5 hover:text-white"
-                  )}
-                >
-                  <Icon className="size-3.5" />
-                  <span>{tab.label}</span>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Active View Mode Content */}
-          {viewMode === "qa" && (
-            <div className="rounded-3xl glass-panel p-6 sm:p-8 border border-white/15 space-y-4">
-              <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                <span className="text-xs font-bold uppercase text-white flex items-center gap-2">
-                  <Terminal className="size-4 text-emerald-400" />
-                  <span>AUTOMATED QA TEST SUITE RESULTS ({testResults.length})</span>
-                </span>
-              </div>
-
-              {loading ? (
-                <div className="py-12 text-center text-muted-foreground text-xs">
-                  <RefreshCw className="size-5 animate-spin mx-auto mb-2 text-[#ff1e4b]" />
-                  Loading test suite matrix...
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <GlassCard className="p-6 space-y-4 bg-[#03091D]/90 border border-cyan-500/30">
+              <h3 className="text-sm font-bold text-white font-mono uppercase tracking-wider">Canonical API Endpoints</h3>
+              <div className="space-y-2 text-xs font-mono">
+                <div className="p-2.5 bg-[#02050E] rounded-xl border border-cyan-500/20 flex items-center justify-between">
+                  <span className="text-emerald-400 font-bold">GET</span>
+                  <span className="text-white">/api/games</span>
+                  <span className="text-slate-400">Public Catalog</span>
                 </div>
-              ) : (
-                <div className="space-y-3">
-                  {testResults.map((test) => (
-                    <div key={test.id} className="p-4 rounded-2xl bg-black/40 border border-white/10 flex items-center justify-between gap-4 text-xs">
-                      <div className="flex items-center gap-3">
-                        <CheckCircle2 className="size-4 text-emerald-400 shrink-0" />
-                        <div>
-                          <strong className="text-white font-sans text-sm block">{test.testName}</strong>
-                          <span className="text-[10px] text-muted-foreground">Category: {test.category}</span>
-                        </div>
-                      </div>
-                      <div className="text-right shrink-0">
-                        <span className="rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2.5 py-0.5 font-bold text-[10px]">
-                          {test.status}
-                        </span>
-                        <span className="block text-[10px] text-muted-foreground mt-0.5">{test.duration}ms</span>
-                      </div>
-                    </div>
-                  ))}
+                <div className="p-2.5 bg-[#02050E] rounded-xl border border-cyan-500/20 flex items-center justify-between">
+                  <span className="text-emerald-400 font-bold">GET</span>
+                  <span className="text-white">/api/games/[slug]</span>
+                  <span className="text-slate-400">Game Details</span>
                 </div>
-              )}
-            </div>
-          )}
-
-          {viewMode === "deployments" && (
-            <div className="rounded-3xl glass-panel p-6 sm:p-8 border border-white/15 space-y-4">
-              <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                <span className="text-xs font-bold uppercase text-white flex items-center gap-2">
-                  <GitBranch className="size-4 text-[#ff1e4b]" />
-                  <span>CI/CD DEPLOYMENT PIPELINE HISTORY</span>
-                </span>
+                <div className="p-2.5 bg-[#02050E] rounded-xl border border-cyan-500/20 flex items-center justify-between">
+                  <span className="text-cyan-400 font-bold">POST</span>
+                  <span className="text-white">/api/revalidate</span>
+                  <span className="text-slate-400">Targeted Purge</span>
+                </div>
+                <div className="p-2.5 bg-[#02050E] rounded-xl border border-cyan-500/20 flex items-center justify-between">
+                  <span className="text-emerald-400 font-bold">GET</span>
+                  <span className="text-white">/api/cms/blocks</span>
+                  <span className="text-slate-400">Layout Sections</span>
+                </div>
               </div>
+            </GlassCard>
 
-              <div className="space-y-3">
-                {deployments.map((dep) => (
-                  <div key={dep.id} className="p-4 rounded-2xl bg-black/40 border border-white/10 flex items-center justify-between gap-4 text-xs">
-                    <div>
-                      <strong className="text-white font-sans text-sm block">{dep.version}</strong>
-                      <span className="text-[10px] text-muted-foreground">Deployed by {dep.deployedBy} • Commit: {dep.commitHash}</span>
-                    </div>
-                    <span className="rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2.5 py-0.5 font-bold text-[10px]">
-                      {dep.status}
-                    </span>
-                  </div>
-                ))}
+            <GlassCard className="p-6 space-y-4 bg-[#03091D]/90 border border-cyan-500/30">
+              <h3 className="text-sm font-bold text-white font-mono uppercase tracking-wider">Studio Database Architecture</h3>
+              <div className="space-y-3 text-xs font-mono">
+                <div className="flex justify-between py-2 border-b border-cyan-500/15">
+                  <span className="text-slate-400">ORM & Driver</span>
+                  <span className="font-bold text-white">Prisma Client v6.19.3</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-cyan-500/15">
+                  <span className="text-slate-400">Shared Schema</span>
+                  <span className="font-bold text-cyan-300">packages/shared-db</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-cyan-500/15">
+                  <span className="text-slate-400">Serverless Host</span>
+                  <span className="font-bold text-white">Neon PostgreSQL</span>
+                </div>
+                <div className="flex justify-between py-2">
+                  <span className="text-slate-400">Authentication Layer</span>
+                  <span className="font-bold text-emerald-400">Auth.js & RBAC Enforced</span>
+                </div>
               </div>
-            </div>
-          )}
+            </GlassCard>
+          </div>
+
         </main>
       </div>
     </div>

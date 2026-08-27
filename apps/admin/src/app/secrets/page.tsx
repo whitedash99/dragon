@@ -3,41 +3,24 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { Navbar } from "@/components/navbar/Navbar";
-import {
-  KeyRound,
-  RefreshCw,
-  ShieldAlert,
-  CheckCircle2,
-  Lock,
-  History,
-  RotateCw,
-  EyeOff
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Lock, ShieldAlert, KeyRound, CheckCircle2, RotateCw, RefreshCw, EyeOff, History } from "lucide-react";
+import { GlassCard, GlassBadge, GlassButton, GlassStat } from "@/components/ui/glass";
 
-interface SecretItem {
+interface SecretRecord {
   id: string;
   name: string;
-  category: string;
   keyName: string;
   maskedValue: string;
-  isConfigured: boolean;
+  category: string;
   lastRotated: string;
-  rotations?: Array<{
-    id: string;
-    rotatedBy: string;
-    reason?: string;
-    createdAt: string;
-  }>;
+  rotations?: { id: string; rotatedBy: string; reason: string; createdAt: string }[];
 }
 
-export default function SecretsVaultPage() {
-  const [secrets, setSecrets] = useState<SecretItem[]>([]);
+export default function SecretsPage() {
+  const [secrets, setSecrets] = useState<SecretRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  // Rotation Modal
-  const [selectedSecret, setSelectedSecret] = useState<SecretItem | null>(null);
+  const [selectedSecret, setSelectedSecret] = useState<SecretRecord | null>(null);
   const [newMaskedValue, setNewMaskedValue] = useState("");
   const [rotationReason, setRotationReason] = useState("");
   const [rotating, setRotating] = useState(false);
@@ -54,52 +37,49 @@ export default function SecretsVaultPage() {
       } else {
         setError(data.error || "Failed to load secrets vault.");
       }
-    } catch (e: unknown) {
-      setError("Failed to communicate with Secrets Vault API.");
+    } catch {
+      setError("An unexpected network error occurred while querying the secrets vault.");
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    let isMounted = true;
-    Promise.resolve().then(() => {
-      if (isMounted) fetchSecrets();
-    });
-    return () => { isMounted = false; };
+    fetchSecrets();
   }, [fetchSecrets]);
 
-  const handleOpenRotate = (sec: SecretItem) => {
+  const handleOpenRotate = (sec: SecretRecord) => {
     setSelectedSecret(sec);
     setNewMaskedValue(sec.maskedValue);
-    setRotationReason("Routine quarterly key rotation");
+    setRotationReason("");
+    setNoticeMsg(null);
   };
 
   const handleRotateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedSecret) return;
-
     setRotating(true);
+    setNoticeMsg(null);
+
     try {
       const res = await fetch("/api/secrets", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           secretId: selectedSecret.id,
-          maskedValue: newMaskedValue.trim(),
-          reason: rotationReason.trim(),
+          newMaskedValue,
+          reason: rotationReason,
         }),
       });
-
       const data = await res.json();
       if (data.success) {
-        setNoticeMsg({ type: "success", text: `Secret ${selectedSecret.name} successfully rotated & audited.` });
+        setNoticeMsg({ type: "success", text: "Secret metadata rotated successfully in audit vault." });
         setSelectedSecret(null);
         fetchSecrets();
       } else {
         setNoticeMsg({ type: "error", text: data.error || "Failed to rotate secret." });
       }
-    } catch (e: unknown) {
+    } catch {
       setNoticeMsg({ type: "error", text: "Failed to rotate secret credential." });
     } finally {
       setRotating(false);
@@ -107,160 +87,173 @@ export default function SecretsVaultPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-slate-50 text-slate-900 font-sans select-none">
+    <div className="flex min-h-screen w-full bg-[#02040A] text-slate-100 font-sans antialiased overflow-hidden select-none font-mono">
       <Sidebar />
 
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
         <Navbar />
 
-        <main className="flex-1 overflow-y-auto p-8 max-w-7xl mx-auto w-full space-y-8 font-sans text-xs">
+        <main className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-6 max-w-7xl mx-auto w-full">
           {/* Header Bar */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-6 border-b border-slate-200">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-cyan-500/20">
             <div>
-              <div className="text-xs font-mono font-bold text-slate-500 uppercase tracking-wider mb-1 flex items-center gap-1.5">
-                <Lock className="size-3.5 text-slate-700" />
+              <div className="text-xs font-mono font-bold text-cyan-400/80 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                <Lock className="size-3.5 text-cyan-400" />
                 <span>Executive Secrets Vault & Rotation Engine</span>
               </div>
-              <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
+              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
                 Secrets & API Keys Governance
               </h1>
             </div>
 
             <div className="flex items-center gap-3">
-              <Button onClick={fetchSecrets} variant="outline" size="sm" className="rounded-xl text-xs gap-2 border-slate-200 bg-white text-slate-700 hover:bg-slate-50 shadow-xs">
-                <RefreshCw className="size-3.5 text-slate-500" />
+              <button
+                onClick={fetchSecrets}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#03091D] hover:border-cyan-400 border border-cyan-500/30 text-xs font-mono font-bold text-cyan-300 transition-all shadow-[0_0_15px_rgba(0,0,0,0.6)] cursor-pointer"
+              >
+                <RefreshCw className="size-3.5 text-cyan-400" />
                 <span>Refresh Vault</span>
-              </Button>
+              </button>
             </div>
           </div>
 
           {error && (
-            <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 font-bold flex items-center gap-2 text-xs font-mono">
-              <ShieldAlert className="size-4 shrink-0 text-rose-600" />
+            <div className="p-4 rounded-xl bg-rose-500/15 border border-rose-400/40 text-rose-300 font-bold flex items-center gap-2 text-xs font-mono">
+              <ShieldAlert className="size-4 shrink-0 text-rose-400" />
               <span>{error}</span>
             </div>
           )}
 
           {noticeMsg && (
-            <div className={`p-4 rounded-xl border font-bold flex items-center justify-between text-xs font-mono ${noticeMsg.type === "success" ? "bg-emerald-50 border-emerald-200 text-emerald-800" : "bg-rose-50 border-rose-200 text-rose-800"}`}>
+            <div className={`p-4 rounded-xl border font-bold flex items-center justify-between text-xs font-mono ${noticeMsg.type === "success" ? "bg-emerald-500/15 border-emerald-400/40 text-emerald-300" : "bg-rose-500/15 border-rose-400/40 text-rose-300"}`}>
               <span>{noticeMsg.text}</span>
-              <button onClick={() => setNoticeMsg(null)} className="text-slate-400 hover:text-slate-700">✕</button>
+              <button onClick={() => setNoticeMsg(null)} className="text-slate-400 hover:text-white">✕</button>
             </div>
           )}
 
           {/* Secrets Grid */}
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {loading ? (
-              <div className="col-span-full py-16 text-center text-slate-400 text-xs font-mono">
-                <RefreshCw className="size-5 animate-spin mx-auto mb-2 text-slate-500" />
+              <div className="col-span-full py-16 text-center text-slate-500 text-xs font-mono">
+                <RefreshCw className="size-5 animate-spin mx-auto mb-2 text-cyan-400" />
                 Decrypting Secrets Vault metadata from PostgreSQL...
               </div>
             ) : (
               secrets.map((sec) => (
-                <div key={sec.id} className="rounded-2xl bg-white p-6 border border-slate-200 space-y-4 relative flex flex-col justify-between shadow-xs hover:border-slate-300 transition-all">
+                <GlassCard key={sec.id} className="p-6 space-y-4 relative flex flex-col justify-between bg-[#03091D]/90 border border-cyan-500/30 shadow-[0_0_30px_rgba(0,229,255,0.15)]">
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200 text-[10px] font-mono font-bold">
+                      <span className="px-2.5 py-0.5 rounded-full bg-[#02050E] text-cyan-300 border border-cyan-500/25 text-[10px] font-mono font-bold">
                         {sec.category}
                       </span>
-                      <span className="flex items-center gap-1 text-[10px] text-emerald-700 font-mono font-bold">
-                        <CheckCircle2 className="size-3 text-emerald-600" />
-                        <span>CONFIGURED</span>
-                      </span>
+                      <GlassBadge variant="published">
+                        CONFIGURED
+                      </GlassBadge>
                     </div>
 
-                    <h3 className="font-bold text-slate-900 text-sm">{sec.name}</h3>
-                    <code className="text-slate-900 font-mono text-[11px] block bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200 truncate font-semibold">
+                    <h3 className="font-bold text-white text-sm font-mono">{sec.name}</h3>
+                    <code className="text-cyan-300 font-mono text-[11px] block bg-[#02050E] px-3 py-1.5 rounded-xl border border-cyan-500/20 truncate font-semibold">
                       {sec.keyName}
                     </code>
 
                     {/* Masked Value Display */}
-                    <div className="flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-200 text-[11px] font-mono text-slate-700">
+                    <div className="flex items-center justify-between bg-[#02050E] p-3 rounded-xl border border-cyan-500/20 text-[11px] font-mono text-slate-300">
                       <span className="truncate">{sec.maskedValue}</span>
-                      <EyeOff className="size-3.5 text-slate-400 shrink-0" />
+                      <EyeOff className="size-3.5 text-slate-500 shrink-0" />
                     </div>
                   </div>
 
-                  <div className="space-y-3 pt-3 border-t border-slate-100 text-[11px] font-mono text-slate-500">
+                  <div className="space-y-3 pt-3 border-t border-cyan-500/20 text-[11px] font-mono text-slate-400">
                     <div className="flex items-center justify-between">
                       <span>Last Rotated:</span>
-                      <span className="text-slate-900 font-bold">{new Date(sec.lastRotated).toLocaleDateString()}</span>
+                      <span className="text-white font-bold">{new Date(sec.lastRotated).toLocaleDateString()}</span>
                     </div>
 
-                    <Button onClick={() => handleOpenRotate(sec)} variant="outline" size="sm" className="w-full rounded-xl gap-2 border-slate-200 bg-white hover:bg-slate-50 text-slate-900 font-bold shadow-xs">
-                      <RotateCw className="size-3.5 text-slate-600" />
+                    <button
+                      onClick={() => handleOpenRotate(sec)}
+                      className="w-full py-2 px-3 rounded-xl bg-[#02050E] border border-cyan-500/30 hover:border-cyan-400 text-cyan-300 font-bold font-mono text-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
+                    >
+                      <RotateCw className="size-3.5 text-cyan-400" />
                       <span>Rotate Key Metadata</span>
-                    </Button>
+                    </button>
                   </div>
-                </div>
+                </GlassCard>
               ))
             )}
           </div>
 
           {/* Rotation Modal */}
           {selectedSecret && (
-            <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
-              <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-lg p-6 space-y-6 shadow-2xl">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-                  <span className="font-bold text-slate-900 text-sm flex items-center gap-2 font-mono">
-                    <KeyRound className="size-4 text-slate-700" />
+            <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+              <div className="bg-[#03091D] border border-cyan-500/40 rounded-3xl w-full max-w-lg p-6 space-y-6 shadow-[0_0_50px_rgba(0,229,255,0.25)] font-mono">
+                <div className="flex items-center justify-between border-b border-cyan-500/20 pb-4">
+                  <span className="font-bold text-white text-sm flex items-center gap-2 font-mono">
+                    <KeyRound className="size-4 text-cyan-400" />
                     <span>Key Rotation — {selectedSecret.name}</span>
                   </span>
-                  <button onClick={() => setSelectedSecret(null)} className="text-slate-400 hover:text-slate-700 text-xs font-mono font-bold">Close</button>
+                  <button onClick={() => setSelectedSecret(null)} className="text-slate-400 hover:text-white text-xs font-mono font-bold">Close</button>
                 </div>
 
                 <form onSubmit={handleRotateSubmit} className="space-y-4 font-mono">
                   <div className="space-y-1">
-                    <label className="block text-[10px] font-bold uppercase text-slate-500">ENV VARIABLE NAME</label>
-                    <input type="text" disabled value={selectedSecret.keyName} className="w-full bg-slate-100 px-3.5 py-2 rounded-xl text-xs text-slate-700 border border-slate-200" />
+                    <label className="block text-[10px] font-bold uppercase text-cyan-400">ENV VARIABLE NAME</label>
+                    <input type="text" disabled value={selectedSecret.keyName} className="w-full bg-[#02050E] px-3.5 py-2.5 rounded-xl text-xs text-slate-400 border border-cyan-500/20" />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="block text-[10px] font-bold uppercase text-slate-500">NEW MASKED DISPLAY VALUE</label>
+                    <label className="block text-[10px] font-bold uppercase text-cyan-400">NEW MASKED DISPLAY VALUE</label>
                     <input
                       type="text"
                       required
                       value={newMaskedValue}
                       onChange={(e) => setNewMaskedValue(e.target.value)}
                       placeholder="e.g. re_SAR55...9W"
-                      className="w-full bg-slate-50 px-3.5 py-2 rounded-xl text-xs text-slate-900 border border-slate-200 focus:outline-none focus:border-slate-400"
+                      className="w-full bg-[#02050E] px-3.5 py-2.5 rounded-xl text-xs text-white border border-cyan-500/30 focus:outline-none focus:border-cyan-400 placeholder-slate-600"
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="block text-[10px] font-bold uppercase text-slate-500">ROTATION REASON / AUDIT NOTE</label>
+                    <label className="block text-[10px] font-bold uppercase text-cyan-400">ROTATION REASON / AUDIT NOTE</label>
                     <input
                       type="text"
                       required
                       value={rotationReason}
                       onChange={(e) => setRotationReason(e.target.value)}
                       placeholder="e.g. Quarterly key rotation or compromise prevention"
-                      className="w-full bg-slate-50 px-3.5 py-2 rounded-xl text-xs text-slate-900 border border-slate-200 focus:outline-none focus:border-slate-400"
+                      className="w-full bg-[#02050E] px-3.5 py-2.5 rounded-xl text-xs text-white border border-cyan-500/30 focus:outline-none focus:border-cyan-400 placeholder-slate-600"
                     />
                   </div>
 
                   <div className="flex justify-end gap-2 pt-2">
-                    <Button type="button" onClick={() => setSelectedSecret(null)} variant="outline" size="sm" className="rounded-xl border-slate-200 font-bold">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedSecret(null)}
+                      className="px-4 py-2 rounded-xl bg-[#02050E] border border-cyan-500/25 text-slate-300 text-xs font-bold font-mono cursor-pointer"
+                    >
                       Cancel
-                    </Button>
-                    <Button type="submit" disabled={rotating} variant="outline" size="sm" className="rounded-xl gap-2 bg-slate-900 hover:bg-slate-800 text-white font-bold shadow-xs">
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={rotating}
+                      className="px-5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 text-black font-black text-xs font-mono shadow-[0_0_20px_rgba(0,229,255,0.4)] flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                    >
                       {rotating ? <RefreshCw className="size-3.5 animate-spin" /> : <RotateCw className="size-3.5" />}
                       <span>Execute Rotation</span>
-                    </Button>
+                    </button>
                   </div>
                 </form>
 
                 {selectedSecret.rotations && selectedSecret.rotations.length > 0 && (
-                  <div className="pt-4 border-t border-slate-100 space-y-2 font-mono">
-                    <span className="text-[10px] font-bold uppercase text-slate-500 flex items-center gap-1">
-                      <History className="size-3" />
+                  <div className="pt-4 border-t border-cyan-500/20 space-y-2 font-mono">
+                    <span className="text-[10px] font-bold uppercase text-cyan-400/80 flex items-center gap-1">
+                      <History className="size-3 text-cyan-400" />
                       <span>Rotation Audit History</span>
                     </span>
-                    <div className="space-y-1 max-h-32 overflow-y-auto">
+                    <div className="space-y-1.5 max-h-32 overflow-y-auto">
                       {selectedSecret.rotations.map((r) => (
-                        <div key={r.id} className="text-[10px] bg-slate-50 p-2.5 rounded-xl border border-slate-200 flex items-center justify-between text-slate-700">
+                        <div key={r.id} className="text-[10px] bg-[#02050E] p-2.5 rounded-xl border border-cyan-500/20 flex items-center justify-between text-slate-300">
                           <span>{r.rotatedBy} — {r.reason || "Rotated"}</span>
-                          <span className="text-slate-400">{new Date(r.createdAt).toLocaleDateString()}</span>
+                          <span className="text-slate-500">{new Date(r.createdAt).toLocaleDateString()}</span>
                         </div>
                       ))}
                     </div>

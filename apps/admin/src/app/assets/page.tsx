@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { Navbar } from "@/components/navbar/Navbar";
 import { FolderKanban, Image as ImageIcon, Video, FileText, Upload, Search, RefreshCw, CheckCircle2 } from "lucide-react";
+import { GlassCard, GlassBadge, GlassButton, GlassStat } from "@/components/ui/glass";
 
 interface MediaAsset {
   id: string;
@@ -43,76 +44,72 @@ export default function AssetsPage() {
   );
 
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans select-none">
+    <div className="flex min-h-screen w-full bg-[#02040A] text-slate-100 font-sans antialiased overflow-hidden select-none font-mono">
       <Sidebar />
 
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
         <Navbar />
 
-        <main className="flex-1 overflow-y-auto p-8 max-w-7xl mx-auto w-full space-y-8">
+        <main className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-6 max-w-7xl mx-auto w-full">
           {/* Header Bar */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-6 border-b border-slate-200 dark:border-slate-800">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-cyan-500/20">
             <div>
-              <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1 flex items-center gap-1.5">
-                <FolderKanban className="size-3.5 text-slate-700 dark:text-slate-300" />
+              <div className="text-xs font-mono font-bold text-cyan-400/80 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                <FolderKanban className="size-3.5 text-cyan-400" />
                 <span>Dragon Digital Asset Management (DAM)</span>
               </div>
-              <h1 className="text-2xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">Studio Media & Brand Assets</h1>
+              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">Studio Media & Brand Assets</h1>
             </div>
 
             <button
               onClick={fetchAssets}
               disabled={loading}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-all shadow-xs"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#03091D] hover:border-cyan-400 border border-cyan-500/30 text-xs font-mono font-bold text-cyan-300 transition-all shadow-[0_0_15px_rgba(0,0,0,0.6)] cursor-pointer"
             >
-              <RefreshCw className={`size-3.5 text-slate-500 dark:text-slate-400 ${loading ? "animate-spin" : ""}`} />
+              <RefreshCw className={`size-3.5 text-cyan-400 ${loading ? "animate-spin" : ""}`} />
               <span>Refresh Assets</span>
             </button>
           </div>
 
           {/* Search Bar */}
           <div className="relative max-w-md">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-3.5 text-slate-400" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-3.5 text-cyan-400" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search assets by filename or URL..."
-              className="w-full rounded-xl bg-white dark:bg-slate-900 pl-9 pr-3 py-2 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 border border-slate-200 dark:border-slate-800 focus:outline-none shadow-xs font-sans"
+              className="w-full rounded-xl bg-[#02050E] pl-9 pr-3 py-2 text-xs text-white placeholder-slate-500 border border-cyan-500/30 focus:outline-none focus:border-cyan-400 font-mono"
             />
           </div>
 
           {/* Assets Grid */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-xs space-y-4">
-            <h2 className="text-sm font-bold text-slate-900 dark:text-slate-100">Stored Asset Files ({filteredAssets.length})</h2>
+          <GlassCard className="p-6 space-y-4 bg-[#03091D]/90 border border-cyan-500/30 shadow-[0_0_30px_rgba(0,229,255,0.15)]">
+            <h2 className="text-sm font-bold text-white font-mono uppercase tracking-wider">Stored Asset Files ({filteredAssets.length})</h2>
 
             {loading ? (
-              <div className="py-16 text-center text-slate-400 dark:text-slate-500 text-xs font-mono">
+              <div className="py-16 text-center text-slate-500 text-xs font-mono">
                 Loading digital assets...
               </div>
             ) : filteredAssets.length === 0 ? (
-              <div className="py-16 text-center text-slate-400 dark:text-slate-500 text-xs font-mono">
+              <div className="py-16 text-center text-slate-500 text-xs font-mono">
                 No media assets found in repository.
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 text-xs">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 text-xs font-mono">
                 {filteredAssets.map((asset) => (
-                  <div key={asset.id} className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2 hover:border-slate-300 dark:hover:border-slate-600 transition-all">
-                    <div className="h-24 rounded-lg bg-slate-200 dark:bg-slate-800 overflow-hidden flex items-center justify-center relative">
-                      {asset.type?.includes("image") || asset.url?.match(/\.(jpg|jpeg|png|webp|gif|svg)$/i) ? (
-                        /* eslint-disable-next-line @next/next/no-img-element */
-                        <img src={asset.url} alt={asset.name} className="object-cover size-full" />
-                      ) : (
-                        <FileText className="size-8 text-slate-400 dark:text-slate-500" />
-                      )}
+                  <div key={asset.id} className="p-4 rounded-xl bg-[#02050E] border border-cyan-500/20 space-y-2 hover:border-cyan-400/50 transition-all">
+                    <div className="flex items-center justify-between">
+                      <ImageIcon className="size-4 text-cyan-400" />
+                      <span className="text-[10px] text-slate-500 uppercase">{asset.type}</span>
                     </div>
-                    <div className="font-bold text-slate-900 dark:text-slate-100 truncate text-[11px] font-sans">{asset.name}</div>
-                    <div className="text-[10px] text-slate-400 dark:text-slate-500 truncate font-mono">{asset.url}</div>
+                    <div className="font-bold text-white truncate" title={asset.name}>{asset.name}</div>
+                    <div className="text-[10px] text-slate-500 truncate">{asset.url}</div>
                   </div>
                 ))}
               </div>
             )}
-          </div>
+          </GlassCard>
         </main>
       </div>
     </div>

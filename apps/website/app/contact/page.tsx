@@ -249,7 +249,7 @@ export default function ContactPage() {
   };
 
   return (
-    <SceneBackground gradient noise orbs vignette>
+    <SceneBackground world3D="signal" gradient noise orbs vignette>
       <Navbar />
 
       <main className="cinematic-page relative min-h-screen overflow-x-hidden pb-24 pt-28">

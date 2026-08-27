@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { 
   Sparkles, 
   Tv, 
@@ -9,21 +8,20 @@ import {
   CheckCircle2, 
   Plus, 
   X, 
-  Save, 
   ShieldCheck, 
   DollarSign 
 } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { SceneBackground } from "@/components/background/SceneBackground";
 import { CommunityNav } from "@/components/community/CommunityNav";
-import { creatorsList, CreatorProfile } from "@/data/communityData";
-import { Button } from "@/components/ui/button";
+import { DragonAtmosphere } from "@/components/cinematic/DragonAtmosphere";
 
 export default function CommunityCreatorsPage() {
-  const [creators] = useState<CreatorProfile[]>(creatorsList);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [appliedSuccess, setAppliedSuccess] = useState(false);
+  const [creatorName, setCreatorName] = useState("");
+  const [creatorChannel, setCreatorChannel] = useState("");
+  const [creatorPlatform, setCreatorPlatform] = useState("YouTube");
 
   const handleApply = (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,152 +29,144 @@ export default function CommunityCreatorsPage() {
     setTimeout(() => {
       setAppliedSuccess(false);
       setIsModalOpen(false);
-    }, 2000);
+      setCreatorName("");
+      setCreatorChannel("");
+    }, 2500);
   };
 
   return (
-    <SceneBackground gradient noise orbs vignette>
+    <div className="min-h-screen bg-[#020512] text-slate-100 font-sans antialiased overflow-x-hidden select-none relative font-mono">
       <Navbar />
-      <CommunityNav />
+      <DragonAtmosphere world="core" />
 
-      <main className="cinematic-page relative min-h-screen overflow-x-hidden pb-32 pt-12">
+      <main className="cinematic-page relative min-h-screen overflow-x-hidden pb-32 pt-20 lg:pt-24 z-10">
+        <CommunityNav />
+
         {/* Hero */}
-        <section className="container-site relative z-10 mb-12">
-          <div className="rounded-3xl glass-heavy p-8 sm:p-12 border border-white/15 overflow-hidden relative text-center max-w-4xl mx-auto">
-            <div className="inline-flex items-center gap-2 rounded-full border border-dragon-500/20 bg-dragon-500/10 px-3.5 py-1 text-xs font-semibold uppercase tracking-widest text-dragon-400 mb-4">
-              <Sparkles className="size-3.5" />
+        <section className="container-site relative z-10 mb-12 px-4 sm:px-6">
+          <div className="rounded-3xl bg-[#03091D]/90 p-8 sm:p-12 border border-cyan-500/30 overflow-hidden relative text-center max-w-4xl mx-auto shadow-[0_0_40px_rgba(0,229,255,0.15)] font-mono">
+            <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3.5 py-1 text-xs font-bold uppercase tracking-widest text-cyan-300 mb-4">
+              <Sparkles className="size-3.5 text-cyan-400" />
               <span>Dragon Partner Program</span>
             </div>
 
-            <h1 className="text-4xl font-black uppercase text-white tracking-tight sm:text-5xl lg:text-6xl">
+            <h1 className="text-3xl sm:text-5xl font-black uppercase text-white tracking-tight font-heading">
               Dragon Creator Network
             </h1>
 
-            <p className="mt-4 text-base text-muted-foreground leading-relaxed sm:text-lg max-w-2xl mx-auto">
-              Stream, create content, and build your audience in the Dragon Studios ecosystem. Get early access builds, 70/30 revenue share on creator codes, and verified badges.
+            <p className="mt-4 text-xs sm:text-sm text-slate-300 leading-relaxed max-w-2xl mx-auto font-sans">
+              Stream, create gameplay videos, and build your gaming community with UNCHARTED DRIVE: BEYOND. Get early access builds, direct developer support, and verified badges.
             </p>
 
-            <Button onClick={() => setIsModalOpen(true)} variant="glow" size="xl" className="mt-8 rounded-full gap-2 px-8">
-              <Plus className="size-5" />
-              <span>Apply for Creator Verification</span>
-            </Button>
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="mt-6 px-8 py-3.5 rounded-2xl bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 text-black font-black text-xs uppercase tracking-wider shadow-[0_0_25px_rgba(0,229,255,0.4)] hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer inline-flex items-center gap-2"
+            >
+              <Plus className="size-4 text-black" />
+              <span>Apply for Creator Partner Verification</span>
+            </button>
           </div>
         </section>
 
         {/* Perks Grid */}
-        <section className="container-site relative z-10 mb-16">
-          <div className="grid gap-6 sm:grid-cols-3">
+        <section className="container-site relative z-10 mb-16 px-4 sm:px-6">
+          <div className="grid gap-6 sm:grid-cols-3 max-w-5xl mx-auto">
             {[
-              { title: "70/30 Creator Revenue Share", desc: "Earn direct revenue on in-game cosmetic pack sales using your custom Creator Code.", icon: DollarSign, color: "text-emerald-400" },
-              { title: "Alpha Build Early Access", desc: "Get priority access to Dragon Engine playtests before public reveals.", icon: Sparkles, color: "text-dragon-400" },
-              { title: "Verified Partner Badge", desc: "Unlock official verified partner badges in Dragon Launcher, forums, and streams.", icon: ShieldCheck, color: "text-neon-cyan" },
+              { title: "Direct Build Early Access", desc: "Get priority access to Dragon Engine driving builds before public releases.", icon: Sparkles, color: "text-cyan-400" },
+              { title: "Developer Collaboration", desc: "Collaborate directly with studio leadership on vehicle physics and track trials.", icon: DollarSign, color: "text-amber-400" },
+              { title: "Verified Partner Badge", desc: "Unlock official verified creator partner badges across forums and chat.", icon: ShieldCheck, color: "text-emerald-400" },
             ].map((p, idx) => (
-              <div key={idx} className="rounded-2xl glass-md p-6 border border-white/10">
-                <p.icon className={`size-6 ${p.color} mb-4`} />
-                <h3 className="text-lg font-bold text-white mb-1">{p.title}</h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">{p.desc}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Directory */}
-        <section className="container-site relative z-10 mb-16">
-          <div className="mb-8">
-            <span className="text-xs font-bold uppercase tracking-widest text-dragon-400">
-              Verified Partners
-            </span>
-            <h2 className="mt-1 text-3xl font-black uppercase text-white">
-              Featured Dragon Creators
-            </h2>
-          </div>
-
-          <div className="grid gap-6 sm:grid-cols-2">
-            {creators.map((c) => (
-              <div key={c.id} className="rounded-2xl glass-heavy p-6 border border-white/10 flex items-center gap-4">
-                <div className="rounded-xl bg-white/5 p-3.5 border border-white/10 shrink-0">
-                  {c.platform === "Twitch" ? <Tv className="size-6 text-neon-purple" /> : <Youtube className="size-6 text-red-400" />}
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-base font-bold text-white">{c.name}</h3>
-                    <CheckCircle2 className="size-4 text-emerald-400" />
-                  </div>
-                  <span className="text-xs font-mono text-dragon-300">{c.handle} • {c.followers} Followers</span>
-                  <p className="text-xs text-muted-foreground mt-1 line-clamp-1">{c.bio}</p>
-                </div>
+              <div key={idx} className="rounded-2xl bg-[#03091D]/90 p-6 border border-cyan-500/25 shadow-[0_0_20px_rgba(0,0,0,0.5)] space-y-2">
+                <p.icon className={`size-6 ${p.color} mb-3`} />
+                <h3 className="text-sm font-bold text-white uppercase">{p.title}</h3>
+                <p className="text-xs text-slate-400 leading-relaxed font-sans">{p.desc}</p>
               </div>
             ))}
           </div>
         </section>
       </main>
 
-      {/* Apply Modal */}
-      <AnimatePresence>
-        {isModalOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl"
-          >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="relative w-full max-w-lg rounded-2xl glass-heavy p-8 border border-white/20"
-            >
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="absolute top-6 right-6 p-2 rounded-full bg-white/10 text-white hover:bg-white/20"
-              >
-                <X className="size-5" />
+      {/* Application Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-[#03091D] border border-cyan-500/35 rounded-3xl w-full max-w-md p-6 space-y-4 shadow-[0_0_50px_rgba(0,229,255,0.25)] font-mono animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between border-b border-cyan-500/20 pb-3">
+              <span className="font-bold text-white text-sm">
+                Apply for Creator Verification
+              </span>
+              <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-white">
+                <X className="size-4" />
               </button>
+            </div>
 
-              <h2 className="text-2xl font-black uppercase text-white">Apply for Creator Verification</h2>
-
-              {appliedSuccess ? (
-                <div className="py-8 text-center text-emerald-400 font-bold text-sm">
-                  ✓ Application submitted! Our creator ops team will review your channel metrics within 48 hours.
+            {appliedSuccess ? (
+              <div className="p-4 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs text-center space-y-1">
+                <CheckCircle2 className="size-6 text-emerald-400 mx-auto" />
+                <div className="font-bold">Application Received</div>
+                <div className="text-[11px] text-slate-400">Our studio team will review your channel and verify your account.</div>
+              </div>
+            ) : (
+              <form onSubmit={handleApply} className="space-y-3 text-xs">
+                <div>
+                  <label className="text-cyan-400 block mb-1 font-bold">Creator / Channel Name *</label>
+                  <input
+                    type="text"
+                    required
+                    value={creatorName}
+                    onChange={(e) => setCreatorName(e.target.value)}
+                    placeholder="e.g. DragonSpeedRunner"
+                    className="w-full rounded-xl bg-[#02050E] p-2.5 text-white border border-cyan-500/30 focus:outline-none focus:border-cyan-400"
+                  />
                 </div>
-              ) : (
-                <form onSubmit={handleApply} className="mt-6 space-y-4">
-                  <div>
-                    <label className="block text-xs font-semibold text-white mb-1">Channel Handle / Link</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="https://twitch.tv/yourchannel"
-                      className="w-full rounded-xl bg-black/40 px-4 py-3 text-sm text-white border border-white/10 focus:outline-none"
-                    />
-                  </div>
 
-                  <div>
-                    <label className="block text-xs font-semibold text-white mb-1">Main Streaming Platform</label>
-                    <select className="w-full rounded-xl bg-black/40 px-4 py-3 text-sm text-white border border-white/10 focus:outline-none">
-                      <option value="Twitch">Twitch</option>
-                      <option value="YouTube">YouTube</option>
-                      <option value="Kick">Kick</option>
-                    </select>
-                  </div>
+                <div>
+                  <label className="text-cyan-400 block mb-1 font-bold">Primary Platform</label>
+                  <select
+                    value={creatorPlatform}
+                    onChange={(e) => setCreatorPlatform(e.target.value)}
+                    className="w-full rounded-xl bg-[#02050E] p-2.5 text-white border border-cyan-500/30 focus:outline-none focus:border-cyan-400"
+                  >
+                    <option value="YouTube">YouTube</option>
+                    <option value="Twitch">Twitch</option>
+                    <option value="Kick">Kick</option>
+                    <option value="X">X (Twitter)</option>
+                  </select>
+                </div>
 
-                  <div className="pt-4 flex items-center justify-end gap-3">
-                    <Button type="button" onClick={() => setIsModalOpen(false)} variant="ghost" size="sm">
-                      Cancel
-                    </Button>
-                    <Button type="submit" variant="glow" size="sm" className="rounded-full gap-2">
-                      <Save className="size-3.5" />
-                      <span>Submit Application</span>
-                    </Button>
-                  </div>
-                </form>
-              )}
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                <div>
+                  <label className="text-cyan-400 block mb-1 font-bold">Channel Link / URL *</label>
+                  <input
+                    type="url"
+                    required
+                    value={creatorChannel}
+                    onChange={(e) => setCreatorChannel(e.target.value)}
+                    placeholder="https://youtube.com/@channel"
+                    className="w-full rounded-xl bg-[#02050E] p-2.5 text-white border border-cyan-500/30 focus:outline-none focus:border-cyan-400"
+                  />
+                </div>
+
+                <div className="flex justify-end gap-2 pt-2 border-t border-cyan-500/20">
+                  <button
+                    type="button"
+                    onClick={() => setIsModalOpen(false)}
+                    className="px-4 py-2 rounded-xl bg-[#02050E] border border-cyan-500/20 text-slate-400"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-black font-black uppercase tracking-wider"
+                  >
+                    Submit Application
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
 
       <Footer />
-    </SceneBackground>
+    </div>
   );
 }

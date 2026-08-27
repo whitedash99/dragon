@@ -1,4 +1,5 @@
 import { z } from 'zod';
+export { z };
 
 export const ContactFormSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -97,3 +98,57 @@ export const ModerationActionSchema = z.object({
 });
 
 export type ModerationActionData = z.infer<typeof ModerationActionSchema>;
+
+// ══════════════════════════════════════════════════════════════════
+// 🎮 DRAGON STUDIOS GAME DISTRIBUTION & BACKBLAZE B2 ZOD SCHEMAS
+// ══════════════════════════════════════════════════════════════════
+
+export const CreateGameReleaseSchema = z.object({
+  gameId: z.string().min(1, 'Game ID is required'),
+  version: z.string().min(1, 'Version is required').regex(/^[vV]?[0-9]+\.[0-9]+(\.[0-9]+)?(-[a-zA-Z0-9.]+)?$/, 'Invalid version format (e.g. v1.0.0 or 1.0.0)'),
+  buildNumber: z.number().int().positive().default(1),
+  platform: z.enum(['WINDOWS', 'ANDROID']),
+  targetArch: z.string().optional().default('x64'),
+  fileType: z.enum(['EXE', 'ZIP', 'INSTALLER', 'APK', 'AAB']),
+  fileName: z.string().min(1, 'File name is required').regex(/^[a-zA-Z0-9._-]+$/, 'Filename contains invalid characters'),
+  fileSizeBytes: z.number().int().positive('File size must be greater than 0 bytes'),
+  sha256Checksum: z.string().regex(/^[a-fA-F0-9]{64}$/, 'SHA-256 checksum must be a 64-character hexadecimal hash'),
+  releaseNotes: z.string().max(10000).optional(),
+});
+
+export type CreateGameReleaseData = z.infer<typeof CreateGameReleaseSchema>;
+
+export const InitUploadSchema = z.object({
+  gameId: z.string().min(1, 'Game ID is required'),
+  releaseId: z.string().optional(),
+  version: z.string().min(1, 'Version is required'),
+  platform: z.enum(['WINDOWS', 'ANDROID']),
+  fileName: z.string().min(1, 'File name is required'),
+  fileSizeBytes: z.number().int().positive('File size must be positive').max(100 * 1024 * 1024 * 1024, 'File exceeds maximum 100GB limit'),
+  sha256Checksum: z.string().regex(/^[a-fA-F0-9]{64}$/, 'SHA-256 checksum must be a 64-character hexadecimal hash'),
+  contentType: z.string().optional().default('application/octet-stream'),
+});
+
+export type InitUploadData = z.infer<typeof InitUploadSchema>;
+
+export const VerifyUploadSchema = z.object({
+  releaseId: z.string().min(1, 'Release ID is required'),
+  fileSizeBytes: z.number().int().positive().optional(),
+  sha256Checksum: z.string().regex(/^[a-fA-F0-9]{64}$/).optional(),
+});
+
+export type VerifyUploadData = z.infer<typeof VerifyUploadSchema>;
+
+export const PublishReleaseSchema = z.object({
+  releaseId: z.string().min(1, 'Release ID is required'),
+  action: z.enum(['PUBLISH', 'UNPUBLISH', 'DEPRECATE', 'ARCHIVE']),
+});
+
+export type PublishReleaseData = z.infer<typeof PublishReleaseSchema>;
+
+export const DownloadGameQuerySchema = z.object({
+  platform: z.enum(['windows', 'android', 'WINDOWS', 'ANDROID']).default('windows'),
+});
+
+export type DownloadGameQueryData = z.infer<typeof DownloadGameQuerySchema>;
+

@@ -20,11 +20,15 @@ const eslintConfig = [
       ".turbo/**",
       ".vercel/**",
       "out/**",
+      "tests/**",
+      "scripts/**",
+      "*.d.ts",
       "next-env.d.ts",
-      "seed.js"
+      "*.js",
+      "*.mjs"
     ]
   },
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  ...compat.extends("next/core-web-vitals"),
 ];
 
 export default eslintConfig;

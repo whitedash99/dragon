@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
+import {
+  parseProfileMetadata,
+  serializeProfileMetadata,
+  validateDragonIdHandle,
+} from "@/lib/user-profile";
 
 export const dynamic = "force-dynamic";
 
@@ -36,27 +41,23 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ success: false, error: "Unauthenticated" }, { status: 401 });
     }
 
-    // Parse custom metadata from profile
-    let customTheme = "valyria-fire";
-    let customBannerUrl = "";
-    let gamerTag = targetUser.name || targetUser.email.split("@")[0];
-    let primaryTitle = "Dragon Warrior";
+    const metadata = parseProfileMetadata(targetUser.profile?.notificationSettings, targetUser.name);
 
-    if (targetUser.profile?.notificationSettings) {
-      try {
-        const meta = JSON.parse(targetUser.profile.notificationSettings);
-        if (meta.bannerTheme) customTheme = meta.bannerTheme;
-        if (meta.bannerUrl) customBannerUrl = meta.bannerUrl;
-        if (meta.gamerTag) gamerTag = meta.gamerTag;
-        if (meta.primaryTitle) primaryTitle = meta.primaryTitle;
-      } catch {}
+    // Ensure user has a real canonical DragonID in database
+    if (!targetUser.dragonId) {
+      const generatedId = `DRG-${Math.floor(1000 + Math.random() * 9000)}-${Math.floor(1000 + Math.random() * 9000)}`;
+      targetUser = await prisma.user.update({
+        where: { id: targetUser.id },
+        data: { dragonId: generatedId },
+        include: { profile: true },
+      });
     }
 
-    // Fetch user support tickets
+    // Fetch user real support tickets
     const tickets = await prisma.contactTicket.findMany({
       where: { email: targetUser.email, deleted: false },
       orderBy: { createdAt: "desc" },
-      take: 5,
+      take: 10,
     }).catch(() => []);
 
     return NextResponse.json({
@@ -65,14 +66,24 @@ export async function GET(req: NextRequest) {
         id: targetUser.id,
         name: targetUser.name,
         email: targetUser.email,
+        dragonId: targetUser.dragonId,
         role: targetUser.role,
-        image: targetUser.image,
+        image: targetUser.image || targetUser.avatar,
+        avatar: targetUser.avatar || targetUser.image,
         createdAt: targetUser.createdAt,
-        gamerTag,
-        primaryTitle,
-        bannerTheme: customTheme,
-        bannerUrl: customBannerUrl,
+        securityScore: targetUser.securityScore || 95,
+        gamerTag: metadata.gamerTag,
+        primaryTitle: metadata.primaryTitle,
+        bannerTheme: metadata.bannerTheme,
+        bannerUrl: metadata.bannerUrl,
+        avatarId: metadata.avatarId,
         bio: targetUser.profile?.bio || "Dragon Studios Player & VIP Member",
+      },
+      metadata,
+      onboarding: {
+        hasCompletedWelcome: metadata.hasCompletedWelcome,
+        hasCompletedDragonId: metadata.hasCompletedDragonId,
+        step: metadata.onboardingStep,
       },
       tickets,
     });
@@ -112,51 +123,81 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ success: false, error: "Unauthenticated" }, { status: 401 });
     }
 
-    const body = await req.json();
-    const { name, gamerTag, primaryTitle, bannerTheme, bannerUrl, bio } = body;
+    const existingUser = await prisma.user.findUnique({
+      where: { id: targetUserId },
+      include: { profile: true },
+    });
 
-    // Update User Name
+    if (!existingUser) {
+      return NextResponse.json({ success: false, error: "User not found" }, { status: 404 });
+    }
+
+    const body = await req.json();
+    const { name, gamerTag, primaryTitle, bannerTheme, bannerUrl, avatar, image, bio } = body;
+
+    const currentMetadata = parseProfileMetadata(existingUser.profile?.notificationSettings, existingUser.name);
+
+    if (gamerTag) {
+      const val = validateDragonIdHandle(gamerTag);
+      if (!val.valid) {
+        return NextResponse.json({ success: false, error: val.error }, { status: 400 });
+      }
+    }
+
+    const targetGamerTag = (gamerTag || name || currentMetadata.gamerTag).trim();
+    const targetAvatar = avatar || image || currentMetadata.avatarId;
+
+    // Update User Name and Avatar
     const updatedUser = await prisma.user.update({
       where: { id: targetUserId },
       data: {
         name: name ? String(name).trim() : undefined,
+        image: targetAvatar ? String(targetAvatar) : undefined,
+        avatar: targetAvatar ? String(targetAvatar) : undefined,
       },
     });
 
-    // Upsert UserProfile with gamer customization metadata
-    const settingsPayload = JSON.stringify({
-      bannerTheme: bannerTheme || "valyria-fire",
-      bannerUrl: bannerUrl || "",
-      gamerTag: gamerTag || name || "Player",
-      primaryTitle: primaryTitle || "Dragon Warrior",
+    const updatedMetadataString = serializeProfileMetadata(currentMetadata, {
+      gamerTag: targetGamerTag,
+      primaryTitle: primaryTitle || currentMetadata.primaryTitle,
+      bannerTheme: bannerTheme || currentMetadata.bannerTheme,
+      bannerUrl: bannerUrl !== undefined ? bannerUrl : currentMetadata.bannerUrl,
+      avatarId: targetAvatar,
+      hasCompletedDragonId: true,
     });
 
+    // Upsert UserProfile with gamer customization metadata
     await prisma.userProfile.upsert({
       where: { userId: targetUserId },
       update: {
-        bio: bio || undefined,
-        notificationSettings: settingsPayload,
+        bio: bio !== undefined ? bio : undefined,
+        notificationSettings: updatedMetadataString,
       },
       create: {
         userId: targetUserId,
         bio: bio || "Dragon Studios Player & VIP Member",
-        notificationSettings: settingsPayload,
+        notificationSettings: updatedMetadataString,
       },
     });
+
+    const refreshedMetadata = parseProfileMetadata(updatedMetadataString, updatedUser.name);
 
     return NextResponse.json({
       success: true,
       user: {
         ...updatedUser,
-        gamerTag,
-        primaryTitle,
-        bannerTheme,
-        bannerUrl,
-        bio,
+        gamerTag: refreshedMetadata.gamerTag,
+        primaryTitle: refreshedMetadata.primaryTitle,
+        bannerTheme: refreshedMetadata.bannerTheme,
+        bannerUrl: refreshedMetadata.bannerUrl,
+        avatarId: refreshedMetadata.avatarId,
+        bio: bio || existingUser.profile?.bio || "Dragon Studios Player & VIP Member",
       },
+      metadata: refreshedMetadata,
     });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json({ success: false, error: message }, { status: 400 });
   }
 }
+

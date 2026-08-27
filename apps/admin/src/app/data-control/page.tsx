@@ -315,24 +315,24 @@ export default function OwnerDataCommandCenterPage() {
 
   if (accessDenied) {
     return (
-      <div className="flex min-h-screen bg-slate-950 text-slate-100 font-sans select-none items-center justify-center p-6">
-        <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-8 text-center space-y-6 shadow-2xl">
-          <div className="size-16 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-500 flex items-center justify-center mx-auto">
+      <div className="flex min-h-screen bg-[#02040A] text-slate-100 font-sans select-none items-center justify-center p-6 font-mono">
+        <div className="max-w-md w-full bg-[#03091D] border border-cyan-500/30 rounded-3xl p-8 text-center space-y-6 shadow-[0_0_50px_rgba(0,229,255,0.2)]">
+          <div className="size-16 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-400 flex items-center justify-center mx-auto">
             <ShieldAlert className="size-8" />
           </div>
           <div className="space-y-2">
-            <h1 className="text-xl font-bold text-white tracking-tight">HTTP 403 — ACCESS DENIED</h1>
+            <h1 className="text-xl font-bold text-white tracking-tight font-mono">HTTP 403 — ACCESS DENIED</h1>
             <p className="text-xs text-slate-400 leading-relaxed font-mono">
               The Owner Data Command Center (/data-control) requires an authenticated session with a protected OWNER role identity.
             </p>
           </div>
-          <div className="p-3 bg-slate-950/80 rounded-xl border border-slate-800 text-[11px] font-mono text-slate-500 text-left space-y-1">
+          <div className="p-3 bg-[#02050E] rounded-xl border border-cyan-500/20 text-[11px] font-mono text-slate-400 text-left space-y-1">
             <div>Server Authorization Enforcement: ACTIVE</div>
             <div>Identity Check: Failed or Insufficient Privilege</div>
           </div>
           <Link
             href="/dashboard"
-            className="inline-flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-white transition-all border border-slate-700"
+            className="inline-flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-[#02050E] hover:border-cyan-400 text-xs font-mono font-bold text-cyan-300 transition-all border border-cyan-500/30"
           >
             <span>Return to Executive Dashboard</span>
           </Link>
@@ -342,7 +342,7 @@ export default function OwnerDataCommandCenterPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans select-none">
+    <div className="flex min-h-screen w-full bg-[#02040A] text-slate-100 font-sans antialiased overflow-hidden select-none font-mono">
       <Sidebar />
 
       <div className="flex-1 flex flex-col min-w-0">

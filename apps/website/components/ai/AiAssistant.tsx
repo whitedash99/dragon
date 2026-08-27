@@ -24,10 +24,10 @@ export function AiAssistant() {
       {/* Floating Trigger Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-dragon-500 via-neon-purple to-neon-cyan text-white shadow-2xl shadow-dragon-500/50 border border-white/20 hover:scale-105 transition-transform"
+        className="fixed bottom-20 lg:bottom-6 right-4 lg:right-6 z-40 flex h-12 w-12 lg:h-14 lg:w-14 items-center justify-center rounded-full bg-gradient-to-br from-dragon-500 via-neon-purple to-neon-cyan text-white shadow-2xl shadow-dragon-500/50 border border-white/20 hover:scale-105 active:scale-95 transition-transform cursor-pointer"
         aria-label="Toggle Dragon Assistant"
       >
-        <Sparkles className="size-6 animate-pulse" />
+        <Sparkles className="size-5 lg:size-6 animate-pulse" />
         <span className="absolute -top-1 -right-1 flex h-3 w-3">
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-neon-cyan opacity-75"></span>
           <span className="relative inline-flex rounded-full h-3 w-3 bg-neon-cyan"></span>
@@ -41,7 +41,7 @@ export function AiAssistant() {
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="fixed bottom-24 right-6 z-50 w-80 sm:w-96 rounded-3xl glass-heavy p-4 sm:p-6 border border-white/20 shadow-2xl overflow-hidden flex flex-col h-[520px]"
+            className="fixed bottom-36 lg:bottom-24 right-3 lg:right-6 z-50 w-[calc(100vw-1.5rem)] max-w-sm sm:w-96 rounded-3xl glass-heavy p-4 sm:p-6 border border-white/20 shadow-2xl overflow-hidden flex flex-col h-[480px] sm:h-[520px]"
           >
             {/* Top Header */}
             <div className="flex items-center justify-between pb-3 border-b border-white/10 shrink-0">
