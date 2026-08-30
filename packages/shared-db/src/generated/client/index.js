@@ -1929,7 +1929,7 @@ const config = {
   },
   "relativeEnvPaths": {
     "rootEnvPath": null,
-    "schemaEnvPath": "../../../../../apps/website/.env"
+    "schemaEnvPath": "../../../../../apps/admin/.env"
   },
   "relativePath": "../../..",
   "clientVersion": "6.19.3",

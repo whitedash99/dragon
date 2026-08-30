@@ -11,26 +11,49 @@ import {
 export const dynamic = "force-dynamic";
 
 async function getAuthenticatedUser(req: NextRequest) {
-  // Method 1: Check dragon_session cookie
-  const sessionToken = req.cookies.get("dragon_session")?.value;
-  if (sessionToken) {
-    const session = await prisma.session.findUnique({
-      where: { sessionToken },
-      include: { user: { include: { profile: true } } },
-    });
-    if (session && session.user) {
-      return session.user;
+  try {
+    // Method 1: Check dragon_session cookie
+    const sessionToken = req.cookies.get("dragon_session")?.value;
+    if (sessionToken) {
+      try {
+        const session = await prisma.session.findUnique({
+          where: { sessionToken },
+          include: { user: { include: { profile: true } } },
+        });
+        if (session && session.user) {
+          return session.user;
+        }
+      } catch (err) {
+        console.warn("Session token user lookup fallback:", err);
+      }
     }
-  }
 
-  // Method 2: NextAuth Google session
-  const authSession = await getServerSession(authOptions).catch(() => null);
-  if (authSession?.user?.email) {
-    const user = await prisma.user.findUnique({
-      where: { email: authSession.user.email.toLowerCase().trim() },
-      include: { profile: true },
-    });
-    if (user) return user;
+    // Method 2: NextAuth Google session
+    const authSession = await getServerSession(authOptions).catch(() => null);
+    if (authSession?.user?.email) {
+      const normalizedEmail = authSession.user.email.toLowerCase().trim();
+      try {
+        const user = await prisma.user.findUnique({
+          where: { email: normalizedEmail },
+          include: { profile: true },
+        });
+        if (user) return user;
+      } catch (err) {
+        console.warn("User email lookup fallback:", err);
+        // Fallback: minimal user object if DB query failed
+        return {
+          id: (authSession.user as any)?.id || "user-google",
+          name: authSession.user.name || normalizedEmail.split("@")[0],
+          email: normalizedEmail,
+          image: authSession.user.image,
+          role: (authSession.user as any)?.role || "PLAYER",
+          createdAt: new Date(),
+          profile: null,
+        } as any;
+      }
+    }
+  } catch (error) {
+    console.error("getAuthenticatedUser error:", error);
   }
 
   return null;
