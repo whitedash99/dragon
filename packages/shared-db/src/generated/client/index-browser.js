@@ -1746,6 +1746,37 @@ exports.Prisma.CommunityBookmarkScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.ScoreScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  dragonId: 'dragonId',
+  playerName: 'playerName',
+  gameSlug: 'gameSlug',
+  score: 'score',
+  level: 'level',
+  rank: 'rank',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.GameSessionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  dragonId: 'dragonId',
+  gameSlug: 'gameSlug',
+  sessionToken: 'sessionToken',
+  status: 'status',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  startedAt: 'startedAt',
+  endedAt: 'endedAt',
+  lastHeartbeat: 'lastHeartbeat',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -1920,7 +1951,9 @@ exports.Prisma.ModelName = {
   CommunityModerationAction: 'CommunityModerationAction',
   CommunityBan: 'CommunityBan',
   CommunityMute: 'CommunityMute',
-  CommunityBookmark: 'CommunityBookmark'
+  CommunityBookmark: 'CommunityBookmark',
+  Score: 'Score',
+  GameSession: 'GameSession'
 };
 
 /**

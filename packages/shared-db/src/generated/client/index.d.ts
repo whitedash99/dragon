@@ -748,6 +748,16 @@ export type CommunityMute = $Result.DefaultSelection<Prisma.$CommunityMutePayloa
  * 
  */
 export type CommunityBookmark = $Result.DefaultSelection<Prisma.$CommunityBookmarkPayload>
+/**
+ * Model Score
+ * 
+ */
+export type Score = $Result.DefaultSelection<Prisma.$ScorePayload>
+/**
+ * Model GameSession
+ * 
+ */
+export type GameSession = $Result.DefaultSelection<Prisma.$GameSessionPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -2336,6 +2346,26 @@ export class PrismaClient<
     * ```
     */
   get communityBookmark(): Prisma.CommunityBookmarkDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.score`: Exposes CRUD operations for the **Score** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Scores
+    * const scores = await prisma.score.findMany()
+    * ```
+    */
+  get score(): Prisma.ScoreDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.gameSession`: Exposes CRUD operations for the **GameSession** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more GameSessions
+    * const gameSessions = await prisma.gameSession.findMany()
+    * ```
+    */
+  get gameSession(): Prisma.GameSessionDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -2923,7 +2953,9 @@ export namespace Prisma {
     CommunityModerationAction: 'CommunityModerationAction',
     CommunityBan: 'CommunityBan',
     CommunityMute: 'CommunityMute',
-    CommunityBookmark: 'CommunityBookmark'
+    CommunityBookmark: 'CommunityBookmark',
+    Score: 'Score',
+    GameSession: 'GameSession'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -2942,7 +2974,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "role" | "permission" | "session" | "auditLog" | "page" | "pageSection" | "contentBlock" | "contentRevision" | "sEOData" | "gameContent" | "gameRelease" | "gameDownloadLog" | "gameMedia" | "gameFeature" | "gamePlatform" | "patchNote" | "dLC" | "newsArticle" | "navigationMenu" | "mediaAsset" | "mediaFolder" | "mediaCollection" | "mediaTag" | "mediaUsage" | "uploadHistory" | "customer" | "ticket" | "ticketMessage" | "ticketAttachment" | "internalNote" | "ticketActivity" | "aIAnalysis" | "department" | "teamMember" | "emailLog" | "aIConversation" | "aIMessage" | "aIPrompt" | "aIUsage" | "aISetting" | "aIKnowledge" | "aIActivity" | "analyticsEvent" | "visitor" | "analyticsSession" | "analyticsReport" | "metric" | "dashboardWidget" | "securityEvent" | "aPIKey" | "securityAlert" | "backupRecord" | "notification" | "notificationTemplate" | "notificationPreference" | "notificationRule" | "deliveryLog" | "systemSetting" | "integration" | "emailConfiguration" | "storageConfiguration" | "aIConfiguration" | "featureFlag" | "testResult" | "errorLog" | "performanceMetric" | "deployment" | "buildHistory" | "systemLog" | "healthCheck" | "cacheRecord" | "optimizationReport" | "systemResource" | "productionEnvironment" | "cloudDeployment" | "systemHealthCheck" | "databaseBackupRecord" | "workflow" | "workflowTrigger" | "workflowCondition" | "workflowAction" | "workflowExecution" | "automationLog" | "scheduledJob" | "knowledgeArticle" | "knowledgeCategory" | "aIHelpConversation" | "aIHelpMessage" | "aIFeedback" | "aISearchLog" | "aPIApplication" | "aPIEndpoint" | "aPILog" | "webhook" | "webhookEvent" | "aPIUsageRecord" | "campaign" | "audienceSegment" | "emailCampaign" | "announcement" | "promotion" | "marketingTemplate" | "campaignAnalyticsRecord" | "contactTicket" | "account" | "verificationToken" | "emailVerificationCode" | "contactVerificationToken" | "career" | "pressRelease" | "fAQItem" | "communityEvent" | "newsletterSubscriber" | "customerProfile" | "customerPreference" | "customerNotification" | "customerSession" | "game" | "article" | "supportCategory" | "ticketAssignment" | "ticketReply" | "adminNotification" | "userProfile" | "userDevice" | "dualApproval" | "dualApprovalConfirmed" | "systemSecurityState" | "secretVault" | "secretRotationLog" | "teamInvitation" | "teamApplication" | "passkeyCredential" | "recoveryMethod" | "trustedDevice" | "communityRoom" | "chatMessage" | "chatReaction" | "forumCategory" | "forumThread" | "forumPost" | "communityReport" | "communityModerationAction" | "communityBan" | "communityMute" | "communityBookmark"
+      modelProps: "user" | "role" | "permission" | "session" | "auditLog" | "page" | "pageSection" | "contentBlock" | "contentRevision" | "sEOData" | "gameContent" | "gameRelease" | "gameDownloadLog" | "gameMedia" | "gameFeature" | "gamePlatform" | "patchNote" | "dLC" | "newsArticle" | "navigationMenu" | "mediaAsset" | "mediaFolder" | "mediaCollection" | "mediaTag" | "mediaUsage" | "uploadHistory" | "customer" | "ticket" | "ticketMessage" | "ticketAttachment" | "internalNote" | "ticketActivity" | "aIAnalysis" | "department" | "teamMember" | "emailLog" | "aIConversation" | "aIMessage" | "aIPrompt" | "aIUsage" | "aISetting" | "aIKnowledge" | "aIActivity" | "analyticsEvent" | "visitor" | "analyticsSession" | "analyticsReport" | "metric" | "dashboardWidget" | "securityEvent" | "aPIKey" | "securityAlert" | "backupRecord" | "notification" | "notificationTemplate" | "notificationPreference" | "notificationRule" | "deliveryLog" | "systemSetting" | "integration" | "emailConfiguration" | "storageConfiguration" | "aIConfiguration" | "featureFlag" | "testResult" | "errorLog" | "performanceMetric" | "deployment" | "buildHistory" | "systemLog" | "healthCheck" | "cacheRecord" | "optimizationReport" | "systemResource" | "productionEnvironment" | "cloudDeployment" | "systemHealthCheck" | "databaseBackupRecord" | "workflow" | "workflowTrigger" | "workflowCondition" | "workflowAction" | "workflowExecution" | "automationLog" | "scheduledJob" | "knowledgeArticle" | "knowledgeCategory" | "aIHelpConversation" | "aIHelpMessage" | "aIFeedback" | "aISearchLog" | "aPIApplication" | "aPIEndpoint" | "aPILog" | "webhook" | "webhookEvent" | "aPIUsageRecord" | "campaign" | "audienceSegment" | "emailCampaign" | "announcement" | "promotion" | "marketingTemplate" | "campaignAnalyticsRecord" | "contactTicket" | "account" | "verificationToken" | "emailVerificationCode" | "contactVerificationToken" | "career" | "pressRelease" | "fAQItem" | "communityEvent" | "newsletterSubscriber" | "customerProfile" | "customerPreference" | "customerNotification" | "customerSession" | "game" | "article" | "supportCategory" | "ticketAssignment" | "ticketReply" | "adminNotification" | "userProfile" | "userDevice" | "dualApproval" | "dualApprovalConfirmed" | "systemSecurityState" | "secretVault" | "secretRotationLog" | "teamInvitation" | "teamApplication" | "passkeyCredential" | "recoveryMethod" | "trustedDevice" | "communityRoom" | "chatMessage" | "chatReaction" | "forumCategory" | "forumThread" | "forumPost" | "communityReport" | "communityModerationAction" | "communityBan" | "communityMute" | "communityBookmark" | "score" | "gameSession"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -13824,6 +13856,154 @@ export namespace Prisma {
           }
         }
       }
+      Score: {
+        payload: Prisma.$ScorePayload<ExtArgs>
+        fields: Prisma.ScoreFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ScoreFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ScorePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ScoreFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ScorePayload>
+          }
+          findFirst: {
+            args: Prisma.ScoreFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ScorePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ScoreFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ScorePayload>
+          }
+          findMany: {
+            args: Prisma.ScoreFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ScorePayload>[]
+          }
+          create: {
+            args: Prisma.ScoreCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ScorePayload>
+          }
+          createMany: {
+            args: Prisma.ScoreCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ScoreCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ScorePayload>[]
+          }
+          delete: {
+            args: Prisma.ScoreDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ScorePayload>
+          }
+          update: {
+            args: Prisma.ScoreUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ScorePayload>
+          }
+          deleteMany: {
+            args: Prisma.ScoreDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ScoreUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ScoreUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ScorePayload>[]
+          }
+          upsert: {
+            args: Prisma.ScoreUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ScorePayload>
+          }
+          aggregate: {
+            args: Prisma.ScoreAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateScore>
+          }
+          groupBy: {
+            args: Prisma.ScoreGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ScoreGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ScoreCountArgs<ExtArgs>
+            result: $Utils.Optional<ScoreCountAggregateOutputType> | number
+          }
+        }
+      }
+      GameSession: {
+        payload: Prisma.$GameSessionPayload<ExtArgs>
+        fields: Prisma.GameSessionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.GameSessionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GameSessionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.GameSessionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GameSessionPayload>
+          }
+          findFirst: {
+            args: Prisma.GameSessionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GameSessionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.GameSessionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GameSessionPayload>
+          }
+          findMany: {
+            args: Prisma.GameSessionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GameSessionPayload>[]
+          }
+          create: {
+            args: Prisma.GameSessionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GameSessionPayload>
+          }
+          createMany: {
+            args: Prisma.GameSessionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.GameSessionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GameSessionPayload>[]
+          }
+          delete: {
+            args: Prisma.GameSessionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GameSessionPayload>
+          }
+          update: {
+            args: Prisma.GameSessionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GameSessionPayload>
+          }
+          deleteMany: {
+            args: Prisma.GameSessionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.GameSessionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.GameSessionUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GameSessionPayload>[]
+          }
+          upsert: {
+            args: Prisma.GameSessionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GameSessionPayload>
+          }
+          aggregate: {
+            args: Prisma.GameSessionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateGameSession>
+          }
+          groupBy: {
+            args: Prisma.GameSessionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<GameSessionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.GameSessionCountArgs<ExtArgs>
+            result: $Utils.Optional<GameSessionCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -14067,6 +14247,8 @@ export namespace Prisma {
     communityBan?: CommunityBanOmit
     communityMute?: CommunityMuteOmit
     communityBookmark?: CommunityBookmarkOmit
+    score?: ScoreOmit
+    gameSession?: GameSessionOmit
   }
 
   /* Types for Logging */
@@ -14165,6 +14347,8 @@ export namespace Prisma {
     communityMutes: number
     bookmarks: number
     verificationCodes: number
+    scores: number
+    gameSessions: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -14186,6 +14370,8 @@ export namespace Prisma {
     communityMutes?: boolean | UserCountOutputTypeCountCommunityMutesArgs
     bookmarks?: boolean | UserCountOutputTypeCountBookmarksArgs
     verificationCodes?: boolean | UserCountOutputTypeCountVerificationCodesArgs
+    scores?: boolean | UserCountOutputTypeCountScoresArgs
+    gameSessions?: boolean | UserCountOutputTypeCountGameSessionsArgs
   }
 
   // Custom InputTypes
@@ -14323,6 +14509,20 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountVerificationCodesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: EmailVerificationCodeWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountScoresArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ScoreWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountGameSessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: GameSessionWhereInput
   }
 
 
@@ -15655,6 +15855,8 @@ export namespace Prisma {
     communityMutes?: boolean | User$communityMutesArgs<ExtArgs>
     bookmarks?: boolean | User$bookmarksArgs<ExtArgs>
     verificationCodes?: boolean | User$verificationCodesArgs<ExtArgs>
+    scores?: boolean | User$scoresArgs<ExtArgs>
+    gameSessions?: boolean | User$gameSessionsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -15776,6 +15978,8 @@ export namespace Prisma {
     communityMutes?: boolean | User$communityMutesArgs<ExtArgs>
     bookmarks?: boolean | User$bookmarksArgs<ExtArgs>
     verificationCodes?: boolean | User$verificationCodesArgs<ExtArgs>
+    scores?: boolean | User$scoresArgs<ExtArgs>
+    gameSessions?: boolean | User$gameSessionsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -15804,6 +16008,8 @@ export namespace Prisma {
       communityMutes: Prisma.$CommunityMutePayload<ExtArgs>[]
       bookmarks: Prisma.$CommunityBookmarkPayload<ExtArgs>[]
       verificationCodes: Prisma.$EmailVerificationCodePayload<ExtArgs>[]
+      scores: Prisma.$ScorePayload<ExtArgs>[]
+      gameSessions: Prisma.$GameSessionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -16249,6 +16455,8 @@ export namespace Prisma {
     communityMutes<T extends User$communityMutesArgs<ExtArgs> = {}>(args?: Subset<T, User$communityMutesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CommunityMutePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     bookmarks<T extends User$bookmarksArgs<ExtArgs> = {}>(args?: Subset<T, User$bookmarksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CommunityBookmarkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     verificationCodes<T extends User$verificationCodesArgs<ExtArgs> = {}>(args?: Subset<T, User$verificationCodesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EmailVerificationCodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    scores<T extends User$scoresArgs<ExtArgs> = {}>(args?: Subset<T, User$scoresArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ScorePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    gameSessions<T extends User$gameSessionsArgs<ExtArgs> = {}>(args?: Subset<T, User$gameSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GameSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -17162,6 +17370,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: EmailVerificationCodeScalarFieldEnum | EmailVerificationCodeScalarFieldEnum[]
+  }
+
+  /**
+   * User.scores
+   */
+  export type User$scoresArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Score
+     */
+    select?: ScoreSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Score
+     */
+    omit?: ScoreOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScoreInclude<ExtArgs> | null
+    where?: ScoreWhereInput
+    orderBy?: ScoreOrderByWithRelationInput | ScoreOrderByWithRelationInput[]
+    cursor?: ScoreWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ScoreScalarFieldEnum | ScoreScalarFieldEnum[]
+  }
+
+  /**
+   * User.gameSessions
+   */
+  export type User$gameSessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GameSession
+     */
+    select?: GameSessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GameSession
+     */
+    omit?: GameSessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GameSessionInclude<ExtArgs> | null
+    where?: GameSessionWhereInput
+    orderBy?: GameSessionOrderByWithRelationInput | GameSessionOrderByWithRelationInput[]
+    cursor?: GameSessionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: GameSessionScalarFieldEnum | GameSessionScalarFieldEnum[]
   }
 
   /**
@@ -175165,6 +175421,2366 @@ export namespace Prisma {
 
 
   /**
+   * Model Score
+   */
+
+  export type AggregateScore = {
+    _count: ScoreCountAggregateOutputType | null
+    _avg: ScoreAvgAggregateOutputType | null
+    _sum: ScoreSumAggregateOutputType | null
+    _min: ScoreMinAggregateOutputType | null
+    _max: ScoreMaxAggregateOutputType | null
+  }
+
+  export type ScoreAvgAggregateOutputType = {
+    score: number | null
+    level: number | null
+  }
+
+  export type ScoreSumAggregateOutputType = {
+    score: number | null
+    level: number | null
+  }
+
+  export type ScoreMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    dragonId: string | null
+    playerName: string | null
+    gameSlug: string | null
+    score: number | null
+    level: number | null
+    rank: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ScoreMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    dragonId: string | null
+    playerName: string | null
+    gameSlug: string | null
+    score: number | null
+    level: number | null
+    rank: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ScoreCountAggregateOutputType = {
+    id: number
+    userId: number
+    dragonId: number
+    playerName: number
+    gameSlug: number
+    score: number
+    level: number
+    rank: number
+    metadata: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type ScoreAvgAggregateInputType = {
+    score?: true
+    level?: true
+  }
+
+  export type ScoreSumAggregateInputType = {
+    score?: true
+    level?: true
+  }
+
+  export type ScoreMinAggregateInputType = {
+    id?: true
+    userId?: true
+    dragonId?: true
+    playerName?: true
+    gameSlug?: true
+    score?: true
+    level?: true
+    rank?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ScoreMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    dragonId?: true
+    playerName?: true
+    gameSlug?: true
+    score?: true
+    level?: true
+    rank?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ScoreCountAggregateInputType = {
+    id?: true
+    userId?: true
+    dragonId?: true
+    playerName?: true
+    gameSlug?: true
+    score?: true
+    level?: true
+    rank?: true
+    metadata?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type ScoreAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Score to aggregate.
+     */
+    where?: ScoreWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Scores to fetch.
+     */
+    orderBy?: ScoreOrderByWithRelationInput | ScoreOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ScoreWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Scores from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Scores.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Scores
+    **/
+    _count?: true | ScoreCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ScoreAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ScoreSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ScoreMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ScoreMaxAggregateInputType
+  }
+
+  export type GetScoreAggregateType<T extends ScoreAggregateArgs> = {
+        [P in keyof T & keyof AggregateScore]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateScore[P]>
+      : GetScalarType<T[P], AggregateScore[P]>
+  }
+
+
+
+
+  export type ScoreGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ScoreWhereInput
+    orderBy?: ScoreOrderByWithAggregationInput | ScoreOrderByWithAggregationInput[]
+    by: ScoreScalarFieldEnum[] | ScoreScalarFieldEnum
+    having?: ScoreScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ScoreCountAggregateInputType | true
+    _avg?: ScoreAvgAggregateInputType
+    _sum?: ScoreSumAggregateInputType
+    _min?: ScoreMinAggregateInputType
+    _max?: ScoreMaxAggregateInputType
+  }
+
+  export type ScoreGroupByOutputType = {
+    id: string
+    userId: string | null
+    dragonId: string
+    playerName: string
+    gameSlug: string
+    score: number
+    level: number
+    rank: string | null
+    metadata: JsonValue | null
+    createdAt: Date
+    updatedAt: Date
+    _count: ScoreCountAggregateOutputType | null
+    _avg: ScoreAvgAggregateOutputType | null
+    _sum: ScoreSumAggregateOutputType | null
+    _min: ScoreMinAggregateOutputType | null
+    _max: ScoreMaxAggregateOutputType | null
+  }
+
+  type GetScoreGroupByPayload<T extends ScoreGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ScoreGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ScoreGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ScoreGroupByOutputType[P]>
+            : GetScalarType<T[P], ScoreGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ScoreSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    dragonId?: boolean
+    playerName?: boolean
+    gameSlug?: boolean
+    score?: boolean
+    level?: boolean
+    rank?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | Score$userArgs<ExtArgs>
+  }, ExtArgs["result"]["score"]>
+
+  export type ScoreSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    dragonId?: boolean
+    playerName?: boolean
+    gameSlug?: boolean
+    score?: boolean
+    level?: boolean
+    rank?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | Score$userArgs<ExtArgs>
+  }, ExtArgs["result"]["score"]>
+
+  export type ScoreSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    dragonId?: boolean
+    playerName?: boolean
+    gameSlug?: boolean
+    score?: boolean
+    level?: boolean
+    rank?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | Score$userArgs<ExtArgs>
+  }, ExtArgs["result"]["score"]>
+
+  export type ScoreSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    dragonId?: boolean
+    playerName?: boolean
+    gameSlug?: boolean
+    score?: boolean
+    level?: boolean
+    rank?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type ScoreOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "dragonId" | "playerName" | "gameSlug" | "score" | "level" | "rank" | "metadata" | "createdAt" | "updatedAt", ExtArgs["result"]["score"]>
+  export type ScoreInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | Score$userArgs<ExtArgs>
+  }
+  export type ScoreIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | Score$userArgs<ExtArgs>
+  }
+  export type ScoreIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | Score$userArgs<ExtArgs>
+  }
+
+  export type $ScorePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Score"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string | null
+      dragonId: string
+      playerName: string
+      gameSlug: string
+      score: number
+      level: number
+      rank: string | null
+      metadata: Prisma.JsonValue | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["score"]>
+    composites: {}
+  }
+
+  type ScoreGetPayload<S extends boolean | null | undefined | ScoreDefaultArgs> = $Result.GetResult<Prisma.$ScorePayload, S>
+
+  type ScoreCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ScoreFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ScoreCountAggregateInputType | true
+    }
+
+  export interface ScoreDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Score'], meta: { name: 'Score' } }
+    /**
+     * Find zero or one Score that matches the filter.
+     * @param {ScoreFindUniqueArgs} args - Arguments to find a Score
+     * @example
+     * // Get one Score
+     * const score = await prisma.score.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ScoreFindUniqueArgs>(args: SelectSubset<T, ScoreFindUniqueArgs<ExtArgs>>): Prisma__ScoreClient<$Result.GetResult<Prisma.$ScorePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Score that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ScoreFindUniqueOrThrowArgs} args - Arguments to find a Score
+     * @example
+     * // Get one Score
+     * const score = await prisma.score.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ScoreFindUniqueOrThrowArgs>(args: SelectSubset<T, ScoreFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ScoreClient<$Result.GetResult<Prisma.$ScorePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Score that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ScoreFindFirstArgs} args - Arguments to find a Score
+     * @example
+     * // Get one Score
+     * const score = await prisma.score.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ScoreFindFirstArgs>(args?: SelectSubset<T, ScoreFindFirstArgs<ExtArgs>>): Prisma__ScoreClient<$Result.GetResult<Prisma.$ScorePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Score that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ScoreFindFirstOrThrowArgs} args - Arguments to find a Score
+     * @example
+     * // Get one Score
+     * const score = await prisma.score.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ScoreFindFirstOrThrowArgs>(args?: SelectSubset<T, ScoreFindFirstOrThrowArgs<ExtArgs>>): Prisma__ScoreClient<$Result.GetResult<Prisma.$ScorePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Scores that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ScoreFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Scores
+     * const scores = await prisma.score.findMany()
+     * 
+     * // Get first 10 Scores
+     * const scores = await prisma.score.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const scoreWithIdOnly = await prisma.score.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ScoreFindManyArgs>(args?: SelectSubset<T, ScoreFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ScorePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Score.
+     * @param {ScoreCreateArgs} args - Arguments to create a Score.
+     * @example
+     * // Create one Score
+     * const Score = await prisma.score.create({
+     *   data: {
+     *     // ... data to create a Score
+     *   }
+     * })
+     * 
+     */
+    create<T extends ScoreCreateArgs>(args: SelectSubset<T, ScoreCreateArgs<ExtArgs>>): Prisma__ScoreClient<$Result.GetResult<Prisma.$ScorePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Scores.
+     * @param {ScoreCreateManyArgs} args - Arguments to create many Scores.
+     * @example
+     * // Create many Scores
+     * const score = await prisma.score.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ScoreCreateManyArgs>(args?: SelectSubset<T, ScoreCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Scores and returns the data saved in the database.
+     * @param {ScoreCreateManyAndReturnArgs} args - Arguments to create many Scores.
+     * @example
+     * // Create many Scores
+     * const score = await prisma.score.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Scores and only return the `id`
+     * const scoreWithIdOnly = await prisma.score.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ScoreCreateManyAndReturnArgs>(args?: SelectSubset<T, ScoreCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ScorePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Score.
+     * @param {ScoreDeleteArgs} args - Arguments to delete one Score.
+     * @example
+     * // Delete one Score
+     * const Score = await prisma.score.delete({
+     *   where: {
+     *     // ... filter to delete one Score
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ScoreDeleteArgs>(args: SelectSubset<T, ScoreDeleteArgs<ExtArgs>>): Prisma__ScoreClient<$Result.GetResult<Prisma.$ScorePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Score.
+     * @param {ScoreUpdateArgs} args - Arguments to update one Score.
+     * @example
+     * // Update one Score
+     * const score = await prisma.score.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ScoreUpdateArgs>(args: SelectSubset<T, ScoreUpdateArgs<ExtArgs>>): Prisma__ScoreClient<$Result.GetResult<Prisma.$ScorePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Scores.
+     * @param {ScoreDeleteManyArgs} args - Arguments to filter Scores to delete.
+     * @example
+     * // Delete a few Scores
+     * const { count } = await prisma.score.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ScoreDeleteManyArgs>(args?: SelectSubset<T, ScoreDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Scores.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ScoreUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Scores
+     * const score = await prisma.score.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ScoreUpdateManyArgs>(args: SelectSubset<T, ScoreUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Scores and returns the data updated in the database.
+     * @param {ScoreUpdateManyAndReturnArgs} args - Arguments to update many Scores.
+     * @example
+     * // Update many Scores
+     * const score = await prisma.score.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Scores and only return the `id`
+     * const scoreWithIdOnly = await prisma.score.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ScoreUpdateManyAndReturnArgs>(args: SelectSubset<T, ScoreUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ScorePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Score.
+     * @param {ScoreUpsertArgs} args - Arguments to update or create a Score.
+     * @example
+     * // Update or create a Score
+     * const score = await prisma.score.upsert({
+     *   create: {
+     *     // ... data to create a Score
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Score we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ScoreUpsertArgs>(args: SelectSubset<T, ScoreUpsertArgs<ExtArgs>>): Prisma__ScoreClient<$Result.GetResult<Prisma.$ScorePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Scores.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ScoreCountArgs} args - Arguments to filter Scores to count.
+     * @example
+     * // Count the number of Scores
+     * const count = await prisma.score.count({
+     *   where: {
+     *     // ... the filter for the Scores we want to count
+     *   }
+     * })
+    **/
+    count<T extends ScoreCountArgs>(
+      args?: Subset<T, ScoreCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ScoreCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Score.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ScoreAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ScoreAggregateArgs>(args: Subset<T, ScoreAggregateArgs>): Prisma.PrismaPromise<GetScoreAggregateType<T>>
+
+    /**
+     * Group by Score.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ScoreGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ScoreGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ScoreGroupByArgs['orderBy'] }
+        : { orderBy?: ScoreGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ScoreGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetScoreGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Score model
+   */
+  readonly fields: ScoreFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Score.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ScoreClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends Score$userArgs<ExtArgs> = {}>(args?: Subset<T, Score$userArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Score model
+   */
+  interface ScoreFieldRefs {
+    readonly id: FieldRef<"Score", 'String'>
+    readonly userId: FieldRef<"Score", 'String'>
+    readonly dragonId: FieldRef<"Score", 'String'>
+    readonly playerName: FieldRef<"Score", 'String'>
+    readonly gameSlug: FieldRef<"Score", 'String'>
+    readonly score: FieldRef<"Score", 'Int'>
+    readonly level: FieldRef<"Score", 'Int'>
+    readonly rank: FieldRef<"Score", 'String'>
+    readonly metadata: FieldRef<"Score", 'Json'>
+    readonly createdAt: FieldRef<"Score", 'DateTime'>
+    readonly updatedAt: FieldRef<"Score", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Score findUnique
+   */
+  export type ScoreFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Score
+     */
+    select?: ScoreSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Score
+     */
+    omit?: ScoreOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScoreInclude<ExtArgs> | null
+    /**
+     * Filter, which Score to fetch.
+     */
+    where: ScoreWhereUniqueInput
+  }
+
+  /**
+   * Score findUniqueOrThrow
+   */
+  export type ScoreFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Score
+     */
+    select?: ScoreSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Score
+     */
+    omit?: ScoreOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScoreInclude<ExtArgs> | null
+    /**
+     * Filter, which Score to fetch.
+     */
+    where: ScoreWhereUniqueInput
+  }
+
+  /**
+   * Score findFirst
+   */
+  export type ScoreFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Score
+     */
+    select?: ScoreSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Score
+     */
+    omit?: ScoreOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScoreInclude<ExtArgs> | null
+    /**
+     * Filter, which Score to fetch.
+     */
+    where?: ScoreWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Scores to fetch.
+     */
+    orderBy?: ScoreOrderByWithRelationInput | ScoreOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Scores.
+     */
+    cursor?: ScoreWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Scores from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Scores.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Scores.
+     */
+    distinct?: ScoreScalarFieldEnum | ScoreScalarFieldEnum[]
+  }
+
+  /**
+   * Score findFirstOrThrow
+   */
+  export type ScoreFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Score
+     */
+    select?: ScoreSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Score
+     */
+    omit?: ScoreOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScoreInclude<ExtArgs> | null
+    /**
+     * Filter, which Score to fetch.
+     */
+    where?: ScoreWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Scores to fetch.
+     */
+    orderBy?: ScoreOrderByWithRelationInput | ScoreOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Scores.
+     */
+    cursor?: ScoreWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Scores from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Scores.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Scores.
+     */
+    distinct?: ScoreScalarFieldEnum | ScoreScalarFieldEnum[]
+  }
+
+  /**
+   * Score findMany
+   */
+  export type ScoreFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Score
+     */
+    select?: ScoreSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Score
+     */
+    omit?: ScoreOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScoreInclude<ExtArgs> | null
+    /**
+     * Filter, which Scores to fetch.
+     */
+    where?: ScoreWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Scores to fetch.
+     */
+    orderBy?: ScoreOrderByWithRelationInput | ScoreOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Scores.
+     */
+    cursor?: ScoreWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Scores from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Scores.
+     */
+    skip?: number
+    distinct?: ScoreScalarFieldEnum | ScoreScalarFieldEnum[]
+  }
+
+  /**
+   * Score create
+   */
+  export type ScoreCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Score
+     */
+    select?: ScoreSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Score
+     */
+    omit?: ScoreOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScoreInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Score.
+     */
+    data: XOR<ScoreCreateInput, ScoreUncheckedCreateInput>
+  }
+
+  /**
+   * Score createMany
+   */
+  export type ScoreCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Scores.
+     */
+    data: ScoreCreateManyInput | ScoreCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Score createManyAndReturn
+   */
+  export type ScoreCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Score
+     */
+    select?: ScoreSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Score
+     */
+    omit?: ScoreOmit<ExtArgs> | null
+    /**
+     * The data used to create many Scores.
+     */
+    data: ScoreCreateManyInput | ScoreCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScoreIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Score update
+   */
+  export type ScoreUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Score
+     */
+    select?: ScoreSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Score
+     */
+    omit?: ScoreOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScoreInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Score.
+     */
+    data: XOR<ScoreUpdateInput, ScoreUncheckedUpdateInput>
+    /**
+     * Choose, which Score to update.
+     */
+    where: ScoreWhereUniqueInput
+  }
+
+  /**
+   * Score updateMany
+   */
+  export type ScoreUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Scores.
+     */
+    data: XOR<ScoreUpdateManyMutationInput, ScoreUncheckedUpdateManyInput>
+    /**
+     * Filter which Scores to update
+     */
+    where?: ScoreWhereInput
+    /**
+     * Limit how many Scores to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Score updateManyAndReturn
+   */
+  export type ScoreUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Score
+     */
+    select?: ScoreSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Score
+     */
+    omit?: ScoreOmit<ExtArgs> | null
+    /**
+     * The data used to update Scores.
+     */
+    data: XOR<ScoreUpdateManyMutationInput, ScoreUncheckedUpdateManyInput>
+    /**
+     * Filter which Scores to update
+     */
+    where?: ScoreWhereInput
+    /**
+     * Limit how many Scores to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScoreIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Score upsert
+   */
+  export type ScoreUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Score
+     */
+    select?: ScoreSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Score
+     */
+    omit?: ScoreOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScoreInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Score to update in case it exists.
+     */
+    where: ScoreWhereUniqueInput
+    /**
+     * In case the Score found by the `where` argument doesn't exist, create a new Score with this data.
+     */
+    create: XOR<ScoreCreateInput, ScoreUncheckedCreateInput>
+    /**
+     * In case the Score was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ScoreUpdateInput, ScoreUncheckedUpdateInput>
+  }
+
+  /**
+   * Score delete
+   */
+  export type ScoreDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Score
+     */
+    select?: ScoreSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Score
+     */
+    omit?: ScoreOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScoreInclude<ExtArgs> | null
+    /**
+     * Filter which Score to delete.
+     */
+    where: ScoreWhereUniqueInput
+  }
+
+  /**
+   * Score deleteMany
+   */
+  export type ScoreDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Scores to delete
+     */
+    where?: ScoreWhereInput
+    /**
+     * Limit how many Scores to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Score.user
+   */
+  export type Score$userArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
+   * Score without action
+   */
+  export type ScoreDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Score
+     */
+    select?: ScoreSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Score
+     */
+    omit?: ScoreOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScoreInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model GameSession
+   */
+
+  export type AggregateGameSession = {
+    _count: GameSessionCountAggregateOutputType | null
+    _min: GameSessionMinAggregateOutputType | null
+    _max: GameSessionMaxAggregateOutputType | null
+  }
+
+  export type GameSessionMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    dragonId: string | null
+    gameSlug: string | null
+    sessionToken: string | null
+    status: string | null
+    ipAddress: string | null
+    userAgent: string | null
+    startedAt: Date | null
+    endedAt: Date | null
+    lastHeartbeat: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type GameSessionMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    dragonId: string | null
+    gameSlug: string | null
+    sessionToken: string | null
+    status: string | null
+    ipAddress: string | null
+    userAgent: string | null
+    startedAt: Date | null
+    endedAt: Date | null
+    lastHeartbeat: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type GameSessionCountAggregateOutputType = {
+    id: number
+    userId: number
+    dragonId: number
+    gameSlug: number
+    sessionToken: number
+    status: number
+    ipAddress: number
+    userAgent: number
+    startedAt: number
+    endedAt: number
+    lastHeartbeat: number
+    metadata: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type GameSessionMinAggregateInputType = {
+    id?: true
+    userId?: true
+    dragonId?: true
+    gameSlug?: true
+    sessionToken?: true
+    status?: true
+    ipAddress?: true
+    userAgent?: true
+    startedAt?: true
+    endedAt?: true
+    lastHeartbeat?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type GameSessionMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    dragonId?: true
+    gameSlug?: true
+    sessionToken?: true
+    status?: true
+    ipAddress?: true
+    userAgent?: true
+    startedAt?: true
+    endedAt?: true
+    lastHeartbeat?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type GameSessionCountAggregateInputType = {
+    id?: true
+    userId?: true
+    dragonId?: true
+    gameSlug?: true
+    sessionToken?: true
+    status?: true
+    ipAddress?: true
+    userAgent?: true
+    startedAt?: true
+    endedAt?: true
+    lastHeartbeat?: true
+    metadata?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type GameSessionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which GameSession to aggregate.
+     */
+    where?: GameSessionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GameSessions to fetch.
+     */
+    orderBy?: GameSessionOrderByWithRelationInput | GameSessionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: GameSessionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GameSessions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GameSessions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned GameSessions
+    **/
+    _count?: true | GameSessionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: GameSessionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: GameSessionMaxAggregateInputType
+  }
+
+  export type GetGameSessionAggregateType<T extends GameSessionAggregateArgs> = {
+        [P in keyof T & keyof AggregateGameSession]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateGameSession[P]>
+      : GetScalarType<T[P], AggregateGameSession[P]>
+  }
+
+
+
+
+  export type GameSessionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: GameSessionWhereInput
+    orderBy?: GameSessionOrderByWithAggregationInput | GameSessionOrderByWithAggregationInput[]
+    by: GameSessionScalarFieldEnum[] | GameSessionScalarFieldEnum
+    having?: GameSessionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: GameSessionCountAggregateInputType | true
+    _min?: GameSessionMinAggregateInputType
+    _max?: GameSessionMaxAggregateInputType
+  }
+
+  export type GameSessionGroupByOutputType = {
+    id: string
+    userId: string
+    dragonId: string
+    gameSlug: string
+    sessionToken: string
+    status: string
+    ipAddress: string | null
+    userAgent: string | null
+    startedAt: Date
+    endedAt: Date | null
+    lastHeartbeat: Date
+    metadata: JsonValue | null
+    createdAt: Date
+    updatedAt: Date
+    _count: GameSessionCountAggregateOutputType | null
+    _min: GameSessionMinAggregateOutputType | null
+    _max: GameSessionMaxAggregateOutputType | null
+  }
+
+  type GetGameSessionGroupByPayload<T extends GameSessionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<GameSessionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof GameSessionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], GameSessionGroupByOutputType[P]>
+            : GetScalarType<T[P], GameSessionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type GameSessionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    dragonId?: boolean
+    gameSlug?: boolean
+    sessionToken?: boolean
+    status?: boolean
+    ipAddress?: boolean
+    userAgent?: boolean
+    startedAt?: boolean
+    endedAt?: boolean
+    lastHeartbeat?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["gameSession"]>
+
+  export type GameSessionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    dragonId?: boolean
+    gameSlug?: boolean
+    sessionToken?: boolean
+    status?: boolean
+    ipAddress?: boolean
+    userAgent?: boolean
+    startedAt?: boolean
+    endedAt?: boolean
+    lastHeartbeat?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["gameSession"]>
+
+  export type GameSessionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    dragonId?: boolean
+    gameSlug?: boolean
+    sessionToken?: boolean
+    status?: boolean
+    ipAddress?: boolean
+    userAgent?: boolean
+    startedAt?: boolean
+    endedAt?: boolean
+    lastHeartbeat?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["gameSession"]>
+
+  export type GameSessionSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    dragonId?: boolean
+    gameSlug?: boolean
+    sessionToken?: boolean
+    status?: boolean
+    ipAddress?: boolean
+    userAgent?: boolean
+    startedAt?: boolean
+    endedAt?: boolean
+    lastHeartbeat?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type GameSessionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "dragonId" | "gameSlug" | "sessionToken" | "status" | "ipAddress" | "userAgent" | "startedAt" | "endedAt" | "lastHeartbeat" | "metadata" | "createdAt" | "updatedAt", ExtArgs["result"]["gameSession"]>
+  export type GameSessionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type GameSessionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type GameSessionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $GameSessionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "GameSession"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      dragonId: string
+      gameSlug: string
+      sessionToken: string
+      status: string
+      ipAddress: string | null
+      userAgent: string | null
+      startedAt: Date
+      endedAt: Date | null
+      lastHeartbeat: Date
+      metadata: Prisma.JsonValue | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["gameSession"]>
+    composites: {}
+  }
+
+  type GameSessionGetPayload<S extends boolean | null | undefined | GameSessionDefaultArgs> = $Result.GetResult<Prisma.$GameSessionPayload, S>
+
+  type GameSessionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<GameSessionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: GameSessionCountAggregateInputType | true
+    }
+
+  export interface GameSessionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['GameSession'], meta: { name: 'GameSession' } }
+    /**
+     * Find zero or one GameSession that matches the filter.
+     * @param {GameSessionFindUniqueArgs} args - Arguments to find a GameSession
+     * @example
+     * // Get one GameSession
+     * const gameSession = await prisma.gameSession.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends GameSessionFindUniqueArgs>(args: SelectSubset<T, GameSessionFindUniqueArgs<ExtArgs>>): Prisma__GameSessionClient<$Result.GetResult<Prisma.$GameSessionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one GameSession that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {GameSessionFindUniqueOrThrowArgs} args - Arguments to find a GameSession
+     * @example
+     * // Get one GameSession
+     * const gameSession = await prisma.gameSession.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends GameSessionFindUniqueOrThrowArgs>(args: SelectSubset<T, GameSessionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__GameSessionClient<$Result.GetResult<Prisma.$GameSessionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first GameSession that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GameSessionFindFirstArgs} args - Arguments to find a GameSession
+     * @example
+     * // Get one GameSession
+     * const gameSession = await prisma.gameSession.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends GameSessionFindFirstArgs>(args?: SelectSubset<T, GameSessionFindFirstArgs<ExtArgs>>): Prisma__GameSessionClient<$Result.GetResult<Prisma.$GameSessionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first GameSession that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GameSessionFindFirstOrThrowArgs} args - Arguments to find a GameSession
+     * @example
+     * // Get one GameSession
+     * const gameSession = await prisma.gameSession.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends GameSessionFindFirstOrThrowArgs>(args?: SelectSubset<T, GameSessionFindFirstOrThrowArgs<ExtArgs>>): Prisma__GameSessionClient<$Result.GetResult<Prisma.$GameSessionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more GameSessions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GameSessionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all GameSessions
+     * const gameSessions = await prisma.gameSession.findMany()
+     * 
+     * // Get first 10 GameSessions
+     * const gameSessions = await prisma.gameSession.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const gameSessionWithIdOnly = await prisma.gameSession.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends GameSessionFindManyArgs>(args?: SelectSubset<T, GameSessionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GameSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a GameSession.
+     * @param {GameSessionCreateArgs} args - Arguments to create a GameSession.
+     * @example
+     * // Create one GameSession
+     * const GameSession = await prisma.gameSession.create({
+     *   data: {
+     *     // ... data to create a GameSession
+     *   }
+     * })
+     * 
+     */
+    create<T extends GameSessionCreateArgs>(args: SelectSubset<T, GameSessionCreateArgs<ExtArgs>>): Prisma__GameSessionClient<$Result.GetResult<Prisma.$GameSessionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many GameSessions.
+     * @param {GameSessionCreateManyArgs} args - Arguments to create many GameSessions.
+     * @example
+     * // Create many GameSessions
+     * const gameSession = await prisma.gameSession.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends GameSessionCreateManyArgs>(args?: SelectSubset<T, GameSessionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many GameSessions and returns the data saved in the database.
+     * @param {GameSessionCreateManyAndReturnArgs} args - Arguments to create many GameSessions.
+     * @example
+     * // Create many GameSessions
+     * const gameSession = await prisma.gameSession.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many GameSessions and only return the `id`
+     * const gameSessionWithIdOnly = await prisma.gameSession.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends GameSessionCreateManyAndReturnArgs>(args?: SelectSubset<T, GameSessionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GameSessionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a GameSession.
+     * @param {GameSessionDeleteArgs} args - Arguments to delete one GameSession.
+     * @example
+     * // Delete one GameSession
+     * const GameSession = await prisma.gameSession.delete({
+     *   where: {
+     *     // ... filter to delete one GameSession
+     *   }
+     * })
+     * 
+     */
+    delete<T extends GameSessionDeleteArgs>(args: SelectSubset<T, GameSessionDeleteArgs<ExtArgs>>): Prisma__GameSessionClient<$Result.GetResult<Prisma.$GameSessionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one GameSession.
+     * @param {GameSessionUpdateArgs} args - Arguments to update one GameSession.
+     * @example
+     * // Update one GameSession
+     * const gameSession = await prisma.gameSession.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends GameSessionUpdateArgs>(args: SelectSubset<T, GameSessionUpdateArgs<ExtArgs>>): Prisma__GameSessionClient<$Result.GetResult<Prisma.$GameSessionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more GameSessions.
+     * @param {GameSessionDeleteManyArgs} args - Arguments to filter GameSessions to delete.
+     * @example
+     * // Delete a few GameSessions
+     * const { count } = await prisma.gameSession.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends GameSessionDeleteManyArgs>(args?: SelectSubset<T, GameSessionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more GameSessions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GameSessionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many GameSessions
+     * const gameSession = await prisma.gameSession.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends GameSessionUpdateManyArgs>(args: SelectSubset<T, GameSessionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more GameSessions and returns the data updated in the database.
+     * @param {GameSessionUpdateManyAndReturnArgs} args - Arguments to update many GameSessions.
+     * @example
+     * // Update many GameSessions
+     * const gameSession = await prisma.gameSession.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more GameSessions and only return the `id`
+     * const gameSessionWithIdOnly = await prisma.gameSession.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends GameSessionUpdateManyAndReturnArgs>(args: SelectSubset<T, GameSessionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GameSessionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one GameSession.
+     * @param {GameSessionUpsertArgs} args - Arguments to update or create a GameSession.
+     * @example
+     * // Update or create a GameSession
+     * const gameSession = await prisma.gameSession.upsert({
+     *   create: {
+     *     // ... data to create a GameSession
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the GameSession we want to update
+     *   }
+     * })
+     */
+    upsert<T extends GameSessionUpsertArgs>(args: SelectSubset<T, GameSessionUpsertArgs<ExtArgs>>): Prisma__GameSessionClient<$Result.GetResult<Prisma.$GameSessionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of GameSessions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GameSessionCountArgs} args - Arguments to filter GameSessions to count.
+     * @example
+     * // Count the number of GameSessions
+     * const count = await prisma.gameSession.count({
+     *   where: {
+     *     // ... the filter for the GameSessions we want to count
+     *   }
+     * })
+    **/
+    count<T extends GameSessionCountArgs>(
+      args?: Subset<T, GameSessionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], GameSessionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a GameSession.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GameSessionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends GameSessionAggregateArgs>(args: Subset<T, GameSessionAggregateArgs>): Prisma.PrismaPromise<GetGameSessionAggregateType<T>>
+
+    /**
+     * Group by GameSession.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GameSessionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends GameSessionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: GameSessionGroupByArgs['orderBy'] }
+        : { orderBy?: GameSessionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, GameSessionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetGameSessionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the GameSession model
+   */
+  readonly fields: GameSessionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for GameSession.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__GameSessionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the GameSession model
+   */
+  interface GameSessionFieldRefs {
+    readonly id: FieldRef<"GameSession", 'String'>
+    readonly userId: FieldRef<"GameSession", 'String'>
+    readonly dragonId: FieldRef<"GameSession", 'String'>
+    readonly gameSlug: FieldRef<"GameSession", 'String'>
+    readonly sessionToken: FieldRef<"GameSession", 'String'>
+    readonly status: FieldRef<"GameSession", 'String'>
+    readonly ipAddress: FieldRef<"GameSession", 'String'>
+    readonly userAgent: FieldRef<"GameSession", 'String'>
+    readonly startedAt: FieldRef<"GameSession", 'DateTime'>
+    readonly endedAt: FieldRef<"GameSession", 'DateTime'>
+    readonly lastHeartbeat: FieldRef<"GameSession", 'DateTime'>
+    readonly metadata: FieldRef<"GameSession", 'Json'>
+    readonly createdAt: FieldRef<"GameSession", 'DateTime'>
+    readonly updatedAt: FieldRef<"GameSession", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * GameSession findUnique
+   */
+  export type GameSessionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GameSession
+     */
+    select?: GameSessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GameSession
+     */
+    omit?: GameSessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GameSessionInclude<ExtArgs> | null
+    /**
+     * Filter, which GameSession to fetch.
+     */
+    where: GameSessionWhereUniqueInput
+  }
+
+  /**
+   * GameSession findUniqueOrThrow
+   */
+  export type GameSessionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GameSession
+     */
+    select?: GameSessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GameSession
+     */
+    omit?: GameSessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GameSessionInclude<ExtArgs> | null
+    /**
+     * Filter, which GameSession to fetch.
+     */
+    where: GameSessionWhereUniqueInput
+  }
+
+  /**
+   * GameSession findFirst
+   */
+  export type GameSessionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GameSession
+     */
+    select?: GameSessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GameSession
+     */
+    omit?: GameSessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GameSessionInclude<ExtArgs> | null
+    /**
+     * Filter, which GameSession to fetch.
+     */
+    where?: GameSessionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GameSessions to fetch.
+     */
+    orderBy?: GameSessionOrderByWithRelationInput | GameSessionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for GameSessions.
+     */
+    cursor?: GameSessionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GameSessions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GameSessions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of GameSessions.
+     */
+    distinct?: GameSessionScalarFieldEnum | GameSessionScalarFieldEnum[]
+  }
+
+  /**
+   * GameSession findFirstOrThrow
+   */
+  export type GameSessionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GameSession
+     */
+    select?: GameSessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GameSession
+     */
+    omit?: GameSessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GameSessionInclude<ExtArgs> | null
+    /**
+     * Filter, which GameSession to fetch.
+     */
+    where?: GameSessionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GameSessions to fetch.
+     */
+    orderBy?: GameSessionOrderByWithRelationInput | GameSessionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for GameSessions.
+     */
+    cursor?: GameSessionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GameSessions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GameSessions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of GameSessions.
+     */
+    distinct?: GameSessionScalarFieldEnum | GameSessionScalarFieldEnum[]
+  }
+
+  /**
+   * GameSession findMany
+   */
+  export type GameSessionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GameSession
+     */
+    select?: GameSessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GameSession
+     */
+    omit?: GameSessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GameSessionInclude<ExtArgs> | null
+    /**
+     * Filter, which GameSessions to fetch.
+     */
+    where?: GameSessionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GameSessions to fetch.
+     */
+    orderBy?: GameSessionOrderByWithRelationInput | GameSessionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing GameSessions.
+     */
+    cursor?: GameSessionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GameSessions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GameSessions.
+     */
+    skip?: number
+    distinct?: GameSessionScalarFieldEnum | GameSessionScalarFieldEnum[]
+  }
+
+  /**
+   * GameSession create
+   */
+  export type GameSessionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GameSession
+     */
+    select?: GameSessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GameSession
+     */
+    omit?: GameSessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GameSessionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a GameSession.
+     */
+    data: XOR<GameSessionCreateInput, GameSessionUncheckedCreateInput>
+  }
+
+  /**
+   * GameSession createMany
+   */
+  export type GameSessionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many GameSessions.
+     */
+    data: GameSessionCreateManyInput | GameSessionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * GameSession createManyAndReturn
+   */
+  export type GameSessionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GameSession
+     */
+    select?: GameSessionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the GameSession
+     */
+    omit?: GameSessionOmit<ExtArgs> | null
+    /**
+     * The data used to create many GameSessions.
+     */
+    data: GameSessionCreateManyInput | GameSessionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GameSessionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * GameSession update
+   */
+  export type GameSessionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GameSession
+     */
+    select?: GameSessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GameSession
+     */
+    omit?: GameSessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GameSessionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a GameSession.
+     */
+    data: XOR<GameSessionUpdateInput, GameSessionUncheckedUpdateInput>
+    /**
+     * Choose, which GameSession to update.
+     */
+    where: GameSessionWhereUniqueInput
+  }
+
+  /**
+   * GameSession updateMany
+   */
+  export type GameSessionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update GameSessions.
+     */
+    data: XOR<GameSessionUpdateManyMutationInput, GameSessionUncheckedUpdateManyInput>
+    /**
+     * Filter which GameSessions to update
+     */
+    where?: GameSessionWhereInput
+    /**
+     * Limit how many GameSessions to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * GameSession updateManyAndReturn
+   */
+  export type GameSessionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GameSession
+     */
+    select?: GameSessionSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the GameSession
+     */
+    omit?: GameSessionOmit<ExtArgs> | null
+    /**
+     * The data used to update GameSessions.
+     */
+    data: XOR<GameSessionUpdateManyMutationInput, GameSessionUncheckedUpdateManyInput>
+    /**
+     * Filter which GameSessions to update
+     */
+    where?: GameSessionWhereInput
+    /**
+     * Limit how many GameSessions to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GameSessionIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * GameSession upsert
+   */
+  export type GameSessionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GameSession
+     */
+    select?: GameSessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GameSession
+     */
+    omit?: GameSessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GameSessionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the GameSession to update in case it exists.
+     */
+    where: GameSessionWhereUniqueInput
+    /**
+     * In case the GameSession found by the `where` argument doesn't exist, create a new GameSession with this data.
+     */
+    create: XOR<GameSessionCreateInput, GameSessionUncheckedCreateInput>
+    /**
+     * In case the GameSession was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<GameSessionUpdateInput, GameSessionUncheckedUpdateInput>
+  }
+
+  /**
+   * GameSession delete
+   */
+  export type GameSessionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GameSession
+     */
+    select?: GameSessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GameSession
+     */
+    omit?: GameSessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GameSessionInclude<ExtArgs> | null
+    /**
+     * Filter which GameSession to delete.
+     */
+    where: GameSessionWhereUniqueInput
+  }
+
+  /**
+   * GameSession deleteMany
+   */
+  export type GameSessionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which GameSessions to delete
+     */
+    where?: GameSessionWhereInput
+    /**
+     * Limit how many GameSessions to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * GameSession without action
+   */
+  export type GameSessionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GameSession
+     */
+    select?: GameSessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GameSession
+     */
+    omit?: GameSessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GameSessionInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -177244,6 +179860,43 @@ export namespace Prisma {
   export type CommunityBookmarkScalarFieldEnum = (typeof CommunityBookmarkScalarFieldEnum)[keyof typeof CommunityBookmarkScalarFieldEnum]
 
 
+  export const ScoreScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    dragonId: 'dragonId',
+    playerName: 'playerName',
+    gameSlug: 'gameSlug',
+    score: 'score',
+    level: 'level',
+    rank: 'rank',
+    metadata: 'metadata',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type ScoreScalarFieldEnum = (typeof ScoreScalarFieldEnum)[keyof typeof ScoreScalarFieldEnum]
+
+
+  export const GameSessionScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    dragonId: 'dragonId',
+    gameSlug: 'gameSlug',
+    sessionToken: 'sessionToken',
+    status: 'status',
+    ipAddress: 'ipAddress',
+    userAgent: 'userAgent',
+    startedAt: 'startedAt',
+    endedAt: 'endedAt',
+    lastHeartbeat: 'lastHeartbeat',
+    metadata: 'metadata',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type GameSessionScalarFieldEnum = (typeof GameSessionScalarFieldEnum)[keyof typeof GameSessionScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -177437,6 +180090,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteListRelationFilter
     bookmarks?: CommunityBookmarkListRelationFilter
     verificationCodes?: EmailVerificationCodeListRelationFilter
+    scores?: ScoreListRelationFilter
+    gameSessions?: GameSessionListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -177489,6 +180144,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteOrderByRelationAggregateInput
     bookmarks?: CommunityBookmarkOrderByRelationAggregateInput
     verificationCodes?: EmailVerificationCodeOrderByRelationAggregateInput
+    scores?: ScoreOrderByRelationAggregateInput
+    gameSessions?: GameSessionOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -177544,6 +180201,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteListRelationFilter
     bookmarks?: CommunityBookmarkListRelationFilter
     verificationCodes?: EmailVerificationCodeListRelationFilter
+    scores?: ScoreListRelationFilter
+    gameSessions?: GameSessionListRelationFilter
   }, "id" | "email" | "employeeId" | "dragonId">
 
   export type UserOrderByWithAggregationInput = {
@@ -187765,6 +190424,193 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"CommunityBookmark"> | Date | string
   }
 
+  export type ScoreWhereInput = {
+    AND?: ScoreWhereInput | ScoreWhereInput[]
+    OR?: ScoreWhereInput[]
+    NOT?: ScoreWhereInput | ScoreWhereInput[]
+    id?: StringFilter<"Score"> | string
+    userId?: StringNullableFilter<"Score"> | string | null
+    dragonId?: StringFilter<"Score"> | string
+    playerName?: StringFilter<"Score"> | string
+    gameSlug?: StringFilter<"Score"> | string
+    score?: IntFilter<"Score"> | number
+    level?: IntFilter<"Score"> | number
+    rank?: StringNullableFilter<"Score"> | string | null
+    metadata?: JsonNullableFilter<"Score">
+    createdAt?: DateTimeFilter<"Score"> | Date | string
+    updatedAt?: DateTimeFilter<"Score"> | Date | string
+    user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+  }
+
+  export type ScoreOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrderInput | SortOrder
+    dragonId?: SortOrder
+    playerName?: SortOrder
+    gameSlug?: SortOrder
+    score?: SortOrder
+    level?: SortOrder
+    rank?: SortOrderInput | SortOrder
+    metadata?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type ScoreWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ScoreWhereInput | ScoreWhereInput[]
+    OR?: ScoreWhereInput[]
+    NOT?: ScoreWhereInput | ScoreWhereInput[]
+    userId?: StringNullableFilter<"Score"> | string | null
+    dragonId?: StringFilter<"Score"> | string
+    playerName?: StringFilter<"Score"> | string
+    gameSlug?: StringFilter<"Score"> | string
+    score?: IntFilter<"Score"> | number
+    level?: IntFilter<"Score"> | number
+    rank?: StringNullableFilter<"Score"> | string | null
+    metadata?: JsonNullableFilter<"Score">
+    createdAt?: DateTimeFilter<"Score"> | Date | string
+    updatedAt?: DateTimeFilter<"Score"> | Date | string
+    user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+  }, "id">
+
+  export type ScoreOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrderInput | SortOrder
+    dragonId?: SortOrder
+    playerName?: SortOrder
+    gameSlug?: SortOrder
+    score?: SortOrder
+    level?: SortOrder
+    rank?: SortOrderInput | SortOrder
+    metadata?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: ScoreCountOrderByAggregateInput
+    _avg?: ScoreAvgOrderByAggregateInput
+    _max?: ScoreMaxOrderByAggregateInput
+    _min?: ScoreMinOrderByAggregateInput
+    _sum?: ScoreSumOrderByAggregateInput
+  }
+
+  export type ScoreScalarWhereWithAggregatesInput = {
+    AND?: ScoreScalarWhereWithAggregatesInput | ScoreScalarWhereWithAggregatesInput[]
+    OR?: ScoreScalarWhereWithAggregatesInput[]
+    NOT?: ScoreScalarWhereWithAggregatesInput | ScoreScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Score"> | string
+    userId?: StringNullableWithAggregatesFilter<"Score"> | string | null
+    dragonId?: StringWithAggregatesFilter<"Score"> | string
+    playerName?: StringWithAggregatesFilter<"Score"> | string
+    gameSlug?: StringWithAggregatesFilter<"Score"> | string
+    score?: IntWithAggregatesFilter<"Score"> | number
+    level?: IntWithAggregatesFilter<"Score"> | number
+    rank?: StringNullableWithAggregatesFilter<"Score"> | string | null
+    metadata?: JsonNullableWithAggregatesFilter<"Score">
+    createdAt?: DateTimeWithAggregatesFilter<"Score"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Score"> | Date | string
+  }
+
+  export type GameSessionWhereInput = {
+    AND?: GameSessionWhereInput | GameSessionWhereInput[]
+    OR?: GameSessionWhereInput[]
+    NOT?: GameSessionWhereInput | GameSessionWhereInput[]
+    id?: StringFilter<"GameSession"> | string
+    userId?: StringFilter<"GameSession"> | string
+    dragonId?: StringFilter<"GameSession"> | string
+    gameSlug?: StringFilter<"GameSession"> | string
+    sessionToken?: StringFilter<"GameSession"> | string
+    status?: StringFilter<"GameSession"> | string
+    ipAddress?: StringNullableFilter<"GameSession"> | string | null
+    userAgent?: StringNullableFilter<"GameSession"> | string | null
+    startedAt?: DateTimeFilter<"GameSession"> | Date | string
+    endedAt?: DateTimeNullableFilter<"GameSession"> | Date | string | null
+    lastHeartbeat?: DateTimeFilter<"GameSession"> | Date | string
+    metadata?: JsonNullableFilter<"GameSession">
+    createdAt?: DateTimeFilter<"GameSession"> | Date | string
+    updatedAt?: DateTimeFilter<"GameSession"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type GameSessionOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    dragonId?: SortOrder
+    gameSlug?: SortOrder
+    sessionToken?: SortOrder
+    status?: SortOrder
+    ipAddress?: SortOrderInput | SortOrder
+    userAgent?: SortOrderInput | SortOrder
+    startedAt?: SortOrder
+    endedAt?: SortOrderInput | SortOrder
+    lastHeartbeat?: SortOrder
+    metadata?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type GameSessionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    sessionToken?: string
+    AND?: GameSessionWhereInput | GameSessionWhereInput[]
+    OR?: GameSessionWhereInput[]
+    NOT?: GameSessionWhereInput | GameSessionWhereInput[]
+    userId?: StringFilter<"GameSession"> | string
+    dragonId?: StringFilter<"GameSession"> | string
+    gameSlug?: StringFilter<"GameSession"> | string
+    status?: StringFilter<"GameSession"> | string
+    ipAddress?: StringNullableFilter<"GameSession"> | string | null
+    userAgent?: StringNullableFilter<"GameSession"> | string | null
+    startedAt?: DateTimeFilter<"GameSession"> | Date | string
+    endedAt?: DateTimeNullableFilter<"GameSession"> | Date | string | null
+    lastHeartbeat?: DateTimeFilter<"GameSession"> | Date | string
+    metadata?: JsonNullableFilter<"GameSession">
+    createdAt?: DateTimeFilter<"GameSession"> | Date | string
+    updatedAt?: DateTimeFilter<"GameSession"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id" | "sessionToken">
+
+  export type GameSessionOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    dragonId?: SortOrder
+    gameSlug?: SortOrder
+    sessionToken?: SortOrder
+    status?: SortOrder
+    ipAddress?: SortOrderInput | SortOrder
+    userAgent?: SortOrderInput | SortOrder
+    startedAt?: SortOrder
+    endedAt?: SortOrderInput | SortOrder
+    lastHeartbeat?: SortOrder
+    metadata?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: GameSessionCountOrderByAggregateInput
+    _max?: GameSessionMaxOrderByAggregateInput
+    _min?: GameSessionMinOrderByAggregateInput
+  }
+
+  export type GameSessionScalarWhereWithAggregatesInput = {
+    AND?: GameSessionScalarWhereWithAggregatesInput | GameSessionScalarWhereWithAggregatesInput[]
+    OR?: GameSessionScalarWhereWithAggregatesInput[]
+    NOT?: GameSessionScalarWhereWithAggregatesInput | GameSessionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"GameSession"> | string
+    userId?: StringWithAggregatesFilter<"GameSession"> | string
+    dragonId?: StringWithAggregatesFilter<"GameSession"> | string
+    gameSlug?: StringWithAggregatesFilter<"GameSession"> | string
+    sessionToken?: StringWithAggregatesFilter<"GameSession"> | string
+    status?: StringWithAggregatesFilter<"GameSession"> | string
+    ipAddress?: StringNullableWithAggregatesFilter<"GameSession"> | string | null
+    userAgent?: StringNullableWithAggregatesFilter<"GameSession"> | string | null
+    startedAt?: DateTimeWithAggregatesFilter<"GameSession"> | Date | string
+    endedAt?: DateTimeNullableWithAggregatesFilter<"GameSession"> | Date | string | null
+    lastHeartbeat?: DateTimeWithAggregatesFilter<"GameSession"> | Date | string
+    metadata?: JsonNullableWithAggregatesFilter<"GameSession">
+    createdAt?: DateTimeWithAggregatesFilter<"GameSession"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"GameSession"> | Date | string
+  }
+
   export type UserCreateInput = {
     id?: string
     name?: string | null
@@ -187815,6 +190661,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteCreateNestedManyWithoutUserInput
     bookmarks?: CommunityBookmarkCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
+    scores?: ScoreCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -187867,6 +190715,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUncheckedCreateNestedManyWithoutUserInput
     bookmarks?: CommunityBookmarkUncheckedCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
+    scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -187919,6 +190769,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUpdateManyWithoutUserNestedInput
     bookmarks?: CommunityBookmarkUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
+    scores?: ScoreUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -187971,6 +190823,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUncheckedUpdateManyWithoutUserNestedInput
     bookmarks?: CommunityBookmarkUncheckedUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
+    scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -199341,6 +202195,221 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type ScoreCreateInput = {
+    id?: string
+    dragonId: string
+    playerName: string
+    gameSlug: string
+    score?: number
+    level?: number
+    rank?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user?: UserCreateNestedOneWithoutScoresInput
+  }
+
+  export type ScoreUncheckedCreateInput = {
+    id?: string
+    userId?: string | null
+    dragonId: string
+    playerName: string
+    gameSlug: string
+    score?: number
+    level?: number
+    rank?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ScoreUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dragonId?: StringFieldUpdateOperationsInput | string
+    playerName?: StringFieldUpdateOperationsInput | string
+    gameSlug?: StringFieldUpdateOperationsInput | string
+    score?: IntFieldUpdateOperationsInput | number
+    level?: IntFieldUpdateOperationsInput | number
+    rank?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneWithoutScoresNestedInput
+  }
+
+  export type ScoreUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    dragonId?: StringFieldUpdateOperationsInput | string
+    playerName?: StringFieldUpdateOperationsInput | string
+    gameSlug?: StringFieldUpdateOperationsInput | string
+    score?: IntFieldUpdateOperationsInput | number
+    level?: IntFieldUpdateOperationsInput | number
+    rank?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ScoreCreateManyInput = {
+    id?: string
+    userId?: string | null
+    dragonId: string
+    playerName: string
+    gameSlug: string
+    score?: number
+    level?: number
+    rank?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ScoreUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dragonId?: StringFieldUpdateOperationsInput | string
+    playerName?: StringFieldUpdateOperationsInput | string
+    gameSlug?: StringFieldUpdateOperationsInput | string
+    score?: IntFieldUpdateOperationsInput | number
+    level?: IntFieldUpdateOperationsInput | number
+    rank?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ScoreUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    dragonId?: StringFieldUpdateOperationsInput | string
+    playerName?: StringFieldUpdateOperationsInput | string
+    gameSlug?: StringFieldUpdateOperationsInput | string
+    score?: IntFieldUpdateOperationsInput | number
+    level?: IntFieldUpdateOperationsInput | number
+    rank?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GameSessionCreateInput = {
+    id?: string
+    dragonId: string
+    gameSlug: string
+    sessionToken: string
+    status?: string
+    ipAddress?: string | null
+    userAgent?: string | null
+    startedAt?: Date | string
+    endedAt?: Date | string | null
+    lastHeartbeat?: Date | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutGameSessionsInput
+  }
+
+  export type GameSessionUncheckedCreateInput = {
+    id?: string
+    userId: string
+    dragonId: string
+    gameSlug: string
+    sessionToken: string
+    status?: string
+    ipAddress?: string | null
+    userAgent?: string | null
+    startedAt?: Date | string
+    endedAt?: Date | string | null
+    lastHeartbeat?: Date | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type GameSessionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dragonId?: StringFieldUpdateOperationsInput | string
+    gameSlug?: StringFieldUpdateOperationsInput | string
+    sessionToken?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastHeartbeat?: DateTimeFieldUpdateOperationsInput | Date | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutGameSessionsNestedInput
+  }
+
+  export type GameSessionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    dragonId?: StringFieldUpdateOperationsInput | string
+    gameSlug?: StringFieldUpdateOperationsInput | string
+    sessionToken?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastHeartbeat?: DateTimeFieldUpdateOperationsInput | Date | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GameSessionCreateManyInput = {
+    id?: string
+    userId: string
+    dragonId: string
+    gameSlug: string
+    sessionToken: string
+    status?: string
+    ipAddress?: string | null
+    userAgent?: string | null
+    startedAt?: Date | string
+    endedAt?: Date | string | null
+    lastHeartbeat?: Date | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type GameSessionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dragonId?: StringFieldUpdateOperationsInput | string
+    gameSlug?: StringFieldUpdateOperationsInput | string
+    sessionToken?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastHeartbeat?: DateTimeFieldUpdateOperationsInput | Date | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GameSessionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    dragonId?: StringFieldUpdateOperationsInput | string
+    gameSlug?: StringFieldUpdateOperationsInput | string
+    sessionToken?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastHeartbeat?: DateTimeFieldUpdateOperationsInput | Date | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -199515,6 +202584,18 @@ export namespace Prisma {
     none?: EmailVerificationCodeWhereInput
   }
 
+  export type ScoreListRelationFilter = {
+    every?: ScoreWhereInput
+    some?: ScoreWhereInput
+    none?: ScoreWhereInput
+  }
+
+  export type GameSessionListRelationFilter = {
+    every?: GameSessionWhereInput
+    some?: GameSessionWhereInput
+    none?: GameSessionWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -199581,6 +202662,14 @@ export namespace Prisma {
   }
 
   export type EmailVerificationCodeOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ScoreOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type GameSessionOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -205590,6 +208679,105 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
+  export type ScoreCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    dragonId?: SortOrder
+    playerName?: SortOrder
+    gameSlug?: SortOrder
+    score?: SortOrder
+    level?: SortOrder
+    rank?: SortOrder
+    metadata?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ScoreAvgOrderByAggregateInput = {
+    score?: SortOrder
+    level?: SortOrder
+  }
+
+  export type ScoreMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    dragonId?: SortOrder
+    playerName?: SortOrder
+    gameSlug?: SortOrder
+    score?: SortOrder
+    level?: SortOrder
+    rank?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ScoreMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    dragonId?: SortOrder
+    playerName?: SortOrder
+    gameSlug?: SortOrder
+    score?: SortOrder
+    level?: SortOrder
+    rank?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ScoreSumOrderByAggregateInput = {
+    score?: SortOrder
+    level?: SortOrder
+  }
+
+  export type GameSessionCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    dragonId?: SortOrder
+    gameSlug?: SortOrder
+    sessionToken?: SortOrder
+    status?: SortOrder
+    ipAddress?: SortOrder
+    userAgent?: SortOrder
+    startedAt?: SortOrder
+    endedAt?: SortOrder
+    lastHeartbeat?: SortOrder
+    metadata?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type GameSessionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    dragonId?: SortOrder
+    gameSlug?: SortOrder
+    sessionToken?: SortOrder
+    status?: SortOrder
+    ipAddress?: SortOrder
+    userAgent?: SortOrder
+    startedAt?: SortOrder
+    endedAt?: SortOrder
+    lastHeartbeat?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type GameSessionMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    dragonId?: SortOrder
+    gameSlug?: SortOrder
+    sessionToken?: SortOrder
+    status?: SortOrder
+    ipAddress?: SortOrder
+    userAgent?: SortOrder
+    startedAt?: SortOrder
+    endedAt?: SortOrder
+    lastHeartbeat?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
   export type AccountCreateNestedManyWithoutUserInput = {
     create?: XOR<AccountCreateWithoutUserInput, AccountUncheckedCreateWithoutUserInput> | AccountCreateWithoutUserInput[] | AccountUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AccountCreateOrConnectWithoutUserInput | AccountCreateOrConnectWithoutUserInput[]
@@ -205728,6 +208916,20 @@ export namespace Prisma {
     connect?: EmailVerificationCodeWhereUniqueInput | EmailVerificationCodeWhereUniqueInput[]
   }
 
+  export type ScoreCreateNestedManyWithoutUserInput = {
+    create?: XOR<ScoreCreateWithoutUserInput, ScoreUncheckedCreateWithoutUserInput> | ScoreCreateWithoutUserInput[] | ScoreUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ScoreCreateOrConnectWithoutUserInput | ScoreCreateOrConnectWithoutUserInput[]
+    createMany?: ScoreCreateManyUserInputEnvelope
+    connect?: ScoreWhereUniqueInput | ScoreWhereUniqueInput[]
+  }
+
+  export type GameSessionCreateNestedManyWithoutUserInput = {
+    create?: XOR<GameSessionCreateWithoutUserInput, GameSessionUncheckedCreateWithoutUserInput> | GameSessionCreateWithoutUserInput[] | GameSessionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: GameSessionCreateOrConnectWithoutUserInput | GameSessionCreateOrConnectWithoutUserInput[]
+    createMany?: GameSessionCreateManyUserInputEnvelope
+    connect?: GameSessionWhereUniqueInput | GameSessionWhereUniqueInput[]
+  }
+
   export type AccountUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<AccountCreateWithoutUserInput, AccountUncheckedCreateWithoutUserInput> | AccountCreateWithoutUserInput[] | AccountUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AccountCreateOrConnectWithoutUserInput | AccountCreateOrConnectWithoutUserInput[]
@@ -205864,6 +209066,20 @@ export namespace Prisma {
     connectOrCreate?: EmailVerificationCodeCreateOrConnectWithoutUserInput | EmailVerificationCodeCreateOrConnectWithoutUserInput[]
     createMany?: EmailVerificationCodeCreateManyUserInputEnvelope
     connect?: EmailVerificationCodeWhereUniqueInput | EmailVerificationCodeWhereUniqueInput[]
+  }
+
+  export type ScoreUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<ScoreCreateWithoutUserInput, ScoreUncheckedCreateWithoutUserInput> | ScoreCreateWithoutUserInput[] | ScoreUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ScoreCreateOrConnectWithoutUserInput | ScoreCreateOrConnectWithoutUserInput[]
+    createMany?: ScoreCreateManyUserInputEnvelope
+    connect?: ScoreWhereUniqueInput | ScoreWhereUniqueInput[]
+  }
+
+  export type GameSessionUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<GameSessionCreateWithoutUserInput, GameSessionUncheckedCreateWithoutUserInput> | GameSessionCreateWithoutUserInput[] | GameSessionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: GameSessionCreateOrConnectWithoutUserInput | GameSessionCreateOrConnectWithoutUserInput[]
+    createMany?: GameSessionCreateManyUserInputEnvelope
+    connect?: GameSessionWhereUniqueInput | GameSessionWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -206166,6 +209382,34 @@ export namespace Prisma {
     deleteMany?: EmailVerificationCodeScalarWhereInput | EmailVerificationCodeScalarWhereInput[]
   }
 
+  export type ScoreUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ScoreCreateWithoutUserInput, ScoreUncheckedCreateWithoutUserInput> | ScoreCreateWithoutUserInput[] | ScoreUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ScoreCreateOrConnectWithoutUserInput | ScoreCreateOrConnectWithoutUserInput[]
+    upsert?: ScoreUpsertWithWhereUniqueWithoutUserInput | ScoreUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ScoreCreateManyUserInputEnvelope
+    set?: ScoreWhereUniqueInput | ScoreWhereUniqueInput[]
+    disconnect?: ScoreWhereUniqueInput | ScoreWhereUniqueInput[]
+    delete?: ScoreWhereUniqueInput | ScoreWhereUniqueInput[]
+    connect?: ScoreWhereUniqueInput | ScoreWhereUniqueInput[]
+    update?: ScoreUpdateWithWhereUniqueWithoutUserInput | ScoreUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ScoreUpdateManyWithWhereWithoutUserInput | ScoreUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ScoreScalarWhereInput | ScoreScalarWhereInput[]
+  }
+
+  export type GameSessionUpdateManyWithoutUserNestedInput = {
+    create?: XOR<GameSessionCreateWithoutUserInput, GameSessionUncheckedCreateWithoutUserInput> | GameSessionCreateWithoutUserInput[] | GameSessionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: GameSessionCreateOrConnectWithoutUserInput | GameSessionCreateOrConnectWithoutUserInput[]
+    upsert?: GameSessionUpsertWithWhereUniqueWithoutUserInput | GameSessionUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: GameSessionCreateManyUserInputEnvelope
+    set?: GameSessionWhereUniqueInput | GameSessionWhereUniqueInput[]
+    disconnect?: GameSessionWhereUniqueInput | GameSessionWhereUniqueInput[]
+    delete?: GameSessionWhereUniqueInput | GameSessionWhereUniqueInput[]
+    connect?: GameSessionWhereUniqueInput | GameSessionWhereUniqueInput[]
+    update?: GameSessionUpdateWithWhereUniqueWithoutUserInput | GameSessionUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: GameSessionUpdateManyWithWhereWithoutUserInput | GameSessionUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: GameSessionScalarWhereInput | GameSessionScalarWhereInput[]
+  }
+
   export type AccountUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<AccountCreateWithoutUserInput, AccountUncheckedCreateWithoutUserInput> | AccountCreateWithoutUserInput[] | AccountUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AccountCreateOrConnectWithoutUserInput | AccountCreateOrConnectWithoutUserInput[]
@@ -206436,6 +209680,34 @@ export namespace Prisma {
     update?: EmailVerificationCodeUpdateWithWhereUniqueWithoutUserInput | EmailVerificationCodeUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: EmailVerificationCodeUpdateManyWithWhereWithoutUserInput | EmailVerificationCodeUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: EmailVerificationCodeScalarWhereInput | EmailVerificationCodeScalarWhereInput[]
+  }
+
+  export type ScoreUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ScoreCreateWithoutUserInput, ScoreUncheckedCreateWithoutUserInput> | ScoreCreateWithoutUserInput[] | ScoreUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ScoreCreateOrConnectWithoutUserInput | ScoreCreateOrConnectWithoutUserInput[]
+    upsert?: ScoreUpsertWithWhereUniqueWithoutUserInput | ScoreUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ScoreCreateManyUserInputEnvelope
+    set?: ScoreWhereUniqueInput | ScoreWhereUniqueInput[]
+    disconnect?: ScoreWhereUniqueInput | ScoreWhereUniqueInput[]
+    delete?: ScoreWhereUniqueInput | ScoreWhereUniqueInput[]
+    connect?: ScoreWhereUniqueInput | ScoreWhereUniqueInput[]
+    update?: ScoreUpdateWithWhereUniqueWithoutUserInput | ScoreUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ScoreUpdateManyWithWhereWithoutUserInput | ScoreUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ScoreScalarWhereInput | ScoreScalarWhereInput[]
+  }
+
+  export type GameSessionUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<GameSessionCreateWithoutUserInput, GameSessionUncheckedCreateWithoutUserInput> | GameSessionCreateWithoutUserInput[] | GameSessionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: GameSessionCreateOrConnectWithoutUserInput | GameSessionCreateOrConnectWithoutUserInput[]
+    upsert?: GameSessionUpsertWithWhereUniqueWithoutUserInput | GameSessionUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: GameSessionCreateManyUserInputEnvelope
+    set?: GameSessionWhereUniqueInput | GameSessionWhereUniqueInput[]
+    disconnect?: GameSessionWhereUniqueInput | GameSessionWhereUniqueInput[]
+    delete?: GameSessionWhereUniqueInput | GameSessionWhereUniqueInput[]
+    connect?: GameSessionWhereUniqueInput | GameSessionWhereUniqueInput[]
+    update?: GameSessionUpdateWithWhereUniqueWithoutUserInput | GameSessionUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: GameSessionUpdateManyWithWhereWithoutUserInput | GameSessionUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: GameSessionScalarWhereInput | GameSessionScalarWhereInput[]
   }
 
   export type PermissionCreateNestedManyWithoutRoleInput = {
@@ -209398,6 +212670,36 @@ export namespace Prisma {
     update?: XOR<XOR<ForumThreadUpdateToOneWithWhereWithoutBookmarksInput, ForumThreadUpdateWithoutBookmarksInput>, ForumThreadUncheckedUpdateWithoutBookmarksInput>
   }
 
+  export type UserCreateNestedOneWithoutScoresInput = {
+    create?: XOR<UserCreateWithoutScoresInput, UserUncheckedCreateWithoutScoresInput>
+    connectOrCreate?: UserCreateOrConnectWithoutScoresInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneWithoutScoresNestedInput = {
+    create?: XOR<UserCreateWithoutScoresInput, UserUncheckedCreateWithoutScoresInput>
+    connectOrCreate?: UserCreateOrConnectWithoutScoresInput
+    upsert?: UserUpsertWithoutScoresInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutScoresInput, UserUpdateWithoutScoresInput>, UserUncheckedUpdateWithoutScoresInput>
+  }
+
+  export type UserCreateNestedOneWithoutGameSessionsInput = {
+    create?: XOR<UserCreateWithoutGameSessionsInput, UserUncheckedCreateWithoutGameSessionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutGameSessionsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutGameSessionsNestedInput = {
+    create?: XOR<UserCreateWithoutGameSessionsInput, UserUncheckedCreateWithoutGameSessionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutGameSessionsInput
+    upsert?: UserUpsertWithoutGameSessionsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutGameSessionsInput, UserUpdateWithoutGameSessionsInput>, UserUncheckedUpdateWithoutGameSessionsInput>
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -210335,6 +213637,84 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ScoreCreateWithoutUserInput = {
+    id?: string
+    dragonId: string
+    playerName: string
+    gameSlug: string
+    score?: number
+    level?: number
+    rank?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ScoreUncheckedCreateWithoutUserInput = {
+    id?: string
+    dragonId: string
+    playerName: string
+    gameSlug: string
+    score?: number
+    level?: number
+    rank?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ScoreCreateOrConnectWithoutUserInput = {
+    where: ScoreWhereUniqueInput
+    create: XOR<ScoreCreateWithoutUserInput, ScoreUncheckedCreateWithoutUserInput>
+  }
+
+  export type ScoreCreateManyUserInputEnvelope = {
+    data: ScoreCreateManyUserInput | ScoreCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type GameSessionCreateWithoutUserInput = {
+    id?: string
+    dragonId: string
+    gameSlug: string
+    sessionToken: string
+    status?: string
+    ipAddress?: string | null
+    userAgent?: string | null
+    startedAt?: Date | string
+    endedAt?: Date | string | null
+    lastHeartbeat?: Date | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type GameSessionUncheckedCreateWithoutUserInput = {
+    id?: string
+    dragonId: string
+    gameSlug: string
+    sessionToken: string
+    status?: string
+    ipAddress?: string | null
+    userAgent?: string | null
+    startedAt?: Date | string
+    endedAt?: Date | string | null
+    lastHeartbeat?: Date | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type GameSessionCreateOrConnectWithoutUserInput = {
+    where: GameSessionWhereUniqueInput
+    create: XOR<GameSessionCreateWithoutUserInput, GameSessionUncheckedCreateWithoutUserInput>
+  }
+
+  export type GameSessionCreateManyUserInputEnvelope = {
+    data: GameSessionCreateManyUserInput | GameSessionCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type AccountUpsertWithWhereUniqueWithoutUserInput = {
     where: AccountWhereUniqueInput
     update: XOR<AccountUpdateWithoutUserInput, AccountUncheckedUpdateWithoutUserInput>
@@ -210927,6 +214307,75 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"EmailVerificationCode"> | Date | string
   }
 
+  export type ScoreUpsertWithWhereUniqueWithoutUserInput = {
+    where: ScoreWhereUniqueInput
+    update: XOR<ScoreUpdateWithoutUserInput, ScoreUncheckedUpdateWithoutUserInput>
+    create: XOR<ScoreCreateWithoutUserInput, ScoreUncheckedCreateWithoutUserInput>
+  }
+
+  export type ScoreUpdateWithWhereUniqueWithoutUserInput = {
+    where: ScoreWhereUniqueInput
+    data: XOR<ScoreUpdateWithoutUserInput, ScoreUncheckedUpdateWithoutUserInput>
+  }
+
+  export type ScoreUpdateManyWithWhereWithoutUserInput = {
+    where: ScoreScalarWhereInput
+    data: XOR<ScoreUpdateManyMutationInput, ScoreUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type ScoreScalarWhereInput = {
+    AND?: ScoreScalarWhereInput | ScoreScalarWhereInput[]
+    OR?: ScoreScalarWhereInput[]
+    NOT?: ScoreScalarWhereInput | ScoreScalarWhereInput[]
+    id?: StringFilter<"Score"> | string
+    userId?: StringNullableFilter<"Score"> | string | null
+    dragonId?: StringFilter<"Score"> | string
+    playerName?: StringFilter<"Score"> | string
+    gameSlug?: StringFilter<"Score"> | string
+    score?: IntFilter<"Score"> | number
+    level?: IntFilter<"Score"> | number
+    rank?: StringNullableFilter<"Score"> | string | null
+    metadata?: JsonNullableFilter<"Score">
+    createdAt?: DateTimeFilter<"Score"> | Date | string
+    updatedAt?: DateTimeFilter<"Score"> | Date | string
+  }
+
+  export type GameSessionUpsertWithWhereUniqueWithoutUserInput = {
+    where: GameSessionWhereUniqueInput
+    update: XOR<GameSessionUpdateWithoutUserInput, GameSessionUncheckedUpdateWithoutUserInput>
+    create: XOR<GameSessionCreateWithoutUserInput, GameSessionUncheckedCreateWithoutUserInput>
+  }
+
+  export type GameSessionUpdateWithWhereUniqueWithoutUserInput = {
+    where: GameSessionWhereUniqueInput
+    data: XOR<GameSessionUpdateWithoutUserInput, GameSessionUncheckedUpdateWithoutUserInput>
+  }
+
+  export type GameSessionUpdateManyWithWhereWithoutUserInput = {
+    where: GameSessionScalarWhereInput
+    data: XOR<GameSessionUpdateManyMutationInput, GameSessionUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type GameSessionScalarWhereInput = {
+    AND?: GameSessionScalarWhereInput | GameSessionScalarWhereInput[]
+    OR?: GameSessionScalarWhereInput[]
+    NOT?: GameSessionScalarWhereInput | GameSessionScalarWhereInput[]
+    id?: StringFilter<"GameSession"> | string
+    userId?: StringFilter<"GameSession"> | string
+    dragonId?: StringFilter<"GameSession"> | string
+    gameSlug?: StringFilter<"GameSession"> | string
+    sessionToken?: StringFilter<"GameSession"> | string
+    status?: StringFilter<"GameSession"> | string
+    ipAddress?: StringNullableFilter<"GameSession"> | string | null
+    userAgent?: StringNullableFilter<"GameSession"> | string | null
+    startedAt?: DateTimeFilter<"GameSession"> | Date | string
+    endedAt?: DateTimeNullableFilter<"GameSession"> | Date | string | null
+    lastHeartbeat?: DateTimeFilter<"GameSession"> | Date | string
+    metadata?: JsonNullableFilter<"GameSession">
+    createdAt?: DateTimeFilter<"GameSession"> | Date | string
+    updatedAt?: DateTimeFilter<"GameSession"> | Date | string
+  }
+
   export type PermissionCreateWithoutRoleInput = {
     id?: string
     action: string
@@ -211082,6 +214531,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteCreateNestedManyWithoutUserInput
     bookmarks?: CommunityBookmarkCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
+    scores?: ScoreCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -211133,6 +214584,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUncheckedCreateNestedManyWithoutUserInput
     bookmarks?: CommunityBookmarkUncheckedCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
+    scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -211200,6 +214653,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUpdateManyWithoutUserNestedInput
     bookmarks?: CommunityBookmarkUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
+    scores?: ScoreUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -211251,6 +214706,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUncheckedUpdateManyWithoutUserNestedInput
     bookmarks?: CommunityBookmarkUncheckedUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
+    scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutAuditLogsInput = {
@@ -211302,6 +214759,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteCreateNestedManyWithoutUserInput
     bookmarks?: CommunityBookmarkCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
+    scores?: ScoreCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAuditLogsInput = {
@@ -211353,6 +214812,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUncheckedCreateNestedManyWithoutUserInput
     bookmarks?: CommunityBookmarkUncheckedCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
+    scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAuditLogsInput = {
@@ -211420,6 +214881,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUpdateManyWithoutUserNestedInput
     bookmarks?: CommunityBookmarkUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
+    scores?: ScoreUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAuditLogsInput = {
@@ -211471,6 +214934,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUncheckedUpdateManyWithoutUserNestedInput
     bookmarks?: CommunityBookmarkUncheckedUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
+    scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ContentRevisionCreateWithoutPageInput = {
@@ -214260,6 +217725,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteCreateNestedManyWithoutUserInput
     bookmarks?: CommunityBookmarkCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
+    scores?: ScoreCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAssetsInput = {
@@ -214311,6 +217778,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUncheckedCreateNestedManyWithoutUserInput
     bookmarks?: CommunityBookmarkUncheckedCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
+    scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAssetsInput = {
@@ -214447,6 +217916,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUpdateManyWithoutUserNestedInput
     bookmarks?: CommunityBookmarkUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
+    scores?: ScoreUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAssetsInput = {
@@ -214498,6 +217969,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUncheckedUpdateManyWithoutUserNestedInput
     bookmarks?: CommunityBookmarkUncheckedUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
+    scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type MediaTagUpsertWithWhereUniqueWithoutAssetInput = {
@@ -217399,6 +220872,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteCreateNestedManyWithoutUserInput
     bookmarks?: CommunityBookmarkCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
+    scores?: ScoreCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAccountsInput = {
@@ -217450,6 +220925,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUncheckedCreateNestedManyWithoutUserInput
     bookmarks?: CommunityBookmarkUncheckedCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
+    scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAccountsInput = {
@@ -217517,6 +220994,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUpdateManyWithoutUserNestedInput
     bookmarks?: CommunityBookmarkUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
+    scores?: ScoreUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -217568,6 +221047,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUncheckedUpdateManyWithoutUserNestedInput
     bookmarks?: CommunityBookmarkUncheckedUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
+    scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutVerificationCodesInput = {
@@ -217619,6 +221100,8 @@ export namespace Prisma {
     communityBan?: CommunityBanCreateNestedOneWithoutUserInput
     communityMutes?: CommunityMuteCreateNestedManyWithoutUserInput
     bookmarks?: CommunityBookmarkCreateNestedManyWithoutUserInput
+    scores?: ScoreCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutVerificationCodesInput = {
@@ -217670,6 +221153,8 @@ export namespace Prisma {
     communityBan?: CommunityBanUncheckedCreateNestedOneWithoutUserInput
     communityMutes?: CommunityMuteUncheckedCreateNestedManyWithoutUserInput
     bookmarks?: CommunityBookmarkUncheckedCreateNestedManyWithoutUserInput
+    scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutVerificationCodesInput = {
@@ -217737,6 +221222,8 @@ export namespace Prisma {
     communityBan?: CommunityBanUpdateOneWithoutUserNestedInput
     communityMutes?: CommunityMuteUpdateManyWithoutUserNestedInput
     bookmarks?: CommunityBookmarkUpdateManyWithoutUserNestedInput
+    scores?: ScoreUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutVerificationCodesInput = {
@@ -217788,6 +221275,8 @@ export namespace Prisma {
     communityBan?: CommunityBanUncheckedUpdateOneWithoutUserNestedInput
     communityMutes?: CommunityMuteUncheckedUpdateManyWithoutUserNestedInput
     bookmarks?: CommunityBookmarkUncheckedUpdateManyWithoutUserNestedInput
+    scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type CustomerNotificationCreateWithoutProfileInput = {
@@ -218275,6 +221764,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteCreateNestedManyWithoutUserInput
     bookmarks?: CommunityBookmarkCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
+    scores?: ScoreCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutProfileInput = {
@@ -218326,6 +221817,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUncheckedCreateNestedManyWithoutUserInput
     bookmarks?: CommunityBookmarkUncheckedCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
+    scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutProfileInput = {
@@ -218393,6 +221886,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUpdateManyWithoutUserNestedInput
     bookmarks?: CommunityBookmarkUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
+    scores?: ScoreUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProfileInput = {
@@ -218444,6 +221939,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUncheckedUpdateManyWithoutUserNestedInput
     bookmarks?: CommunityBookmarkUncheckedUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
+    scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutDevicesInput = {
@@ -218495,6 +221992,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteCreateNestedManyWithoutUserInput
     bookmarks?: CommunityBookmarkCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
+    scores?: ScoreCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutDevicesInput = {
@@ -218546,6 +222045,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUncheckedCreateNestedManyWithoutUserInput
     bookmarks?: CommunityBookmarkUncheckedCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
+    scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutDevicesInput = {
@@ -218613,6 +222114,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUpdateManyWithoutUserNestedInput
     bookmarks?: CommunityBookmarkUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
+    scores?: ScoreUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDevicesInput = {
@@ -218664,6 +222167,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUncheckedUpdateManyWithoutUserNestedInput
     bookmarks?: CommunityBookmarkUncheckedUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
+    scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutDualApprovalsCreatedInput = {
@@ -218715,6 +222220,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteCreateNestedManyWithoutUserInput
     bookmarks?: CommunityBookmarkCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
+    scores?: ScoreCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutDualApprovalsCreatedInput = {
@@ -218766,6 +222273,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUncheckedCreateNestedManyWithoutUserInput
     bookmarks?: CommunityBookmarkUncheckedCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
+    scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutDualApprovalsCreatedInput = {
@@ -218855,6 +222364,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUpdateManyWithoutUserNestedInput
     bookmarks?: CommunityBookmarkUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
+    scores?: ScoreUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDualApprovalsCreatedInput = {
@@ -218906,6 +222417,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUncheckedUpdateManyWithoutUserNestedInput
     bookmarks?: CommunityBookmarkUncheckedUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
+    scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type DualApprovalConfirmedUpsertWithWhereUniqueWithoutDualApprovalInput = {
@@ -219000,6 +222513,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteCreateNestedManyWithoutUserInput
     bookmarks?: CommunityBookmarkCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
+    scores?: ScoreCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutDualApprovalsConfirmedInput = {
@@ -219051,6 +222566,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUncheckedCreateNestedManyWithoutUserInput
     bookmarks?: CommunityBookmarkUncheckedCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
+    scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutDualApprovalsConfirmedInput = {
@@ -219151,6 +222668,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUpdateManyWithoutUserNestedInput
     bookmarks?: CommunityBookmarkUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
+    scores?: ScoreUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDualApprovalsConfirmedInput = {
@@ -219202,6 +222721,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUncheckedUpdateManyWithoutUserNestedInput
     bookmarks?: CommunityBookmarkUncheckedUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
+    scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type SecretRotationLogCreateWithoutSecretVaultInput = {
@@ -219563,6 +223084,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteCreateNestedManyWithoutUserInput
     bookmarks?: CommunityBookmarkCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
+    scores?: ScoreCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutChatMessagesInput = {
@@ -219614,6 +223137,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUncheckedCreateNestedManyWithoutUserInput
     bookmarks?: CommunityBookmarkUncheckedCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
+    scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutChatMessagesInput = {
@@ -219869,6 +223394,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUpdateManyWithoutUserNestedInput
     bookmarks?: CommunityBookmarkUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
+    scores?: ScoreUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutChatMessagesInput = {
@@ -219920,6 +223447,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUncheckedUpdateManyWithoutUserNestedInput
     bookmarks?: CommunityBookmarkUncheckedUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
+    scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ChatMessageUpsertWithoutRepliesInput = {
@@ -220099,6 +223628,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteCreateNestedManyWithoutUserInput
     bookmarks?: CommunityBookmarkCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
+    scores?: ScoreCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutChatReactionsInput = {
@@ -220150,6 +223681,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUncheckedCreateNestedManyWithoutUserInput
     bookmarks?: CommunityBookmarkUncheckedCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
+    scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutChatReactionsInput = {
@@ -220260,6 +223793,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUpdateManyWithoutUserNestedInput
     bookmarks?: CommunityBookmarkUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
+    scores?: ScoreUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutChatReactionsInput = {
@@ -220311,6 +223846,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUncheckedUpdateManyWithoutUserNestedInput
     bookmarks?: CommunityBookmarkUncheckedUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
+    scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ForumThreadCreateWithoutCategoryInput = {
@@ -220451,6 +223988,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteCreateNestedManyWithoutUserInput
     bookmarks?: CommunityBookmarkCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
+    scores?: ScoreCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutForumThreadsInput = {
@@ -220502,6 +224041,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUncheckedCreateNestedManyWithoutUserInput
     bookmarks?: CommunityBookmarkUncheckedCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
+    scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutForumThreadsInput = {
@@ -220698,6 +224239,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUpdateManyWithoutUserNestedInput
     bookmarks?: CommunityBookmarkUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
+    scores?: ScoreUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutForumThreadsInput = {
@@ -220749,6 +224292,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUncheckedUpdateManyWithoutUserNestedInput
     bookmarks?: CommunityBookmarkUncheckedUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
+    scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ForumPostUpsertWithWhereUniqueWithoutThreadInput = {
@@ -220887,6 +224432,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteCreateNestedManyWithoutUserInput
     bookmarks?: CommunityBookmarkCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
+    scores?: ScoreCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutForumPostsInput = {
@@ -220938,6 +224485,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUncheckedCreateNestedManyWithoutUserInput
     bookmarks?: CommunityBookmarkUncheckedCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
+    scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutForumPostsInput = {
@@ -221092,6 +224641,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUpdateManyWithoutUserNestedInput
     bookmarks?: CommunityBookmarkUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
+    scores?: ScoreUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutForumPostsInput = {
@@ -221143,6 +224694,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUncheckedUpdateManyWithoutUserNestedInput
     bookmarks?: CommunityBookmarkUncheckedUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
+    scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type CommunityReportUpsertWithWhereUniqueWithoutPostInput = {
@@ -221210,6 +224763,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteCreateNestedManyWithoutUserInput
     bookmarks?: CommunityBookmarkCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
+    scores?: ScoreCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutReportsMadeInput = {
@@ -221261,6 +224816,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUncheckedCreateNestedManyWithoutUserInput
     bookmarks?: CommunityBookmarkUncheckedCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
+    scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutReportsMadeInput = {
@@ -221317,6 +224874,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteCreateNestedManyWithoutUserInput
     bookmarks?: CommunityBookmarkCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
+    scores?: ScoreCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutReportsReceivedInput = {
@@ -221368,6 +224927,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUncheckedCreateNestedManyWithoutUserInput
     bookmarks?: CommunityBookmarkUncheckedCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
+    scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutReportsReceivedInput = {
@@ -221536,6 +225097,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUpdateManyWithoutUserNestedInput
     bookmarks?: CommunityBookmarkUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
+    scores?: ScoreUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutReportsMadeInput = {
@@ -221587,6 +225150,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUncheckedUpdateManyWithoutUserNestedInput
     bookmarks?: CommunityBookmarkUncheckedUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
+    scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutReportsReceivedInput = {
@@ -221649,6 +225214,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUpdateManyWithoutUserNestedInput
     bookmarks?: CommunityBookmarkUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
+    scores?: ScoreUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutReportsReceivedInput = {
@@ -221700,6 +225267,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUncheckedUpdateManyWithoutUserNestedInput
     bookmarks?: CommunityBookmarkUncheckedUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
+    scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ChatMessageUpsertWithoutReportsInput = {
@@ -221870,6 +225439,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteCreateNestedManyWithoutUserInput
     bookmarks?: CommunityBookmarkCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
+    scores?: ScoreCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutModeratorActionsInput = {
@@ -221921,6 +225492,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUncheckedCreateNestedManyWithoutUserInput
     bookmarks?: CommunityBookmarkUncheckedCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
+    scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutModeratorActionsInput = {
@@ -221977,6 +225550,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteCreateNestedManyWithoutUserInput
     bookmarks?: CommunityBookmarkCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
+    scores?: ScoreCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutUserActionsReceivedInput = {
@@ -222028,6 +225603,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUncheckedCreateNestedManyWithoutUserInput
     bookmarks?: CommunityBookmarkUncheckedCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
+    scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutUserActionsReceivedInput = {
@@ -222095,6 +225672,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUpdateManyWithoutUserNestedInput
     bookmarks?: CommunityBookmarkUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
+    scores?: ScoreUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutModeratorActionsInput = {
@@ -222146,6 +225725,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUncheckedUpdateManyWithoutUserNestedInput
     bookmarks?: CommunityBookmarkUncheckedUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
+    scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutUserActionsReceivedInput = {
@@ -222208,6 +225789,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUpdateManyWithoutUserNestedInput
     bookmarks?: CommunityBookmarkUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
+    scores?: ScoreUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUserActionsReceivedInput = {
@@ -222259,6 +225842,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUncheckedUpdateManyWithoutUserNestedInput
     bookmarks?: CommunityBookmarkUncheckedUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
+    scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutCommunityBanInput = {
@@ -222310,6 +225895,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteCreateNestedManyWithoutUserInput
     bookmarks?: CommunityBookmarkCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
+    scores?: ScoreCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCommunityBanInput = {
@@ -222361,6 +225948,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUncheckedCreateNestedManyWithoutUserInput
     bookmarks?: CommunityBookmarkUncheckedCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
+    scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCommunityBanInput = {
@@ -222428,6 +226017,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUpdateManyWithoutUserNestedInput
     bookmarks?: CommunityBookmarkUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
+    scores?: ScoreUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCommunityBanInput = {
@@ -222479,6 +226070,8 @@ export namespace Prisma {
     communityMutes?: CommunityMuteUncheckedUpdateManyWithoutUserNestedInput
     bookmarks?: CommunityBookmarkUncheckedUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
+    scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutCommunityMutesInput = {
@@ -222530,6 +226123,8 @@ export namespace Prisma {
     communityBan?: CommunityBanCreateNestedOneWithoutUserInput
     bookmarks?: CommunityBookmarkCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
+    scores?: ScoreCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCommunityMutesInput = {
@@ -222581,6 +226176,8 @@ export namespace Prisma {
     communityBan?: CommunityBanUncheckedCreateNestedOneWithoutUserInput
     bookmarks?: CommunityBookmarkUncheckedCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
+    scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCommunityMutesInput = {
@@ -222648,6 +226245,8 @@ export namespace Prisma {
     communityBan?: CommunityBanUpdateOneWithoutUserNestedInput
     bookmarks?: CommunityBookmarkUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
+    scores?: ScoreUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCommunityMutesInput = {
@@ -222699,6 +226298,8 @@ export namespace Prisma {
     communityBan?: CommunityBanUncheckedUpdateOneWithoutUserNestedInput
     bookmarks?: CommunityBookmarkUncheckedUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
+    scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutBookmarksInput = {
@@ -222750,6 +226351,8 @@ export namespace Prisma {
     communityBan?: CommunityBanCreateNestedOneWithoutUserInput
     communityMutes?: CommunityMuteCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
+    scores?: ScoreCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutBookmarksInput = {
@@ -222801,6 +226404,8 @@ export namespace Prisma {
     communityBan?: CommunityBanUncheckedCreateNestedOneWithoutUserInput
     communityMutes?: CommunityMuteUncheckedCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
+    scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutBookmarksInput = {
@@ -222907,6 +226512,8 @@ export namespace Prisma {
     communityBan?: CommunityBanUpdateOneWithoutUserNestedInput
     communityMutes?: CommunityMuteUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
+    scores?: ScoreUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutBookmarksInput = {
@@ -222958,6 +226565,8 @@ export namespace Prisma {
     communityBan?: CommunityBanUncheckedUpdateOneWithoutUserNestedInput
     communityMutes?: CommunityMuteUncheckedUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
+    scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ForumThreadUpsertWithoutBookmarksInput = {
@@ -223003,6 +226612,462 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     posts?: ForumPostUncheckedUpdateManyWithoutThreadNestedInput
     reports?: CommunityReportUncheckedUpdateManyWithoutThreadNestedInput
+  }
+
+  export type UserCreateWithoutScoresInput = {
+    id?: string
+    name?: string | null
+    email: string
+    password?: string | null
+    role?: string
+    department?: string | null
+    status?: string
+    avatar?: string | null
+    employeeId?: string | null
+    dragonId?: string | null
+    securityScore?: number
+    dragonKeyPrefix?: string | null
+    dragonKeyHash?: string | null
+    mfaEnabled?: boolean
+    mfaSecret?: string | null
+    mfaRecoveryCodes?: string | null
+    mfaVerified?: boolean
+    isProtected?: boolean
+    permissions?: string | null
+    provider?: string | null
+    providerAccountId?: string | null
+    lastLogin?: Date | string | null
+    loginCount?: number
+    isActive?: boolean
+    isDeleted?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    emailVerified?: Date | string | null
+    image?: string | null
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    assets?: MediaAssetCreateNestedManyWithoutUploaderInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    profile?: UserProfileCreateNestedOneWithoutUserInput
+    devices?: UserDeviceCreateNestedManyWithoutUserInput
+    dualApprovalsCreated?: DualApprovalCreateNestedManyWithoutRequestedByInput
+    dualApprovalsConfirmed?: DualApprovalConfirmedCreateNestedManyWithoutConfirmedByInput
+    chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
+    chatReactions?: ChatReactionCreateNestedManyWithoutUserInput
+    forumThreads?: ForumThreadCreateNestedManyWithoutAuthorInput
+    forumPosts?: ForumPostCreateNestedManyWithoutAuthorInput
+    reportsMade?: CommunityReportCreateNestedManyWithoutReporterInput
+    reportsReceived?: CommunityReportCreateNestedManyWithoutReportedUserInput
+    moderatorActions?: CommunityModerationActionCreateNestedManyWithoutModeratorInput
+    userActionsReceived?: CommunityModerationActionCreateNestedManyWithoutTargetUserInput
+    communityBan?: CommunityBanCreateNestedOneWithoutUserInput
+    communityMutes?: CommunityMuteCreateNestedManyWithoutUserInput
+    bookmarks?: CommunityBookmarkCreateNestedManyWithoutUserInput
+    verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutScoresInput = {
+    id?: string
+    name?: string | null
+    email: string
+    password?: string | null
+    role?: string
+    department?: string | null
+    status?: string
+    avatar?: string | null
+    employeeId?: string | null
+    dragonId?: string | null
+    securityScore?: number
+    dragonKeyPrefix?: string | null
+    dragonKeyHash?: string | null
+    mfaEnabled?: boolean
+    mfaSecret?: string | null
+    mfaRecoveryCodes?: string | null
+    mfaVerified?: boolean
+    isProtected?: boolean
+    permissions?: string | null
+    provider?: string | null
+    providerAccountId?: string | null
+    lastLogin?: Date | string | null
+    loginCount?: number
+    isActive?: boolean
+    isDeleted?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    emailVerified?: Date | string | null
+    image?: string | null
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    assets?: MediaAssetUncheckedCreateNestedManyWithoutUploaderInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    profile?: UserProfileUncheckedCreateNestedOneWithoutUserInput
+    devices?: UserDeviceUncheckedCreateNestedManyWithoutUserInput
+    dualApprovalsCreated?: DualApprovalUncheckedCreateNestedManyWithoutRequestedByInput
+    dualApprovalsConfirmed?: DualApprovalConfirmedUncheckedCreateNestedManyWithoutConfirmedByInput
+    chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
+    chatReactions?: ChatReactionUncheckedCreateNestedManyWithoutUserInput
+    forumThreads?: ForumThreadUncheckedCreateNestedManyWithoutAuthorInput
+    forumPosts?: ForumPostUncheckedCreateNestedManyWithoutAuthorInput
+    reportsMade?: CommunityReportUncheckedCreateNestedManyWithoutReporterInput
+    reportsReceived?: CommunityReportUncheckedCreateNestedManyWithoutReportedUserInput
+    moderatorActions?: CommunityModerationActionUncheckedCreateNestedManyWithoutModeratorInput
+    userActionsReceived?: CommunityModerationActionUncheckedCreateNestedManyWithoutTargetUserInput
+    communityBan?: CommunityBanUncheckedCreateNestedOneWithoutUserInput
+    communityMutes?: CommunityMuteUncheckedCreateNestedManyWithoutUserInput
+    bookmarks?: CommunityBookmarkUncheckedCreateNestedManyWithoutUserInput
+    verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutScoresInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutScoresInput, UserUncheckedCreateWithoutScoresInput>
+  }
+
+  export type UserUpsertWithoutScoresInput = {
+    update: XOR<UserUpdateWithoutScoresInput, UserUncheckedUpdateWithoutScoresInput>
+    create: XOR<UserCreateWithoutScoresInput, UserUncheckedCreateWithoutScoresInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutScoresInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutScoresInput, UserUncheckedUpdateWithoutScoresInput>
+  }
+
+  export type UserUpdateWithoutScoresInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    employeeId?: NullableStringFieldUpdateOperationsInput | string | null
+    dragonId?: NullableStringFieldUpdateOperationsInput | string | null
+    securityScore?: IntFieldUpdateOperationsInput | number
+    dragonKeyPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    dragonKeyHash?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabled?: BoolFieldUpdateOperationsInput | boolean
+    mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaRecoveryCodes?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaVerified?: BoolFieldUpdateOperationsInput | boolean
+    isProtected?: BoolFieldUpdateOperationsInput | boolean
+    permissions?: NullableStringFieldUpdateOperationsInput | string | null
+    provider?: NullableStringFieldUpdateOperationsInput | string | null
+    providerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    lastLogin?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    loginCount?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    assets?: MediaAssetUpdateManyWithoutUploaderNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    profile?: UserProfileUpdateOneWithoutUserNestedInput
+    devices?: UserDeviceUpdateManyWithoutUserNestedInput
+    dualApprovalsCreated?: DualApprovalUpdateManyWithoutRequestedByNestedInput
+    dualApprovalsConfirmed?: DualApprovalConfirmedUpdateManyWithoutConfirmedByNestedInput
+    chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
+    chatReactions?: ChatReactionUpdateManyWithoutUserNestedInput
+    forumThreads?: ForumThreadUpdateManyWithoutAuthorNestedInput
+    forumPosts?: ForumPostUpdateManyWithoutAuthorNestedInput
+    reportsMade?: CommunityReportUpdateManyWithoutReporterNestedInput
+    reportsReceived?: CommunityReportUpdateManyWithoutReportedUserNestedInput
+    moderatorActions?: CommunityModerationActionUpdateManyWithoutModeratorNestedInput
+    userActionsReceived?: CommunityModerationActionUpdateManyWithoutTargetUserNestedInput
+    communityBan?: CommunityBanUpdateOneWithoutUserNestedInput
+    communityMutes?: CommunityMuteUpdateManyWithoutUserNestedInput
+    bookmarks?: CommunityBookmarkUpdateManyWithoutUserNestedInput
+    verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutScoresInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    employeeId?: NullableStringFieldUpdateOperationsInput | string | null
+    dragonId?: NullableStringFieldUpdateOperationsInput | string | null
+    securityScore?: IntFieldUpdateOperationsInput | number
+    dragonKeyPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    dragonKeyHash?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabled?: BoolFieldUpdateOperationsInput | boolean
+    mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaRecoveryCodes?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaVerified?: BoolFieldUpdateOperationsInput | boolean
+    isProtected?: BoolFieldUpdateOperationsInput | boolean
+    permissions?: NullableStringFieldUpdateOperationsInput | string | null
+    provider?: NullableStringFieldUpdateOperationsInput | string | null
+    providerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    lastLogin?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    loginCount?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    assets?: MediaAssetUncheckedUpdateManyWithoutUploaderNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    profile?: UserProfileUncheckedUpdateOneWithoutUserNestedInput
+    devices?: UserDeviceUncheckedUpdateManyWithoutUserNestedInput
+    dualApprovalsCreated?: DualApprovalUncheckedUpdateManyWithoutRequestedByNestedInput
+    dualApprovalsConfirmed?: DualApprovalConfirmedUncheckedUpdateManyWithoutConfirmedByNestedInput
+    chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
+    chatReactions?: ChatReactionUncheckedUpdateManyWithoutUserNestedInput
+    forumThreads?: ForumThreadUncheckedUpdateManyWithoutAuthorNestedInput
+    forumPosts?: ForumPostUncheckedUpdateManyWithoutAuthorNestedInput
+    reportsMade?: CommunityReportUncheckedUpdateManyWithoutReporterNestedInput
+    reportsReceived?: CommunityReportUncheckedUpdateManyWithoutReportedUserNestedInput
+    moderatorActions?: CommunityModerationActionUncheckedUpdateManyWithoutModeratorNestedInput
+    userActionsReceived?: CommunityModerationActionUncheckedUpdateManyWithoutTargetUserNestedInput
+    communityBan?: CommunityBanUncheckedUpdateOneWithoutUserNestedInput
+    communityMutes?: CommunityMuteUncheckedUpdateManyWithoutUserNestedInput
+    bookmarks?: CommunityBookmarkUncheckedUpdateManyWithoutUserNestedInput
+    verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserCreateWithoutGameSessionsInput = {
+    id?: string
+    name?: string | null
+    email: string
+    password?: string | null
+    role?: string
+    department?: string | null
+    status?: string
+    avatar?: string | null
+    employeeId?: string | null
+    dragonId?: string | null
+    securityScore?: number
+    dragonKeyPrefix?: string | null
+    dragonKeyHash?: string | null
+    mfaEnabled?: boolean
+    mfaSecret?: string | null
+    mfaRecoveryCodes?: string | null
+    mfaVerified?: boolean
+    isProtected?: boolean
+    permissions?: string | null
+    provider?: string | null
+    providerAccountId?: string | null
+    lastLogin?: Date | string | null
+    loginCount?: number
+    isActive?: boolean
+    isDeleted?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    emailVerified?: Date | string | null
+    image?: string | null
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    assets?: MediaAssetCreateNestedManyWithoutUploaderInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    profile?: UserProfileCreateNestedOneWithoutUserInput
+    devices?: UserDeviceCreateNestedManyWithoutUserInput
+    dualApprovalsCreated?: DualApprovalCreateNestedManyWithoutRequestedByInput
+    dualApprovalsConfirmed?: DualApprovalConfirmedCreateNestedManyWithoutConfirmedByInput
+    chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
+    chatReactions?: ChatReactionCreateNestedManyWithoutUserInput
+    forumThreads?: ForumThreadCreateNestedManyWithoutAuthorInput
+    forumPosts?: ForumPostCreateNestedManyWithoutAuthorInput
+    reportsMade?: CommunityReportCreateNestedManyWithoutReporterInput
+    reportsReceived?: CommunityReportCreateNestedManyWithoutReportedUserInput
+    moderatorActions?: CommunityModerationActionCreateNestedManyWithoutModeratorInput
+    userActionsReceived?: CommunityModerationActionCreateNestedManyWithoutTargetUserInput
+    communityBan?: CommunityBanCreateNestedOneWithoutUserInput
+    communityMutes?: CommunityMuteCreateNestedManyWithoutUserInput
+    bookmarks?: CommunityBookmarkCreateNestedManyWithoutUserInput
+    verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
+    scores?: ScoreCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutGameSessionsInput = {
+    id?: string
+    name?: string | null
+    email: string
+    password?: string | null
+    role?: string
+    department?: string | null
+    status?: string
+    avatar?: string | null
+    employeeId?: string | null
+    dragonId?: string | null
+    securityScore?: number
+    dragonKeyPrefix?: string | null
+    dragonKeyHash?: string | null
+    mfaEnabled?: boolean
+    mfaSecret?: string | null
+    mfaRecoveryCodes?: string | null
+    mfaVerified?: boolean
+    isProtected?: boolean
+    permissions?: string | null
+    provider?: string | null
+    providerAccountId?: string | null
+    lastLogin?: Date | string | null
+    loginCount?: number
+    isActive?: boolean
+    isDeleted?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    emailVerified?: Date | string | null
+    image?: string | null
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    assets?: MediaAssetUncheckedCreateNestedManyWithoutUploaderInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    profile?: UserProfileUncheckedCreateNestedOneWithoutUserInput
+    devices?: UserDeviceUncheckedCreateNestedManyWithoutUserInput
+    dualApprovalsCreated?: DualApprovalUncheckedCreateNestedManyWithoutRequestedByInput
+    dualApprovalsConfirmed?: DualApprovalConfirmedUncheckedCreateNestedManyWithoutConfirmedByInput
+    chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
+    chatReactions?: ChatReactionUncheckedCreateNestedManyWithoutUserInput
+    forumThreads?: ForumThreadUncheckedCreateNestedManyWithoutAuthorInput
+    forumPosts?: ForumPostUncheckedCreateNestedManyWithoutAuthorInput
+    reportsMade?: CommunityReportUncheckedCreateNestedManyWithoutReporterInput
+    reportsReceived?: CommunityReportUncheckedCreateNestedManyWithoutReportedUserInput
+    moderatorActions?: CommunityModerationActionUncheckedCreateNestedManyWithoutModeratorInput
+    userActionsReceived?: CommunityModerationActionUncheckedCreateNestedManyWithoutTargetUserInput
+    communityBan?: CommunityBanUncheckedCreateNestedOneWithoutUserInput
+    communityMutes?: CommunityMuteUncheckedCreateNestedManyWithoutUserInput
+    bookmarks?: CommunityBookmarkUncheckedCreateNestedManyWithoutUserInput
+    verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
+    scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutGameSessionsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutGameSessionsInput, UserUncheckedCreateWithoutGameSessionsInput>
+  }
+
+  export type UserUpsertWithoutGameSessionsInput = {
+    update: XOR<UserUpdateWithoutGameSessionsInput, UserUncheckedUpdateWithoutGameSessionsInput>
+    create: XOR<UserCreateWithoutGameSessionsInput, UserUncheckedCreateWithoutGameSessionsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutGameSessionsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutGameSessionsInput, UserUncheckedUpdateWithoutGameSessionsInput>
+  }
+
+  export type UserUpdateWithoutGameSessionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    employeeId?: NullableStringFieldUpdateOperationsInput | string | null
+    dragonId?: NullableStringFieldUpdateOperationsInput | string | null
+    securityScore?: IntFieldUpdateOperationsInput | number
+    dragonKeyPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    dragonKeyHash?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabled?: BoolFieldUpdateOperationsInput | boolean
+    mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaRecoveryCodes?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaVerified?: BoolFieldUpdateOperationsInput | boolean
+    isProtected?: BoolFieldUpdateOperationsInput | boolean
+    permissions?: NullableStringFieldUpdateOperationsInput | string | null
+    provider?: NullableStringFieldUpdateOperationsInput | string | null
+    providerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    lastLogin?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    loginCount?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    assets?: MediaAssetUpdateManyWithoutUploaderNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    profile?: UserProfileUpdateOneWithoutUserNestedInput
+    devices?: UserDeviceUpdateManyWithoutUserNestedInput
+    dualApprovalsCreated?: DualApprovalUpdateManyWithoutRequestedByNestedInput
+    dualApprovalsConfirmed?: DualApprovalConfirmedUpdateManyWithoutConfirmedByNestedInput
+    chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
+    chatReactions?: ChatReactionUpdateManyWithoutUserNestedInput
+    forumThreads?: ForumThreadUpdateManyWithoutAuthorNestedInput
+    forumPosts?: ForumPostUpdateManyWithoutAuthorNestedInput
+    reportsMade?: CommunityReportUpdateManyWithoutReporterNestedInput
+    reportsReceived?: CommunityReportUpdateManyWithoutReportedUserNestedInput
+    moderatorActions?: CommunityModerationActionUpdateManyWithoutModeratorNestedInput
+    userActionsReceived?: CommunityModerationActionUpdateManyWithoutTargetUserNestedInput
+    communityBan?: CommunityBanUpdateOneWithoutUserNestedInput
+    communityMutes?: CommunityMuteUpdateManyWithoutUserNestedInput
+    bookmarks?: CommunityBookmarkUpdateManyWithoutUserNestedInput
+    verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
+    scores?: ScoreUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutGameSessionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    employeeId?: NullableStringFieldUpdateOperationsInput | string | null
+    dragonId?: NullableStringFieldUpdateOperationsInput | string | null
+    securityScore?: IntFieldUpdateOperationsInput | number
+    dragonKeyPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    dragonKeyHash?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabled?: BoolFieldUpdateOperationsInput | boolean
+    mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaRecoveryCodes?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaVerified?: BoolFieldUpdateOperationsInput | boolean
+    isProtected?: BoolFieldUpdateOperationsInput | boolean
+    permissions?: NullableStringFieldUpdateOperationsInput | string | null
+    provider?: NullableStringFieldUpdateOperationsInput | string | null
+    providerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    lastLogin?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    loginCount?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    assets?: MediaAssetUncheckedUpdateManyWithoutUploaderNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    profile?: UserProfileUncheckedUpdateOneWithoutUserNestedInput
+    devices?: UserDeviceUncheckedUpdateManyWithoutUserNestedInput
+    dualApprovalsCreated?: DualApprovalUncheckedUpdateManyWithoutRequestedByNestedInput
+    dualApprovalsConfirmed?: DualApprovalConfirmedUncheckedUpdateManyWithoutConfirmedByNestedInput
+    chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
+    chatReactions?: ChatReactionUncheckedUpdateManyWithoutUserNestedInput
+    forumThreads?: ForumThreadUncheckedUpdateManyWithoutAuthorNestedInput
+    forumPosts?: ForumPostUncheckedUpdateManyWithoutAuthorNestedInput
+    reportsMade?: CommunityReportUncheckedUpdateManyWithoutReporterNestedInput
+    reportsReceived?: CommunityReportUncheckedUpdateManyWithoutReportedUserNestedInput
+    moderatorActions?: CommunityModerationActionUncheckedUpdateManyWithoutModeratorNestedInput
+    userActionsReceived?: CommunityModerationActionUncheckedUpdateManyWithoutTargetUserNestedInput
+    communityBan?: CommunityBanUncheckedUpdateOneWithoutUserNestedInput
+    communityMutes?: CommunityMuteUncheckedUpdateManyWithoutUserNestedInput
+    bookmarks?: CommunityBookmarkUncheckedUpdateManyWithoutUserNestedInput
+    verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
+    scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type AccountCreateManyUserInput = {
@@ -223203,6 +227268,35 @@ export namespace Prisma {
     attempts?: number
     consumedAt?: Date | string | null
     createdAt?: Date | string
+  }
+
+  export type ScoreCreateManyUserInput = {
+    id?: string
+    dragonId: string
+    playerName: string
+    gameSlug: string
+    score?: number
+    level?: number
+    rank?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type GameSessionCreateManyUserInput = {
+    id?: string
+    dragonId: string
+    gameSlug: string
+    sessionToken: string
+    status?: string
+    ipAddress?: string | null
+    userAgent?: string | null
+    startedAt?: Date | string
+    endedAt?: Date | string | null
+    lastHeartbeat?: Date | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type AccountUpdateWithoutUserInput = {
@@ -223823,6 +227917,93 @@ export namespace Prisma {
     attempts?: IntFieldUpdateOperationsInput | number
     consumedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ScoreUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dragonId?: StringFieldUpdateOperationsInput | string
+    playerName?: StringFieldUpdateOperationsInput | string
+    gameSlug?: StringFieldUpdateOperationsInput | string
+    score?: IntFieldUpdateOperationsInput | number
+    level?: IntFieldUpdateOperationsInput | number
+    rank?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ScoreUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dragonId?: StringFieldUpdateOperationsInput | string
+    playerName?: StringFieldUpdateOperationsInput | string
+    gameSlug?: StringFieldUpdateOperationsInput | string
+    score?: IntFieldUpdateOperationsInput | number
+    level?: IntFieldUpdateOperationsInput | number
+    rank?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ScoreUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dragonId?: StringFieldUpdateOperationsInput | string
+    playerName?: StringFieldUpdateOperationsInput | string
+    gameSlug?: StringFieldUpdateOperationsInput | string
+    score?: IntFieldUpdateOperationsInput | number
+    level?: IntFieldUpdateOperationsInput | number
+    rank?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GameSessionUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dragonId?: StringFieldUpdateOperationsInput | string
+    gameSlug?: StringFieldUpdateOperationsInput | string
+    sessionToken?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastHeartbeat?: DateTimeFieldUpdateOperationsInput | Date | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GameSessionUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dragonId?: StringFieldUpdateOperationsInput | string
+    gameSlug?: StringFieldUpdateOperationsInput | string
+    sessionToken?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastHeartbeat?: DateTimeFieldUpdateOperationsInput | Date | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GameSessionUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dragonId?: StringFieldUpdateOperationsInput | string
+    gameSlug?: StringFieldUpdateOperationsInput | string
+    sessionToken?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastHeartbeat?: DateTimeFieldUpdateOperationsInput | Date | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type PermissionCreateManyRoleInput = {
