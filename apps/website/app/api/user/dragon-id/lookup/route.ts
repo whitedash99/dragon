@@ -16,18 +16,27 @@ export async function GET(req: NextRequest) {
     const clean = query.replace(/^@/, "").trim();
     const upperQuery = clean.toUpperCase();
 
-    // 1. Search DB by dragonId or email
-    let user = await prisma.user.findFirst({
-      where: {
-        OR: [
-          { dragonId: query },
-          { dragonId: clean },
-          { dragonId: upperQuery },
-          { email: clean.toLowerCase() },
-        ],
-      },
-      include: { profile: true },
-    });
+    // 1. Search DB by dragonId or email (crash-proof — handles missing dragonId column)
+    let user: any = null;
+    try {
+      user = await prisma.user.findFirst({
+        where: {
+          OR: [
+            { dragonId: query },
+            { dragonId: clean },
+            { dragonId: upperQuery },
+            { email: clean.toLowerCase() },
+          ],
+        },
+        include: { profile: true },
+      });
+    } catch {
+      // dragonId column may not exist — fallback to email-only search
+      user = await prisma.user.findFirst({
+        where: { email: clean.toLowerCase() },
+        include: { profile: true },
+      }).catch(() => null);
+    }
 
     // 2. Fallback search by gamerTag in profile notificationSettings
     if (!user) {

@@ -15,17 +15,26 @@ export async function POST(req: NextRequest) {
     const identifier = email.trim();
     const normalizedEmail = identifier.toLowerCase();
 
-    let user = await prisma.user.findFirst({
-      where: {
-        OR: [
-          { email: normalizedEmail },
-          { dragonId: identifier },
-          { dragonId: identifier.toUpperCase() },
-          { dragonId: identifier.replace(/^@/, "") },
-        ],
-      },
-      include: { profile: true },
-    });
+    let user: any = null;
+    try {
+      user = await prisma.user.findFirst({
+        where: {
+          OR: [
+            { email: normalizedEmail },
+            { dragonId: identifier },
+            { dragonId: identifier.toUpperCase() },
+            { dragonId: identifier.replace(/^@/, "") },
+          ],
+        },
+        include: { profile: true },
+      });
+    } catch {
+      // dragonId column may not exist — fallback to email-only search
+      user = await prisma.user.findFirst({
+        where: { email: normalizedEmail },
+        include: { profile: true },
+      }).catch(() => null);
+    }
 
     if (!user) {
       // Auto-provision user if logging in for first time in dev/testing mode

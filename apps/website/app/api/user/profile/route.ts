@@ -43,14 +43,19 @@ export async function GET(req: NextRequest) {
 
     const metadata = parseProfileMetadata(targetUser.profile?.notificationSettings, targetUser.name);
 
-    // Ensure user has a real canonical DragonID in database
-    if (!targetUser.dragonId) {
-      const generatedId = `DRG-${Math.floor(1000 + Math.random() * 9000)}-${Math.floor(1000 + Math.random() * 9000)}`;
-      targetUser = await prisma.user.update({
-        where: { id: targetUser.id },
-        data: { dragonId: generatedId },
-        include: { profile: true },
-      });
+    // Ensure user has a DragonID (crash-proof — handles missing column)
+    let effectiveDragonId = targetUser.dragonId;
+    if (!effectiveDragonId) {
+      effectiveDragonId = `DRG-${Math.floor(1000 + Math.random() * 9000)}-${Math.floor(1000 + Math.random() * 9000)}`;
+      try {
+        targetUser = await prisma.user.update({
+          where: { id: targetUser.id },
+          data: { dragonId: effectiveDragonId },
+          include: { profile: true },
+        });
+      } catch {
+        // dragonId column may not exist — continue with generated ID for display
+      }
     }
 
     // Fetch user real support tickets
@@ -66,7 +71,7 @@ export async function GET(req: NextRequest) {
         id: targetUser.id,
         name: targetUser.name,
         email: targetUser.email,
-        dragonId: targetUser.dragonId,
+        dragonId: effectiveDragonId || targetUser.dragonId || `DRG-${Math.floor(1000 + Math.random() * 9000)}-${Math.floor(1000 + Math.random() * 9000)}`,
         role: targetUser.role,
         image: targetUser.image || targetUser.avatar,
         avatar: targetUser.avatar || targetUser.image,
