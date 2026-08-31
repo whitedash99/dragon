@@ -370,12 +370,25 @@ export const authOptions: NextAuthOptions = {
       }
       return `${baseUrl}/auth/verify-otp`;
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id;
         token.role = (user as any).role || "USER";
         token.picture = user.image;
         token.emailVerified = (user as any).emailVerified || null;
+        token.otpVerified = false; // Must be explicitly verified via OTP screen
+      }
+
+      if (trigger === "update" && session) {
+        if (session.otpVerified !== undefined) {
+          token.otpVerified = session.otpVerified;
+        }
+        if (session.hasCompletedWelcome !== undefined) {
+          token.hasCompletedWelcome = session.hasCompletedWelcome;
+        }
+        if (session.hasCompletedDragonId !== undefined) {
+          token.hasCompletedDragonId = session.hasCompletedDragonId;
+        }
       }
       
       if (token.email) {
@@ -390,7 +403,6 @@ export const authOptions: NextAuthOptions = {
             token.role = dbUser.role;
             token.picture = dbUser.image || dbUser.avatar || token.picture;
             token.emailVerified = dbUser.emailVerified ? true : false;
-            token.otpVerified = dbUser.emailVerified ? true : false;
 
             const meta = parseProfileMetadata(dbUser.profile?.notificationSettings, dbUser.name);
             token.dragonIdSetupCompleted = meta.hasCompletedDragonId;

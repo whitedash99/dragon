@@ -3,6 +3,7 @@ import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { resolvePlayerEntryState } from "@/lib/auth-decision-engine";
 import { INSTALLATION_COOKIE_NAME } from "@/lib/installation";
+import { verifyOtpToken, OTP_COOKIE_NAME } from "@/lib/otp-token";
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -13,6 +14,7 @@ export async function middleware(req: NextRequest) {
 
   const token = await getToken({ req, secret });
   const installationCookie = req.cookies.get(INSTALLATION_COOKIE_NAME)?.value || null;
+  const otpCookie = req.cookies.get(OTP_COOKIE_NAME)?.value || null;
 
   const isVerifyRoute = pathname === "/auth/verify-otp" || pathname === "/auth/verify-email";
   const isWelcomeRoute = pathname === "/welcome";
@@ -27,11 +29,19 @@ export async function middleware(req: NextRequest) {
   const welcomeCompletedCookie = req.cookies.get("dragon_welcome_completed")?.value === "true";
   const dragonIdCompletedCookie = req.cookies.get("dragon_dragonid_completed")?.value === "true";
 
+  // Check OTP verification
+  const isOtpVerified = Boolean(
+    (token as any)?.otpVerified ||
+    (token?.email && otpCookie && verifyOtpToken(token.email, otpCookie))
+  );
+
   // Resolve Authoritative State with immediate cookie awareness
   const decision = resolvePlayerEntryState({
     token: token
       ? {
           ...(token as any),
+          otpVerified: isOtpVerified,
+          emailVerified: isOtpVerified,
           hasCompletedWelcome: Boolean((token as any)?.hasCompletedWelcome || welcomeCompletedCookie),
           hasCompletedDragonId: Boolean((token as any)?.hasCompletedDragonId || (token as any)?.dragonIdSetupCompleted || dragonIdCompletedCookie),
           dragonIdSetupCompleted: Boolean((token as any)?.dragonIdSetupCompleted || dragonIdCompletedCookie),

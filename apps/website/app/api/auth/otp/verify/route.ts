@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { parseProfileMetadata } from "@/lib/user-profile";
 import { resolvePlayerEntryState } from "@/lib/auth-decision-engine";
 import { INSTALLATION_COOKIE_NAME } from "@/lib/installation";
+import { generateOtpToken, OTP_COOKIE_NAME } from "@/lib/otp-token";
 import { checkRateLimit } from "@dragon/utils";
 
 export const dynamic = "force-dynamic";
@@ -115,6 +116,15 @@ export async function POST(req: NextRequest) {
 
     // Set secure HTTP-only session cookie (Layer 2)
     response.cookies.set("dragon_session", sessionToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      expires,
+      path: "/",
+    });
+
+    // Set signed OTP verification token (Layer 2 OTP State)
+    response.cookies.set(OTP_COOKIE_NAME, generateOtpToken(targetEmail), {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",

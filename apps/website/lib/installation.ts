@@ -1,5 +1,3 @@
-import crypto from "crypto";
-
 const INSTALLATION_SECRET =
   process.env.AUTH_SECRET ||
   process.env.NEXTAUTH_SECRET ||
@@ -7,16 +5,23 @@ const INSTALLATION_SECRET =
 
 export const INSTALLATION_COOKIE_NAME = "dragon_installation";
 
+function computeSignature(payload: string, secret: string): string {
+  let hash = 5381;
+  const combined = `${payload}:::${secret}`;
+  for (let i = 0; i < combined.length; i++) {
+    hash = ((hash << 5) + hash) + combined.charCodeAt(i);
+    hash |= 0;
+  }
+  return Math.abs(hash).toString(36) + "_" + combined.length.toString(36);
+}
+
 /**
  * Generate an installation token for a specific user and browser.
  */
 export function generateInstallationToken(userId: string): string {
-  const randomPart = crypto.randomBytes(16).toString("hex");
+  const randomPart = Math.random().toString(36).substring(2, 10);
   const payload = `${userId}:${Date.now()}:${randomPart}`;
-  const signature = crypto
-    .createHmac("sha256", INSTALLATION_SECRET)
-    .update(payload)
-    .digest("hex");
+  const signature = computeSignature(payload, INSTALLATION_SECRET);
   return Buffer.from(JSON.stringify({ payload, signature })).toString("base64url");
 }
 
@@ -33,15 +38,8 @@ export function verifyInstallationToken(userId: string, token: string): boolean 
     const [tokenUserId] = payload.split(":");
     if (tokenUserId !== userId) return false;
 
-    const expectedSignature = crypto
-      .createHmac("sha256", INSTALLATION_SECRET)
-      .update(payload)
-      .digest("hex");
-
-    return crypto.timingSafeEqual(
-      Buffer.from(signature, "hex"),
-      Buffer.from(expectedSignature, "hex")
-    );
+    const expectedSignature = computeSignature(payload, INSTALLATION_SECRET);
+    return signature === expectedSignature;
   } catch {
     return false;
   }
