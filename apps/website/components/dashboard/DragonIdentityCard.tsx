@@ -18,7 +18,8 @@ import {
   Copy,
   Check,
   ExternalLink,
-  Key
+  Key,
+  Gamepad2,
 } from "lucide-react";
 import { DragonLogoIcon } from "@/components/ui/dragon-logo";
 import { soundFx } from "@/lib/sound-effects";
@@ -91,7 +92,7 @@ export function DragonIdentityCard({ user, onEdit }: DragonIdentityCardProps) {
               GOLDEN DRAGON ID IDENTITY COMMAND
             </h2>
             <p className="text-xs text-slate-400 font-mono">
-              Universal Ecosystem Credentials, Golden Battle Banner & Second Portal Key
+              Isolated Personal Credentials, Golden Combat Banner & Second Portal Key
             </p>
           </div>
         </div>
@@ -194,6 +195,33 @@ export function DragonIdentityCard({ user, onEdit }: DragonIdentityCardProps) {
               </div>
             </div>
           </motion.div>
+
+          {/* Dragon Web Games Companion SSO Key Banner */}
+          <div className="mt-4 p-5 rounded-3xl bg-gradient-to-r from-[#140628] via-[#09153a] to-[#041a2e] border-2 border-purple-500/40 shadow-[0_0_30px_rgba(124,60,255,0.25)] flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3 text-left">
+              <div className="p-3 rounded-2xl bg-purple-500/20 border border-purple-400/50 shadow-inner shrink-0">
+                <Gamepad2 className="size-6 text-purple-300" />
+              </div>
+              <div>
+                <span className="text-[10px] font-mono font-bold text-purple-300 uppercase tracking-widest block">
+                  ✦ SECOND DRAGON PORTAL LINKED ✦
+                </span>
+                <h4 className="text-sm font-bold text-white font-heading">
+                  DRAGON WEB GAMES SSO PASS
+                </h4>
+                <p className="text-[11px] text-slate-400 font-mono">
+                  Personal Dragon ID: <span className="text-amber-300 font-bold">{displayDragonId}</span>
+                </p>
+              </div>
+            </div>
+
+            <a
+              href="/api/auth/sso/launch"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 hover:from-purple-500 hover:to-pink-500 text-white font-mono font-bold text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(255,43,214,0.4)] border border-pink-400/50 transition-all hover:scale-105 active:scale-95 cursor-pointer shrink-0"
+            >
+              <span>LAUNCH WEB GAMES →</span>
+            </a>
+          </div>
         </div>
 
         {/* Public DragonID Identity Lookup Scanner */}

@@ -8,13 +8,16 @@ export async function GET() {
   let dbStatus = "UNAVAILABLE";
   let dbLatency: number | null = null;
 
+  let dbError: string | null = null;
+
   try {
     const dbPingStart = Date.now();
     await prisma.$queryRaw`SELECT 1`;
     dbLatency = Date.now() - dbPingStart;
     dbStatus = "OPERATIONAL";
   } catch (error: any) {
-    console.error("[Health API] Database check failed:", error?.message || error);
+    dbError = error?.message || String(error);
+    console.error("[Health API] Database check failed:", dbError);
     dbStatus = "UNAVAILABLE";
     dbLatency = null;
   }
@@ -31,6 +34,7 @@ export async function GET() {
     uptimeSeconds: Math.floor(process.uptime()),
     diagnostics: {
       database: dbStatus === "OPERATIONAL" ? "operational" : "unavailable",
+      databaseError: dbError,
       latency: dbLatency !== null ? `${dbLatency}ms` : null,
       memory: {
         rss: `${Math.round(process.memoryUsage().rss / 1024 / 1024)} MB`,

@@ -1,0 +1,2115 @@
+generator client {
+  provider      = "prisma-client-js"
+  output        = "./src/generated/client"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id                     String                  @id @default(cuid())
+  name                   String?
+  email                  String                  @unique
+  password               String?
+  role                   String                  @default("USER")
+  department             String?                 @default("Engineering")
+  status                 String                  @default("ACTIVE")
+  avatar                 String?
+  employeeId             String?                 @unique
+  dragonId               String?                 @unique
+  securityScore          Int                     @default(95)
+  dragonKeyPrefix        String?
+  dragonKeyHash          String?
+  mfaEnabled             Boolean                 @default(false)
+  mfaSecret              String?
+  mfaRecoveryCodes       String?                 @default("[]")
+  mfaVerified            Boolean                 @default(false)
+  isProtected            Boolean                 @default(false)
+  permissions            String?                 @default("[]")
+  provider               String?                 @default("google")
+  providerAccountId      String?
+  lastLogin              DateTime?               @default(now())
+  loginCount             Int                     @default(0)
+  isActive               Boolean                 @default(true)
+  isDeleted              Boolean                 @default(false)
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+  emailVerified          DateTime?
+  image                  String?
+  accounts               Account[]
+  auditLogs              AuditLog[]
+  assets                 MediaAsset[]
+  sessions               Session[]
+  profile                UserProfile?
+  devices                UserDevice[]
+  dualApprovalsCreated   DualApproval[]          @relation("DualApprovalRequester")
+  dualApprovalsConfirmed DualApprovalConfirmed[]
+
+  // Community relations
+  chatMessages        ChatMessage[]
+  chatReactions       ChatReaction[]
+  forumThreads        ForumThread[]
+  forumPosts          ForumPost[]
+  reportsMade         CommunityReport[]           @relation("ReportReporter")
+  reportsReceived     CommunityReport[]           @relation("ReportTargetUser")
+  moderatorActions    CommunityModerationAction[] @relation("ModeratorActions")
+  userActionsReceived CommunityModerationAction[] @relation("TargetedUserActions")
+  communityBan        CommunityBan?
+  communityMutes      CommunityMute[]
+  bookmarks           CommunityBookmark[]
+  verificationCodes   EmailVerificationCode[]
+  scores              Score[]
+  gameSessions        GameSession[]
+
+  @@index([email])
+  @@index([role])
+  @@index([providerAccountId])
+}
+
+model Role {
+  id          String       @id @default(cuid())
+  name        String       @unique
+  description String?
+  isCustom    Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  permissions Permission[]
+}
+
+model Permission {
+  id        String   @id @default(cuid())
+  roleId    String
+  action    String
+  resource  String
+  granted   Boolean  @default(true)
+  createdAt DateTime @default(now())
+  role      Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@index([roleId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  userId       String
+  sessionToken String   @unique
+  ipAddress    String?
+  userAgent    String?
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([sessionToken])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  userEmail String?
+  action    String
+  resource  String?
+  details   String?
+  ipAddress String?
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id])
+
+  @@index([action])
+  @@index([userEmail])
+  @@index([createdAt])
+}
+
+model Page {
+  id        String            @id @default(cuid())
+  title     String
+  slug      String            @unique
+  status    String            @default("PUBLISHED")
+  author    String            @default("Dragon CMS Team")
+  category  String            @default("General")
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  revisions ContentRevision[]
+  sections  PageSection[]
+  seoData   SEOData?
+
+  @@index([slug])
+  @@index([status])
+}
+
+model PageSection {
+  id        String         @id @default(cuid())
+  pageId    String
+  title     String
+  order     Int            @default(0)
+  visible   Boolean        @default(true)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  blocks    ContentBlock[]
+  page      Page           @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@index([pageId])
+}
+
+model ContentBlock {
+  id           String       @id @default(cuid())
+  key          String       @unique
+  category     String       @default("General")
+  label        String
+  type         String       @default("text")
+  content      String
+  draftContent String?
+  isPublished  Boolean      @default(true)
+  version      Int          @default(1)
+  updatedBy    String       @default("Admin")
+  sectionId    String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  section      PageSection? @relation(fields: [sectionId], references: [id])
+
+  @@index([key])
+  @@index([category])
+}
+
+model ContentRevision {
+  id        String   @id @default(cuid())
+  pageId    String?
+  blockKey  String?
+  version   Int      @default(1)
+  content   String
+  changedBy String   @default("Admin")
+  createdAt DateTime @default(now())
+  page      Page?    @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@index([pageId])
+  @@index([blockKey])
+}
+
+model SEOData {
+  id              String   @id @default(cuid())
+  pageId          String?  @unique
+  metaTitle       String
+  metaDescription String
+  keywords        String
+  ogImage         String?
+  canonicalUrl    String?
+  robots          String   @default("index, follow")
+  structuredData  String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  page            Page?    @relation(fields: [pageId], references: [id], onDelete: Cascade)
+}
+
+model GameContent {
+  id              String  @id @default(cuid())
+  slug            String  @unique
+  name            String
+  subtitle        String?
+  genre           String
+  status          String  @default("In Development")
+  releaseDate     String
+  developer       String  @default("Dragon Studios")
+  publisher       String  @default("Dragon Interactive")
+  engine          String  @default("Dragon Engine v5.4")
+  platforms       String
+  description     String
+  fullDescription String?
+  logoUrl         String?
+  bannerUrl       String?
+  cardBannerUrl   String?
+  heroVideoUrl    String?
+  screenshots     String? @default("[]")
+  features        String?
+  requirements    String?
+  isPublished     Boolean @default(true)
+  isFeatured      Boolean @default(false)
+  featuredOrder   Int     @default(0)
+
+  // AI Visual Intelligence & Presentation Controls
+  aiAnalysisStatus  String    @default("PENDING") // PENDING | COMPLETED | FAILED | SKIPPED
+  aiAnalysisVersion Int       @default(1)
+  aiAnalyzedAt      DateTime?
+  assetHash         String?
+  aiFocalPoint      String? // JSON: {"x": 0.5, "y": 0.5}
+  aiDesktopPosition String?   @default("50% 50%")
+  aiMobilePosition  String?   @default("50% 50%")
+  aiCardPosition    String?   @default("50% 50%")
+  aiTextSafeArea    String?   @default("left")
+  aiConfidence      Float?    @default(1.0)
+
+  // Manual Human Overrides
+  manualFocalPoint      String?
+  manualDesktopPosition String?
+  manualMobilePosition  String?
+  manualCardPosition    String?
+  presentationMode      String  @default("AUTO") // AUTO | MANUAL
+  zoomLevel             Float   @default(1.0)
+  overlayIntensity      Float   @default(0.4)
+  textPlacement         String  @default("bottom-left")
+
+  // Versioning & Rollback Snapshot
+  publishedSnapshot Json?
+
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  dlcList      DLC[]
+  gameFeatures GameFeature[]
+  mediaList    GameMedia[]
+  platformList GamePlatform[]
+  patchNotes   PatchNote[]
+  releases     GameRelease[]
+  downloadLogs GameDownloadLog[]
+
+  @@index([slug])
+  @@index([status])
+  @@index([isPublished])
+  @@index([isFeatured])
+}
+
+model GameRelease {
+  id             String            @id @default(cuid())
+  gameId         String
+  version        String
+  buildNumber    Int               @default(1)
+  platform       String // "WINDOWS" | "ANDROID"
+  targetArch     String?           @default("x64")
+  fileType       String // "EXE" | "ZIP" | "INSTALLER" | "APK" | "AAB"
+  fileName       String
+  fileSizeBytes  BigInt            @default(0)
+  sha256Checksum String
+  b2ObjectKey    String
+  b2Bucket       String            @default("dragon-games-production")
+  b2Region       String            @default("us-east-005")
+  contentType    String?           @default("application/octet-stream")
+  releaseNotes   String?
+  status         String            @default("DRAFT") // DRAFT | UPLOADING | UPLOADED | VERIFIED | PUBLISHED | DEPRECATED | ARCHIVED
+  isPublished    Boolean           @default(false)
+  publishedAt    DateTime?
+  verifiedAt     DateTime?
+  downloadCount  Int               @default(0)
+  uploadedById   String?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  game           GameContent       @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  downloadLogs   GameDownloadLog[]
+
+  @@unique([gameId, version, platform])
+  @@index([gameId])
+  @@index([platform])
+  @@index([status])
+  @@index([isPublished])
+}
+
+model GameDownloadLog {
+  id        String       @id @default(cuid())
+  releaseId String
+  gameId    String?
+  platform  String // "WINDOWS" | "ANDROID"
+  ipAddress String?
+  userAgent String?
+  country   String?
+  status    String       @default("COMPLETED")
+  createdAt DateTime     @default(now())
+  release   GameRelease  @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+  game      GameContent? @relation(fields: [gameId], references: [id], onDelete: SetNull)
+
+  @@index([releaseId])
+  @@index([gameId])
+  @@index([createdAt])
+}
+
+model GameMedia {
+  id        String      @id @default(cuid())
+  gameId    String
+  type      String
+  url       String
+  title     String?
+  createdAt DateTime    @default(now())
+  game      GameContent @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@index([gameId])
+}
+
+model GameFeature {
+  id          String      @id @default(cuid())
+  gameId      String
+  title       String
+  description String
+  icon        String?
+  game        GameContent @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@index([gameId])
+}
+
+model GamePlatform {
+  id          String      @id @default(cuid())
+  gameId      String
+  name        String
+  storeUrl    String?
+  releaseDate String?
+  game        GameContent @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@index([gameId])
+}
+
+model PatchNote {
+  id         String      @id @default(cuid())
+  gameId     String
+  version    String
+  title      String
+  changes    String
+  releasedAt DateTime    @default(now())
+  game       GameContent @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@index([gameId])
+}
+
+model DLC {
+  id          String      @id @default(cuid())
+  gameId      String
+  name        String
+  description String
+  price       String?     @default("$19.99")
+  status      String      @default("AVAILABLE")
+  game        GameContent @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@index([gameId])
+}
+
+model NewsArticle {
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  title         String
+  excerpt       String
+  content       String
+  author        String   @default("Dragon Dispatches")
+  category      String   @default("Game Updates")
+  tags          String   @default("News, Update")
+  featuredImage String?
+  status        String   @default("PUBLISHED")
+  publishedAt   DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([slug])
+  @@index([status])
+}
+
+model NavigationMenu {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  items     String
+  updatedBy String   @default("Admin")
+  updatedAt DateTime @updatedAt
+}
+
+model MediaAsset {
+  id         String       @id @default(cuid())
+  name       String
+  size       String
+  type       String
+  mimeType   String?      @default("image/png")
+  category   String       @default("Images")
+  url        String
+  altText    String?
+  dimensions String?      @default("1920x1080")
+  folderId   String?
+  uploaderId String?
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  folder     MediaFolder? @relation(fields: [folderId], references: [id])
+  uploader   User?        @relation(fields: [uploaderId], references: [id])
+  tags       MediaTag[]
+  usages     MediaUsage[]
+
+  @@index([name])
+  @@index([category])
+  @@index([folderId])
+}
+
+model MediaFolder {
+  id        String       @id @default(cuid())
+  name      String       @unique
+  slug      String       @unique
+  path      String       @default("/")
+  createdAt DateTime     @default(now())
+  assets    MediaAsset[]
+}
+
+model MediaCollection {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+}
+
+model MediaTag {
+  id      String     @id @default(cuid())
+  assetId String
+  name    String
+  asset   MediaAsset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@index([assetId])
+}
+
+model MediaUsage {
+  id        String     @id @default(cuid())
+  assetId   String
+  location  String
+  createdAt DateTime   @default(now())
+  asset     MediaAsset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@index([assetId])
+}
+
+model UploadHistory {
+  id        String   @id @default(cuid())
+  fileName  String
+  fileSize  String
+  status    String   @default("COMPLETED")
+  createdAt DateTime @default(now())
+}
+
+model Customer {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  country   String?  @default("Global")
+  language  String?  @default("English")
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  tickets   Ticket[]
+
+  @@index([email])
+}
+
+model Ticket {
+  id                    String             @id @default(cuid())
+  ticketId              String             @unique
+  tenantId              String?            @default("dragon_studios")
+  customerId            String?
+  customerName          String
+  customerEmail         String
+  category              String             @default("General Support")
+  subject               String
+  description           String
+  priority              String             @default("NORMAL")
+  status                String             @default("NEW")
+  assignedAgent         String?
+  department            String             @default("Support")
+  tags                  String?            @default("Inbound")
+  source                String             @default("ADMIN_CREATED")
+  createdByType         String             @default("CUSTOMER")
+  legacyContactTicketId String?
+  migrationDate         DateTime?
+  deletedAt             DateTime?
+  deleted               Boolean            @default(false)
+  lastReplyAt           DateTime           @default(now())
+  closedAt              DateTime?
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime           @updatedAt
+  aiAnalyses            AIAnalysis[]
+  emailLogs             EmailLog[]
+  internalNotes         InternalNote[]
+  customer              Customer?          @relation(fields: [customerId], references: [id])
+  activities            TicketActivity[]
+  attachments           TicketAttachment[]
+  messages              TicketMessage[]    @relation("AdminTicketMessages")
+
+  @@index([ticketId])
+  @@index([customerId])
+  @@index([customerEmail])
+  @@index([status])
+  @@index([priority])
+  @@index([category])
+  @@index([source])
+  @@index([tenantId])
+  @@index([createdByType])
+}
+
+model TicketMessage {
+  id              String         @id @default(cuid())
+  ticketId        String
+  senderType      String?        @default("CUSTOMER")
+  senderName      String
+  senderEmail     String?
+  message         String
+  createdAt       DateTime       @default(now())
+  sender          String?        @default("CUSTOMER")
+  ticket          Ticket         @relation("AdminTicketMessages", fields: [ticketId], references: [id], onDelete: Cascade, map: "TicketMessage_admin_fkey")
+  contactTicketId String?
+  contactTicket   ContactTicket? @relation("ContactTicketMessages", fields: [contactTicketId], references: [ticketId], onDelete: Cascade, map: "TicketMessage_contact_fkey")
+
+  @@index([ticketId])
+}
+
+model TicketAttachment {
+  id        String   @id @default(cuid())
+  ticketId  String
+  fileName  String
+  fileSize  String
+  fileType  String
+  url       String
+  createdAt DateTime @default(now())
+  ticket    Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+}
+
+model InternalNote {
+  id        String   @id @default(cuid())
+  ticketId  String
+  author    String
+  note      String
+  createdAt DateTime @default(now())
+  ticket    Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+}
+
+model TicketActivity {
+  id        String   @id @default(cuid())
+  ticketId  String
+  action    String
+  details   String?
+  performer String
+  createdAt DateTime @default(now())
+  ticket    Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+}
+
+model AIAnalysis {
+  id               String   @id @default(cuid())
+  ticketId         String
+  summary          String
+  detectedCategory String?
+  detectedPriority String?
+  spamScore        Float    @default(0)
+  suggestedReply   String
+  approved         Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  ticket           Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+}
+
+model Department {
+  id          String       @id @default(cuid())
+  name        String       @unique
+  description String?
+  createdAt   DateTime     @default(now())
+  members     TeamMember[]
+}
+
+model TeamMember {
+  id           String     @id @default(cuid())
+  departmentId String
+  name         String
+  email        String     @unique
+  role         String     @default("Support Agent")
+  active       Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  department   Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+
+  @@index([departmentId])
+}
+
+model EmailLog {
+  id               String    @id @default(cuid())
+  ticketId         String?
+  type             String    @default("NOTIFICATION")
+  template         String    @default("GENERAL")
+  recipient        String
+  subject          String
+  status           String    @default("DISPATCHED")
+  providerResponse String?
+  providerId       String?
+  errorMessage     String?
+  sentAt           DateTime? @default(now())
+  openedAt         DateTime?
+  clickedAt        DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @default(now()) @updatedAt
+  ticket           Ticket?   @relation(fields: [ticketId], references: [id])
+
+  @@index([recipient])
+  @@index([status])
+  @@index([type])
+  @@index([template])
+}
+
+model AIConversation {
+  id        String      @id @default(cuid())
+  title     String
+  userEmail String      @default("Admin")
+  model     String      @default("gemini-2.5-flash")
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  messages  AIMessage[]
+
+  @@index([userEmail])
+}
+
+model AIMessage {
+  id             String         @id @default(cuid())
+  conversationId String
+  role           String
+  content        String
+  createdAt      DateTime       @default(now())
+  conversation   AIConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+}
+
+model AIPrompt {
+  id         String   @id @default(cuid())
+  key        String   @unique
+  title      String
+  category   String   @default("General")
+  promptText String
+  active     Boolean  @default(true)
+  version    Int      @default(1)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([key])
+  @@index([category])
+}
+
+model AIUsage {
+  id           String   @id @default(cuid())
+  feature      String
+  model        String   @default("gemini-2.5-flash")
+  tokens       Int      @default(0)
+  responseTime Float    @default(0)
+  status       String   @default("SUCCESS")
+  userEmail    String   @default("Admin")
+  createdAt    DateTime @default(now())
+
+  @@index([feature])
+  @@index([createdAt])
+}
+
+model AISetting {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String
+  description String?
+  updatedAt   DateTime @updatedAt
+}
+
+model AIKnowledge {
+  id        String   @id @default(cuid())
+  topic     String   @unique
+  category  String   @default("Studio")
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category])
+}
+
+model AIActivity {
+  id        String   @id @default(cuid())
+  action    String
+  details   String?
+  userEmail String   @default("Admin")
+  createdAt DateTime @default(now())
+}
+
+model AnalyticsEvent {
+  id        String   @id @default(cuid())
+  event     String
+  category  String   @default("General")
+  userEmail String?  @default("Visitor")
+  ipAddress String?
+  metadata  String?
+  createdAt DateTime @default(now())
+
+  @@index([event])
+  @@index([createdAt])
+}
+
+model Visitor {
+  id        String   @id @default(cuid())
+  ipAddress String   @unique
+  country   String?  @default("United States")
+  language  String?  @default("en-US")
+  device    String?  @default("Desktop")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AnalyticsSession {
+  id         String   @id @default(cuid())
+  sessionKey String   @unique
+  duration   Int      @default(0)
+  pageViews  Int      @default(1)
+  createdAt  DateTime @default(now())
+}
+
+model AnalyticsReport {
+  id        String   @id @default(cuid())
+  title     String
+  type      String   @default("DAILY")
+  data      String
+  createdAt DateTime @default(now())
+}
+
+model Metric {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  value     Float
+  unit      String?  @default("count")
+  updatedAt DateTime @updatedAt
+}
+
+model DashboardWidget {
+  id        String   @id @default(cuid())
+  title     String
+  type      String
+  position  Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model SecurityEvent {
+  id        String   @id @default(cuid())
+  eventType String
+  severity  String   @default("MEDIUM")
+  userEmail String?  @default("Unknown")
+  ipAddress String?
+  details   String?
+  createdAt DateTime @default(now())
+
+  @@index([eventType])
+  @@index([severity])
+}
+
+model APIKey {
+  id         String   @id @default(cuid())
+  name       String
+  keyPrefix  String
+  secretHash String
+  active     Boolean  @default(true)
+  createdBy  String   @default("Admin")
+  createdAt  DateTime @default(now())
+
+  @@index([name])
+}
+
+model SecurityAlert {
+  id        String   @id @default(cuid())
+  title     String
+  severity  String   @default("HIGH")
+  status    String   @default("OPEN")
+  details   String
+  createdAt DateTime @default(now())
+
+  @@index([status])
+}
+
+model BackupRecord {
+  id        String   @id @default(cuid())
+  filename  String
+  size      String
+  status    String   @default("COMPLETED")
+  createdBy String   @default("Automated System")
+  createdAt DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  title     String
+  message   String
+  type      String   @default("INFO")
+  recipient String   @default("All Staff")
+  isRead    Boolean  @default(false)
+  channel   String   @default("IN_APP")
+  createdAt DateTime @default(now())
+
+  @@index([recipient])
+  @@index([isRead])
+}
+
+model NotificationTemplate {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  subject   String
+  body      String
+  category  String   @default("General")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model NotificationPreference {
+  id         String   @id @default(cuid())
+  userEmail  String   @unique
+  emailAlert Boolean  @default(true)
+  inAppAlert Boolean  @default(true)
+  createdAt  DateTime @default(now())
+}
+
+model NotificationRule {
+  id        String   @id @default(cuid())
+  event     String
+  channel   String   @default("EMAIL")
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model DeliveryLog {
+  id           String   @id @default(cuid())
+  recipient    String
+  channel      String   @default("EMAIL")
+  status       String   @default("DELIVERED")
+  errorMessage String?
+  createdAt    DateTime @default(now())
+
+  @@index([recipient])
+}
+
+model SystemSetting {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String
+  category    String   @default("General")
+  description String?
+  updatedBy   String   @default("Super Admin")
+  updatedAt   DateTime @updatedAt
+
+  @@index([key])
+  @@index([category])
+}
+
+model Integration {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  provider  String
+  status    String   @default("CONNECTED")
+  enabled   Boolean  @default(true)
+  config    String?
+  updatedAt DateTime @updatedAt
+
+  @@index([provider])
+}
+
+model EmailConfiguration {
+  id          String   @id @default(cuid())
+  smtpHost    String   @default("smtp.dragonstudios.com")
+  smtpPort    Int      @default(587)
+  username    String   @default("notifications@dragonstudios.com")
+  senderEmail String   @default("support@dragonstudios.com")
+  senderName  String   @default("Dragon Studios Enterprise")
+  updatedAt   DateTime @updatedAt
+}
+
+model StorageConfiguration {
+  id         String   @id @default(cuid())
+  provider   String   @default("LOCAL")
+  bucketName String   @default("dragon-media-production")
+  region     String   @default("us-east-1")
+  updatedAt  DateTime @updatedAt
+}
+
+model AIConfiguration {
+  id           String   @id @default(cuid())
+  defaultModel String   @default("gemini-2.5-flash")
+  temperature  Float    @default(0.7)
+  tokenLimit   Int      @default(8192)
+  updatedAt    DateTime @updatedAt
+}
+
+model FeatureFlag {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  name        String
+  enabled     Boolean  @default(true)
+  description String?
+  updatedAt   DateTime @updatedAt
+
+  @@index([key])
+}
+
+model TestResult {
+  id        String   @id @default(cuid())
+  testName  String
+  category  String   @default("UNIT")
+  status    String   @default("PASSED")
+  duration  Float    @default(0)
+  details   String?
+  createdAt DateTime @default(now())
+
+  @@index([category])
+  @@index([status])
+}
+
+model ErrorLog {
+  id        String   @id @default(cuid())
+  message   String
+  stack     String?
+  source    String   @default("SERVER")
+  userEmail String?  @default("System")
+  createdAt DateTime @default(now())
+
+  @@index([source])
+  @@index([createdAt])
+}
+
+model PerformanceMetric {
+  id        String   @id @default(cuid())
+  name      String
+  value     Float
+  unit      String   @default("ms")
+  createdAt DateTime @default(now())
+
+  @@index([name])
+}
+
+model Deployment {
+  id          String   @id @default(cuid())
+  version     String
+  environment String   @default("PRODUCTION")
+  status      String   @default("SUCCESS")
+  deployedBy  String   @default("DevOps Automated")
+  commitHash  String?  @default("a8f9c1e")
+  createdAt   DateTime @default(now())
+}
+
+model BuildHistory {
+  id        String   @id @default(cuid())
+  buildNum  Int
+  status    String   @default("SUCCESS")
+  duration  String   @default("10.5s")
+  createdAt DateTime @default(now())
+}
+
+model SystemLog {
+  id        String   @id @default(cuid())
+  level     String   @default("INFO")
+  message   String
+  createdAt DateTime @default(now())
+
+  @@index([level])
+}
+
+model HealthCheck {
+  id        String   @id @default(cuid())
+  service   String   @unique
+  status    String   @default("HEALTHY")
+  latency   Float    @default(0)
+  updatedAt DateTime @updatedAt
+}
+
+model CacheRecord {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  hitCount  Int      @default(1)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model OptimizationReport {
+  id        String   @id @default(cuid())
+  title     String
+  summary   String
+  createdAt DateTime @default(now())
+}
+
+model SystemResource {
+  id          String   @id @default(cuid())
+  nodeId      String   @default("node-us-east-1a")
+  cpuUsage    Float    @default(14.2)
+  memoryUsage Float    @default(38.4)
+  diskUsage   Float    @default(24.8)
+  updatedAt   DateTime @updatedAt
+}
+
+model ProductionEnvironment {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  domain    String   @default("admin.dragonstudios.com")
+  status    String   @default("ACTIVE")
+  updatedAt DateTime @updatedAt
+}
+
+model CloudDeployment {
+  id         String   @id @default(cuid())
+  version    String
+  branch     String   @default("main")
+  commit     String   @default("a8f9c1e")
+  status     String   @default("SUCCESS")
+  deployedBy String   @default("DevOps Pipeline")
+  createdAt  DateTime @default(now())
+}
+
+model SystemHealthCheck {
+  id         String   @id @default(cuid())
+  endpoint   String   @unique
+  status     String   @default("UP")
+  httpStatus Int      @default(200)
+  updatedAt  DateTime @updatedAt
+}
+
+model DatabaseBackupRecord {
+  id         String   @id @default(cuid())
+  filename   String
+  size       String
+  status     String   @default("COMPLETED")
+  storageUrl String?
+  createdAt  DateTime @default(now())
+}
+
+model Workflow {
+  id          String              @id @default(cuid())
+  name        String
+  description String?
+  status      String              @default("ACTIVE")
+  category    String              @default("CRM")
+  triggerType String              @default("CRM_TICKET_CREATED")
+  actionType  String              @default("SEND_EMAIL_DISPATCH")
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  actions     WorkflowAction[]
+  conditions  WorkflowCondition[]
+  executions  WorkflowExecution[]
+  triggers    WorkflowTrigger[]
+
+  @@index([status])
+  @@index([category])
+}
+
+model WorkflowTrigger {
+  id         String   @id @default(cuid())
+  workflowId String
+  eventType  String
+  payload    String?
+  createdAt  DateTime @default(now())
+  workflow   Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+
+  @@index([workflowId])
+}
+
+model WorkflowCondition {
+  id         String   @id @default(cuid())
+  workflowId String
+  operator   String   @default("IF")
+  field      String
+  comparison String   @default("EQUALS")
+  value      String
+  createdAt  DateTime @default(now())
+  workflow   Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+
+  @@index([workflowId])
+}
+
+model WorkflowAction {
+  id         String   @id @default(cuid())
+  workflowId String
+  actionType String
+  config     String?
+  createdAt  DateTime @default(now())
+  workflow   Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+
+  @@index([workflowId])
+}
+
+model WorkflowExecution {
+  id         String   @id @default(cuid())
+  workflowId String
+  status     String   @default("SUCCESS")
+  duration   Int      @default(120)
+  error      String?
+  createdAt  DateTime @default(now())
+  workflow   Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+
+  @@index([workflowId])
+  @@index([status])
+}
+
+model AutomationLog {
+  id        String   @id @default(cuid())
+  workflow  String
+  event     String
+  status    String   @default("SUCCESS")
+  details   String?
+  createdAt DateTime @default(now())
+
+  @@index([workflow])
+}
+
+model ScheduledJob {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  cron      String   @default("0 0 * * *")
+  status    String   @default("ACTIVE")
+  lastRunAt DateTime @default(now())
+}
+
+model KnowledgeArticle {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  title     String
+  category  String   @default("Technical Support")
+  tags      String   @default("Guide, Troubleshooting")
+  author    String   @default("Dragon Support Lead")
+  content   String
+  status    String   @default("PUBLISHED")
+  helpful   Int      @default(0)
+  views     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([slug])
+  @@index([category])
+  @@index([status])
+}
+
+model KnowledgeCategory {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  icon        String?  @default("BookOpen")
+  createdAt   DateTime @default(now())
+}
+
+model AIHelpConversation {
+  id            String          @id @default(cuid())
+  customerName  String          @default("Player")
+  customerEmail String          @default("player@dragonstudios.com")
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  feedbacks     AIFeedback[]
+  messages      AIHelpMessage[]
+
+  @@index([customerEmail])
+}
+
+model AIHelpMessage {
+  id             String             @id @default(cuid())
+  conversationId String
+  sender         String
+  text           String
+  sources        String?
+  createdAt      DateTime           @default(now())
+  conversation   AIHelpConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+}
+
+model AIFeedback {
+  id             String             @id @default(cuid())
+  conversationId String
+  rating         Int                @default(5)
+  comment        String?
+  createdAt      DateTime           @default(now())
+  conversation   AIHelpConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+}
+
+model AISearchLog {
+  id        String   @id @default(cuid())
+  query     String
+  resolved  Boolean  @default(true)
+  userEmail String?  @default("Visitor")
+  createdAt DateTime @default(now())
+
+  @@index([query])
+}
+
+model APIApplication {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  developer   String   @default("External Partner")
+  description String?
+  permissions String   @default("READ_WRITE")
+  status      String   @default("ACTIVE")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model APIEndpoint {
+  id          String   @id @default(cuid())
+  name        String
+  url         String   @unique
+  method      String   @default("GET")
+  description String?
+  permission  String   @default("READ_ONLY")
+  status      String   @default("ACTIVE")
+  createdAt   DateTime @default(now())
+}
+
+model APILog {
+  id         String   @id @default(cuid())
+  endpoint   String
+  method     String   @default("GET")
+  ipAddress  String?  @default("127.0.0.1")
+  statusCode Int      @default(200)
+  latency    Int      @default(28)
+  createdAt  DateTime @default(now())
+
+  @@index([endpoint])
+  @@index([statusCode])
+}
+
+model Webhook {
+  id        String   @id @default(cuid())
+  name      String
+  url       String   @unique
+  events    String   @default("NEW_USER,NEW_TICKET,GAME_PUBLISHED")
+  secretKey String   @default("whsec_9a8f7c1")
+  status    String   @default("ACTIVE")
+  createdAt DateTime @default(now())
+}
+
+model WebhookEvent {
+  id        String   @id @default(cuid())
+  event     String
+  payload   String
+  status    String   @default("DELIVERED")
+  createdAt DateTime @default(now())
+
+  @@index([event])
+}
+
+model APIUsageRecord {
+  id       String   @id @default(cuid())
+  appName  String
+  requests Int      @default(0)
+  date     DateTime @default(now())
+
+  @@index([appName])
+}
+
+model Campaign {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  type        String   @default("Product Launch")
+  audience    String   @default("All Active Players")
+  status      String   @default("ACTIVE")
+  reach       Int      @default(45000)
+  openRate    Float    @default(42.8)
+  clickRate   Float    @default(18.5)
+  conversions Int      @default(2420)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([type])
+  @@index([status])
+}
+
+model AudienceSegment {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  filter      String   @default("ACTIVE_30_DAYS")
+  size        Int      @default(120000)
+  createdAt   DateTime @default(now())
+}
+
+model EmailCampaign {
+  id        String   @id @default(cuid())
+  subject   String
+  content   String
+  sentCount Int      @default(0)
+  status    String   @default("DISPATCHED")
+  createdAt DateTime @default(now())
+}
+
+model Announcement {
+  id        String   @id @default(cuid())
+  title     String
+  body      String
+  target    String   @default("GLOBAL_WEBSITE")
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model Promotion {
+  id         String   @id @default(cuid())
+  code       String   @unique
+  discount   String   @default("25% OFF")
+  usageLimit Int      @default(1000)
+  usageCount Int      @default(142)
+  status     String   @default("ACTIVE")
+  createdAt  DateTime @default(now())
+}
+
+model MarketingTemplate {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  category    String   @default("Email Newsletter")
+  htmlContent String
+  createdAt   DateTime @default(now())
+}
+
+model CampaignAnalyticsRecord {
+  id          String   @id @default(cuid())
+  campaignId  String
+  views       Int      @default(0)
+  clicks      Int      @default(0)
+  conversions Int      @default(0)
+  recordedAt  DateTime @default(now())
+
+  @@index([campaignId])
+}
+
+model ContactTicket {
+  id                String          @id @default(cuid())
+  ticketId          String          @unique
+  trackingToken     String?         @default(cuid())
+  name              String
+  email             String
+  company           String?
+  phone             String?
+  category          String
+  subject           String
+  message           String
+  priority          String          @default("NORMAL")
+  status            String          @default("OPEN")
+  assignedStaff     String?
+  internalNotes     String?
+  attachments       String?
+  tags              String?
+  device            String?
+  archived          Boolean         @default(false)
+  deleted           Boolean         @default(false)
+  ipAddress         String?
+  country           String?
+  browser           String?
+  os                String?
+  language          String?
+  timezone          String?
+  verifiedAt        DateTime?
+  aiSummary         String?
+  aiCategory        String?
+  aiUrgency         String?
+  aiSpamScore       Float?          @default(0)
+  aiSuggestedReply  String?
+  aiKeywords        String?
+  aiTags            String?
+  estimatedResponse String?         @default("Within 24 Hours")
+  replied           Boolean         @default(false)
+  closedAt          DateTime?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  messages          TicketMessage[] @relation("ContactTicketMessages")
+
+  @@index([email])
+  @@index([status])
+  @@index([category])
+  @@index([createdAt])
+  @@index([trackingToken])
+}
+
+model Account {
+  id                String   @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model EmailVerificationCode {
+  id         String    @id @default(cuid())
+  userId     String?
+  email      String
+  codeHash   String
+  expiresAt  DateTime
+  attempts   Int       @default(0)
+  consumedAt DateTime?
+  createdAt  DateTime  @default(now())
+  user       User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([email])
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model ContactVerificationToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  email     String
+  name      String
+  company   String?
+  phone     String?
+  category  String
+  subject   String
+  message   String
+  priority  String   @default("NORMAL")
+  ipAddress String?
+  country   String?
+  browser   String?
+  os        String?
+  language  String?
+  timezone  String?
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([email])
+  @@index([token])
+}
+
+model Career {
+  id           String   @id @default(cuid())
+  title        String
+  department   String
+  location     String   @default("Bengaluru / Remote")
+  type         String   @default("Full-Time")
+  description  String
+  requirements String
+  salary       String?
+  status       String   @default("OPEN")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([department])
+  @@index([status])
+}
+
+model PressRelease {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  excerpt     String
+  content     String
+  releaseDate DateTime @default(now())
+  pdfUrl      String?
+  createdAt   DateTime @default(now())
+}
+
+model FAQItem {
+  id       String @id @default(cuid())
+  question String
+  answer   String
+  category String @default("General")
+  order    Int    @default(0)
+}
+
+model CommunityEvent {
+  id              String   @id @default(cuid())
+  title           String
+  slug            String   @unique
+  date            DateTime
+  location        String   @default("Online / Esports Arena")
+  prizePool       String   @default("$50,000")
+  registeredCount Int      @default(0)
+  createdAt       DateTime @default(now())
+}
+
+model NewsletterSubscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+
+  @@index([email])
+}
+
+model CustomerProfile {
+  id            String                 @id @default(cuid())
+  email         String                 @unique
+  name          String
+  avatar        String?
+  language      String                 @default("English")
+  timezone      String                 @default("UTC")
+  createdAt     DateTime               @default(now())
+  updatedAt     DateTime               @updatedAt
+  notifications CustomerNotification[]
+  preferences   CustomerPreference?
+  sessions      CustomerSession[]
+
+  @@index([email])
+}
+
+model CustomerPreference {
+  id                String          @id @default(cuid())
+  profileId         String          @unique
+  emailUpdateAlerts Boolean         @default(true)
+  securityAlerts    Boolean         @default(true)
+  marketingEmails   Boolean         @default(false)
+  profile           CustomerProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+}
+
+model CustomerNotification {
+  id        String          @id @default(cuid())
+  profileId String
+  title     String
+  message   String
+  isRead    Boolean         @default(false)
+  createdAt DateTime        @default(now())
+  profile   CustomerProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId])
+}
+
+model CustomerSession {
+  id           String          @id @default(cuid())
+  profileId    String
+  sessionToken String          @unique
+  ipAddress    String?
+  userAgent    String?
+  expiresAt    DateTime
+  createdAt    DateTime        @default(now())
+  profile      CustomerProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId])
+}
+
+model Game {
+  id              String          @id @default(cuid())
+  slug            String          @unique
+  title           String
+  subtitle        String?
+  genre           String
+  status          String
+  year            String
+  description     String
+  fullDescription String?
+  palette         String          @default("from-[#df5033] via-[#361914] to-[#070709]")
+  accentColor     String          @default("#df5033")
+  glowColor       String          @default("rgba(223, 80, 51, 0.4)")
+  platforms       String          @default("PC,PS5,Xbox Series X")
+  tags            String          @default("Open World,Ray Tracing")
+  featured        Boolean         @default(false)
+  heroImage       String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  communityRooms  CommunityRoom[]
+
+  @@index([slug])
+  @@index([status])
+}
+
+model Article {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  title     String
+  excerpt   String
+  tag       String
+  readTime  String   @default("4 min read")
+  author    String   @default("Dragon Studios Editorial")
+  featured  Boolean  @default(false)
+  imageUrl  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([slug])
+  @@index([featured])
+}
+
+model SupportCategory {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  icon        String?  @default("HelpCircle")
+  order       Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([slug])
+  @@index([active])
+}
+
+model TicketAssignment {
+  id         String   @id @default(cuid())
+  ticketId   String
+  assignedTo String
+  assignedBy String   @default("System")
+  note       String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([ticketId])
+  @@index([assignedTo])
+}
+
+model TicketReply {
+  id              String   @id @default(cuid())
+  ticketId        String?
+  contactTicketId String?
+  senderType      String   @default("CUSTOMER")
+  senderName      String
+  senderEmail     String?
+  message         String
+  attachments     String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([ticketId])
+  @@index([contactTicketId])
+  @@index([senderType])
+}
+
+model AdminNotification {
+  id        String   @id @default(cuid())
+  title     String
+  message   String
+  type      String   @default("TICKET_CREATED")
+  ticketId  String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([read])
+  @@index([ticketId])
+  @@index([type])
+}
+
+model UserProfile {
+  id                   String   @id @default(cuid())
+  userId               String   @unique
+  phone                String?
+  company              String?
+  bio                  String?
+  country              String?  @default("United States")
+  timezone             String?  @default("UTC")
+  language             String?  @default("en-US")
+  theme                String?  @default("dark")
+  notificationSettings String?  @default("{}")
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UserDevice {
+  id          String   @id @default(cuid())
+  userId      String
+  deviceId    String   @unique
+  browser     String?
+  os          String?
+  ipAddress   String?
+  country     String?
+  timezone    String?
+  fingerprint String?
+  trusted     Boolean  @default(true)
+  lastUsedAt  DateTime @default(now())
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([deviceId])
+}
+
+model DualApproval {
+  id            String                  @id @default(cuid())
+  action        String
+  resource      String?
+  payload       String?
+  status        String                  @default("PENDING")
+  requestedById String
+  requestedBy   User                    @relation("DualApprovalRequester", fields: [requestedById], references: [id], onDelete: Cascade)
+  confirmations DualApprovalConfirmed[]
+  createdAt     DateTime                @default(now())
+  expiresAt     DateTime
+
+  @@index([status])
+  @@index([requestedById])
+}
+
+model DualApprovalConfirmed {
+  id             String       @id @default(cuid())
+  dualApprovalId String
+  confirmedById  String
+  confirmedAt    DateTime     @default(now())
+  dualApproval   DualApproval @relation(fields: [dualApprovalId], references: [id], onDelete: Cascade)
+  confirmedBy    User         @relation(fields: [confirmedById], references: [id], onDelete: Cascade)
+
+  @@unique([dualApprovalId, confirmedById])
+}
+
+model SystemSecurityState {
+  id           String   @id @default("SYSTEM_SECURITY_SINGLETON")
+  lockdownMode Boolean  @default(false)
+  readOnlyMode Boolean  @default(false)
+  updatedById  String?
+  updatedAt    DateTime @updatedAt
+}
+
+model SecretVault {
+  id           String              @id @default(cuid())
+  name         String              @unique
+  category     String
+  keyName      String
+  maskedValue  String
+  isConfigured Boolean             @default(true)
+  lastRotated  DateTime            @default(now())
+  createdById  String
+  updatedAt    DateTime            @updatedAt
+  rotations    SecretRotationLog[]
+
+  @@index([category])
+}
+
+model SecretRotationLog {
+  id          String      @id @default(cuid())
+  secretId    String
+  rotatedBy   String
+  reason      String?
+  createdAt   DateTime    @default(now())
+  secretVault SecretVault @relation(fields: [secretId], references: [id], onDelete: Cascade)
+
+  @@index([secretId])
+}
+
+model TeamInvitation {
+  id          String   @id @default(cuid())
+  email       String
+  name        String?
+  role        String   @default("DEVELOPER")
+  department  String?  @default("Engineering")
+  permissions String?  @default("[]")
+  tokenHash   String   @unique
+  status      String   @default("PENDING") // PENDING, ACCEPTED, REVOKED, EXPIRED
+  createdBy   String
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([email])
+  @@index([tokenHash])
+  @@index([status])
+}
+
+model TeamApplication {
+  id                String    @id @default(cuid())
+  applicationNumber String?   @unique
+  jobId             String?
+  jobTitle          String
+  department        String    @default("Engineering")
+  applicantName     String
+  applicantEmail    String
+  phone             String?
+  country           String?   @default("Global / Remote")
+  portfolioUrl      String
+  linkedinUrl       String?
+  primarySkill      String?   @default("Core C++ / Engine Architecture")
+  experience        String?   @default("Senior / 5+ Years")
+  whyJoin           String?
+  relevantProjects  String?
+  resumeUrl         String?
+  note              String?
+  status            String    @default("PENDING") // PENDING, UNDER_REVIEW, MORE_INFORMATION, APPROVED, REJECTED, WITHDRAWN
+  ownerNotes        String?
+  reviewedBy        String?
+  reviewedAt        DateTime?
+  invitationId      String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([applicantEmail])
+  @@index([status])
+  @@index([applicationNumber])
+}
+
+model PasskeyCredential {
+  id           String   @id @default(cuid())
+  userId       String
+  credentialId String   @unique
+  publicKey    String
+  counter      BigInt   @default(0)
+  deviceType   String?
+  backedUp     Boolean  @default(false)
+  transports   String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model RecoveryMethod {
+  id         String    @id @default(cuid())
+  userId     String
+  type       String    @default("RECOVERY_CODES")
+  secretHash String
+  usedAt     DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([userId])
+}
+
+model TrustedDevice {
+  id          String   @id @default(cuid())
+  userId      String
+  fingerprint String   @unique
+  deviceName  String?
+  ipAddress   String?
+  lastUsedAt  DateTime @default(now())
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+}
+
+// ══════════════════════════════════════════════════════════════════
+// 🐉 DRAGON STUDIOS COMMUNITY & REAL-TIME CHAT MODELS
+// ══════════════════════════════════════════════════════════════════
+
+model CommunityRoom {
+  id          String        @id @default(cuid())
+  name        String
+  slug        String        @unique
+  description String?
+  category    String        @default("COMMUNITY") // INFORMATION, COMMUNITY, GAMES, OFF_TOPIC
+  type        String        @default("TEXT") // TEXT, ANNOUNCEMENT, GAME_LOUNGE, VOICE
+  gameId      String?
+  isPublic    Boolean       @default(true)
+  isArchived  Boolean       @default(false)
+  order       Int           @default(0)
+  icon        String?       @default("Hash")
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  messages    ChatMessage[]
+  game        Game?         @relation(fields: [gameId], references: [id], onDelete: SetNull)
+
+  @@index([slug])
+  @@index([category])
+  @@index([gameId])
+}
+
+model ChatMessage {
+  id          String            @id @default(cuid())
+  roomId      String
+  userId      String
+  content     String
+  attachments String?           @default("[]")
+  replyToId   String?
+  isPinned    Boolean           @default(false)
+  isEdited    Boolean           @default(false)
+  deletedAt   DateTime?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  room        CommunityRoom     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  replyTo     ChatMessage?      @relation("MessageReplies", fields: [replyToId], references: [id], onDelete: SetNull)
+  replies     ChatMessage[]     @relation("MessageReplies")
+  reactions   ChatReaction[]
+  reports     CommunityReport[]
+
+  @@index([roomId])
+  @@index([userId])
+  @@index([createdAt])
+  @@index([replyToId])
+}
+
+model ChatReaction {
+  id        String      @id @default(cuid())
+  messageId String
+  userId    String
+  emoji     String
+  createdAt DateTime    @default(now())
+  message   ChatMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([messageId, userId, emoji])
+  @@index([messageId])
+  @@index([userId])
+}
+
+model ForumCategory {
+  id          String        @id @default(cuid())
+  name        String        @unique
+  slug        String        @unique
+  description String
+  icon        String        @default("MessageSquare")
+  color       String        @default("#38bdf8")
+  order       Int           @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  threads     ForumThread[]
+
+  @@index([slug])
+}
+
+model ForumThread {
+  id         String              @id @default(cuid())
+  categoryId String
+  authorId   String
+  title      String
+  slug       String              @unique
+  content    String
+  tags       String              @default("[]")
+  isPinned   Boolean             @default(false)
+  isLocked   Boolean             @default(false)
+  viewsCount Int                 @default(0)
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
+  category   ForumCategory       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  author     User                @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  posts      ForumPost[]
+  bookmarks  CommunityBookmark[]
+  reports    CommunityReport[]
+
+  @@index([categoryId])
+  @@index([authorId])
+  @@index([slug])
+  @@index([createdAt])
+}
+
+model ForumPost {
+  id         String            @id @default(cuid())
+  threadId   String
+  authorId   String
+  content    String
+  isSolution Boolean           @default(false)
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+  thread     ForumThread       @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  author     User              @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  reports    CommunityReport[]
+
+  @@index([threadId])
+  @@index([authorId])
+  @@index([createdAt])
+}
+
+model CommunityReport {
+  id             String       @id @default(cuid())
+  reporterId     String
+  reportedUserId String?
+  targetType     String // MESSAGE, THREAD, POST, USER
+  messageId      String?
+  threadId       String?
+  postId         String?
+  reason         String // SPAM, HARASSMENT, INAPPROPRIATE, SCAM, IMPERSONATION, OTHER
+  details        String?
+  status         String       @default("PENDING") // PENDING, REVIEWED, DISMISSED, ACTIONED
+  resolvedById   String?
+  resolutionNote String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  reporter       User         @relation("ReportReporter", fields: [reporterId], references: [id], onDelete: Cascade)
+  reportedUser   User?        @relation("ReportTargetUser", fields: [reportedUserId], references: [id], onDelete: SetNull)
+  message        ChatMessage? @relation(fields: [messageId], references: [id], onDelete: SetNull)
+  thread         ForumThread? @relation(fields: [threadId], references: [id], onDelete: SetNull)
+  post           ForumPost?   @relation(fields: [postId], references: [id], onDelete: SetNull)
+
+  @@index([reporterId])
+  @@index([reportedUserId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model CommunityModerationAction {
+  id              String    @id @default(cuid())
+  moderatorId     String
+  targetUserId    String
+  action          String // WARN, MUTE, KICK, BAN, UNBAN, UNMUTE, DELETE_CONTENT
+  reason          String
+  durationMinutes Int?
+  expiresAt       DateTime?
+  createdAt       DateTime  @default(now())
+  moderator       User      @relation("ModeratorActions", fields: [moderatorId], references: [id], onDelete: Cascade)
+  targetUser      User      @relation("TargetedUserActions", fields: [targetUserId], references: [id], onDelete: Cascade)
+
+  @@index([moderatorId])
+  @@index([targetUserId])
+  @@index([createdAt])
+}
+
+model CommunityBan {
+  id         String    @id @default(cuid())
+  userId     String    @unique
+  reason     String
+  bannedById String
+  expiresAt  DateTime?
+  createdAt  DateTime  @default(now())
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model CommunityMute {
+  id        String    @id @default(cuid())
+  userId    String    @unique
+  roomId    String?
+  reason    String
+  mutedById String
+  expiresAt DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model CommunityBookmark {
+  id        String       @id @default(cuid())
+  userId    String
+  threadId  String?
+  createdAt DateTime     @default(now())
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  thread    ForumThread? @relation(fields: [threadId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, threadId])
+  @@index([userId])
+}
+
+model Score {
+  id         String   @id @default(cuid())
+  userId     String?
+  dragonId   String
+  playerName String
+  gameSlug   String
+  score      Int      @default(0)
+  level      Int      @default(1)
+  rank       String?  @default("Dragon Operative")
+  metadata   Json?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([gameSlug])
+  @@index([dragonId])
+  @@index([score])
+  @@index([createdAt])
+}
+
+model GameSession {
+  id            String    @id @default(cuid())
+  userId        String
+  dragonId      String
+  gameSlug      String
+  sessionToken  String    @unique
+  status        String    @default("ACTIVE") // ACTIVE | TERMINATED | EXPIRED
+  ipAddress     String?
+  userAgent     String?
+  startedAt     DateTime  @default(now())
+  endedAt       DateTime?
+  lastHeartbeat DateTime  @default(now())
+  metadata      Json?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([dragonId])
+  @@index([gameSlug])
+  @@index([sessionToken])
+  @@index([status])
+}

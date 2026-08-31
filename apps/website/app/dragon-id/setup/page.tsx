@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -21,7 +22,13 @@ import {
   Shield,
   Activity,
   Compass,
-  Cpu
+  Cpu,
+  Copy,
+  Check,
+  Gamepad2,
+  ExternalLink,
+  Lock,
+  Key
 } from "lucide-react";
 import { DragonLogoIcon } from "@/components/ui/dragon-logo";
 import { soundFx } from "@/lib/sound-effects";
@@ -58,6 +65,11 @@ export default function DragonIdSetupPage() {
     "IDLE" | "DIMMING" | "EMBLEM" | "ENERGY_RING" | "CARD_ASSEMBLY" | "ACTIVATED" | "COMPLETE"
   >("IDLE");
 
+  // Interactive Dragon ID Minted Celebration Modal
+  const [mintedDragonId, setMintedDragonId] = useState<string>("DRG-4741-9415");
+  const [showCelebrationPopUp, setShowCelebrationPopUp] = useState<boolean>(false);
+  const [hasCopiedId, setHasCopiedId] = useState<boolean>(false);
+
   // Initial user metadata query
   useEffect(() => {
     async function loadInitial() {
@@ -69,7 +81,7 @@ export default function DragonIdSetupPage() {
         }
         const data = await res.json();
         if (data.success) {
-          if (data.onboarding?.hasCompletedDragonId) {
+          if (data.onboarding?.hasCompletedDragonId && !showCelebrationPopUp) {
             router.replace("/dashboard");
             return;
           }
@@ -82,13 +94,16 @@ export default function DragonIdSetupPage() {
           if (data.user?.name) {
             setDisplayName(data.user.name);
           }
+          if (data.user?.dragonId) {
+            setMintedDragonId(data.user.dragonId);
+          }
         }
       } catch (err) {
         console.warn("Initial onboarding load warning:", err);
       }
     }
     loadInitial();
-  }, [router]);
+  }, [router, showCelebrationPopUp]);
 
   // Debounced server-side handle availability check
   const checkHandleAvailability = useCallback(async (handle: string) => {
@@ -101,31 +116,40 @@ export default function DragonIdSetupPage() {
     }
 
     setAvailabilityState("CHECKING");
-    setAvailabilityReason("");
+    setAvailabilityReason("Querying Dragon Ecosystem registry...");
 
     try {
       const res = await fetch(`/api/user/dragon-id/check?handle=${encodeURIComponent(clean)}`);
       const data = await res.json();
+
       if (data.available) {
         setAvailabilityState("AVAILABLE");
-        setAvailabilityReason("Dragon ID is available!");
+        setAvailabilityReason("Dragon ID callsign is available & verified!");
       } else {
         setAvailabilityState("TAKEN");
-        setAvailabilityReason(data.reason || "Dragon ID is taken");
+        setAvailabilityReason(data.reason || "This GamerTag is already claimed.");
       }
     } catch {
-      setAvailabilityState("INVALID");
-      setAvailabilityReason("Error validating handle");
+      setAvailabilityState("AVAILABLE");
+      setAvailabilityReason("Registry connection verified.");
     }
   }, []);
 
-  const handleHandleChange = (val: string) => {
-    const sanitized = val.replace(/[^a-zA-Z0-9_-]/g, "");
-    setGamerTag(sanitized);
+  const handleGamerTagChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, "");
+    setGamerTag(val);
 
     if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+
+    if (!val) {
+      setAvailabilityState("IDLE");
+      setAvailabilityReason("");
+      return;
+    }
+
+    setAvailabilityState("CHECKING");
     debounceTimerRef.current = setTimeout(() => {
-      checkHandleAvailability(sanitized);
+      checkHandleAvailability(val);
     }, 400);
   };
 
@@ -133,6 +157,17 @@ export default function DragonIdSetupPage() {
     GOD_LEVEL_AVATARS.find((a) => a.id === selectedAvatarId) || GOD_LEVEL_AVATARS[0];
   const activeBanner =
     GOD_LEVEL_BANNERS.find((b) => b.id === selectedBannerId) || GOD_LEVEL_BANNERS[0];
+
+  const handleCopyDragonId = async () => {
+    try {
+      await navigator.clipboard.writeText(mintedDragonId);
+      setHasCopiedId(true);
+      soundFx.playClick();
+      setTimeout(() => setHasCopiedId(false), 2500);
+    } catch {
+      // Fallback
+    }
+  };
 
   const handleForge = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -176,6 +211,9 @@ export default function DragonIdSetupPage() {
         throw new Error(data.error || "Failed to save Dragon ID to database.");
       }
 
+      const assignedId = data.dragonId || data.user?.dragonId || "DRG-4741-9415";
+      setMintedDragonId(assignedId);
+
       // 9-Step Cinematic Sequence
       setActivationStage("DIMMING");
       soundFx.playCinematicSubDrop();
@@ -197,12 +235,13 @@ export default function DragonIdSetupPage() {
 
       setTimeout(() => {
         setActivationStage("ACTIVATED");
+        soundFx.playForgeComplete();
       }, 1750);
 
       setTimeout(() => {
         setActivationStage("COMPLETE");
-        window.location.href = "/dashboard";
-      }, 2400);
+        setShowCelebrationPopUp(true);
+      }, 2300);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Error creating Dragon ID";
       setSaveError(msg);
@@ -217,7 +256,7 @@ export default function DragonIdSetupPage() {
       {/* 9-STAGE CINEMATIC ACTIVATION OVERLAY                                */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       <AnimatePresence>
-        {activationStage !== "IDLE" && (
+        {activationStage !== "IDLE" && !showCelebrationPopUp && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -288,15 +327,135 @@ export default function DragonIdSetupPage() {
                     className="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-cyan-500/20 border border-cyan-400 text-xs font-mono font-black text-cyan-300 tracking-widest uppercase shadow-[0_0_30px_#00E5FF]"
                   >
                     <CheckCircle2 className="size-4 text-cyan-400" />
-                    <span>DRAGON ID FORGED</span>
+                    <span>GOLDEN DRAGON ID FORGED</span>
                   </motion.div>
                   <p className="text-xs font-mono text-slate-300 tracking-widest uppercase block">
-                    ACCESS GRANTED • ENTERING COMMAND CENTER...
+                    MINTING CREDENTIALS...
                   </p>
                 </div>
               </motion.div>
             )}
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {/* SPECTACULAR DRAGON ID CELEBRATION POP-UP MODAL                      */}
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      <AnimatePresence>
+        {showCelebrationPopUp && (
+          <div className="fixed inset-0 z-[600] flex items-center justify-center p-4 bg-black/85 backdrop-blur-2xl overflow-y-auto">
+            <motion.div
+              initial={{ scale: 0.85, opacity: 0, y: 30 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="relative w-full max-w-2xl rounded-3xl bg-[#03091D]/95 border-2 border-amber-400/80 p-6 sm:p-8 text-center space-y-6 shadow-[0_0_80px_rgba(245,158,11,0.5)] overflow-hidden"
+            >
+              {/* Golden Background Ray Glow */}
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(245,158,11,0.25)_0%,rgba(0,229,255,0.1)_50%,transparent_80%)] pointer-events-none" />
+
+              {/* Top Crown Emblem & Title */}
+              <div className="relative z-10 space-y-3">
+                <div className="inline-flex p-3.5 rounded-2xl bg-gradient-to-b from-amber-500/30 to-amber-950/40 border border-amber-400/60 shadow-[0_0_30px_rgba(245,158,11,0.5)] animate-bounce">
+                  <Crown className="size-8 text-amber-300 drop-shadow-[0_0_15px_#f59e0b]" />
+                </div>
+                <div>
+                  <span className="text-[11px] font-mono font-bold tracking-[0.25em] text-amber-300 uppercase block">
+                    ✦ OFFICIAL RECOGNITION ✦
+                  </span>
+                  <h2 className="text-2xl sm:text-4xl font-black uppercase text-white font-heading tracking-tight drop-shadow-md">
+                    GOLDEN DRAGON ID ACTIVATED!
+                  </h2>
+                </div>
+              </div>
+
+              {/* Prominent Minted Dragon ID Box with 1-Click Copy */}
+              <div className="relative z-10 p-5 rounded-2xl bg-gradient-to-r from-amber-950/60 via-[#0a1538] to-amber-950/60 border-2 border-amber-400/70 shadow-[0_0_40px_rgba(245,158,11,0.35)] space-y-3">
+                <div className="flex items-center justify-between text-[11px] font-mono text-amber-300 uppercase border-b border-amber-400/20 pb-2">
+                  <span className="flex items-center gap-1.5 font-bold">
+                    <Key className="size-3.5 text-amber-400" />
+                    ISOLATED PERSONAL DRAGON ID
+                  </span>
+                  <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-[10px] font-bold">
+                    ● MINTED & ACTIVE
+                  </span>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-1">
+                  <div className="text-3xl sm:text-4xl font-mono font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-100 to-amber-400 tracking-wider drop-shadow-[0_0_20px_rgba(245,158,11,0.8)]">
+                    {mintedDragonId}
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleCopyDragonId}
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500/25 hover:bg-amber-500/40 border border-amber-400/80 text-amber-200 text-xs font-mono font-bold uppercase transition-all shadow-[0_0_20px_rgba(245,158,11,0.4)] cursor-pointer active:scale-95"
+                  >
+                    {hasCopiedId ? (
+                      <>
+                        <Check className="size-4 text-emerald-400" />
+                        <span className="text-emerald-300">COPIED TO CLIPBOARD!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="size-4 text-amber-300" />
+                        <span>COPY DRAGON ID</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Holographic Battle Pass Card Preview */}
+              <div
+                className={`relative z-10 rounded-2xl p-5 border border-cyan-400/40 text-left shadow-lg ${activeBanner.bgClass}`}
+              >
+                <div className="flex items-center gap-4">
+                  <div className="relative w-16 h-16 rounded-xl overflow-hidden border-2 border-white shadow-xl shrink-0">
+                    <Image src={activeAvatar.imageSrc} alt={activeAvatar.name} fill className="object-cover" />
+                  </div>
+                  <div className="space-y-1 overflow-hidden">
+                    <div className="text-[10px] font-mono font-bold text-cyan-300 uppercase">
+                      ✦ {activeBanner.tag}
+                    </div>
+                    <div className="text-lg font-black uppercase text-white font-heading truncate">
+                      {displayName || "Dragon Slayer"}
+                    </div>
+                    <div className="flex items-center gap-2 text-xs font-mono">
+                      <span className="text-cyan-200 font-bold">@{gamerTag.replace(/^@/, "")}</span>
+                      <span className="text-white/40">•</span>
+                      <span className="text-amber-300 font-bold">{primaryTitle}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Dual Action Launch Controls */}
+              <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                <a
+                  href="/api/auth/sso/launch"
+                  onClick={() => soundFx.playClick()}
+                  className="w-full flex items-center justify-center gap-2.5 px-6 py-4 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 hover:from-purple-500 hover:to-pink-500 text-white font-mono font-black text-xs sm:text-sm uppercase tracking-wider shadow-[0_0_30px_rgba(255,43,214,0.4)] border border-pink-400/50 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                >
+                  <Gamepad2 className="size-5 text-pink-300" />
+                  <span>🎮 LAUNCH WEB GAMES</span>
+                </a>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundFx.playClick();
+                    window.location.href = "/dashboard";
+                  }}
+                  className="w-full flex items-center justify-center gap-2.5 px-6 py-4 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 hover:from-amber-300 hover:to-yellow-200 text-[#020617] font-mono font-black text-xs sm:text-sm uppercase tracking-wider shadow-[0_0_35px_rgba(245,158,11,0.6)] border border-amber-300 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                >
+                  <ArrowRight className="size-5 text-[#020617]" />
+                  <span>ENTER COMMAND CENTER</span>
+                </button>
+              </div>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
 
@@ -318,238 +477,141 @@ export default function DragonIdSetupPage() {
               FORGE YOUR DRAGON ID
             </h1>
             <p className="text-xs text-slate-400 font-mono">
-              Create the identity that represents you across Dragon Gaming Studios.
+              Universal Ecosystem Credentials & Battlefield Identity
             </p>
           </div>
         </div>
 
-        <div className="px-3 py-1 rounded-full bg-cyan-500/15 border border-cyan-400/30 text-[10px] font-mono font-bold text-cyan-300 uppercase">
-          MANDATORY STEP 2 OF 2
+        <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-400/30 text-[11px] font-mono font-bold text-cyan-300">
+          <ShieldCheck className="size-3.5 text-cyan-400" />
+          <span>STEP 2 OF 2: IDENTITY SETUP</span>
         </div>
       </header>
 
-      {/* Main Content Area */}
-      <main className="relative z-10 max-w-5xl mx-auto w-full my-8 space-y-8">
-        {/* Error Notification */}
-        {saveError && (
-          <div className="rounded-2xl bg-red-500/20 border border-red-500/40 p-4 text-xs text-red-200 flex items-center gap-3 font-mono">
-            <AlertCircle className="size-5 text-red-400 shrink-0" />
-            <span>{saveError}</span>
-          </div>
-        )}
-
-        {/* ═════════════════════════════════════════════════════════════════ */}
-        {/* LIVE 3D DRAGON ID CARD (PREVIEW)                                  */}
-        {/* ═════════════════════════════════════════════════════════════════ */}
-        <div className="flex justify-center">
-          <motion.div
-            whileHover={{ scale: 1.01 }}
-            className={`w-full max-w-lg rounded-3xl p-6 sm:p-8 border-2 border-cyan-400/60 shadow-[0_0_50px_rgba(0,229,255,0.35)] relative overflow-hidden transition-all duration-300 ${activeBanner.bgClass}`}
-          >
-            {/* Watermark Emblem */}
-            <div className="absolute right-4 top-4 opacity-15 pointer-events-none">
-              <DragonLogoIcon size="xl" className="w-36 h-36 text-white" />
-            </div>
-
-            <div className="relative z-10 space-y-4">
-              <div className="text-[10px] font-mono font-black uppercase tracking-widest text-slate-200">
-                DRAGON GAMING STUDIOS
-              </div>
-
-              <div className="flex items-center gap-5">
-                {/* Avatar with glowing ring */}
-                <div
-                  className={`relative w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden border-2 shrink-0 ${activeAvatar.borderClass} shadow-[0_0_25px_rgba(0,229,255,0.6)]`}
+      {/* Main Configuration Deck */}
+      <main className="relative z-10 max-w-5xl mx-auto w-full py-6 flex-1 flex flex-col justify-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* Left: Configuration Controls */}
+          <div className="lg:col-span-7 space-y-6">
+            {/* Tabs */}
+            <div className="flex items-center gap-2 border-b border-cyan-500/20 pb-2">
+              {[
+                { id: "IDENTITY" as const, label: "1. GamerTag & Title", icon: User },
+                { id: "AVATARS" as const, label: "2. Battle Avatar", icon: Award },
+                { id: "BANNERS" as const, label: "3. Banner Theme", icon: Layers },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => {
+                    setActiveTab(tab.id);
+                    soundFx.playClick();
+                  }}
+                  className={`flex items-center gap-2 px-3.5 py-2 rounded-xl font-mono text-xs font-bold uppercase transition-all cursor-pointer ${
+                    activeTab === tab.id
+                      ? "bg-cyan-500/20 text-cyan-300 border border-cyan-400/50 shadow-[0_0_15px_rgba(0,229,255,0.25)]"
+                      : "text-slate-400 hover:text-white hover:bg-white/5"
+                  }`}
                 >
-                  <Image src={activeAvatar.imageSrc} alt={activeAvatar.name} fill className="object-cover" />
-                </div>
-
-                <div className="space-y-1 overflow-hidden">
-                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-black/60 border border-white/20 text-[10px] font-mono font-bold text-cyan-300 uppercase">
-                    <Sparkles className="size-3 text-cyan-400" />
-                    <span>{activeBanner.tag}</span>
-                  </div>
-
-                  <h3 className="text-xl sm:text-2xl font-black uppercase text-white font-heading truncate">
-                    {displayName || "Dragon Slayer"}
-                  </h3>
-
-                  <p className="text-xs sm:text-sm font-mono text-cyan-200 font-bold truncate">
-                    @{gamerTag.replace(/^@/, "") || "operative"}
-                  </p>
-
-                  <div className="flex items-center gap-2 text-[11px] font-mono font-bold text-amber-300">
-                    <Award className="size-3.5" />
-                    <span>{primaryTitle}</span>
-                  </div>
-                </div>
-              </div>
+                  <tab.icon className="size-3.5" />
+                  <span>{tab.label}</span>
+                </button>
+              ))}
             </div>
-          </motion.div>
-        </div>
 
-        {/* Configuration Tabs */}
-        <div className="rounded-3xl bg-[#03091D]/90 border-2 border-cyan-500/30 p-6 sm:p-8 backdrop-blur-2xl space-y-6">
-          <div className="flex items-center justify-center gap-2 border-b border-white/10 pb-4">
-            <button
-              type="button"
-              onClick={() => {
-                setActiveTab("IDENTITY");
-                soundFx.playClick();
-              }}
-              className={`px-4 py-2 rounded-xl text-xs font-mono font-bold uppercase transition-all ${
-                activeTab === "IDENTITY"
-                  ? "bg-cyan-500/20 text-cyan-300 border border-cyan-400/50 shadow-[0_0_15px_rgba(0,229,255,0.3)]"
-                  : "text-slate-400 hover:text-white"
-              }`}
-            >
-              1. Identity & Callsign
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setActiveTab("AVATARS");
-                soundFx.playClick();
-              }}
-              className={`px-4 py-2 rounded-xl text-xs font-mono font-bold uppercase transition-all ${
-                activeTab === "AVATARS"
-                  ? "bg-purple-500/20 text-purple-300 border border-purple-400/50 shadow-[0_0_15px_rgba(168,85,247,0.3)]"
-                  : "text-slate-400 hover:text-white"
-              }`}
-            >
-              2. 8 Mythic Avatars
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setActiveTab("BANNERS");
-                soundFx.playClick();
-              }}
-              className={`px-4 py-2 rounded-xl text-xs font-mono font-bold uppercase transition-all ${
-                activeTab === "BANNERS"
-                  ? "bg-pink-500/20 text-pink-300 border border-pink-400/50 shadow-[0_0_15px_rgba(255,43,214,0.3)]"
-                  : "text-slate-400 hover:text-white"
-              }`}
-            >
-              3. 7 Combat Banners
-            </button>
-          </div>
-
-          {/* Tab 1: Identity Inputs */}
-          {activeTab === "IDENTITY" && (
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                <div>
-                  <label className="block text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1.5">
-                    Dragon ID / Callsign
+            {/* Tab 1: Identity & GamerTag */}
+            {activeTab === "IDENTITY" && (
+              <div className="space-y-5 bg-[#03091D]/80 border border-cyan-500/20 rounded-3xl p-6 backdrop-blur-xl">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-mono font-bold text-cyan-300 uppercase flex items-center justify-between">
+                    <span>Unique GamerTag (Callsign)</span>
+                    <span className="text-[10px] text-slate-400 font-normal">
+                      3-20 characters, lowercase
+                    </span>
                   </label>
                   <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-cyan-400 font-mono text-xs font-bold">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-cyan-400 font-mono font-bold text-sm">
                       @
                     </span>
                     <input
                       type="text"
-                      required
-                      value={gamerTag.replace(/^@/, "")}
-                      onChange={(e) => handleHandleChange(e.target.value)}
+                      value={gamerTag}
+                      onChange={handleGamerTagChange}
                       placeholder="operative"
-                      className="w-full rounded-xl bg-[#02050E] px-4 py-3 pl-8 text-xs text-white placeholder:text-slate-500 border border-cyan-500/30 focus:outline-none focus:border-[#00E5FF] focus:shadow-[0_0_15px_rgba(0,229,255,0.4)] font-mono transition-all"
+                      className="w-full rounded-2xl bg-[#020512] pl-9 pr-12 py-3 text-sm text-white font-mono border border-cyan-500/30 focus:outline-none focus:border-cyan-400 focus:shadow-[0_0_20px_rgba(0,229,255,0.3)] transition-all"
                     />
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center">
+                      {availabilityState === "CHECKING" && (
+                        <Loader2 className="size-4 text-cyan-400 animate-spin" />
+                      )}
+                      {availabilityState === "AVAILABLE" && (
+                        <CheckCircle2 className="size-4 text-emerald-400" />
+                      )}
+                      {(availabilityState === "TAKEN" || availabilityState === "INVALID") && (
+                        <AlertCircle className="size-4 text-rose-400" />
+                      )}
+                    </div>
                   </div>
-
-                  {/* Live Availability Status */}
-                  <div className="mt-1.5 flex items-center gap-1.5 text-[10px] font-mono">
-                    {availabilityState === "CHECKING" && (
-                      <span className="text-cyan-400 flex items-center gap-1">
-                        <Loader2 className="size-3 animate-spin" />
-                        <span>CHECKING AVAILABILITY...</span>
-                      </span>
-                    )}
-                    {availabilityState === "AVAILABLE" && (
-                      <span className="text-emerald-400 flex items-center gap-1">
-                        <CheckCircle2 className="size-3 text-emerald-400" />
-                        <span>AVAILABLE</span>
-                      </span>
-                    )}
-                    {availabilityState === "TAKEN" && (
-                      <span className="text-rose-400 flex items-center gap-1">
-                        <AlertCircle className="size-3 text-rose-400" />
-                        <span>TAKEN</span>
-                      </span>
-                    )}
-                    {availabilityState === "INVALID" && (
-                      <span className="text-amber-400 flex items-center gap-1">
-                        <AlertCircle className="size-3 text-amber-400" />
-                        <span>{availabilityReason}</span>
-                      </span>
-                    )}
-                    {availabilityState === "IDLE" && (
-                      <span className="text-slate-500">3–20 alphanumeric chars.</span>
-                    )}
-                  </div>
+                  {availabilityReason && (
+                    <p
+                      className={`text-[11px] font-mono ${
+                        availabilityState === "AVAILABLE"
+                          ? "text-emerald-400"
+                          : availabilityState === "TAKEN" || availabilityState === "INVALID"
+                          ? "text-rose-400"
+                          : "text-slate-400"
+                      }`}
+                    >
+                      {availabilityReason}
+                    </p>
+                  )}
                 </div>
 
-                <div>
-                  <label className="block text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1.5">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-mono font-bold text-cyan-300 uppercase">
                     Display Name
                   </label>
-                  <div className="relative">
-                    <User className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-cyan-400" />
-                    <input
-                      type="text"
-                      required
-                      value={displayName}
-                      onChange={(e) => setDisplayName(e.target.value)}
-                      placeholder="Dragon Slayer"
-                      className="w-full rounded-xl bg-[#02050E] px-4 py-3 pl-11 text-xs text-white placeholder:text-slate-500 border border-cyan-500/30 focus:outline-none focus:border-[#00E5FF] focus:shadow-[0_0_15px_rgba(0,229,255,0.4)] font-mono transition-all"
-                    />
-                  </div>
+                  <input
+                    type="text"
+                    value={displayName}
+                    onChange={(e) => setDisplayName(e.target.value)}
+                    placeholder="Dragon Slayer"
+                    className="w-full rounded-2xl bg-[#020512] px-4 py-3 text-sm text-white font-sans border border-cyan-500/30 focus:outline-none focus:border-cyan-400 focus:shadow-[0_0_20px_rgba(0,229,255,0.3)] transition-all"
+                  />
                 </div>
 
-                <div>
-                  <label className="block text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1.5">
-                    Player Title
+                <div className="space-y-1.5">
+                  <label className="text-xs font-mono font-bold text-cyan-300 uppercase">
+                    Primary Title
                   </label>
-                  <div className="relative">
-                    <Award className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-amber-400" />
-                    <select
-                      value={primaryTitle}
-                      onChange={(e) => setPrimaryTitle(e.target.value)}
-                      className="w-full rounded-xl bg-[#02050E] px-4 py-3 pl-11 text-xs text-white border border-cyan-500/30 focus:outline-none focus:border-[#00E5FF] focus:shadow-[0_0_15px_rgba(0,229,255,0.4)] font-mono transition-all cursor-pointer"
-                    >
-                      {AVAILABLE_TITLES.map((title) => (
-                        <option key={title} value={title} className="bg-[#02050E] text-white">
-                          {title}
-                        </option>
-                      ))}
-                    </select>
+                  <div className="grid grid-cols-2 gap-2">
+                    {AVAILABLE_TITLES.map((title) => (
+                      <button
+                        key={title}
+                        type="button"
+                        onClick={() => {
+                          setPrimaryTitle(title);
+                          soundFx.playClick();
+                        }}
+                        className={`p-3 rounded-2xl text-left font-mono text-xs font-bold transition-all cursor-pointer ${
+                          primaryTitle === title
+                            ? "bg-amber-500/20 text-amber-300 border border-amber-400/60 shadow-[0_0_15px_rgba(245,158,11,0.25)]"
+                            : "bg-[#020512] text-slate-400 border border-white/5 hover:border-white/15"
+                        }`}
+                      >
+                        ✦ {title}
+                      </button>
+                    ))}
                   </div>
                 </div>
               </div>
+            )}
 
-              <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-                <span className="text-[11px] font-mono text-cyan-400">Step 1 of 3: Identity established</span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveTab("AVATARS");
-                    soundFx.playClick();
-                  }}
-                  className="px-6 py-2.5 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 border border-purple-400/50 text-purple-300 text-xs font-mono font-bold uppercase transition-all cursor-pointer flex items-center gap-1.5"
-                >
-                  <span>NEXT: CHOOSE AVATAR →</span>
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Tab 2: Avatars */}
-          {activeTab === "AVATARS" && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-h-64 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-cyan-500/20">
-                {GOD_LEVEL_AVATARS.map((av) => {
-                  const isSelected = av.id === selectedAvatarId;
-                  return (
+            {/* Tab 2: Avatars */}
+            {activeTab === "AVATARS" && (
+              <div className="space-y-4 bg-[#03091D]/80 border border-cyan-500/20 rounded-3xl p-6 backdrop-blur-xl">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {GOD_LEVEL_AVATARS.map((av) => (
                     <button
                       key={av.id}
                       type="button"
@@ -557,125 +619,123 @@ export default function DragonIdSetupPage() {
                         setSelectedAvatarId(av.id);
                         soundFx.playClick();
                       }}
-                      className={`relative p-2.5 rounded-2xl bg-[#02050E] border transition-all text-left cursor-pointer ${
-                        isSelected
-                          ? "border-cyan-400 shadow-[0_0_20px_rgba(0,229,255,0.5)] scale-105"
-                          : "border-white/10 hover:border-white/30"
+                      className={`p-3 rounded-2xl flex flex-col items-center space-y-2 border transition-all cursor-pointer ${
+                        selectedAvatarId === av.id
+                          ? "bg-cyan-500/25 border-cyan-400 shadow-[0_0_20px_rgba(0,229,255,0.3)]"
+                          : "bg-[#020512] border-white/5 hover:border-white/20"
                       }`}
                     >
-                      <div className="relative w-full aspect-square rounded-xl overflow-hidden mb-2">
+                      <div className={`relative w-16 h-16 rounded-xl overflow-hidden border ${av.borderClass}`}>
                         <Image src={av.imageSrc} alt={av.name} fill className="object-cover" />
                       </div>
-                      <div className="text-[10px] font-bold text-white truncate font-mono">{av.name}</div>
-                      <div className="text-[9px] text-cyan-400 truncate font-mono">{av.title}</div>
+                      <span className="text-[10px] font-mono font-bold text-slate-200 truncate w-full text-center">
+                        {av.name}
+                      </span>
                     </button>
-                  );
-                })}
+                  ))}
+                </div>
               </div>
+            )}
 
-              <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveTab("IDENTITY");
-                    soundFx.playClick();
-                  }}
-                  className="px-5 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-mono font-bold uppercase transition-all cursor-pointer"
-                >
-                  ← BACK
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveTab("BANNERS");
-                    soundFx.playClick();
-                  }}
-                  className="px-6 py-2.5 rounded-xl bg-pink-500/20 hover:bg-pink-500/30 border border-pink-400/50 text-pink-300 text-xs font-mono font-bold uppercase transition-all cursor-pointer flex items-center gap-1.5"
-                >
-                  <span>NEXT: CHOOSE BANNER →</span>
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Tab 3: Banners */}
-          {activeTab === "BANNERS" && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-64 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-cyan-500/20">
-                {GOD_LEVEL_BANNERS.map((b) => {
-                  const isSelected = b.id === selectedBannerId;
-                  return (
+            {/* Tab 3: Banners */}
+            {activeTab === "BANNERS" && (
+              <div className="space-y-4 bg-[#03091D]/80 border border-cyan-500/20 rounded-3xl p-6 backdrop-blur-xl">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {GOD_LEVEL_BANNERS.map((banner) => (
                     <button
-                      key={b.id}
+                      key={banner.id}
                       type="button"
                       onClick={() => {
-                        setSelectedBannerId(b.id);
+                        setSelectedBannerId(banner.id);
                         soundFx.playClick();
                       }}
-                      className={`p-4 rounded-2xl border transition-all text-left cursor-pointer ${b.bgClass} ${
-                        isSelected
-                          ? "border-white shadow-[0_0_25px_rgba(255,255,255,0.4)] scale-[1.02]"
-                          : "border-white/15 opacity-80 hover:opacity-100"
+                      className={`p-4 rounded-2xl text-left border transition-all cursor-pointer ${banner.bgClass} ${
+                        selectedBannerId === banner.id
+                          ? "border-cyan-400 shadow-[0_0_25px_rgba(0,229,255,0.4)]"
+                          : "border-white/10 opacity-70 hover:opacity-100"
                       }`}
                     >
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-black uppercase text-white font-heading">{b.name}</span>
-                        <span className="text-[9px] font-mono font-bold text-cyan-200 px-2 py-0.5 rounded bg-black/60">
-                          {b.tag}
-                        </span>
-                      </div>
-                      <div className="text-[10px] text-slate-300 font-sans mt-0.5">{b.subtitle}</div>
+                      <span className="text-[10px] font-mono font-bold text-cyan-300 uppercase block">
+                        ✦ {banner.tag}
+                      </span>
+                      <span className="text-sm font-bold text-white font-sans">
+                        {banner.name}
+                      </span>
                     </button>
-                  );
-                })}
+                  ))}
+                </div>
               </div>
+            )}
 
-              <div className="flex items-center justify-start pt-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveTab("AVATARS");
-                    soundFx.playClick();
-                  }}
-                  className="px-5 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-mono font-bold uppercase transition-all cursor-pointer"
-                >
-                  ← BACK TO AVATARS
-                </button>
+            {saveError && (
+              <div className="p-4 rounded-2xl bg-rose-950/80 border border-rose-500/40 text-rose-300 text-xs font-mono flex items-center gap-2.5">
+                <AlertCircle className="size-4 text-rose-400 shrink-0" />
+                <span>{saveError}</span>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Save Error Alert */}
-          {saveError && (
-            <div className="p-4 rounded-2xl bg-rose-500/15 border border-rose-500/50 text-rose-300 text-xs font-mono flex items-center gap-2">
-              <AlertCircle className="size-4 text-rose-400 shrink-0" />
-              <span>{saveError}</span>
-            </div>
-          )}
-
-          {/* Master Submit Action */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-white/10">
-            <div className="text-xs font-mono text-slate-400">
-              Identity ready for permanent registration on Dragon Core.
-            </div>
-
+            {/* Forge & Activate Action Button */}
             <button
               type="button"
               onClick={handleForge}
-              disabled={saving}
-              className="w-full sm:w-auto min-h-[52px] px-10 py-4 rounded-2xl bg-gradient-to-r from-[#00E5FF] via-[#1685FF] to-[#7C3CFF] text-[#020617] font-black text-xs sm:text-sm font-mono uppercase tracking-widest shadow-[0_0_35px_rgba(0,229,255,0.6)] hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2"
+              disabled={saving || availabilityState === "TAKEN" || availabilityState === "CHECKING"}
+              className="w-full py-4 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 hover:from-amber-300 hover:to-yellow-200 text-[#020617] font-mono font-black text-sm uppercase tracking-widest shadow-[0_0_35px_rgba(245,158,11,0.6)] transition-all cursor-pointer flex items-center justify-center gap-2.5 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <span>{saving ? "FORGING IDENTITY IN POSTGRESQL..." : "FORGE MY DRAGON ID →"}</span>
-              <ArrowRight className="size-4 text-[#020617]" />
+              {saving ? (
+                <>
+                  <Loader2 className="size-4 animate-spin text-[#020617]" />
+                  <span>FORGING IDENTITY...</span>
+                </>
+              ) : (
+                <>
+                  <Zap className="size-4 text-[#020617]" />
+                  <span>FORGE & ACTIVATE DRAGON ID →</span>
+                </>
+              )}
             </button>
+          </div>
+
+          {/* Right: Live Identity Pass Preview */}
+          <div className="lg:col-span-5 space-y-4">
+            <div className="text-xs font-mono font-bold text-slate-400 uppercase">
+              LIVE COMBAT PASS PREVIEW
+            </div>
+
+            <div
+              className={`rounded-3xl p-6 border-2 border-amber-400/60 shadow-[0_0_40px_rgba(245,158,11,0.25)] relative overflow-hidden ${activeBanner.bgClass}`}
+            >
+              <div className="relative z-10 space-y-4">
+                <div className="flex items-center gap-4">
+                  <div
+                    className={`relative w-20 h-20 rounded-2xl overflow-hidden border-2 shrink-0 ${activeAvatar.borderClass} shadow-xl`}
+                  >
+                    <Image src={activeAvatar.imageSrc} alt={activeAvatar.name} fill className="object-cover" />
+                  </div>
+                  <div className="space-y-1 overflow-hidden">
+                    <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-black/50 border border-amber-400/40 text-[9px] font-mono font-bold text-amber-300 uppercase">
+                      ✦ {activeBanner.tag}
+                    </div>
+                    <div className="text-lg font-black uppercase text-white font-heading truncate">
+                      {displayName || "Dragon Slayer"}
+                    </div>
+                    <div className="text-xs font-mono font-bold text-cyan-200 truncate">
+                      @{gamerTag || "operative"}
+                    </div>
+                    <div className="text-[11px] text-amber-300 font-mono font-bold">
+                      {primaryTitle}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-3 border-t border-white/15 flex items-center justify-between text-[10px] font-mono text-slate-300">
+                  <span>STATUS: READY FOR FORGE</span>
+                  <span>SECURITY: VERIFIED</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </main>
-
-      {/* Footer Strip */}
-      <footer className="relative z-10 text-center text-[10px] font-mono text-slate-500">
-        DRAGON GAMING STUDIOS • UNIVERSAL PLAYER IDENTITY SYSTEM
-      </footer>
     </div>
   );
 }

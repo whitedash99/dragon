@@ -2,6 +2,7 @@ import { NextAuthOptions, getServerSession } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { prisma } from "@/lib/prisma";
 import { parseProfileMetadata, generateCanonicalDragonId } from "@/lib/user-profile";
+import { createAndSendOtp } from "@/lib/otp";
 import type { Adapter, AdapterUser, AdapterAccount } from "next-auth/adapters";
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -292,7 +293,6 @@ export const authOptions: NextAuthOptions = {
                   avatar: user.image || existingUser.avatar,
                   provider: "google",
                   providerAccountId: account.providerAccountId,
-                  emailVerified: existingUser.emailVerified || new Date(),
                   dragonId: existingUser.dragonId || generateCanonicalDragonId(),
                 },
               });
@@ -306,7 +306,6 @@ export const authOptions: NextAuthOptions = {
                   image: user.image || existingUser.image,
                   provider: "google",
                   providerAccountId: account.providerAccountId,
-                  emailVerified: existingUser.emailVerified || new Date(),
                 },
               }).catch((e) => console.warn("User update fallback:", e?.message));
             }
@@ -327,41 +326,41 @@ export const authOptions: NextAuthOptions = {
               data: {
                 userId: existingUser.id,
                 userEmail: normalizedEmail,
-                action: "GOOGLE_OAUTH_LOGIN",
+                action: "GOOGLE_AUTH_SUCCESS",
                 resource: "AUTHENTICATION",
-                details: `Google Sign-In: ${normalizedEmail}`,
+                details: `Google Sign-In identity verified: ${normalizedEmail}`,
               },
             }).catch(() => {});
 
-            await prisma.notification.create({
-              data: {
-                title: "Security Alert: Google Sign-In Active",
-                message: `You signed into Dragon Gaming Studios with Google (${normalizedEmail}).`,
-                type: "AUTH_LOGIN",
-                recipient: normalizedEmail,
-                channel: "IN_APP",
-              },
-            }).catch(() => {});
+            // Generate & Send 6-digit OTP through Resend
+            await createAndSendOtp(normalizedEmail, existingUser.id).catch((e) => {
+              console.error("[authOptions:signIn] Failed to send OTP:", e);
+            });
           } else {
             await prisma.auditLog.create({
               data: {
                 userEmail: normalizedEmail,
-                action: "GOOGLE_OAUTH_REGISTER",
+                action: "GOOGLE_AUTH_SUCCESS",
                 resource: "AUTHENTICATION",
                 details: `New Google OAuth registration: ${normalizedEmail}`,
               },
             }).catch(() => {});
+
+            // Generate & Send 6-digit OTP through Resend
+            await createAndSendOtp(normalizedEmail).catch((e) => {
+              console.error("[authOptions:signIn] Failed to send OTP for new user:", e);
+            });
           }
         } catch (error) {
           console.error("Google Auth SignIn Sync Error:", error);
-          // CRITICAL: Always return true so the user is not blocked
         }
       }
       return true;
     },
     async redirect({ url, baseUrl }) {
+      // Direct user straight to OTP verification screen after Google OAuth
       if (url.includes("/login") || url.includes("/register") || url.includes("callback/google")) {
-        return `${baseUrl}/welcome`;
+        return `${baseUrl}/auth/verify-email`;
       }
       if (url.startsWith("/")) {
         return `${baseUrl}${url}`;
@@ -369,7 +368,7 @@ export const authOptions: NextAuthOptions = {
       if (new URL(url).origin === baseUrl) {
         return url;
       }
-      return `${baseUrl}/welcome`;
+      return `${baseUrl}/auth/verify-email`;
     },
     async jwt({ token, user }) {
       if (user) {

@@ -7,8 +7,21 @@ const OTP_SECRET =
   process.env.NEXTAUTH_SECRET ||
   "dragon-studios-otp-secure-salt-2026";
 
-const OTP_EXPIRY_MINUTES = 10;
+const OTP_EXPIRY_MINUTES = 5;
 const MAX_VERIFICATION_ATTEMPTS = 5;
+
+/**
+ * Mask an email address for safe UI display (e.g. t***@gmail.com).
+ */
+export function maskEmail(email: string): string {
+  if (!email || !email.includes("@")) return email || "your email";
+  const [local, domain] = email.split("@");
+  if (!local || !domain) return email;
+  const maskedLocal = local.length > 2
+    ? `${local[0]}***${local[local.length - 1]}`
+    : `${local[0]}***`;
+  return `${maskedLocal}@${domain}`;
+}
 
 /**
  * Generate a cryptographically secure 6-digit numeric OTP.
@@ -34,7 +47,11 @@ export function hashOtp(otp: string, email: string): string {
 /**
  * Invalidate previous active OTP codes and store a new hashed verification code.
  */
-export async function createAndSendOtp(email: string, userId?: string): Promise<{ success: boolean; error?: string }> {
+export async function createAndSendOtp(
+  email: string,
+  userId?: string,
+  ipAddress?: string
+): Promise<{ success: boolean; error?: string }> {
   const normalizedEmail = email.toLowerCase().trim();
 
   // 1. Generate 6-digit cryptographic OTP
@@ -69,8 +86,20 @@ export async function createAndSendOtp(email: string, userId?: string): Promise<
     const emailResult = await sendOtpVerificationEmail(normalizedEmail, rawOtp);
     if (!emailResult.success) {
       console.error("[OTP] Failed to deliver verification email via Resend:", emailResult.error);
-      return { success: false, error: "Failed to send verification code. Please try again." };
+      return { success: false, error: "Failed to deliver verification code. Please try again." };
     }
+
+    // 5. Record Security Audit Log
+    await prisma.auditLog.create({
+      data: {
+        userId: userId || undefined,
+        userEmail: normalizedEmail,
+        action: "OTP_SENT",
+        resource: "AUTHENTICATION",
+        details: `6-digit OTP dispatched to ${normalizedEmail} (expires in ${OTP_EXPIRY_MINUTES}m)`,
+        ipAddress: ipAddress || undefined,
+      },
+    }).catch(() => {});
 
     return { success: true };
   } catch (error: unknown) {
@@ -85,13 +114,14 @@ export async function createAndSendOtp(email: string, userId?: string): Promise<
  */
 export async function verifyOtpCode(
   email: string,
-  candidateOtp: string
+  candidateOtp: string,
+  ipAddress?: string
 ): Promise<{ success: boolean; error?: string; userId?: string | null }> {
   const normalizedEmail = email.toLowerCase().trim();
   const cleanOtp = candidateOtp.trim();
 
   if (!/^\d{6}$/.test(cleanOtp)) {
-    return { success: false, error: "That verification code is incorrect." };
+    return { success: false, error: "Invalid verification code format. Must be 6 digits." };
   }
 
   // 1. Find the latest active verification record
@@ -116,18 +146,42 @@ export async function verifyOtpCode(
       where: { id: record.id },
       data: { consumedAt: new Date() },
     });
+
+    await prisma.auditLog.create({
+      data: {
+        userId: record.userId || undefined,
+        userEmail: normalizedEmail,
+        action: "OTP_FAILED",
+        resource: "AUTHENTICATION",
+        details: `OTP verification locked: Exceeded maximum attempts (${MAX_VERIFICATION_ATTEMPTS})`,
+        ipAddress: ipAddress || undefined,
+      },
+    }).catch(() => {});
+
     return {
       success: false,
       error: "Too many attempts. Request a new verification code.",
     };
   }
 
-  // 3. Check expiration (10 minutes)
+  // 3. Check expiration (5 minutes)
   if (new Date() > record.expiresAt) {
     await prisma.emailVerificationCode.update({
       where: { id: record.id },
       data: { consumedAt: new Date() },
     });
+
+    await prisma.auditLog.create({
+      data: {
+        userId: record.userId || undefined,
+        userEmail: normalizedEmail,
+        action: "OTP_EXPIRED",
+        resource: "AUTHENTICATION",
+        details: `Expired OTP verification attempted for ${normalizedEmail}`,
+        ipAddress: ipAddress || undefined,
+      },
+    }).catch(() => {});
+
     return {
       success: false,
       error: "Your verification code has expired. Request a new code.",
@@ -151,6 +205,17 @@ export async function verifyOtpCode(
       },
     });
 
+    await prisma.auditLog.create({
+      data: {
+        userId: record.userId || undefined,
+        userEmail: normalizedEmail,
+        action: "OTP_FAILED",
+        resource: "AUTHENTICATION",
+        details: `Invalid OTP attempt ${updatedAttempts}/${MAX_VERIFICATION_ATTEMPTS} for ${normalizedEmail}`,
+        ipAddress: ipAddress || undefined,
+      },
+    }).catch(() => {});
+
     if (updatedAttempts >= MAX_VERIFICATION_ATTEMPTS) {
       return {
         success: false,
@@ -158,7 +223,7 @@ export async function verifyOtpCode(
       };
     }
 
-    return { success: false, error: "That verification code is incorrect." };
+    return { success: false, error: "Invalid verification code." };
   }
 
   // 5. Success: Consume the code immediately to prevent replay attacks
@@ -166,6 +231,29 @@ export async function verifyOtpCode(
     where: { id: record.id },
     data: { consumedAt: new Date() },
   });
+
+  // Record Success Audit Logs
+  await prisma.auditLog.create({
+    data: {
+      userId: record.userId || undefined,
+      userEmail: normalizedEmail,
+      action: "OTP_VERIFIED",
+      resource: "AUTHENTICATION",
+      details: `Successful OTP verification for ${normalizedEmail}`,
+      ipAddress: ipAddress || undefined,
+    },
+  }).catch(() => {});
+
+  await prisma.auditLog.create({
+    data: {
+      userId: record.userId || undefined,
+      userEmail: normalizedEmail,
+      action: "AUTH_SESSION_CREATED",
+      resource: "AUTHENTICATION",
+      details: `Final authenticated session issued for ${normalizedEmail}`,
+      ipAddress: ipAddress || undefined,
+    },
+  }).catch(() => {});
 
   return { success: true, userId: record.userId };
 }

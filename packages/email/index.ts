@@ -265,28 +265,29 @@ export function buildOtpEmailHtml(otp: string): string {
       <head>
         <meta charset="utf-8">
         <style>
-          body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #02040A; color: #f8fafc; padding: 32px 16px; margin: 0; }
-          .container { max-width: 540px; margin: 0 auto; background: #03091D; border-radius: 24px; padding: 40px 32px; border: 1px solid rgba(0, 229, 255, 0.35); box-shadow: 0 0 40px rgba(0, 229, 255, 0.15); text-align: center; }
-          .logo { font-size: 20px; font-weight: 900; color: #00E5FF; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 24px; font-family: monospace; }
-          .header { font-size: 24px; font-weight: 800; color: #ffffff; margin-bottom: 12px; }
-          .subtext { font-size: 14px; line-height: 1.6; color: #94a3b8; margin-bottom: 32px; }
-          .otp-card { background: #02050E; border: 2px solid #00E5FF; border-radius: 16px; padding: 24px 16px; margin-bottom: 24px; box-shadow: 0 0 30px rgba(0, 229, 255, 0.25); }
-          .otp-code { font-size: 38px; font-weight: 900; letter-spacing: 12px; color: #00E5FF; font-family: monospace; margin: 0; }
-          .notice { font-size: 12px; color: #64748b; font-family: monospace; line-height: 1.5; margin-bottom: 24px; }
-          .footer { font-size: 11px; color: #475569; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 20px; text-align: center; font-family: monospace; }
+          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #02040A; color: #f8fafc; padding: 32px 16px; margin: 0; }
+          .container { max-width: 520px; margin: 0 auto; background: #03091D; border-radius: 24px; padding: 40px 32px; border: 1px solid rgba(0, 229, 255, 0.4); box-shadow: 0 0 50px rgba(0, 229, 255, 0.2); text-align: center; }
+          .logo { font-size: 18px; font-weight: 900; color: #00E5FF; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 24px; font-family: monospace; }
+          .header { font-size: 24px; font-weight: 900; color: #ffffff; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+          .subtext { font-size: 14px; line-height: 1.6; color: #94a3b8; margin-bottom: 28px; }
+          .otp-card { background: #02050E; border: 2px solid #00E5FF; border-radius: 16px; padding: 24px 16px; margin-bottom: 28px; box-shadow: 0 0 35px rgba(0, 229, 255, 0.3); }
+          .otp-code { font-size: 42px; font-weight: 900; letter-spacing: 14px; color: #00E5FF; font-family: 'Courier New', Courier, monospace; margin: 0; text-shadow: 0 0 20px rgba(0, 229, 255, 0.6); }
+          .notice { font-size: 13px; color: #cbd5e1; font-family: monospace; line-height: 1.6; margin-bottom: 24px; background: rgba(0, 229, 255, 0.05); padding: 16px; border-radius: 12px; border: 1px solid rgba(0, 229, 255, 0.15); }
+          .warning { color: #f43f5e; font-weight: bold; }
+          .footer { font-size: 11px; color: #64748b; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 20px; text-align: center; font-family: monospace; }
         </style>
       </head>
       <body>
         <div class="container">
           <div class="logo">DRAGON GAMING STUDIOS</div>
-          <div class="header">Your Verification Code</div>
-          <div class="subtext">Use the 6-digit security code below to verify your Dragon ID and access the Dragon Command Center.</div>
+          <div class="header">YOUR VERIFICATION CODE</div>
+          <div class="subtext">Enter this 6-digit security code on the verification screen to authenticate your account and access Dragon Command Center.</div>
           <div class="otp-card">
             <div class="otp-code">${otp}</div>
           </div>
           <div class="notice">
-            ⏳ This verification code expires in <strong>10 minutes</strong>.<br>
-            If you did not attempt to sign in, you can safely ignore this email.
+            ⏳ <strong>This code expires in 5 minutes.</strong><br>
+            <span class="warning">⚠️ Never share this code with anyone.</span> Dragon Studios will never ask for this code.
           </div>
           <div class="footer">
             &copy; ${new Date().getFullYear()} Dragon Gaming Studios. All rights reserved.
@@ -301,7 +302,7 @@ export async function sendOtpVerificationEmail(to: string, otp: string): Promise
   const html = buildOtpEmailHtml(otp);
   return sendEmail({
     to,
-    subject: "Your Dragon Gaming Studios verification code",
+    subject: "Your Dragon Gaming Studios Verification Code",
     html,
     type: "OTP_VERIFICATION"
   });

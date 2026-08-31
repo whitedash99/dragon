@@ -30,8 +30,8 @@ export default function VerifyEmailPage() {
   const [resending, setResending] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
-  // 10-minute expiry countdown (600 seconds)
-  const [expiresSeconds, setExpiresSeconds] = useState(600);
+  // 5-minute expiry countdown (300 seconds)
+  const [expiresSeconds, setExpiresSeconds] = useState(300);
   // 60-second resend cooldown
   const [cooldown, setCooldown] = useState(60);
 
@@ -72,7 +72,6 @@ export default function VerifyEmailPage() {
     if (!/^\d*$/.test(value)) return;
 
     const newOtp = [...otp];
-    // Handle single character
     newOtp[index] = value.slice(-1);
     setOtp(newOtp);
     setError(null);
@@ -126,24 +125,26 @@ export default function VerifyEmailPage() {
 
       const data = await res.json();
       if (!res.ok || !data.success) {
-        throw new Error(data.error || "That verification code is incorrect.");
+        throw new Error(data.error || "Invalid or expired verification code.");
       }
 
       setSuccess(true);
       soundFx.playForgeComplete();
 
-      // Upgrade NextAuth JWT session to verified
+      // Upgrade NextAuth session
       await updateSession({ otpVerified: true });
 
       setTimeout(() => {
-        if (!data.hasDragonId) {
-          router.push("/dashboard?welcome=true");
+        if (data.redirectUrl) {
+          window.location.href = data.redirectUrl;
+        } else if (!data.hasDragonId) {
+          window.location.href = "/welcome";
         } else {
-          router.push("/dashboard");
+          window.location.href = "/dashboard";
         }
       }, 700);
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "That verification code is incorrect.";
+      const msg = err instanceof Error ? err.message : "Invalid or expired verification code.";
       setError(msg);
       soundFx.playClick();
     } finally {
@@ -166,24 +167,27 @@ export default function VerifyEmailPage() {
 
       const data = await res.json();
       if (!res.ok || !data.success) {
-        throw new Error(data.error || "We couldn't send a new code right now. Please try again.");
+        throw new Error(data.error || "Please wait before requesting another code.");
       }
 
       setStatusMessage("Verification code sent.");
       setCooldown(60);
-      setExpiresSeconds(600);
+      setExpiresSeconds(300);
       setOtp(["", "", "", "", "", ""]);
       inputRefs.current[0]?.focus();
       soundFx.playSlideWhoosh();
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "We couldn't send a new code right now. Please try again.";
+      const msg = err instanceof Error ? err.message : "Please wait before requesting another code.";
       setError(msg);
     } finally {
       setResending(false);
     }
   };
 
-  const userEmail = session?.user?.email || "your Google email";
+  const rawEmail = session?.user?.email || "";
+  const maskedEmail = rawEmail && rawEmail.includes("@")
+    ? `${rawEmail.split("@")[0].slice(0, 1)}***@${rawEmail.split("@")[1]}`
+    : "your registered email";
 
   return (
     <div className="min-h-screen w-full bg-[#02040A] text-slate-100 flex items-center justify-center p-4 sm:p-6 relative select-none font-sans overflow-hidden">
@@ -198,7 +202,7 @@ export default function VerifyEmailPage() {
         initial={{ opacity: 0, y: 20, scale: 0.96 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.4 }}
-        className="relative z-10 w-full max-w-lg rounded-3xl bg-[#03091D]/90 backdrop-blur-2xl border-2 border-cyan-500/40 p-8 sm:p-10 shadow-[0_0_60px_rgba(0,229,255,0.2)] space-y-7 overflow-hidden"
+        className="relative z-10 w-full max-w-lg rounded-3xl bg-[#03091D]/90 backdrop-blur-2xl border-2 border-cyan-500/40 p-6 sm:p-10 shadow-[0_0_60px_rgba(0,229,255,0.2)] space-y-7 overflow-hidden"
       >
         {/* Top Multi-Neon Accent Line */}
         <div
@@ -217,16 +221,15 @@ export default function VerifyEmailPage() {
             DRAGON GAMING STUDIOS
           </span>
           <h1 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-white font-heading">
-            VERIFY YOUR DRAGON ID
+            VERIFY YOUR DRAGON ACCOUNT
           </h1>
           <p className="text-xs text-slate-400 font-mono leading-relaxed max-w-sm mx-auto">
-            We dispatched a 6-digit code to <span className="text-cyan-300 font-bold">{userEmail}</span>.
-            {userEmail !== "dragonstudiosofficial01@gmail.com" && (
-              <span className="block text-[11px] text-purple-300/90 mt-1 font-mono">
-                (While Resend custom domain verification is pending, check <strong className="text-cyan-300">dragonstudiosofficial01@gmail.com</strong>)
-              </span>
-            )}
+            We sent a 6-digit verification code to your email.
           </p>
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-950/40 border border-cyan-500/30 text-xs font-mono text-cyan-300">
+            <Mail className="size-3 text-cyan-400" />
+            <span>{maskedEmail}</span>
+          </div>
         </div>
 
         {/* Status / Error Alerts */}
@@ -269,7 +272,7 @@ export default function VerifyEmailPage() {
 
         {/* 6-Box OTP Inputs */}
         <div className="space-y-4">
-          <div className="flex items-center justify-between gap-2 sm:gap-3">
+          <div className="flex items-center justify-center gap-2 sm:gap-3">
             {otp.map((digit, idx) => (
               <input
                 key={idx}
@@ -279,18 +282,19 @@ export default function VerifyEmailPage() {
                 type="text"
                 inputMode="numeric"
                 pattern="[0-9]*"
+                autoComplete="one-time-code"
                 maxLength={1}
                 value={digit}
                 onChange={(e) => handleInputChange(idx, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(idx, e)}
                 onPaste={handlePaste}
                 disabled={loading || success}
-                className="w-12 h-14 sm:w-14 sm:h-16 rounded-2xl bg-[#02050E] text-center font-mono text-xl sm:text-2xl font-black text-white border-2 border-cyan-500/30 focus:outline-none focus:border-[#00E5FF] focus:shadow-[0_0_20px_rgba(0,229,255,0.5)] transition-all disabled:opacity-50"
+                className="w-10 h-12 xs:w-12 xs:h-14 sm:w-14 sm:h-16 rounded-2xl bg-[#02050E] text-center font-mono text-lg sm:text-2xl font-black text-white border-2 border-cyan-500/30 focus:outline-none focus:border-[#00E5FF] focus:shadow-[0_0_20px_rgba(0,229,255,0.5)] transition-all disabled:opacity-50"
               />
             ))}
           </div>
 
-          {/* Expiry Timer */}
+          {/* Expiry Timer & Resend */}
           <div className="flex items-center justify-between text-xs font-mono text-slate-400 pt-1">
             <span className="flex items-center gap-1.5">
               <Lock className="size-3.5 text-cyan-400" />
@@ -305,7 +309,7 @@ export default function VerifyEmailPage() {
               className={`font-bold transition-colors cursor-pointer ${
                 cooldown > 0 || resending
                   ? "text-slate-500 cursor-not-allowed"
-                  : "text-cyan-400 hover:text-cyan-300 underline"
+                  : "text-cyan-400 hover:text-cyan-300 underline uppercase"
               }`}
             >
               {resending ? (
@@ -313,7 +317,7 @@ export default function VerifyEmailPage() {
               ) : cooldown > 0 ? (
                 `Resend code (${cooldown}s)`
               ) : (
-                "Resend code"
+                "RESEND CODE"
               )}
             </button>
           </div>

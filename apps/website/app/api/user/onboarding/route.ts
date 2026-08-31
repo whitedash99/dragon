@@ -6,6 +6,7 @@ import {
   parseProfileMetadata,
   serializeProfileMetadata,
   validateDragonIdHandle,
+  generateCanonicalDragonId,
 } from "@/lib/user-profile";
 
 export const dynamic = "force-dynamic";
@@ -74,6 +75,7 @@ export async function GET(req: NextRequest) {
         id: user.id,
         name: user.name,
         email: user.email,
+        dragonId: user.dragonId || null,
         image: user.image || user.avatar,
         role: user.role,
         createdAt: user.createdAt,
@@ -147,6 +149,9 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ success: false, error: validation.error }, { status: 400 });
       }
 
+      // Generate canonical golden DragonID if not already assigned
+      const canonicalDragonId = user.dragonId || generateCanonicalDragonId();
+
       const updatedMetadataString = serializeProfileMetadata(currentMetadata, {
         hasCompletedWelcome: true,
         hasCompletedDragonId: true,
@@ -157,13 +162,14 @@ export async function POST(req: NextRequest) {
         avatarId: avatar || currentMetadata.avatarId,
       });
 
-      // Update User name and image
+      // Update User name, image, and dragonId
       await prisma.user.update({
         where: { id: user.id },
         data: {
           name: (displayName || targetTag).trim(),
           image: avatar ? String(avatar) : undefined,
           avatar: avatar ? String(avatar) : undefined,
+          dragonId: canonicalDragonId,
         },
       });
 
@@ -187,7 +193,7 @@ export async function POST(req: NextRequest) {
           userEmail: user.email,
           action: "DRAGON_ID_FORGED",
           resource: "DRAGON_ID",
-          details: `User ${user.email} forged Dragon ID: GamerTag='${targetTag}', Title='${primaryTitle || "Dragon Operative"}'`,
+          details: `User ${user.email} forged Dragon ID: GamerTag='${targetTag}', DragonID='${canonicalDragonId}', Title='${primaryTitle || "Dragon Operative"}'`,
         },
       }).catch((e: unknown) => console.warn("AuditLog creation warning:", e));
 
@@ -195,6 +201,14 @@ export async function POST(req: NextRequest) {
         success: true,
         message: "Dragon ID successfully forged and activated.",
         step: "COMPLETED",
+        dragonId: canonicalDragonId,
+        user: {
+          id: user.id,
+          name: (displayName || targetTag).trim(),
+          dragonId: canonicalDragonId,
+          gamerTag: targetTag,
+          avatar: avatar || currentMetadata.avatarId,
+        },
         metadata: parseProfileMetadata(updatedProfile.notificationSettings, displayName || targetTag),
       });
     }

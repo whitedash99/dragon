@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "postinstall": "prisma generate --schema=../../packages/shared-db/schema.prisma",
-    "build": "prisma generate --schema=../../packages/shared-db/schema.prisma && next build",
+    "build": "node -e \"const fs = require('fs'); if (fs.existsSync('../../packages/shared-db/src/generated/client')) fs.cpSync('../../packages/shared-db/src/generated/client', './src/generated/client', { recursive: true });\" && next build",
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"

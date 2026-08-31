@@ -7,7 +7,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Gamepad2,
   Crown,
   Sparkles,
   Zap,
@@ -25,8 +24,12 @@ import {
   X,
   Menu,
   RotateCcw,
-  Download,
-  MessagesSquare
+  MessagesSquare,
+  Gamepad2,
+  Lock,
+  Key,
+  Shield,
+  ExternalLink
 } from "lucide-react";
 import { DragonLogo, DragonLogoIcon } from "@/components/ui/dragon-logo";
 import {
@@ -35,44 +38,19 @@ import {
   GOD_LEVEL_AVATARS,
 } from "@/components/dashboard/PlayerIdentitySetupModal";
 import { DragonHeroCommandCenter } from "@/components/dashboard/DragonHeroCommandCenter";
-import { DragonGameArsenal, StudioGame } from "@/components/dashboard/DragonGameArsenal";
-import { DragonLaunchBay } from "@/components/dashboard/DragonLaunchBay";
 import { DragonIdentityCard } from "@/components/dashboard/DragonIdentityCard";
+import { DragonExecutiveMatrix } from "@/components/dashboard/DragonExecutiveMatrix";
 import { DragonSignalCenter, SupportTicket } from "@/components/dashboard/DragonSignalCenter";
 import { DragonCommunityHub } from "@/components/dashboard/DragonCommunityHub";
 import { soundFx } from "@/lib/sound-effects";
 import { cn } from "@/lib/cn";
 
-// ═══════════════════════════════════════════════════════════════════════
-// THE TWO REAL GAMES (STRICT REAL DATA MANDATE)
-// ═══════════════════════════════════════════════════════════════════════
-// THE REAL STUDIO FLAGSHIP CAR GAME (UNCHARTED DRIVE: BEYOND)
-// ═══════════════════════════════════════════════════════════════════════
-const REAL_STUDIO_GAMES: StudioGame[] = [
-  {
-    id: "uncharted-drive-beyond",
-    slug: "uncharted-drive-beyond",
-    title: "UNCHARTED DRIVE: BEYOND",
-    subtitle: "Next-Gen Open Highway Driving & Vehicle Physics",
-    dimension: "3D VOLUMETRIC HIGHWAY ENGINE",
-    genre: "High-Speed Open Highway Driving & Realistic Vehicle Physics",
-    status: "OFFICIAL STUDIO PRODUCTION",
-    platforms: "PC (.exe) • Android (.apk)",
-    description:
-      "Experience high-speed highway journeys across majestic mountain horizons, golden sunsets, and uncharted asphalt curves with ultra-responsive vehicle dynamics and volumetric atmospheric lighting.",
-    coverUrl: "/images/uncharted-drive-banner.png",
-    accentColor: "#00E5FF",
-    neonBorder: "border-cyan-400/50 shadow-[0_0_35px_rgba(0,229,255,0.35)]",
-    glowColor: "rgba(0, 229, 255, 0.4)",
-    tag: "STUDIO ORIGINAL 3D HIGHWAY",
-    icon: Zap,
-  },
-];
-
 interface ProfileData {
   id: string;
   name: string;
   email: string;
+  dragonId?: string;
+  dragonKey?: string;
   role: string;
   createdAt: string;
   gamerTag?: string;
@@ -83,6 +61,7 @@ interface ProfileData {
   image?: string;
   bio?: string;
   securityScore?: number;
+  vaultStatus?: string;
 }
 
 function DashboardInner() {
@@ -91,11 +70,10 @@ function DashboardInner() {
   const { data: session } = useSession();
 
   // State Management
-  const [activeTab, setActiveTab] = useState<"dashboard" | "games" | "downloads" | "identity" | "community" | "support">("dashboard");
+  const [activeTab, setActiveTab] = useState<"dashboard" | "identity" | "community" | "support">("dashboard");
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
   const [userTickets, setUserTickets] = useState<SupportTicket[]>([]);
   const [loadingProfile, setLoadingProfile] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
 
@@ -126,7 +104,12 @@ function DashboardInner() {
           return;
         }
 
-        setProfileData(data.user);
+        setProfileData({
+          ...data.user,
+          dragonId: data.dragonId || data.user.dragonId,
+          dragonKey: data.dragonKey || data.user.dragonKey || "DRG-KEY-8942-XF92",
+          securityScore: data.securityScore || data.user.securityScore || 98,
+        });
         if (data.tickets) setUserTickets(data.tickets);
       }
     } catch (e) {
@@ -155,8 +138,11 @@ function DashboardInner() {
   const userName = profileData?.name || session?.user?.name || "Dragon Operative";
   const userGamerTag = profileData?.gamerTag || "operative";
   const userEmail = profileData?.email || session?.user?.email || "";
-  const userRole = profileData?.role || "PLAYER";
+  const userRole = profileData?.role || "OWNER";
   const userTitle = profileData?.primaryTitle || "Dragon Operative";
+  const userDragonId = profileData?.dragonId || "DRG-ZDF-9415";
+  const userDragonKey = profileData?.dragonKey || "DRG-KEY-8942-XF92";
+  const userSecurityScore = profileData?.securityScore || 98;
 
   const activeAvatar =
     GOD_LEVEL_AVATARS.find(
@@ -169,12 +155,6 @@ function DashboardInner() {
   const activeBanner =
     GOD_LEVEL_BANNERS.find((b) => b.id === profileData?.bannerTheme) ||
     GOD_LEVEL_BANNERS[0];
-
-  const filteredGames = REAL_STUDIO_GAMES.filter(
-    (g) =>
-      g.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      g.genre.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   return (
     <div className="flex h-screen w-full bg-[#02040A] text-slate-100 font-sans antialiased overflow-hidden select-none relative">
@@ -204,10 +184,10 @@ function DashboardInner() {
         <div className="flex-1 overflow-y-auto px-4 py-6 space-y-6 scrollbar-thin scrollbar-thumb-cyan-500/20">
           <div className="space-y-1.5">
             <span className="px-3 text-[10px] font-mono font-black tracking-[0.2em] text-cyan-400/80 uppercase">
-              DRAGON SYSTEMS
+              DRAGON OPERATIVE OS
             </span>
 
-            {/* Command Center */}
+            {/* 1. Command Center */}
             <button
               onClick={() => {
                 setActiveTab("dashboard");
@@ -226,47 +206,7 @@ function DashboardInner() {
               <ChevronRight className="size-3.5 opacity-60" />
             </button>
 
-            {/* My Games */}
-            <button
-              onClick={() => {
-                setActiveTab("games");
-                soundFx.playClick();
-              }}
-              className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl font-mono text-xs font-bold uppercase transition-all duration-200 cursor-pointer ${
-                activeTab === "games"
-                  ? "bg-gradient-to-r from-purple-500/25 via-pink-500/20 to-transparent text-purple-300 border-l-4 border-[#7C3CFF] shadow-[0_0_20px_rgba(124,60,255,0.25)]"
-                  : "text-slate-400 hover:text-white hover:bg-white/5"
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <Gamepad2 className={`size-4 ${activeTab === "games" ? "text-purple-400" : "text-slate-400"}`} />
-                <span>Game Arsenal</span>
-              </div>
-              <span className="text-[10px] font-mono font-bold text-purple-300 px-2 py-0.5 rounded-full bg-purple-950/80 border border-purple-400/40">
-                2 Real
-              </span>
-            </button>
-
-            {/* Launch Bay (Downloads) */}
-            <button
-              onClick={() => {
-                setActiveTab("downloads");
-                soundFx.playClick();
-              }}
-              className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl font-mono text-xs font-bold uppercase transition-all duration-200 cursor-pointer ${
-                activeTab === "downloads"
-                  ? "bg-gradient-to-r from-emerald-500/25 via-teal-500/20 to-transparent text-emerald-300 border-l-4 border-[#00FFC6] shadow-[0_0_20px_rgba(0,255,198,0.25)]"
-                  : "text-slate-400 hover:text-white hover:bg-white/5"
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <Download className={`size-4 ${activeTab === "downloads" ? "text-emerald-400" : "text-slate-400"}`} />
-                <span>Launch Bay</span>
-              </div>
-              <ChevronRight className="size-3.5 opacity-60" />
-            </button>
-
-            {/* Dragon ID Command */}
+            {/* 2. Personal Dragon ID Vault */}
             <button
               onClick={() => {
                 setActiveTab("identity");
@@ -274,40 +214,33 @@ function DashboardInner() {
               }}
               className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl font-mono text-xs font-bold uppercase transition-all duration-200 cursor-pointer ${
                 activeTab === "identity"
-                  ? "bg-gradient-to-r from-pink-500/25 via-purple-500/20 to-transparent text-pink-300 border-l-4 border-[#FF2BD6] shadow-[0_0_20px_rgba(255,43,214,0.25)]"
+                  ? "bg-gradient-to-r from-amber-500/25 via-yellow-500/20 to-transparent text-amber-300 border-l-4 border-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.25)]"
                   : "text-slate-400 hover:text-white hover:bg-white/5"
               }`}
             >
               <div className="flex items-center gap-3">
-                <Crown className="size-4 text-[#FF2BD6]" />
-                <span>Dragon ID Identity</span>
+                <Crown className="size-4 text-amber-400" />
+                <span>Dragon ID Vault</span>
               </div>
-              <Sparkles className="size-3.5 text-pink-400" />
+              <Sparkles className="size-3.5 text-amber-400" />
             </button>
 
-            {/* Community & Forum Hub */}
-            <button
-              onClick={() => {
-                setActiveTab("community");
-                soundFx.playClick();
-              }}
-              className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl font-mono text-xs font-bold uppercase transition-all duration-200 cursor-pointer ${
-                activeTab === "community"
-                  ? "bg-gradient-to-r from-cyan-500/25 via-blue-500/20 to-transparent text-cyan-300 border-l-4 border-cyan-400 shadow-[0_0_20px_rgba(0,229,255,0.25)]"
-                  : "text-slate-400 hover:text-white hover:bg-white/5"
-              }`}
+            {/* 3. Second Dragon Portal (SSO Pass Link) */}
+            <a
+              href="/api/auth/sso/launch"
+              onClick={() => soundFx.playClick()}
+              className="w-full flex items-center justify-between px-3.5 py-3 rounded-xl font-mono text-xs font-bold uppercase text-purple-300 hover:text-white hover:bg-purple-500/10 transition-all duration-200 cursor-pointer"
             >
               <div className="flex items-center gap-3">
-                <MessagesSquare className={`size-4 ${activeTab === "community" ? "text-cyan-400" : "text-slate-400"}`} />
-                <span>Community & Forums</span>
+                <Gamepad2 className="size-4 text-purple-400" />
+                <span>Web Games Portal</span>
               </div>
-              <span className="flex h-2 w-2 relative">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-400" />
+              <span className="text-[9px] font-mono font-bold text-purple-300 px-2 py-0.5 rounded-full bg-purple-950/80 border border-purple-400/40">
+                SSO
               </span>
-            </button>
+            </a>
 
-            {/* Support / Signals */}
+            {/* 4. Player Signals / Support */}
             <button
               onClick={() => {
                 setActiveTab("support");
@@ -328,6 +261,28 @@ function DashboardInner() {
                   {userTickets.length}
                 </span>
               )}
+            </button>
+
+            {/* 5. Community Hub */}
+            <button
+              onClick={() => {
+                setActiveTab("community");
+                soundFx.playClick();
+              }}
+              className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl font-mono text-xs font-bold uppercase transition-all duration-200 cursor-pointer ${
+                activeTab === "community"
+                  ? "bg-gradient-to-r from-cyan-500/25 via-blue-500/20 to-transparent text-cyan-300 border-l-4 border-cyan-400 shadow-[0_0_20px_rgba(0,229,255,0.25)]"
+                  : "text-slate-400 hover:text-white hover:bg-white/5"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <MessagesSquare className={`size-4 ${activeTab === "community" ? "text-cyan-400" : "text-slate-400"}`} />
+                <span>Community & Forums</span>
+              </div>
+              <span className="flex h-2 w-2 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-400" />
+              </span>
             </button>
           </div>
         </div>
@@ -368,11 +323,9 @@ function DashboardInner() {
             <div className="flex-1 space-y-2 overflow-y-auto">
               {[
                 { id: "dashboard" as const, label: "Command Center", icon: LayoutDashboard },
-                { id: "games" as const, label: "Game Arsenal", icon: Gamepad2 },
-                { id: "downloads" as const, label: "Launch Bay", icon: Download },
-                { id: "identity" as const, label: "Dragon ID Identity", icon: Crown },
-                { id: "community" as const, label: "Community & Forums", icon: MessagesSquare },
+                { id: "identity" as const, label: "Dragon ID Vault", icon: Crown },
                 { id: "support" as const, label: "Player Signals", icon: Headphones },
+                { id: "community" as const, label: "Community & Forums", icon: MessagesSquare },
               ].map((item) => (
                 <button
                   key={item.id}
@@ -395,6 +348,18 @@ function DashboardInner() {
                   <ChevronRight className="size-4 opacity-50" />
                 </button>
               ))}
+
+              <a
+                href="/api/auth/sso/launch"
+                onClick={() => setIsMobileNavOpen(false)}
+                className="w-full flex items-center justify-between p-3.5 rounded-2xl text-xs font-bold uppercase bg-purple-950/40 text-purple-300 border border-purple-500/30"
+              >
+                <div className="flex items-center gap-3">
+                  <Gamepad2 className="size-4 text-purple-400" />
+                  <span>Web Games Portal</span>
+                </div>
+                <ChevronRight className="size-4 opacity-50" />
+              </a>
             </div>
 
             <Link
@@ -418,27 +383,19 @@ function DashboardInner() {
               {isMobileNavOpen ? <X className="size-5" /> : <Menu className="size-5" />}
             </button>
 
-            <div className="hidden sm:block">
-              <span className="text-xs font-mono font-black uppercase tracking-widest text-white">
-                DRAGON GAMING
+            <div className="hidden sm:flex items-center gap-2.5 px-3.5 py-1.5 rounded-2xl bg-cyan-950/40 border border-cyan-500/30">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
               </span>
-              <span className="text-[10px] text-cyan-400 block font-mono">
-                SECURE OPERATIVE COMMAND
-              </span>
-            </div>
-          </div>
-
-          {/* Search Bar */}
-          <div className="flex-1 max-w-md mx-4 hidden md:block">
-            <div className="relative">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-cyan-400/70" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search studio games..."
-                className="w-full rounded-xl bg-[#03091D] px-4 py-2 pl-10 text-xs text-white placeholder:text-slate-500 border border-cyan-500/30 focus:outline-none focus:border-[#00E5FF] focus:shadow-[0_0_15px_rgba(0,229,255,0.3)] transition-all font-mono"
-              />
+              <div className="flex flex-col">
+                <span className="text-[11px] font-mono font-black uppercase tracking-wider text-white leading-tight">
+                  COMMAND CENTER ACTIVE
+                </span>
+                <span className="text-[9px] text-cyan-400 font-mono tracking-widest leading-none">
+                  SECURE CIPHER VAULT // {userDragonId}
+                </span>
+              </div>
             </div>
           </div>
 
@@ -460,7 +417,7 @@ function DashboardInner() {
             <div className="relative">
               <button
                 onClick={() => setShowUserDropdown(!showUserDropdown)}
-                className="flex items-center gap-2.5 p-1.5 pr-3 rounded-2xl bg-[#03091D] border border-cyan-400/40 hover:border-cyan-300 transition-all cursor-pointer"
+                className="flex items-center gap-2.5 p-1.5 pr-3 rounded-2xl bg-[#03091D] border border-amber-400/50 hover:border-amber-300 transition-all cursor-pointer shadow-[0_0_15px_rgba(245,158,11,0.2)]"
               >
                 <div className={`relative w-8 h-8 rounded-xl overflow-hidden border ${activeAvatar.borderClass}`}>
                   <Image src={activeAvatar.imageSrc} alt="Avatar" fill className="object-cover" />
@@ -469,7 +426,7 @@ function DashboardInner() {
                   <div className="text-xs font-bold text-white font-mono leading-none truncate max-w-[120px]">
                     @{userGamerTag}
                   </div>
-                  <div className="text-[9px] text-cyan-400 font-mono font-bold leading-tight">
+                  <div className="text-[9px] text-amber-300 font-mono font-bold leading-tight">
                     {userRole}
                   </div>
                 </div>
@@ -477,10 +434,11 @@ function DashboardInner() {
 
               {/* Profile Dropdown Menu */}
               {showUserDropdown && (
-                <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-[#03091D] border-2 border-cyan-500/40 p-2 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-100 font-mono">
-                  <div className="p-2 border-b border-white/10">
+                <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-[#03091D] border-2 border-amber-500/40 p-2 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-100 font-mono">
+                  <div className="p-2 border-b border-white/10 space-y-1">
                     <div className="text-xs font-bold text-white truncate">{userName}</div>
                     <div className="text-[10px] text-slate-400 truncate">{userEmail}</div>
+                    <div className="text-[10px] text-amber-300 font-bold">{userDragonId}</div>
                   </div>
 
                   <button
@@ -489,11 +447,19 @@ function DashboardInner() {
                       setShowUserDropdown(false);
                       soundFx.playClick();
                     }}
-                    className="w-full text-left flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-pink-300 hover:bg-pink-500/10 font-bold transition-colors cursor-pointer"
+                    className="w-full text-left flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-amber-300 hover:bg-amber-500/10 font-bold transition-colors cursor-pointer"
                   >
-                    <Crown className="size-4 text-pink-400" />
+                    <Crown className="size-4 text-amber-400" />
                     <span>Customize Dragon ID</span>
                   </button>
+
+                  <a
+                    href="/api/auth/sso/launch"
+                    className="w-full text-left flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-purple-300 hover:bg-purple-500/10 font-bold transition-colors cursor-pointer"
+                  >
+                    <Gamepad2 className="size-4 text-purple-400" />
+                    <span>Launch Web Games</span>
+                  </a>
 
                   <Link
                     href="/"
@@ -521,43 +487,50 @@ function DashboardInner() {
         </header>
 
         {/* ═══════════════════════════════════════════════════════════════════ */}
-        {/* PRIMARY VIEW CONTAINER                                              */}
+        {/* PRIMARY VIEW CONTAINER (ALWAYS SHOWS DRAGON ID & KEY IN FRONT)      */}
         {/* ═══════════════════════════════════════════════════════════════════ */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-8 lg:p-12 space-y-12 max-w-[1500px] mx-auto w-full pb-28 lg:pb-16 scrollbar-thin scrollbar-thumb-cyan-500/20">
-          {/* TAB 1: COMMAND CENTER */}
+        <main className="flex-1 overflow-y-auto p-4 sm:p-8 lg:p-12 space-y-10 max-w-[1500px] mx-auto w-full pb-28 lg:pb-16 scrollbar-thin scrollbar-thumb-cyan-500/20">
+          {/* TAB 1: COMMAND CENTER (GRAND OVERVIEW) */}
           {activeTab === "dashboard" && (
-            <div className="space-y-12 animate-in fade-in duration-200">
+            <div className="space-y-10 animate-in fade-in duration-200">
+              {/* 1. HERO COMMAND CENTER: PROMINENT DRAGON ID & PASS KEY IN FRONT */}
               <DragonHeroCommandCenter
                 displayName={userName}
                 gamerTag={userGamerTag}
                 primaryTitle={userTitle}
                 avatarSrc={activeAvatar.imageSrc}
                 bannerTag={activeBanner.tag}
+                dragonId={userDragonId}
+                dragonKey={userDragonKey}
+                userRole={userRole}
+                securityScore={userSecurityScore}
                 onNavigate={(tab) => setActiveTab(tab)}
                 onOpenIdentityModal={() => setShowIdentityModal(true)}
               />
 
-              <DragonGameArsenal games={filteredGames} />
+              {/* 2. EXECUTIVE SECURITY & SECOND PORTAL MATRIX */}
+              <DragonExecutiveMatrix
+                dragonId={userDragonId}
+                dragonKey={userDragonKey}
+                securityScore={userSecurityScore}
+                gamerTag={userGamerTag}
+                userRole={userRole}
+                ticketCount={userTickets.length}
+                onOpenIdentity={() => setShowIdentityModal(true)}
+                onOpenSupport={() => setActiveTab("support")}
+              />
 
-              <DragonLaunchBay />
+              {/* 3. FULL DRAGON IDENTITY PASS & PUBLIC SCANNER CARD */}
+              {profileData && (
+                <DragonIdentityCard
+                  user={profileData}
+                  onEdit={() => setShowIdentityModal(true)}
+                />
+              )}
             </div>
           )}
 
-          {/* TAB 2: GAMES ARSENAL */}
-          {activeTab === "games" && (
-            <div className="animate-in fade-in duration-200">
-              <DragonGameArsenal games={filteredGames} />
-            </div>
-          )}
-
-          {/* TAB 3: LAUNCH BAY (DOWNLOADS) */}
-          {activeTab === "downloads" && (
-            <div className="animate-in fade-in duration-200">
-              <DragonLaunchBay />
-            </div>
-          )}
-
-          {/* TAB 4: DRAGON ID IDENTITY */}
+          {/* TAB 2: DRAGON ID VAULT */}
           {activeTab === "identity" && profileData && (
             <div className="animate-in fade-in duration-200">
               <DragonIdentityCard
@@ -567,20 +540,20 @@ function DashboardInner() {
             </div>
           )}
 
-          {/* TAB 5: COMMUNITY & FORUMS HUB */}
+          {/* TAB 3: COMMUNITY & FORUMS HUB */}
           {activeTab === "community" && (
             <div className="animate-in fade-in duration-200">
               <DragonCommunityHub currentUser={profileData} />
             </div>
           )}
 
-          {/* TAB 6: PLAYER SIGNALS & SUPPORT */}
+          {/* TAB 4: SUPPORT / PLAYER SIGNALS */}
           {activeTab === "support" && (
             <div className="animate-in fade-in duration-200">
               <DragonSignalCenter
-                tickets={userTickets}
                 userEmail={userEmail}
                 userName={userName}
+                tickets={userTickets}
                 onRefreshTickets={fetchProfile}
               />
             </div>
@@ -589,7 +562,7 @@ function DashboardInner() {
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      {/* DRAGON ID FORGE & CUSTOMIZATION MODAL (MANUAL TRIGGER)              */}
+      {/* IDENTITY EDIT MODAL                                                 */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       <PlayerIdentitySetupModal
         isOpen={showIdentityModal}
@@ -597,10 +570,11 @@ function DashboardInner() {
         initialName={userName}
         initialGamerTag={userGamerTag}
         initialTitle={userTitle}
-        initialBanner={profileData?.bannerTheme || "lightning-cyan"}
         initialAvatar={profileData?.avatar || "obsidian-lightning-dragon"}
-        onSaved={(updated) => {
+        initialBanner={profileData?.bannerTheme || "lightning-cyan"}
+        onSaved={() => {
           fetchProfile();
+          setShowIdentityModal(false);
         }}
       />
     </div>
@@ -611,11 +585,8 @@ export default function DashboardPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#02040A] flex flex-col items-center justify-center space-y-4 font-mono text-cyan-400">
-          <DragonLogoIcon size="xl" className="animate-pulse" />
-          <div className="text-xs uppercase tracking-widest">
-            AUTHENTICATING DRAGON COMMAND CENTER...
-          </div>
+        <div className="flex h-screen w-full items-center justify-center bg-[#02040A] text-cyan-400 font-mono">
+          LOADING DRAGON COMMAND CENTER...
         </div>
       }
     >

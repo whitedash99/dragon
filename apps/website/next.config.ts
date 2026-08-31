@@ -30,21 +30,16 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   outputFileTracingRoot: process.env.VERCEL ? path.resolve(__dirname, "../../") : __dirname,
-  outputFileTracingExcludes: {
-    '*': [
-      '**/Application Data/**',
-      'C:/Users/ASUS/Application Data/**',
-      'C:\\Users\\ASUS\\Application Data\\**',
-      'C:/Users/**',
-      'C:\\Users\\**',
-    ],
-  },
-  outputFileTracingIncludes: {
-    '/api/**/*': [
-      '../../packages/shared-db/src/generated/client/**/*',
-      '../../packages/shared-db/schema.prisma',
-    ],
-  },
+  ...(process.env.VERCEL
+    ? {
+        outputFileTracingIncludes: {
+          "/api/**/*": [
+            "./packages/shared-db/src/generated/client/**/*",
+            "./apps/website/src/generated/client/**/*",
+          ],
+        },
+      }
+    : {}),
   reactStrictMode: true,
   poweredByHeader: false,
   compress: true,

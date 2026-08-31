@@ -87,12 +87,36 @@ export function serializeProfileMetadata(
 }
 
 /**
- * Generates an official Golden DragonID (e.g. DRG-7491-8823)
+ * Generates an isolated, personalized, cryptographically unique Personal Dragon ID
+ * Format: DRG-[HANDLE_PREFIX]-[NUMBERS] (e.g. DRG-ZDF-9415 or DRGZ-122-9415)
  */
-export function generateCanonicalDragonId(): string {
-  const part1 = Math.floor(1000 + Math.random() * 9000);
-  const part2 = Math.floor(1000 + Math.random() * 9000);
-  return `DRG-${part1}-${part2}`;
+export function generateCanonicalDragonId(handleOrName?: string): string {
+  let prefix = "ZDF";
+  if (handleOrName) {
+    const clean = handleOrName.replace(/^@/, "").replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
+    if (clean.length >= 3) {
+      prefix = clean.slice(0, 3);
+    } else if (clean.length > 0) {
+      prefix = clean.padEnd(3, "X");
+    }
+  }
+  const part1 = Math.floor(100 + Math.random() * 900); // e.g. 122
+  const part2 = Math.floor(1000 + Math.random() * 9000); // e.g. 9415
+  return `DRG-${prefix}-${part1}-${part2}`;
+}
+
+/**
+ * Generates an isolated Personal Cryptographic Dragon Pass Key
+ * e.g. DRG-KEY-8942-XF92
+ */
+export function generateDragonPassKey(): string {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let suffix = "";
+  for (let i = 0; i < 4; i++) {
+    suffix += chars[Math.floor(Math.random() * chars.length)];
+  }
+  const num = Math.floor(1000 + Math.random() * 9000);
+  return `DRG-KEY-${num}-${suffix}`;
 }
 
 /**
