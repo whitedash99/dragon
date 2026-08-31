@@ -8,6 +8,8 @@ import {
   validateDragonIdHandle,
   generateCanonicalDragonId,
 } from "@/lib/user-profile";
+import { registerBrowserInstallation } from "@/lib/installation-server";
+import { INSTALLATION_COOKIE_NAME } from "@/lib/installation";
 
 export const dynamic = "force-dynamic";
 
@@ -141,6 +143,52 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    if (step === "INSTALLATION_CONFIRMED") {
+      // User with existing Dragon ID on a fresh browser confirms/activates the new installation
+      if (!user.dragonId) {
+        return NextResponse.json({ success: false, error: "No existing Dragon ID found to confirm." }, { status: 400 });
+      }
+
+      const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "127.0.0.1";
+      const userAgent = req.headers.get("user-agent") || undefined;
+      const installationToken = await registerBrowserInstallation(user.id, userAgent, ip);
+
+      await prisma.auditLog.create({
+        data: {
+          userId: user.id,
+          userEmail: user.email,
+          action: "INSTALLATION_ACTIVATED",
+          resource: "DEVICE_INSTALLATION",
+          details: `User ${user.email} activated existing Dragon ID ${user.dragonId} on new browser installation`,
+          ipAddress: ip,
+        },
+      }).catch(() => {});
+
+      const response = NextResponse.json({
+        success: true,
+        message: "Dragon ID installation activated on this browser.",
+        step: "COMPLETED",
+        redirectUrl: "/dashboard",
+        dragonId: user.dragonId,
+        user: {
+          id: user.id,
+          name: user.name,
+          dragonId: user.dragonId,
+        },
+      });
+
+      // Set long-lived installation marker cookie (Layer 3)
+      response.cookies.set(INSTALLATION_COOKIE_NAME, installationToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 365 * 24 * 60 * 60, // 1 year
+        path: "/",
+      });
+
+      return response;
+    }
+
     if (step === "DRAGON_ID_COMPLETE") {
       // Validate Dragon ID / handle
       const targetTag = (gamerTag || displayName || currentMetadata.gamerTag || "Player").trim();
@@ -150,7 +198,7 @@ export async function POST(req: NextRequest) {
       }
 
       // Generate canonical golden DragonID if not already assigned
-      const canonicalDragonId = user.dragonId || generateCanonicalDragonId();
+      const canonicalDragonId = user.dragonId || generateCanonicalDragonId(targetTag);
 
       const updatedMetadataString = serializeProfileMetadata(currentMetadata, {
         hasCompletedWelcome: true,
@@ -187,6 +235,10 @@ export async function POST(req: NextRequest) {
         },
       });
 
+      const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "127.0.0.1";
+      const userAgent = req.headers.get("user-agent") || undefined;
+      const installationToken = await registerBrowserInstallation(user.id, userAgent, ip);
+
       await prisma.auditLog.create({
         data: {
           userId: user.id,
@@ -194,13 +246,15 @@ export async function POST(req: NextRequest) {
           action: "DRAGON_ID_FORGED",
           resource: "DRAGON_ID",
           details: `User ${user.email} forged Dragon ID: GamerTag='${targetTag}', DragonID='${canonicalDragonId}', Title='${primaryTitle || "Dragon Operative"}'`,
+          ipAddress: ip,
         },
       }).catch((e: unknown) => console.warn("AuditLog creation warning:", e));
 
-      return NextResponse.json({
+      const response = NextResponse.json({
         success: true,
         message: "Dragon ID successfully forged and activated.",
         step: "COMPLETED",
+        redirectUrl: "/dashboard",
         dragonId: canonicalDragonId,
         user: {
           id: user.id,
@@ -211,6 +265,17 @@ export async function POST(req: NextRequest) {
         },
         metadata: parseProfileMetadata(updatedProfile.notificationSettings, displayName || targetTag),
       });
+
+      // Set long-lived installation marker cookie (Layer 3)
+      response.cookies.set(INSTALLATION_COOKIE_NAME, installationToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 365 * 24 * 60 * 60, // 1 year
+        path: "/",
+      });
+
+      return response;
     }
 
     return NextResponse.json({ success: false, error: "Invalid onboarding step action." }, { status: 400 });

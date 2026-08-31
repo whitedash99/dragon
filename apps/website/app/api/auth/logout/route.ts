@@ -7,12 +7,32 @@ export async function POST(req: NextRequest) {
   try {
     const sessionToken = req.cookies.get("dragon_session")?.value;
     if (sessionToken) {
-      await prisma.session.deleteMany({
+      const session = await prisma.session.findUnique({
         where: { sessionToken },
-      }).catch(() => {});
+        include: { user: true },
+      }).catch(() => null);
+
+      if (session) {
+        await prisma.auditLog.create({
+          data: {
+            userId: session.userId,
+            userEmail: session.user?.email,
+            action: "AUTH_LOGOUT",
+            resource: "AUTHENTICATION",
+            details: `User ${session.user?.email} logged out. Session revoked. Account & Dragon ID preserved.`,
+          },
+        }).catch(() => {});
+
+        await prisma.session.deleteMany({
+          where: { sessionToken },
+        }).catch(() => {});
+      }
     }
 
-    const res = NextResponse.json({ success: true, message: "Logged out successfully" });
+    const res = NextResponse.json({
+      success: true,
+      message: "Dragon session terminated. Account safely stored.",
+    });
     
     const cookieNames = [
       "dragon_session",
@@ -22,6 +42,7 @@ export async function POST(req: NextRequest) {
       "__Host-next-auth.csrf-token",
       "next-auth.callback-url",
       "__Secure-next-auth.callback-url",
+      "dragon_pending_email",
     ];
 
     for (const name of cookieNames) {

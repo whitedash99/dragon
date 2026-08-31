@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
+import { resolvePlayerEntryState } from "@/lib/auth-decision-engine";
+import { INSTALLATION_COOKIE_NAME } from "@/lib/installation";
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -10,10 +12,7 @@ export async function middleware(req: NextRequest) {
     "dragon-studios-super-secret-auth-key-2026";
 
   const token = await getToken({ req, secret });
-
-  const isEmailVerified = Boolean((token as any)?.emailVerified || (token as any)?.otpVerified);
-  const isDragonIdCompleted = Boolean((token as any)?.dragonIdSetupCompleted || (token as any)?.hasCompletedDragonId);
-  const hasCompletedWelcome = Boolean((token as any)?.hasCompletedWelcome);
+  const installationCookie = req.cookies.get(INSTALLATION_COOKIE_NAME)?.value || null;
 
   const isVerifyRoute = pathname === "/auth/verify-otp" || pathname === "/auth/verify-email";
   const isWelcomeRoute = pathname === "/welcome";
@@ -25,75 +24,50 @@ export async function middleware(req: NextRequest) {
 
   const isProtectedRoute = isDashboardRoute || isProfileRoute || isSettingsRoute || isProtectedPlayRoute;
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // 1. UNAUTHENTICATED USERS
-  // ═══════════════════════════════════════════════════════════════════════
-  if (!token) {
+  // Resolve Authoritative State
+  const decision = resolvePlayerEntryState({
+    token: token as any,
+    installationCookie,
+  });
+
+  // 1. Unauthenticated Users
+  if (decision.state === "UNAUTHENTICATED") {
     if (isProtectedRoute || isWelcomeRoute || isDragonIdRoute) {
       const loginUrl = new URL("/login", req.url);
       loginUrl.searchParams.set("callbackUrl", pathname);
       return NextResponse.redirect(loginUrl);
     }
-    // Allow public access to /auth/verify-otp only if pending email cookie is present or direct load
     return NextResponse.next();
   }
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // 2. AUTHENTICATED BUT EMAIL OTP NOT VERIFIED (MANDATORY GATE 1)
-  // ═══════════════════════════════════════════════════════════════════════
-  if (!isEmailVerified) {
-    // If not already on verification page, redirect to /auth/verify-otp
+  // 2. Authenticated But OTP Pending
+  if (decision.state === "OTP_REQUIRED") {
     if (!isVerifyRoute) {
-      const verifyUrl = new URL("/auth/verify-otp", req.url);
-      return NextResponse.redirect(verifyUrl);
+      return NextResponse.redirect(new URL("/auth/verify-otp", req.url));
     }
     return NextResponse.next();
   }
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // 3. FULLY OTP VERIFIED USERS
-  // ═══════════════════════════════════════════════════════════════════════
-
-  // If already verified and trying to access verify page, redirect to correct stage
-  if (isVerifyRoute) {
-    if (!hasCompletedWelcome) {
+  // 3. Welcome Required (Brand new account OR Fresh browser reset)
+  if (decision.state === "WELCOME_REQUIRED") {
+    if (isVerifyRoute || isDashboardRoute || isDragonIdRoute || isProfileRoute || isSettingsRoute) {
       return NextResponse.redirect(new URL("/welcome", req.url));
     }
-    if (!isDragonIdCompleted) {
-      return NextResponse.redirect(new URL("/dragon-id/setup", req.url));
-    }
-    return NextResponse.redirect(new URL("/dashboard", req.url));
+    return NextResponse.next();
   }
 
-  // A. WELCOME STAGE GUARD
-  if (isWelcomeRoute) {
-    if (isDragonIdCompleted) {
+  // 4. Dragon ID Setup Required
+  if (decision.state === "DRAGON_ID_SETUP") {
+    if (isVerifyRoute || isDashboardRoute || isWelcomeRoute || isProfileRoute || isSettingsRoute) {
+      return NextResponse.redirect(new URL("/dragon-id/setup", req.url));
+    }
+    return NextResponse.next();
+  }
+
+  // 5. Fully Authenticated Player (Account Complete + Trusted Browser Installation)
+  if (decision.state === "AUTHENTICATED") {
+    if (isVerifyRoute || isWelcomeRoute || isDragonIdRoute) {
       return NextResponse.redirect(new URL("/dashboard", req.url));
-    }
-    if (hasCompletedWelcome) {
-      return NextResponse.redirect(new URL("/dragon-id/setup", req.url));
-    }
-    return NextResponse.next();
-  }
-
-  // B. DRAGON ID SETUP STAGE GUARD
-  if (isDragonIdRoute) {
-    if (!hasCompletedWelcome) {
-      return NextResponse.redirect(new URL("/welcome", req.url));
-    }
-    if (isDragonIdCompleted) {
-      return NextResponse.redirect(new URL("/dashboard", req.url));
-    }
-    return NextResponse.next();
-  }
-
-  // C. DASHBOARD & PROTECTED ROUTES GUARD
-  if (isProtectedRoute) {
-    if (!hasCompletedWelcome) {
-      return NextResponse.redirect(new URL("/welcome", req.url));
-    }
-    if (!isDragonIdCompleted) {
-      return NextResponse.redirect(new URL("/dragon-id/setup", req.url));
     }
     return NextResponse.next();
   }
@@ -117,5 +91,6 @@ export const config = {
     "/games/play/:path*",
   ],
 };
+
 
 

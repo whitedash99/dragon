@@ -76,6 +76,8 @@ function DashboardInner() {
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   // Identity Modal State (for manual edits)
   const [showIdentityModal, setShowIdentityModal] = useState(false);
@@ -123,15 +125,10 @@ function DashboardInner() {
     fetchProfile();
   }, []);
 
-  const handleSignOut = async () => {
+  const handleSignOutClick = () => {
     soundFx.playClick();
-    try {
-      await fetch("/api/auth/logout", { method: "POST" });
-    } catch (e) {
-      console.warn("Logout endpoint warning:", e);
-    }
-    await signOut({ callbackUrl: "/login", redirect: false });
-    window.location.href = "/login";
+    setShowUserDropdown(false);
+    setShowLogoutModal(true);
   };
 
   // Resolved Real User Metadata
@@ -474,11 +471,11 @@ function DashboardInner() {
                   </Link>
 
                   <button
-                    onClick={handleSignOut}
+                    onClick={handleSignOutClick}
                     className="w-full text-left flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-rose-400 hover:bg-rose-500/10 font-bold transition-colors border-t border-white/10 mt-1 cursor-pointer"
                   >
                     <LogOut className="size-4 text-rose-400" />
-                    <span>Sign Out</span>
+                    <span>Log Out</span>
                   </button>
                 </div>
               )}
@@ -560,6 +557,86 @@ function DashboardInner() {
           )}
         </main>
       </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {/* LOGOUT CONFIRMATION MODAL                                            */}
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      <AnimatePresence>
+        {showLogoutModal && (
+          <div className="fixed inset-0 z-[600] flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl">
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="relative w-full max-w-md rounded-3xl bg-[#03091D] border-2 border-rose-500/50 p-6 sm:p-8 space-y-6 shadow-[0_0_60px_rgba(244,63,94,0.3)] font-sans text-center overflow-hidden"
+            >
+              {/* Background glow */}
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(244,63,94,0.15)_0%,transparent_70%)] pointer-events-none" />
+
+              <div className="relative z-10 space-y-3">
+                <div className="inline-flex p-3 rounded-2xl bg-rose-500/10 border border-rose-500/40 text-rose-400">
+                  <LogOut className="size-8 text-rose-400" />
+                </div>
+                <div className="space-y-1">
+                  <span className="text-[10px] font-mono font-bold tracking-widest text-rose-400 uppercase block">
+                    ✦ SESSION TERMINATION PROTOCOL ✦
+                  </span>
+                  <h3 className="text-xl sm:text-2xl font-black uppercase text-white font-heading">
+                    LOG OUT OF DRAGON GAMING STUDIOS?
+                  </h3>
+                  <p className="text-xs text-slate-300 font-mono">
+                    Your Dragon ID (<span className="text-amber-300 font-bold">{userDragonId}</span>), games, achievements, and player progress will remain safely stored.
+                  </p>
+                </div>
+              </div>
+
+              <div className="relative z-10 p-4 rounded-2xl bg-[#020512] border border-white/10 text-left space-y-2 text-xs font-mono text-slate-300">
+                <div className="flex items-center gap-2 text-emerald-400 font-bold">
+                  <ShieldCheck className="size-4" />
+                  <span>Permanent Account & Cloud Data Safe</span>
+                </div>
+                <div className="flex items-center gap-2 text-cyan-300">
+                  <Zap className="size-4" />
+                  <span>Trusted Device Marker Preserved</span>
+                </div>
+              </div>
+
+              <div className="relative z-10 grid grid-cols-2 gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundFx.playClick();
+                    setShowLogoutModal(false);
+                  }}
+                  disabled={isLoggingOut}
+                  className="w-full py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/15 text-slate-200 font-mono font-bold text-xs uppercase transition-all cursor-pointer"
+                >
+                  CANCEL
+                </button>
+
+                <button
+                  type="button"
+                  onClick={async () => {
+                    setIsLoggingOut(true);
+                    soundFx.playClick();
+                    try {
+                      await fetch("/api/auth/logout", { method: "POST" });
+                    } catch (e) {
+                      console.warn("Logout warning:", e);
+                    }
+                    await signOut({ callbackUrl: "/login", redirect: false });
+                    window.location.href = "/login";
+                  }}
+                  disabled={isLoggingOut}
+                  className="w-full py-3 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-mono font-black text-xs uppercase tracking-wider shadow-[0_0_25px_rgba(244,63,94,0.5)] transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-95"
+                >
+                  {isLoggingOut ? "TERMINATING..." : "LOG OUT"}
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* IDENTITY EDIT MODAL                                                 */}

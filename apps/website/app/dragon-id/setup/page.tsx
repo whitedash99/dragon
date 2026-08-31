@@ -67,6 +67,7 @@ export default function DragonIdSetupPage() {
 
   // Interactive Dragon ID Minted Celebration Modal
   const [mintedDragonId, setMintedDragonId] = useState<string>("DRG-4741-9415");
+  const [isRecognized, setIsRecognized] = useState<boolean>(false);
   const [showCelebrationPopUp, setShowCelebrationPopUp] = useState<boolean>(false);
   const [hasCopiedId, setHasCopiedId] = useState<boolean>(false);
 
@@ -81,10 +82,6 @@ export default function DragonIdSetupPage() {
         }
         const data = await res.json();
         if (data.success) {
-          if (data.onboarding?.hasCompletedDragonId && !showCelebrationPopUp) {
-            router.replace("/dashboard");
-            return;
-          }
           if (data.metadata) {
             if (data.metadata.gamerTag) setGamerTag(data.metadata.gamerTag);
             if (data.metadata.primaryTitle) setPrimaryTitle(data.metadata.primaryTitle);
@@ -96,6 +93,7 @@ export default function DragonIdSetupPage() {
           }
           if (data.user?.dragonId) {
             setMintedDragonId(data.user.dragonId);
+            setIsRecognized(true);
           }
         }
       } catch (err) {
@@ -103,7 +101,38 @@ export default function DragonIdSetupPage() {
       }
     }
     loadInitial();
-  }, [router, showCelebrationPopUp]);
+  }, [router]);
+
+  // Direct activation for recognized Dragon ID on fresh browser installation
+  const handleConfirmInstallation = async () => {
+    setSaving(true);
+    setSaveError(null);
+    try {
+      soundFx.playClick();
+      const res = await fetch("/api/user/onboarding", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ step: "INSTALLATION_CONFIRMED" }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Failed to activate installation on this device.");
+      }
+
+      setActivationStage("CARD_ASSEMBLY");
+      soundFx.playForgeComplete();
+
+      setTimeout(() => {
+        setActivationStage("COMPLETE");
+        setShowCelebrationPopUp(true);
+      }, 1000);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Activation error";
+      setSaveError(msg);
+      setSaving(false);
+      setActivationStage("IDLE");
+    }
+  };
 
   // Debounced server-side handle availability check
   const checkHandleAvailability = useCallback(async (handle: string) => {
@@ -493,6 +522,49 @@ export default function DragonIdSetupPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left: Configuration Controls */}
           <div className="lg:col-span-7 space-y-6">
+            {/* Dragon ID Recognized Banner (Fresh Browser Mode) */}
+            {isRecognized && (
+              <div className="p-5 rounded-3xl bg-gradient-to-r from-amber-950/70 via-[#0a1738] to-cyan-950/70 border-2 border-amber-400/80 shadow-[0_0_40px_rgba(245,158,11,0.4)] space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="px-2.5 py-0.5 rounded-full bg-amber-500/20 border border-amber-400/50 text-amber-300 text-[10px] font-mono font-bold tracking-widest uppercase flex items-center gap-1.5">
+                    <ShieldCheck className="size-3 text-amber-400" />
+                    DRAGON CLOUD IDENTITY RECOGNIZED
+                  </span>
+                  <span className="text-[10px] font-mono text-emerald-400 font-bold">
+                    ● SAFE & PERSISTED
+                  </span>
+                </div>
+                <div>
+                  <h3 className="text-lg sm:text-xl font-black text-white font-heading uppercase">
+                    YOUR DRAGON ID IS ALREADY FORGED
+                  </h3>
+                  <p className="text-xs text-slate-300 font-mono">
+                    Identity <span className="text-amber-300 font-bold">{mintedDragonId}</span> was retrieved from the Dragon Cloud ecosystem.
+                  </p>
+                </div>
+                <div className="pt-2">
+                  <button
+                    type="button"
+                    onClick={handleConfirmInstallation}
+                    disabled={saving}
+                    className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 hover:from-amber-300 hover:to-yellow-200 text-[#020617] font-mono font-black text-xs sm:text-sm uppercase tracking-wider shadow-[0_0_30px_rgba(245,158,11,0.6)] transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-95"
+                  >
+                    {saving ? (
+                      <>
+                        <Loader2 className="size-4 animate-spin text-[#020617]" />
+                        <span>ACTIVATING ON THIS DEVICE...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Zap className="size-4 text-[#020617]" />
+                        <span>CONTINUE WITH THIS DRAGON ID →</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* Tabs */}
             <div className="flex items-center gap-2 border-b border-cyan-500/20 pb-2">
               {[

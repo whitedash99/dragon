@@ -4,6 +4,8 @@ import { authOptions } from "@/lib/auth";
 import { verifyOtpCode } from "@/lib/otp";
 import { prisma } from "@/lib/prisma";
 import { parseProfileMetadata } from "@/lib/user-profile";
+import { resolvePlayerEntryState } from "@/lib/auth-decision-engine";
+import { INSTALLATION_COOKIE_NAME } from "@/lib/installation";
 import { checkRateLimit } from "@dragon/utils";
 
 export const dynamic = "force-dynamic";
@@ -76,20 +78,31 @@ export async function POST(req: NextRequest) {
       },
     }).catch(() => {});
 
-    // 3. Determine correct redirect URL from onboarding state
+    // 3. Determine correct redirect URL via Authoritative Decision Engine
+    const installationCookie = req.cookies.get(INSTALLATION_COOKIE_NAME)?.value || null;
+    const decision = resolvePlayerEntryState({
+      dbUser,
+      installationCookie,
+      token: {
+        id: dbUser.id,
+        email: dbUser.email,
+        emailVerified: true,
+        otpVerified: true,
+        hasCompletedWelcome: Boolean(dbUser.profile?.notificationSettings && JSON.parse(dbUser.profile.notificationSettings).hasCompletedWelcome),
+        hasCompletedDragonId: Boolean(dbUser.dragonId && dbUser.profile?.notificationSettings && JSON.parse(dbUser.profile.notificationSettings).hasCompletedDragonId),
+      },
+    });
+
     const meta = parseProfileMetadata(dbUser.profile?.notificationSettings, dbUser.name);
-    const redirectUrl = meta.hasCompletedDragonId
-      ? "/dashboard"
-      : meta.hasCompletedWelcome
-      ? "/dragon-id/setup"
-      : "/welcome";
 
     const response = NextResponse.json({
       success: true,
       verified: true,
-      hasDragonId: meta.hasCompletedDragonId,
+      hasDragonId: decision.hasDragonId,
       hasCompletedWelcome: meta.hasCompletedWelcome,
-      redirectUrl,
+      isRecognizedInstallation: decision.isRecognizedInstallation,
+      state: decision.state,
+      redirectUrl: decision.redirectUrl,
       user: {
         id: dbUser.id,
         name: dbUser.name,
@@ -100,7 +113,7 @@ export async function POST(req: NextRequest) {
       message: "Identity confirmed. Access granted.",
     });
 
-    // Set secure HTTP-only session cookie
+    // Set secure HTTP-only session cookie (Layer 2)
     response.cookies.set("dragon_session", sessionToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
