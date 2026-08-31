@@ -11,68 +11,90 @@ export async function middleware(req: NextRequest) {
 
   const token = await getToken({ req, secret });
 
-  const isDragonIdCompleted = Boolean(token?.dragonIdSetupCompleted || token?.hasCompletedDragonId);
-  const hasCompletedWelcome = Boolean(token?.hasCompletedWelcome);
+  const isEmailVerified = Boolean((token as any)?.emailVerified || (token as any)?.otpVerified);
+  const isDragonIdCompleted = Boolean((token as any)?.dragonIdSetupCompleted || (token as any)?.hasCompletedDragonId);
+  const hasCompletedWelcome = Boolean((token as any)?.hasCompletedWelcome);
 
-  const protectedRoutes = ["/dashboard", "/profile", "/settings"];
-  const isProtectedRoute = protectedRoutes.some(
-    (route) => pathname === route || pathname.startsWith(`${route}/`)
-  );
+  const isVerifyRoute = pathname === "/auth/verify-otp" || pathname === "/auth/verify-email";
+  const isWelcomeRoute = pathname === "/welcome";
+  const isDragonIdRoute = pathname === "/dragon-id/setup" || pathname.startsWith("/dragon-id/");
+  const isDashboardRoute = pathname === "/dashboard" || pathname.startsWith("/dashboard/");
+  const isProfileRoute = pathname === "/profile" || pathname.startsWith("/profile/");
+  const isSettingsRoute = pathname === "/settings" || pathname.startsWith("/settings/");
+  const isProtectedPlayRoute = pathname.startsWith("/games/play/");
 
-  // 1. Protected routes boundary (requires active session AND completed Dragon ID)
-  if (isProtectedRoute) {
-    if (!token) {
+  const isProtectedRoute = isDashboardRoute || isProfileRoute || isSettingsRoute || isProtectedPlayRoute;
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // 1. UNAUTHENTICATED USERS
+  // ═══════════════════════════════════════════════════════════════════════
+  if (!token) {
+    if (isProtectedRoute || isWelcomeRoute || isDragonIdRoute) {
       const loginUrl = new URL("/login", req.url);
+      loginUrl.searchParams.set("callbackUrl", pathname);
       return NextResponse.redirect(loginUrl);
     }
+    // Allow public access to /auth/verify-otp only if pending email cookie is present or direct load
+    return NextResponse.next();
+  }
 
+  // ═══════════════════════════════════════════════════════════════════════
+  // 2. AUTHENTICATED BUT EMAIL OTP NOT VERIFIED (MANDATORY GATE 1)
+  // ═══════════════════════════════════════════════════════════════════════
+  if (!isEmailVerified) {
+    // If not already on verification page, redirect to /auth/verify-otp
+    if (!isVerifyRoute) {
+      const verifyUrl = new URL("/auth/verify-otp", req.url);
+      return NextResponse.redirect(verifyUrl);
+    }
+    return NextResponse.next();
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // 3. FULLY OTP VERIFIED USERS
+  // ═══════════════════════════════════════════════════════════════════════
+
+  // If already verified and trying to access verify page, redirect to correct stage
+  if (isVerifyRoute) {
+    if (!hasCompletedWelcome) {
+      return NextResponse.redirect(new URL("/welcome", req.url));
+    }
     if (!isDragonIdCompleted) {
-      const destUrl = hasCompletedWelcome
-        ? new URL("/dragon-id/setup", req.url)
-        : new URL("/welcome", req.url);
-      return NextResponse.redirect(destUrl);
+      return NextResponse.redirect(new URL("/dragon-id/setup", req.url));
     }
+    return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
-  // 2. /welcome boundary: Incomplete users only. Completed users redirect to /dashboard.
-  if (pathname === "/welcome") {
-    if (!token) {
-      const loginUrl = new URL("/login", req.url);
-      return NextResponse.redirect(loginUrl);
-    }
-
+  // A. WELCOME STAGE GUARD
+  if (isWelcomeRoute) {
     if (isDragonIdCompleted) {
-      const dashboardUrl = new URL("/dashboard", req.url);
-      return NextResponse.redirect(dashboardUrl);
+      return NextResponse.redirect(new URL("/dashboard", req.url));
     }
+    if (hasCompletedWelcome) {
+      return NextResponse.redirect(new URL("/dragon-id/setup", req.url));
+    }
+    return NextResponse.next();
   }
 
-  // 3. /dragon-id/setup boundary: Unauthenticated -> /login. Completed -> /dashboard.
-  if (pathname === "/dragon-id/setup" || pathname.startsWith("/dragon-id/")) {
-    if (!token) {
-      const loginUrl = new URL("/login", req.url);
-      return NextResponse.redirect(loginUrl);
+  // B. DRAGON ID SETUP STAGE GUARD
+  if (isDragonIdRoute) {
+    if (!hasCompletedWelcome) {
+      return NextResponse.redirect(new URL("/welcome", req.url));
     }
-
     if (isDragonIdCompleted) {
-      const dashboardUrl = new URL("/dashboard", req.url);
-      return NextResponse.redirect(dashboardUrl);
+      return NextResponse.redirect(new URL("/dashboard", req.url));
     }
+    return NextResponse.next();
   }
 
-  // 4. /auth/verify-email boundary: Allow unverified users to verify OTP
-  if (pathname === "/auth/verify-email" || pathname === "/auth/verify-otp") {
-    // If user is already fully verified and session is active, redirect to destination
-    const isEmailVerified = Boolean((token as any)?.emailVerified || (token as any)?.otpVerified);
-    if (token && isEmailVerified) {
-      const destUrl = isDragonIdCompleted
-        ? new URL("/dashboard", req.url)
-        : hasCompletedWelcome
-        ? new URL("/dragon-id/setup", req.url)
-        : new URL("/welcome", req.url);
-      return NextResponse.redirect(destUrl);
+  // C. DASHBOARD & PROTECTED ROUTES GUARD
+  if (isProtectedRoute) {
+    if (!hasCompletedWelcome) {
+      return NextResponse.redirect(new URL("/welcome", req.url));
     }
-    // Allow pending/unverified user to access verification page
+    if (!isDragonIdCompleted) {
+      return NextResponse.redirect(new URL("/dragon-id/setup", req.url));
+    }
     return NextResponse.next();
   }
 
@@ -90,7 +112,10 @@ export const config = {
     "/welcome",
     "/dragon-id/:path*",
     "/dragon-id/setup",
+    "/auth/verify-otp",
     "/auth/verify-email",
+    "/games/play/:path*",
   ],
 };
+
 

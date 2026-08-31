@@ -360,7 +360,7 @@ export const authOptions: NextAuthOptions = {
     async redirect({ url, baseUrl }) {
       // Direct user straight to OTP verification screen after Google OAuth
       if (url.includes("/login") || url.includes("/register") || url.includes("callback/google")) {
-        return `${baseUrl}/auth/verify-email`;
+        return `${baseUrl}/auth/verify-otp`;
       }
       if (url.startsWith("/")) {
         return `${baseUrl}${url}`;
@@ -368,13 +368,14 @@ export const authOptions: NextAuthOptions = {
       if (new URL(url).origin === baseUrl) {
         return url;
       }
-      return `${baseUrl}/auth/verify-email`;
+      return `${baseUrl}/auth/verify-otp`;
     },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
         token.role = (user as any).role || "USER";
         token.picture = user.image;
+        token.emailVerified = (user as any).emailVerified || null;
       }
       
       if (token.email) {
@@ -388,6 +389,8 @@ export const authOptions: NextAuthOptions = {
             token.id = dbUser.id;
             token.role = dbUser.role;
             token.picture = dbUser.image || dbUser.avatar || token.picture;
+            token.emailVerified = dbUser.emailVerified ? true : false;
+            token.otpVerified = dbUser.emailVerified ? true : false;
 
             const meta = parseProfileMetadata(dbUser.profile?.notificationSettings, dbUser.name);
             token.dragonIdSetupCompleted = meta.hasCompletedDragonId;
@@ -408,6 +411,8 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.id as string;
         session.user.role = (token.role as string) || "USER";
         session.user.image = (token.picture as string) || session.user.image;
+        (session.user as any).emailVerified = Boolean(token.emailVerified || token.otpVerified);
+        (session.user as any).otpVerified = Boolean(token.emailVerified || token.otpVerified);
         (session.user as any).dragonIdSetupCompleted = Boolean(token.dragonIdSetupCompleted || token.hasCompletedDragonId);
         (session.user as any).hasCompletedDragonId = Boolean(token.hasCompletedDragonId || token.dragonIdSetupCompleted);
         (session.user as any).hasCompletedWelcome = Boolean(token.hasCompletedWelcome);
