@@ -55,15 +55,52 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 1. Mark email as verified on user model in database
-    const dbUser = await prisma.user.update({
+    // 1. Authenticate or create user in PostgreSQL ONLY upon verified OTP
+    let dbUser = await prisma.user.findUnique({
       where: { email: targetEmail },
-      data: {
-        emailVerified: new Date(),
-        status: "ACTIVE",
-      },
       include: { profile: true },
     });
+
+    if (!dbUser) {
+      // Create permanent database account on verified OTP
+      dbUser = await prisma.user.create({
+        data: {
+          name: session?.user?.name || targetEmail.split("@")[0],
+          email: targetEmail,
+          image: session?.user?.image || null,
+          emailVerified: new Date(),
+          role: "PLAYER",
+          status: "ACTIVE",
+          provider: "google",
+          profile: {
+            create: {
+              country: "United States",
+              language: "en-US",
+              theme: "dark",
+              notificationSettings: JSON.stringify({
+                email: true,
+                push: true,
+                hasCompletedWelcome: false,
+                hasCompletedDragonId: false,
+              }),
+            },
+          },
+        },
+        include: { profile: true },
+      });
+    } else {
+      // Existing returning user: confirm verification
+      dbUser = await prisma.user.update({
+        where: { id: dbUser.id },
+        data: {
+          emailVerified: new Date(),
+          status: "ACTIVE",
+          lastLogin: new Date(),
+          loginCount: { increment: 1 },
+        },
+        include: { profile: true },
+      });
+    }
 
     // 2. Issue persistent dragon_session cookie for direct session validation
     const sessionToken = `dragon_sess_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;

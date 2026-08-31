@@ -58,13 +58,9 @@ export function resolvePlayerEntryState(context: PlayerEntryContext): PlayerEntr
   }
 
   // 2. Email OTP verification status check
-  const isEmailVerified = Boolean(
-    token?.emailVerified ||
-    token?.otpVerified ||
-    dbUser?.emailVerified
-  );
+  const isOtpVerified = Boolean(token?.otpVerified);
 
-  if (!isEmailVerified) {
+  if (!isOtpVerified) {
     return {
       state: "OTP_REQUIRED",
       redirectUrl: "/auth/verify-otp",

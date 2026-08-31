@@ -22,12 +22,14 @@ function getSmtpTransporter() {
     process.env.OWNER_NOTIFICATION_EMAIL?.trim() ||
     "dragonstudiosofficial01@gmail.com";
 
-  const pass =
+  const rawPass =
     process.env.SMTP_PASSWORD?.trim() ||
     process.env.SMTP_PASS?.trim() ||
     process.env.GMAIL_APP_PASSWORD?.trim() ||
     process.env.EMAIL_SERVER_PASSWORD?.trim() ||
     "";
+
+  const pass = rawPass.replace(/[\s\r\n\t]+/g, "");
 
   if (!pass) return null;
 
@@ -44,6 +46,9 @@ function getSmtpTransporter() {
         user,
         pass,
       },
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 15000,
     }),
     fromAddress: user,
   };
