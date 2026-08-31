@@ -24,9 +24,19 @@ export async function middleware(req: NextRequest) {
 
   const isProtectedRoute = isDashboardRoute || isProfileRoute || isSettingsRoute || isProtectedPlayRoute;
 
-  // Resolve Authoritative State
+  const welcomeCompletedCookie = req.cookies.get("dragon_welcome_completed")?.value === "true";
+  const dragonIdCompletedCookie = req.cookies.get("dragon_dragonid_completed")?.value === "true";
+
+  // Resolve Authoritative State with immediate cookie awareness
   const decision = resolvePlayerEntryState({
-    token: token as any,
+    token: token
+      ? {
+          ...(token as any),
+          hasCompletedWelcome: Boolean((token as any)?.hasCompletedWelcome || welcomeCompletedCookie),
+          hasCompletedDragonId: Boolean((token as any)?.hasCompletedDragonId || (token as any)?.dragonIdSetupCompleted || dragonIdCompletedCookie),
+          dragonIdSetupCompleted: Boolean((token as any)?.dragonIdSetupCompleted || dragonIdCompletedCookie),
+        }
+      : null,
     installationCookie,
   });
 

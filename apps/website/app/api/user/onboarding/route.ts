@@ -136,11 +136,22 @@ export async function POST(req: NextRequest) {
         },
       }).catch((e: unknown) => console.warn("AuditLog creation warning:", e));
 
-      return NextResponse.json({
+      const response = NextResponse.json({
         success: true,
         message: "Welcome experience marked as completed.",
         step: "DRAGON_ID_FORGE",
+        redirectUrl: "/dragon-id/setup",
       });
+
+      response.cookies.set("dragon_welcome_completed", "true", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 30 * 24 * 60 * 60,
+        path: "/",
+      });
+
+      return response;
     }
 
     if (step === "INSTALLATION_CONFIRMED") {
@@ -272,6 +283,22 @@ export async function POST(req: NextRequest) {
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
         maxAge: 365 * 24 * 60 * 60, // 1 year
+        path: "/",
+      });
+
+      response.cookies.set("dragon_welcome_completed", "true", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 365 * 24 * 60 * 60,
+        path: "/",
+      });
+
+      response.cookies.set("dragon_dragonid_completed", "true", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 365 * 24 * 60 * 60,
         path: "/",
       });
 

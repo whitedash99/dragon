@@ -5,9 +5,11 @@
   "main": "index.ts",
   "types": "index.ts",
   "dependencies": {
-    "@dragon/types": "workspace:*"
+    "@dragon/types": "workspace:*",
+    "nodemailer": "^7.0.13"
   },
   "devDependencies": {
+    "@types/nodemailer": "^8.0.1",
     "typescript": "^5.7.3"
   }
 }

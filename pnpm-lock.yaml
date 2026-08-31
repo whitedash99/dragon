@@ -365,7 +365,13 @@ importers:
       '@dragon/types':
         specifier: workspace:*
         version: link:../types
+      nodemailer:
+        specifier: ^7.0.13
+        version: 7.0.13
     devDependencies:
+      '@types/nodemailer':
+        specifier: ^8.0.1
+        version: 8.0.1
       typescript:
         specifier: ^5.7.3
         version: 5.9.3

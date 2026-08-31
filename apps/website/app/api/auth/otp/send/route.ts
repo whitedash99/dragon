@@ -8,16 +8,17 @@ export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   try {
-    // 1. Authenticate that a valid session exists
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
+    const session = await getServerSession(authOptions).catch(() => null);
+    const body = await req.json().catch(() => ({}));
+    const pendingCookieEmail = req.cookies.get("dragon_pending_email")?.value;
+    const email = (session?.user?.email || pendingCookieEmail || body?.email || "").toLowerCase().trim();
+
+    if (!email) {
       return NextResponse.json(
-        { success: false, error: "Authentication session required." },
+        { success: false, error: "Authentication session or email reference required." },
         { status: 401 }
       );
     }
-
-    const email = session.user.email.toLowerCase().trim();
     const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "127.0.0.1";
 
     // 2. Rate limiting: 5 sends per hour per email, cooldown of 60 seconds
@@ -42,7 +43,7 @@ export async function POST(req: NextRequest) {
     }
 
     // 3. Generate & Send OTP
-    const result = await createAndSendOtp(email, session.user.id);
+    const result = await createAndSendOtp(email, session?.user?.id);
     if (!result.success) {
       return NextResponse.json(
         { success: false, error: result.error || "Failed to send verification code." },

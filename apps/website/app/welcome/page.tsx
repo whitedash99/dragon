@@ -63,7 +63,7 @@ export default function WelcomePage() {
   const [userData, setUserData] = useState<{ name?: string; email?: string } | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  // Fetch real user metadata & check onboarding status
+  // Fetch real user metadata & check onboarding status (Video plays only 1 time)
   useEffect(() => {
     async function checkUserOnboarding() {
       try {
@@ -76,6 +76,10 @@ export default function WelcomePage() {
         if (data.success) {
           if (data.onboarding?.hasCompletedDragonId) {
             router.replace("/dashboard");
+            return;
+          }
+          if (data.onboarding?.hasCompletedWelcome && !data.onboarding?.hasCompletedDragonId) {
+            router.replace("/dragon-id/setup");
             return;
           }
           if (data.user) {
@@ -245,16 +249,20 @@ export default function WelcomePage() {
     }
 
     try {
-      await fetch("/api/user/onboarding", {
+      const res = await fetch("/api/user/onboarding", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ step: "WELCOME_COMPLETE" }),
       });
+      const data = await res.json();
+      if (data.redirectUrl) {
+        window.location.assign(data.redirectUrl);
+        return;
+      }
     } catch (err) {
       console.warn("Non-fatal onboarding sync warning:", err);
-    } finally {
-      window.location.href = "/dragon-id/setup";
     }
+    window.location.assign("/dragon-id/setup");
   };
 
   return (

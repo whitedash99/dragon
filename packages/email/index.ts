@@ -1,3 +1,4 @@
+import nodemailer from "nodemailer";
 import type { ContactReplyPayload } from '@dragon/types';
 
 export interface EmailPayload {
@@ -8,6 +9,140 @@ export interface EmailPayload {
   type?: string;
   template?: string;
   ticketId?: string;
+}
+
+/**
+ * Creates Nodemailer transport for Google SMTP / Custom SMTP.
+ */
+function getSmtpTransporter() {
+  const user =
+    process.env.SMTP_USER?.trim() ||
+    process.env.GMAIL_USER?.trim() ||
+    process.env.EMAIL_SERVER_USER?.trim() ||
+    process.env.OWNER_NOTIFICATION_EMAIL?.trim() ||
+    "dragonstudiosofficial01@gmail.com";
+
+  const pass =
+    process.env.SMTP_PASSWORD?.trim() ||
+    process.env.SMTP_PASS?.trim() ||
+    process.env.GMAIL_APP_PASSWORD?.trim() ||
+    process.env.EMAIL_SERVER_PASSWORD?.trim() ||
+    "";
+
+  if (!pass) return null;
+
+  const host = process.env.SMTP_HOST?.trim() || "smtp.gmail.com";
+  const port = parseInt(process.env.SMTP_PORT?.trim() || "465", 10);
+  const secure = port === 465;
+
+  return {
+    transporter: nodemailer.createTransport({
+      host,
+      port,
+      secure,
+      auth: {
+        user,
+        pass,
+      },
+    }),
+    fromAddress: user,
+  };
+}
+
+export async function sendEmail(payload: EmailPayload): Promise<{ success: boolean; messageId?: string; error?: string; forwardedToOwner?: boolean }> {
+  const rawFrom = process.env.EMAIL_FROM?.trim() || process.env.DEFAULT_FROM_EMAIL?.trim() || "onboarding@resend.dev";
+  const defaultFrom = rawFrom.includes("<") ? rawFrom : `Dragon Studios <${rawFrom}>`;
+  const ownerEmail = process.env.OWNER_NOTIFICATION_EMAIL?.trim() || process.env.CONTACT_EMAIL?.trim() || "dragonstudiosofficial01@gmail.com";
+
+  // 1. First Priority: Google SMTP / Nodemailer (if SMTP password configured)
+  const smtp = getSmtpTransporter();
+  if (smtp) {
+    try {
+      const from = payload.from || `Dragon Gaming Studios <${smtp.fromAddress}>`;
+      const info = await smtp.transporter.sendMail({
+        from,
+        to: payload.to,
+        subject: payload.subject,
+        html: payload.html,
+      });
+
+      console.log(`✅ [@dragon/email] Email sent via Google SMTP — ID: ${info.messageId} | To: ${payload.to}`);
+      return { success: true, messageId: info.messageId };
+    } catch (smtpErr: any) {
+      console.warn(`⚠️ [@dragon/email] SMTP delivery failed, attempting Resend fallback:`, smtpErr?.message || smtpErr);
+    }
+  }
+
+  // 2. Second Priority: Resend HTTP API
+  const apiKey = process.env.RESEND_API_KEY?.trim();
+  if (apiKey && !apiKey.includes("placeholder")) {
+    try {
+      const res = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          from: payload.from || defaultFrom,
+          to: [payload.to],
+          subject: payload.subject,
+          html: payload.html,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.id) {
+        console.log(`✅ [@dragon/email] Email sent via Resend — ID: ${data.id} | To: ${payload.to}`);
+        return { success: true, messageId: data.id };
+      } else {
+        const errMsg = data.message || data.name || JSON.stringify(data);
+        console.warn(`⚠️ [@dragon/email] Resend primary note: ${errMsg}`);
+
+        // Handle Resend unverified testing domain restriction by forwarding to owner email
+        if (
+          (res.status === 403 || String(errMsg).includes("testing emails to your own email address")) &&
+          payload.to.toLowerCase().trim() !== ownerEmail.toLowerCase().trim()
+        ) {
+          console.log(`📡 [@dragon/email] Forwarding delivery for ${payload.to} to registered Resend owner ${ownerEmail}...`);
+          const fallbackRes = await fetch("https://api.resend.com/emails", {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${apiKey}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              from: payload.from || defaultFrom,
+              to: [ownerEmail],
+              subject: `[DISPATCH FOR ${payload.to}] ${payload.subject}`,
+              html: `
+                <div style="background:#02040A; color:#ffffff; font-family:sans-serif; padding:24px; border-radius:16px; border:1px solid rgba(0,229,255,0.4);">
+                  <div style="font-size:11px; font-family:monospace; color:#00E5FF; margin-bottom:12px;">
+                    ⚠️ DISPATCH DESTINATION: ${payload.to}
+                  </div>
+                  ${payload.html}
+                </div>
+              `,
+            }),
+          });
+
+          const fallbackData = await fallbackRes.json();
+          if (fallbackRes.ok && fallbackData.id) {
+            console.log(`✅ [@dragon/email] Successfully delivered dispatch to owner address: ${ownerEmail} (ID: ${fallbackData.id})`);
+            return { success: true, messageId: fallbackData.id, forwardedToOwner: true };
+          }
+        }
+
+        return { success: false, error: errMsg };
+      }
+    } catch (e: any) {
+      console.error("[@dragon/email] Exception sending email via Resend:", e);
+      return { success: false, error: e?.message || "Resend error" };
+    }
+  }
+
+  console.warn("[@dragon/email] No active SMTP password or Resend API key configured.");
+  return { success: false, error: "No email transport configured." };
 }
 
 export function buildContactReplyHtml(payload: ContactReplyPayload): string {
@@ -116,81 +251,7 @@ export function buildCustomerContactConfirmationHtml(name: string, ticketNumber:
   `;
 }
 
-export async function sendEmail(payload: EmailPayload): Promise<{ success: boolean; messageId?: string; error?: string; forwardedToOwner?: boolean }> {
-  const apiKey = process.env.RESEND_API_KEY?.trim();
-  const rawFrom = process.env.EMAIL_FROM?.trim() || process.env.DEFAULT_FROM_EMAIL?.trim() || "onboarding@resend.dev";
-  const fromAddress = rawFrom.includes("<") ? rawFrom : `Dragon Studios <${rawFrom}>`;
-  const ownerEmail = process.env.OWNER_NOTIFICATION_EMAIL?.trim() || process.env.CONTACT_EMAIL?.trim() || "dragonstudiosofficial01@gmail.com";
 
-  if (!apiKey || apiKey.includes("placeholder")) {
-    console.error("[@dragon/email] RESEND_API_KEY is unconfigured or missing");
-    return { success: false, error: "RESEND_API_KEY missing" };
-  }
-
-  try {
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: payload.from || fromAddress,
-        to: [payload.to],
-        subject: payload.subject,
-        html: payload.html,
-      }),
-    });
-
-    const data = await res.json();
-    if (res.ok && data.id) {
-      console.log(`✅ [@dragon/email] Email sent via Resend — ID: ${data.id} | To: ${payload.to}`);
-      return { success: true, messageId: data.id };
-    } else {
-      const errMsg = data.message || data.name || JSON.stringify(data);
-      console.warn(`⚠️ [@dragon/email] Primary delivery note: ${errMsg}`);
-
-      // Handle Resend unverified testing domain restriction by forwarding to owner email
-      if (
-        (res.status === 403 || String(errMsg).includes("testing emails to your own email address")) &&
-        payload.to.toLowerCase().trim() !== ownerEmail.toLowerCase().trim()
-      ) {
-        console.log(`📡 [@dragon/email] Forwarding delivery for ${payload.to} to registered Resend owner ${ownerEmail}...`);
-        const fallbackRes = await fetch("https://api.resend.com/emails", {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${apiKey}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            from: payload.from || fromAddress,
-            to: [ownerEmail],
-            subject: `[DISPATCH FOR ${payload.to}] ${payload.subject}`,
-            html: `
-              <div style="background:#02040A; color:#ffffff; font-family:sans-serif; padding:24px; border-radius:16px; border:1px solid rgba(0,229,255,0.4);">
-                <div style="font-size:11px; font-family:monospace; color:#00E5FF; margin-bottom:12px;">
-                  ⚠️ DISPATCH DESTINATION: ${payload.to}
-                </div>
-                ${payload.html}
-              </div>
-            `,
-          }),
-        });
-
-        const fallbackData = await fallbackRes.json();
-        if (fallbackRes.ok && fallbackData.id) {
-          console.log(`✅ [@dragon/email] Successfully delivered dispatch to owner address: ${ownerEmail} (ID: ${fallbackData.id})`);
-          return { success: true, messageId: fallbackData.id, forwardedToOwner: true };
-        }
-      }
-
-      return { success: false, error: errMsg };
-    }
-  } catch (e: any) {
-    console.error("[@dragon/email] Exception sending email:", e);
-    return { success: false, error: e?.message || String(e) };
-  }
-}
 
 export async function sendOwnerNotificationEmail(subject: string, details: string) {
   const ownerEmail = process.env.OWNER_NOTIFICATION_EMAIL?.trim() || process.env.CONTACT_EMAIL?.trim() || "dragonstudiosofficial01@gmail.com";
