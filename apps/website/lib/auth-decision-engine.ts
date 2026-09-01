@@ -57,8 +57,9 @@ export function resolvePlayerEntryState(context: PlayerEntryContext): PlayerEntr
     };
   }
 
-  // 2. Email OTP verification status check
-  const isOtpVerified = Boolean(token?.otpVerified);
+  // 2. Email OTP verification status check (Active only if explicitly required)
+  const isOtpRequired = process.env.REQUIRE_EMAIL_OTP === "true";
+  const isOtpVerified = !isOtpRequired || Boolean(token?.otpVerified);
 
   if (!isOtpVerified) {
     return {
@@ -72,7 +73,7 @@ export function resolvePlayerEntryState(context: PlayerEntryContext): PlayerEntr
   // 3. Extract Database & Token Account Truth
   const meta = parseProfileMetadata(dbUser?.profile?.notificationSettings);
   const userId = dbUser?.id || token?.id || "";
-  const existingDragonId = dbUser?.dragonId || null;
+  const existingDragonId = dbUser?.dragonId || (token as any)?.dragonId || null;
 
   const hasDragonId = Boolean(
     existingDragonId ||
@@ -97,8 +98,8 @@ export function resolvePlayerEntryState(context: PlayerEntryContext): PlayerEntr
   // SCENARIO EVALUATION
   // ═══════════════════════════════════════════════════════════════════════
 
-  // SCENARIO B: Returning completed player on trusted/existing browser installation
-  if (hasDragonId && hasCompletedWelcome && isRecognizedInstallation) {
+  // SCENARIO 1: User has completed Dragon ID setup -> Direct to Dashboard (Zero video replay)
+  if (hasDragonId) {
     return {
       state: "AUTHENTICATED",
       redirectUrl: "/dashboard",
@@ -109,21 +110,8 @@ export function resolvePlayerEntryState(context: PlayerEntryContext): PlayerEntr
     };
   }
 
-  // SCENARIO C: Returning completed player on Fresh Browser / Cleared Chrome Site Data
-  // Account and Dragon ID exist in DB, but installation token is absent
-  if (hasDragonId && !isRecognizedInstallation) {
-    return {
-      state: "WELCOME_REQUIRED",
-      redirectUrl: "/welcome",
-      isRecognizedInstallation: false,
-      hasDragonId: true,
-      dragonId: existingDragonId,
-      gamerTag: meta.gamerTag,
-    };
-  }
-
-  // SCENARIO D: Partially onboarded account (Welcome finished, Dragon ID incomplete)
-  if (!hasDragonId && hasCompletedWelcome) {
+  // SCENARIO 2: User finished welcome orientation -> Setup Dragon ID
+  if (hasCompletedWelcome && !hasDragonId) {
     return {
       state: "DRAGON_ID_SETUP",
       redirectUrl: "/dragon-id/setup",
@@ -132,7 +120,7 @@ export function resolvePlayerEntryState(context: PlayerEntryContext): PlayerEntr
     };
   }
 
-  // SCENARIO A: Brand new account (Neither welcome nor Dragon ID forged)
+  // SCENARIO 3: Brand new account -> Play intro video once
   return {
     state: "WELCOME_REQUIRED",
     redirectUrl: "/welcome",

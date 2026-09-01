@@ -96,11 +96,19 @@ export default function WelcomePage() {
   const rawName = userData?.name || session?.user?.name || userData?.email || "Dragon Operative";
   const displayName = rawName.split("@")[0].split(" ")[0];
 
+  const isMutedRef = useRef(isMuted);
+  isMutedRef.current = isMuted;
+
+  const hasStartedTimelineRef = useRef(false);
+
   // ═══════════════════════════════════════════════════════════════════════
-  // SCENE PROGRESSION TIMELINE
+  // SCENE PROGRESSION TIMELINE (STABLE SINGLE RUN)
   // ═══════════════════════════════════════════════════════════════════════
   useEffect(() => {
-    if (!isMuted) {
+    if (hasStartedTimelineRef.current) return;
+    hasStartedTimelineRef.current = true;
+
+    if (!isMutedRef.current) {
       soundFx.playCinematicSubDrop();
       soundFx.playLightningSpark();
     }
@@ -108,19 +116,19 @@ export default function WelcomePage() {
     // Scene 01 -> Scene 02 (Dragon Crest) @ 1.8s
     const t1 = setTimeout(() => {
       setScene(2);
-      if (!isMuted) soundFx.playLightningSpark();
+      if (!isMutedRef.current) soundFx.playLightningSpark();
     }, 1800);
 
     // Scene 02 -> Scene 03 (Welcome Title) @ 3.4s
     const t2 = setTimeout(() => {
       setScene(3);
-      if (!isMuted) soundFx.playSlideWhoosh();
+      if (!isMutedRef.current) soundFx.playSlideWhoosh();
     }, 3400);
 
     // Scene 03 -> Scene 04 (Real Games Repertoire) @ 5.4s
     const t3 = setTimeout(() => {
       setScene(4);
-      if (!isMuted) soundFx.playSlideWhoosh();
+      if (!isMutedRef.current) soundFx.playSlideWhoosh();
     }, 5400);
 
     return () => {
@@ -128,7 +136,7 @@ export default function WelcomePage() {
       clearTimeout(t2);
       clearTimeout(t3);
     };
-  }, [isMuted]);
+  }, []);
 
   // Scene 04: Flagship Car Game Showcase
   useEffect(() => {
@@ -137,11 +145,11 @@ export default function WelcomePage() {
     const gameTimer = setTimeout(() => {
       setScene(5);
       setStatementIndex(0);
-      if (!isMuted) soundFx.playSlideWhoosh();
+      if (!isMutedRef.current) soundFx.playSlideWhoosh();
     }, 4000);
 
     return () => clearTimeout(gameTimer);
-  }, [scene, isMuted]);
+  }, [scene]);
 
   // Scene 05: Universe Statements
   useEffect(() => {
@@ -150,15 +158,15 @@ export default function WelcomePage() {
     const stmtTimer = setTimeout(() => {
       if (statementIndex < UNIVERSE_STATEMENTS.length - 1) {
         setStatementIndex((prev) => prev + 1);
-        if (!isMuted) soundFx.playClick();
+        if (!isMutedRef.current) soundFx.playClick();
       } else {
         setScene(6);
-        if (!isMuted) soundFx.playForgeComplete();
+        if (!isMutedRef.current) soundFx.playForgeComplete();
       }
     }, 1200);
 
     return () => clearTimeout(stmtTimer);
-  }, [scene, statementIndex, isMuted]);
+  }, [scene, statementIndex]);
 
   // ═══════════════════════════════════════════════════════════════════════
   // 3D COSMIC PARTICLE WARP CANVAS
@@ -243,26 +251,22 @@ export default function WelcomePage() {
     if (isAdvancing) return;
     setIsAdvancing(true);
 
-    if (!isMuted) {
+    if (!isMutedRef.current) {
       soundFx.playClick();
       soundFx.playForgeComplete();
     }
 
     try {
-      const res = await fetch("/api/user/onboarding", {
+      document.cookie = "dragon_welcome_completed=true; path=/; max-age=2592000; SameSite=Lax";
+      await fetch("/api/user/onboarding", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ step: "WELCOME_COMPLETE" }),
       });
-      const data = await res.json();
-      if (data.redirectUrl) {
-        window.location.assign(data.redirectUrl);
-        return;
-      }
     } catch (err) {
       console.warn("Non-fatal onboarding sync warning:", err);
     }
-    window.location.assign("/dragon-id/setup");
+    window.location.href = "/dragon-id/setup";
   };
 
   return (
@@ -288,11 +292,18 @@ export default function WelcomePage() {
             <span className="text-[10px] font-mono font-black uppercase tracking-[0.2em] text-transparent bg-clip-text bg-gradient-to-r from-[#00E5FF] via-[#A855F7] to-[#FF2BD6] block">
               DRAGON GAMING STUDIOS
             </span>
-            <span className="text-[11px] text-slate-300 font-mono">Mandatory Universe Orientation</span>
+            <span className="text-[11px] text-slate-300 font-mono">Universe Orientation</span>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={handleProceedToForge}
+            className="px-3.5 py-2 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-xs font-mono font-bold tracking-wider transition-all cursor-pointer shadow-lg hover:shadow-[0_0_20px_rgba(0,229,255,0.3)]"
+          >
+            SKIP TO FORGE →
+          </button>
           <button
             type="button"
             onClick={() => setIsMuted(!isMuted)}

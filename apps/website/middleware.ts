@@ -68,9 +68,9 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // 3. Welcome Required (Brand new account OR Fresh browser reset)
+  // 3. Welcome Required (Brand new account)
   if (decision.state === "WELCOME_REQUIRED") {
-    if (isVerifyRoute || isDashboardRoute || isDragonIdRoute || isProfileRoute || isSettingsRoute) {
+    if (isVerifyRoute || isDashboardRoute || isProfileRoute || isSettingsRoute) {
       return NextResponse.redirect(new URL("/welcome", req.url));
     }
     return NextResponse.next();
