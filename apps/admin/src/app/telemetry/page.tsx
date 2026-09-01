@@ -160,17 +160,13 @@ export default function TelemetryPage() {
   const fetchTelemetry = useCallback(async () => {
     try {
       setRefreshing(true);
-      const params = new URLSearchParams();
-      if (categoryFilter !== "ALL") params.set("action", categoryFilter);
-      if (searchQuery) params.set("q", searchQuery);
-
-      const res = await fetch(`/api/telemetry?${params.toString()}`);
+      const res = await fetch(`/api/telemetry`);
       const data = await res.json();
 
       if (data.success) {
         setSummary(data.summary);
-        setEvents(data.events);
-        setPlayers(data.players);
+        setEvents(data.events || []);
+        setPlayers(data.players || []);
         setLastSyncTime(new Date().toLocaleTimeString());
       }
     } catch (err) {
@@ -179,7 +175,7 @@ export default function TelemetryPage() {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [categoryFilter, searchQuery]);
+  }, []);
 
   // Initial Load & Auto-Refresh Interval
   useEffect(() => {
@@ -200,28 +196,56 @@ export default function TelemetryPage() {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  // Filtered Events based on time filter
+  // Filtered Events based on time, category, and instant search
   const filteredEvents = useMemo(() => {
-    if (timeFilter === "ALL") return events;
+    let result = events;
 
-    const now = Date.now();
-    const msLimit =
-      timeFilter === "TODAY"
-        ? 24 * 60 * 60 * 1000
-        : timeFilter === "24H"
-        ? 24 * 60 * 60 * 1000
-        : 7 * 24 * 60 * 60 * 1000;
+    // 1. Time filter
+    if (timeFilter !== "ALL") {
+      const now = Date.now();
+      const msLimit =
+        timeFilter === "TODAY"
+          ? 24 * 60 * 60 * 1000
+          : timeFilter === "24H"
+          ? 24 * 60 * 60 * 1000
+          : 7 * 24 * 60 * 60 * 1000;
 
-    return events.filter((e) => {
-      const eventTime = new Date(e.createdAt).getTime();
-      return now - eventTime <= msLimit;
-    });
-  }, [events, timeFilter]);
+      result = result.filter((e) => {
+        const eventTime = new Date(e.createdAt).getTime();
+        return now - eventTime <= msLimit;
+      });
+    }
 
-  // Filtered Players
+    // 2. Category filter
+    if (categoryFilter !== "ALL") {
+      result = result.filter((e) => e.category === categoryFilter || e.action === categoryFilter);
+    }
+
+    // 3. Search query filter
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      result = result.filter((e) => {
+        return (
+          e.user.email.toLowerCase().includes(q) ||
+          e.user.name.toLowerCase().includes(q) ||
+          (e.user.dragonId && e.user.dragonId.toLowerCase().includes(q)) ||
+          e.device.ipAddress.includes(q) ||
+          e.device.os.toLowerCase().includes(q) ||
+          e.device.browser.toLowerCase().includes(q) ||
+          e.location.toLowerCase().includes(q) ||
+          e.action.toLowerCase().includes(q) ||
+          e.details.toLowerCase().includes(q)
+        );
+      });
+    }
+
+    return result;
+  }, [events, timeFilter, categoryFilter, searchQuery]);
+
+  // Filtered Players based on instant search
   const filteredPlayers = useMemo(() => {
-    if (!searchQuery) return players;
-    const q = searchQuery.toLowerCase();
+    if (!searchQuery.trim()) return players;
+    const q = searchQuery.toLowerCase().trim();
     return players.filter((p) => {
       return (
         p.name.toLowerCase().includes(q) ||
