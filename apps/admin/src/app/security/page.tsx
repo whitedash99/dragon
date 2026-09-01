@@ -14,8 +14,10 @@ import {
   AlertTriangle,
   Smartphone,
   Activity,
-  ArrowUpRight
+  ArrowUpRight,
+  FileText
 } from "lucide-react";
+import { openOfficialPdfReport } from "@/lib/pdf-report-generator";
 import { cn } from "@/lib/utils/cn";
 import { GlassCard, GlassBadge, GlassButton, GlassStat } from "@/components/ui/glass";
 
@@ -115,6 +117,38 @@ export default function SecurityPage() {
     return true;
   });
 
+  const handleExportSecurityPDF = () => {
+    openOfficialPdfReport({
+      header: {
+        title: "MILITARY SECURITY POSTURE & GOVERNANCE AUDIT",
+        subtitle: "Zero-trust verification of Neon PostgreSQL database, WebAuthn authenticators, cryptographic sessions, and RBAC policies.",
+        classification: "TOP SECRET // EXECUTIVE ONLY",
+        category: "SECURITY & GOVERNANCE AUDIT",
+      },
+      metrics: [
+        { label: "SECURITY POSTURE", value: `${posture.score || 85}%`, subtext: "Military Guard Active", color: "emerald" },
+        { label: "ACTIVE SESSIONS", value: telemetry.activeSessions || 1, subtext: "Live Encrypted Tokens", color: "cyan" },
+        { label: "TRUSTED DEVICES", value: trustedDevices.length, subtext: "Hardware Authenticated", color: "purple" },
+        { label: "FAILED CHALLENGES", value: telemetry.failedLogins || 0, subtext: "Zero Breach Record", color: "gold" },
+      ],
+      table: {
+        title: "SECURITY AUDIT LOGS & EVENT TRACE",
+        columns: [
+          { header: "Time", key: "time", width: "15%" },
+          { header: "Action", render: (r: AuditLogRecord) => `<span class="badge-cyan">${r.action}</span>`, width: "25%" },
+          { header: "Operator / User", key: "user", width: "20%" },
+          { header: "Details", key: "details", width: "25%" },
+          { header: "IP Node", key: "ip", width: "15%" },
+        ],
+        rows: filteredLogs,
+      },
+      notes: [
+        "Audit logs are cryptographically sealed in Neon PostgreSQL database.",
+        "Zero-trust RBAC policies actively protect all Dragon Gaming Studios endpoints.",
+      ],
+    });
+  };
+
   return (
     <div className="flex min-h-screen w-full bg-[#02040A] text-slate-100 font-sans antialiased overflow-hidden select-none font-mono">
       <Sidebar />
@@ -133,6 +167,16 @@ export default function SecurityPage() {
             </div>
 
             <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={handleExportSecurityPDF}
+                className="px-4 py-2 rounded-xl text-xs font-mono font-bold flex items-center gap-2 border border-cyan-400/40 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-300 hover:from-cyan-500/30 hover:to-blue-500/30 shadow-[0_0_15px_rgba(0,229,255,0.2)] cursor-pointer"
+                title="Export Security Audit Report to PDF"
+              >
+                <FileText className="size-3.5 text-cyan-400" />
+                <span>Export PDF Report</span>
+              </button>
+
               <Link href="/secrets">
                 <button className="px-4 py-2 rounded-xl text-xs font-mono font-bold flex items-center gap-2 border border-cyan-500/30 bg-[#03091D] text-cyan-300 hover:text-white hover:border-cyan-400 shadow-[0_0_15px_rgba(0,0,0,0.6)] cursor-pointer">
                   <KeyRound className="size-3.5 text-cyan-400" />

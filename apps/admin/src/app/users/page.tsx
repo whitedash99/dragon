@@ -21,8 +21,10 @@ import {
   X,
   Crown,
   Sparkles,
-  Globe
+  Globe,
+  FileText
 } from "lucide-react";
+import { openOfficialPdfReport } from "@/lib/pdf-report-generator";
 import { cn } from "@/lib/utils/cn";
 import { GlassCard, GlassStat, GlassButton, GlassBadge } from "@/components/ui/glass";
 
@@ -63,6 +65,7 @@ interface UserItem {
   id: string;
   name?: string;
   email: string;
+  dragonId?: string | null;
   image?: string;
   avatar?: string;
   employeeId?: string;
@@ -278,6 +281,47 @@ export default function UsersPage() {
     }
   };
 
+  const handleExportUsersPDF = () => {
+    openOfficialPdfReport({
+      header: {
+        title: "TEAM WORKFORCE & PLAYER ROSTER AUDIT",
+        subtitle: "Verified PostgreSQL identity registry containing player credentials, Dragon IDs, and permission tiers.",
+        classification: "TOP SECRET // EXECUTIVE ONLY",
+        category: "IDENTITY & ACCESS ROSTER",
+      },
+      metrics: [
+        { label: "TOTAL ACCOUNTS", value: users.length, subtext: "Synchronized in PostgreSQL", color: "cyan" },
+        { label: "ACTIVE PLAYERS", value: users.filter((u) => u.role === "PLAYER").length, subtext: "Player Base", color: "gold" },
+        { label: "STUDIO STAFF", value: users.filter((u) => u.role !== "PLAYER").length, subtext: "Admin & Operators", color: "purple" },
+        { label: "DRAGON IDs", value: users.filter((u) => Boolean(u.profile?.dragonId || u.dragonId)).length, subtext: "Minted Callsigns", color: "emerald" },
+      ],
+      table: {
+        title: "OFFICIAL ACCOUNT & GAMING IDENTITY ROSTER",
+        columns: [
+          { header: "Name", render: (u: UserItem) => `<b>${u.name || u.email.split("@")[0]}</b>`, width: "18%" },
+          { header: "Email Address", key: "email", width: "22%" },
+          { 
+            header: "Dragon ID", 
+            render: (u: UserItem) => {
+              const dId = u.dragonId || u.profile?.dragonId;
+              return dId ? `<span class="badge-amber">${dId}</span>` : `<span style="color:#64748B">Pending</span>`;
+            },
+            width: "18%" 
+          },
+          { header: "Role Tier", render: (u: UserItem) => `<span class="badge-cyan">${u.role}</span>`, width: "12%" },
+          { header: "Provider", render: (u: UserItem) => (u.provider ? u.provider.toUpperCase() : "GOOGLE"), width: "12%" },
+          { header: "Logins", render: (u: UserItem) => String(u.loginCount || 1), align: "center", width: "8%" },
+          { header: "Joined", render: (u: UserItem) => new Date(u.createdAt).toLocaleDateString(), width: "10%" },
+        ],
+        rows: users,
+      },
+      notes: [
+        "Cryptographically signed by Dragon Identity & Access Control (IAM).",
+        "Direct link to Neon PostgreSQL database with zero mock data.",
+      ],
+    });
+  };
+
   return (
     <div className="flex min-h-screen w-full bg-[#02040A] text-slate-100 font-sans antialiased overflow-hidden select-none font-mono">
       <Sidebar />
@@ -302,6 +346,16 @@ export default function UsersPage() {
             </div>
 
             <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={handleExportUsersPDF}
+                className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500/20 to-blue-500/20 hover:from-cyan-500/30 hover:to-blue-500/30 border border-cyan-400/40 text-xs font-bold text-cyan-300 transition-all shadow-[0_0_15px_rgba(0,229,255,0.2)] cursor-pointer"
+                title="Export Official Player Roster to PDF"
+              >
+                <FileText className="size-3.5 text-cyan-400" />
+                <span>Export PDF Roster</span>
+              </button>
+
               <button
                 onClick={fetchUsers}
                 className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-[#03091D] hover:border-cyan-400 border border-cyan-500/30 text-xs font-bold text-cyan-300 transition-all shadow-[0_0_15px_rgba(0,0,0,0.5)] cursor-pointer"

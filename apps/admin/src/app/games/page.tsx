@@ -31,8 +31,10 @@ import {
   ShieldCheck,
   ChevronRight,
   ChevronLeft,
-  Crown
+  Crown,
+  FileText
 } from "lucide-react";
+import { openOfficialPdfReport } from "@/lib/pdf-report-generator";
 import { cn } from "@/lib/utils/cn";
 import { GlassSurface, GlassButton, GlassCard, GlassBadge, GlassStat } from "@/components/ui/glass";
 import { ReleaseManagerModal } from "@/components/games/ReleaseManagerModal";
@@ -57,6 +59,7 @@ interface GameItem {
   featuredOrder?: number;
   dimension?: "3D" | "2D";
   engineVersion?: string;
+  downloadCount?: number;
   pcExeUrl?: string;
   pcFileSize?: string;
   mobileApkUrl?: string;
@@ -413,6 +416,39 @@ export default function GamesPage() {
     });
   }, [games, searchQuery, statusFilter, dimensionFilter]);
 
+  const handleExportGamesPDF = () => {
+    openOfficialPdfReport({
+      header: {
+        title: "GAME STUDIO PRODUCTION & RELEASES CATALOG",
+        subtitle: "Official audit of all AAA titles, engine binaries, Backblaze B2 distribution channels, and player downloads.",
+        classification: "TOP SECRET // EXECUTIVE ONLY",
+        category: "GAME STUDIO PRODUCTION AUDIT",
+      },
+      metrics: [
+        { label: "REGISTERED TITLES", value: games.length, subtext: "PostgreSQL Games Catalog", color: "cyan" },
+        { label: "PUBLISHED LIVE", value: games.filter((g) => g.isPublished).length, subtext: "Public Website Live", color: "emerald" },
+        { label: "TOTAL DOWNLOADS", value: games.reduce((acc, g) => acc + (g.downloadCount || 0), 0), subtext: "Verified Player Installs", color: "gold" },
+        { label: "STORAGE BACKEND", value: "Backblaze B2", subtext: "S3 Enterprise Cloud", color: "purple" },
+      ],
+      table: {
+        title: "OFFICIAL STUDIO GAMES PRODUCTION REGISTRY",
+        columns: [
+          { header: "Game Title", render: (g: GameItem) => `<b>${g.name}</b>`, width: "22%" },
+          { header: "Genre", render: (g: GameItem) => `<span class="badge-cyan">${g.genre}</span>`, width: "15%" },
+          { header: "Platforms", render: (g: GameItem) => g.platforms || "PC / Android", width: "18%" },
+          { header: "Engine", render: (g: GameItem) => g.engineVersion || "Dragon Engine v5.4", width: "18%" },
+          { header: "Status", render: (g: GameItem) => g.isPublished ? `<span class="badge-emerald">PUBLISHED</span>` : `<span class="badge-amber">DRAFT</span>`, width: "12%" },
+          { header: "Downloads", render: (g: GameItem) => String(g.downloadCount || 0), align: "center", width: "15%" },
+        ],
+        rows: filteredGames,
+      },
+      notes: [
+        "Uncharted Drive: Beyond is the flagship AAA open-world franchise of Dragon Gaming Studios.",
+        "Executable builds (.exe) and mobile packages (.apk) are cryptographically hashed and distributed via Backblaze B2.",
+      ],
+    });
+  };
+
   return (
     <div className="flex h-screen w-full bg-[#02040A] text-slate-100 font-sans antialiased overflow-hidden select-none">
       <Sidebar />
@@ -437,6 +473,16 @@ export default function GamesPage() {
             </div>
 
             <div className="flex items-center gap-2.5">
+              <button
+                type="button"
+                onClick={handleExportGamesPDF}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500/20 to-blue-500/20 hover:from-cyan-500/30 hover:to-blue-500/30 border border-cyan-400/40 text-xs font-mono font-bold text-cyan-300 transition-all shadow-[0_0_15px_rgba(0,229,255,0.2)] cursor-pointer"
+                title="Export Games Catalog Report to PDF"
+              >
+                <FileText className="size-3.5 text-cyan-400" />
+                <span>Export PDF Catalog</span>
+              </button>
+
               <button
                 onClick={fetchGames}
                 className="p-2.5 rounded-xl bg-[#03091D] border border-cyan-500/30 text-cyan-300 hover:text-white hover:bg-cyan-500/20 shadow-[0_0_15px_rgba(0,0,0,0.5)] transition-all cursor-pointer"

@@ -16,8 +16,10 @@ import {
   Crown, 
   Flame, 
   Eye, 
-  ExternalLink 
+  ExternalLink,
+  FileText
 } from "lucide-react";
+import { openOfficialPdfReport } from "@/lib/pdf-report-generator";
 import { cn } from "@/lib/utils/cn";
 
 interface DragonIdPlayer {
@@ -86,6 +88,46 @@ export default function DragonIdPage() {
   const forgedCount = users.filter((u) => u.profile?.hasForgedDragonId || !!u.profile?.dragonId).length;
   const pendingCount = users.length - forgedCount;
 
+  const handleExportIdentityPDF = () => {
+    openOfficialPdfReport({
+      header: {
+        title: "DRAGON ID UNIVERSAL IDENTITY PROTOCOL (DIP) AUDIT",
+        subtitle: "Official minting registry for Dragon IDs, player callsigns, battle pass titles, and passkeys.",
+        classification: "TOP SECRET // EXECUTIVE ONLY",
+        category: "DRAGON ID MINT REGISTRY",
+      },
+      metrics: [
+        { label: "REGISTERED IDENTITIES", value: users.length, subtext: "PostgreSQL Database", color: "cyan" },
+        { label: "FORGED DRAGON IDs", value: forgedCount, subtext: "Active Callsigns", color: "gold" },
+        { label: "PENDING ONBOARDING", value: pendingCount, subtext: "Awaiting Minting", color: "purple" },
+        { label: "FLAGSHIP GAME", value: "UNCHARTED DRIVE", subtext: "Integrated", color: "emerald" },
+      ],
+      table: {
+        title: "OFFICIAL DRAGON ID CALLSIGN REGISTRY",
+        columns: [
+          { header: "Player / Agent", render: (u: DragonIdPlayer) => `<b>${u.name || u.email.split("@")[0]}</b>`, width: "20%" },
+          { header: "Email Address", key: "email", width: "25%" },
+          { 
+            header: "Dragon ID Callsign", 
+            render: (u: DragonIdPlayer) => {
+              const dId = u.profile?.dragonId;
+              return dId ? `<span class="badge-amber">${dId}</span>` : `<span style="color:#64748B">Pending Mint</span>`;
+            },
+            width: "20%" 
+          },
+          { header: "Title Tagline", render: (u: DragonIdPlayer) => u.profile?.title || u.profile?.tagline || "Dragon Operative", width: "15%" },
+          { header: "Status", render: (u: DragonIdPlayer) => u.profile?.dragonId ? `<span class="badge-emerald">VERIFIED</span>` : `<span class="badge-amber">PENDING</span>`, width: "10%" },
+          { header: "Registered", render: (u: DragonIdPlayer) => new Date(u.createdAt).toLocaleDateString(), width: "10%" },
+        ],
+        rows: filteredUsers,
+      },
+      notes: [
+        "Every Dragon ID is an immutable universal player call sign across Dragon Gaming Studios games.",
+        "Verified against Neon PostgreSQL cryptographic cluster.",
+      ],
+    });
+  };
+
   return (
     <div className="flex min-h-screen bg-[#02040A] text-slate-100 font-sans select-none">
       <Sidebar />
@@ -106,14 +148,26 @@ export default function DragonIdPage() {
               </h1>
             </div>
 
-            <button
-              onClick={fetchIdentityData}
-              disabled={loading}
-              className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#03091D] hover:bg-cyan-500/15 border border-cyan-500/30 text-xs font-bold text-cyan-300 transition-all shadow-[0_0_15px_rgba(0,0,0,0.5)] cursor-pointer disabled:opacity-50"
-            >
-              <RefreshCw className={cn("size-3.5", loading && "animate-spin text-cyan-400")} />
-              <span>Sync Identity Ledger</span>
-            </button>
+            <div className="flex items-center gap-2.5">
+              <button
+                type="button"
+                onClick={handleExportIdentityPDF}
+                className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-gradient-to-r from-cyan-500/20 to-blue-500/20 hover:from-cyan-500/30 hover:to-blue-500/30 border border-cyan-400/40 text-xs font-bold text-cyan-300 transition-all shadow-[0_0_15px_rgba(0,229,255,0.2)] cursor-pointer"
+                title="Export Dragon ID Mint Registry to PDF"
+              >
+                <FileText className="size-3.5 text-cyan-400" />
+                <span>Export PDF Registry</span>
+              </button>
+
+              <button
+                onClick={fetchIdentityData}
+                disabled={loading}
+                className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#03091D] hover:bg-cyan-500/15 border border-cyan-500/30 text-xs font-bold text-cyan-300 transition-all shadow-[0_0_15px_rgba(0,0,0,0.5)] cursor-pointer disabled:opacity-50"
+              >
+                <RefreshCw className={cn("size-3.5", loading && "animate-spin text-cyan-400")} />
+                <span>Sync Identity Ledger</span>
+              </button>
+            </div>
           </div>
 
           {/* Metrics */}

@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import Image from "next/image";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { Navbar } from "@/components/navbar/Navbar";
+import { openOfficialPdfReport } from "@/lib/pdf-report-generator";
 import {
   Activity,
   Users,
@@ -35,7 +36,8 @@ import {
   Calendar,
   MapPin,
   Lock,
-  ArrowUpRight
+  ArrowUpRight,
+  FileText
 } from "lucide-react";
 import { GlassCard, GlassBadge, GlassButton, GlassStat } from "@/components/ui/glass";
 
@@ -231,6 +233,83 @@ export default function TelemetryPage() {
     });
   }, [players, searchQuery]);
 
+  // Export to Official PDF Report
+  const handleExportPDF = () => {
+    openOfficialPdfReport({
+      header: {
+        title: "LIVE ACCESS & PLAYER TELEMETRY AUDIT",
+        subtitle: "Complete PostgreSQL tracking of all user sign-ups, Google OAuth logins, Dragon IDs, hardware devices, and network locations.",
+        classification: "TOP SECRET // EXECUTIVE ONLY",
+        category: "TELEMETRY & HARDWARE ACCESS AUDIT",
+      },
+      metrics: [
+        { label: "TOTAL PLAYERS", value: summary.totalUsers, subtext: "Active in PostgreSQL", color: "cyan" },
+        { label: "DRAGON IDs MINTED", value: summary.totalDragonIds, subtext: "Verified Gaming IDs", color: "gold" },
+        { label: "TOTAL SIGN-INS", value: summary.totalLogins, subtext: "Historical Logins", color: "purple" },
+        { label: "HARDWARE NODES", value: summary.totalActiveDevices, subtext: "Fingerprinted Devices", color: "emerald" },
+      ],
+      breakdownSections: [
+        {
+          title: "OPERATING SYSTEM DISTRIBUTION",
+          items: Object.entries(summary.osCounts).map(([label, count]) => ({ label, count })),
+        },
+        {
+          title: "BROWSER CLIENT DISTRIBUTION",
+          items: Object.entries(summary.browserCounts).map(([label, count]) => ({ label, count })),
+        },
+      ],
+      table: {
+        title: "REGISTERED PLAYER DIRECTORY & IDENTITY REGISTRY",
+        columns: [
+          { header: "Player Name", key: "name", width: "15%" },
+          { header: "Email Address", key: "email", width: "20%" },
+          { 
+            header: "Dragon ID", 
+            render: (r: PlayerDossier) => r.dragonId ? `<span class="badge-amber">${r.dragonId}</span>` : `<span style="color:#64748B">Pending</span>`,
+            width: "15%" 
+          },
+          { header: "GamerTag", render: (r: PlayerDossier) => `@${r.gamerTag}`, width: "12%" },
+          { 
+            header: "Primary Device", 
+            render: (r: PlayerDossier) => r.devices[0] ? `${r.devices[0].os} / ${r.devices[0].browser}` : "Web Client",
+            width: "18%" 
+          },
+          { 
+            header: "IP / Location", 
+            render: (r: PlayerDossier) => r.devices[0] ? `${r.devices[0].ipAddress} (${r.country})` : r.country,
+            width: "12%" 
+          },
+          { header: "Logins", key: "loginCount", align: "center", width: "8%" },
+        ],
+        rows: filteredPlayers,
+      },
+      secondaryTable: {
+        title: "CHRONOLOGICAL ACCESS & AUTHENTICATION AUDIT TRAIL",
+        columns: [
+          { header: "Timestamp", render: (e: TelemetryEvent) => new Date(e.createdAt).toLocaleString(), width: "20%" },
+          { header: "User / Email", render: (e: TelemetryEvent) => `<b>${e.user.name}</b><br><span style="color:#00E5FF;font-size:10px">${e.user.email}</span>`, width: "25%" },
+          { 
+            header: "Action", 
+            render: (e: TelemetryEvent) => `<span class="badge-cyan">${e.action}</span>`, 
+            width: "18%" 
+          },
+          { 
+            header: "Device / OS", 
+            render: (e: TelemetryEvent) => `${e.device.os} · ${e.device.browser}`, 
+            width: "22%" 
+          },
+          { header: "IP Address", render: (e: TelemetryEvent) => e.device.ipAddress, width: "15%" },
+        ],
+        rows: filteredEvents.slice(0, 50),
+      },
+      notes: [
+        "All telemetry records are extracted directly from the Dragon Gaming Studios production Neon PostgreSQL database.",
+        "Device fingerprints and installation tokens are validated cryptographically on each authenticated request.",
+        "This document is classified under DGS Executive Security Protocols and must not be distributed outside authorized Dragon Gaming Studios personnel.",
+      ],
+    });
+  };
+
   // Export to CSV
   const handleExportCSV = () => {
     const headers = "Event ID,Action,User Name,Email,Dragon ID,OS,Browser,IP Address,Location,Timestamp\n";
@@ -325,8 +404,18 @@ export default function TelemetryPage() {
 
               <button
                 type="button"
+                onClick={handleExportPDF}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500/20 to-blue-500/20 hover:from-cyan-500/30 hover:to-blue-500/30 border border-cyan-400/50 text-xs font-mono font-bold text-cyan-200 transition-all shadow-[0_0_20px_rgba(0,229,255,0.3)] cursor-pointer active:scale-95"
+                title="Generate Official Dragon Gaming Studios PDF Telemetry Report"
+              >
+                <FileText className="size-3.5 text-cyan-400" />
+                <span>EXPORT PDF REPORT</span>
+              </button>
+
+              <button
+                type="button"
                 onClick={handleExportCSV}
-                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-400/40 text-xs font-mono font-bold text-cyan-200 transition-all shadow-md cursor-pointer"
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-400/40 text-xs font-mono font-bold text-cyan-200 transition-all shadow-md cursor-pointer"
                 title="Export current filtered view to CSV"
               >
                 <Download className="size-3.5 text-cyan-400" />

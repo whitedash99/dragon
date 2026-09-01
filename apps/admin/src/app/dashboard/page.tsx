@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { Navbar } from "@/components/navbar/Navbar";
+import { openOfficialPdfReport } from "@/lib/pdf-report-generator";
 import { 
   Gamepad2, 
   HardDrive, 
@@ -165,6 +166,49 @@ export default function DashboardPage() {
     }
   }, []);
 
+  const handleExportExecutivePDF = () => {
+    openOfficialPdfReport({
+      header: {
+        title: "EXECUTIVE COMMAND & STUDIO AUDIT REPORT",
+        subtitle: "Global overview of active game franchises, verified downloads, player telemetry, and security posture.",
+        classification: "TOP SECRET // EXECUTIVE ONLY",
+        category: "EXECUTIVE STUDIO AUDIT",
+      },
+      metrics: [
+        { label: "ACTIVE FRANCHISES", value: stats.totalGames, subtext: "Uncharted Drive: Beyond", color: "cyan" },
+        { label: "VERIFIED DOWNLOADS", value: stats.totalDownloads, subtext: "PC (.exe) + Android (.apk)", color: "gold" },
+        { label: "TOTAL PLAYERS", value: stats.totalPlayers, subtext: `${stats.activeStaff} Staff / ${Math.max(0, stats.totalPlayers - stats.activeStaff)} Players`, color: "purple" },
+        { label: "SECURITY POSTURE", value: `${stats.securityScore}%`, subtext: "Military Guard Active", color: "emerald" },
+      ],
+      breakdownSections: [
+        {
+          title: "PRODUCTION INFRASTRUCTURE STATUS",
+          items: [
+            { label: "PostgreSQL Database Engine (Latency: " + stats.dbLatencyMs + "ms)", count: 1 },
+            { label: "Backblaze B2 S3 Storage", count: stats.b2Connected ? 1 : 0 },
+            { label: "Resend Official Dispatch", count: stats.resendConnected ? 1 : 0 },
+            { label: "Gemini AI Studio Neural Engine", count: stats.geminiConnected ? 1 : 0 },
+          ],
+        },
+      ],
+      table: {
+        title: "RECENT AUDIT TRAIL & STUDIO ACTIONS",
+        columns: [
+          { header: "Timestamp", render: (r: AuditLogItem) => new Date(r.createdAt).toLocaleString(), width: "20%" },
+          { header: "Action", render: (r: AuditLogItem) => `<span class="badge-cyan">${r.action}</span>`, width: "25%" },
+          { header: "User / Email", render: (r: AuditLogItem) => r.userEmail || "System Administrator", width: "25%" },
+          { header: "Details / Resource", render: (r: AuditLogItem) => r.details || r.resource || "Studio Infrastructure Event", width: "30%" },
+        ],
+        rows: recentAudits,
+      },
+      notes: [
+        "Executive report synthesized live from Dragon Gaming Studios Control infrastructure.",
+        "Game builds distributed via Backblaze B2 S3 storage endpoints.",
+        "Authentication state synchronized with Neon PostgreSQL ep-still-brook cluster.",
+      ],
+    });
+  };
+
   useEffect(() => {
     fetchDashboardData();
   }, [fetchDashboardData]);
@@ -204,6 +248,16 @@ export default function DashboardPage() {
                 title="Refresh Live Telemetry"
               >
                 <RefreshCw className={cn("size-4", refreshing && "animate-spin text-cyan-400")} />
+              </button>
+
+              <button
+                type="button"
+                onClick={handleExportExecutivePDF}
+                className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-400/40 text-cyan-300 text-xs font-mono font-bold hover:from-cyan-500/30 hover:to-blue-500/30 transition-all shadow-[0_0_15px_rgba(0,229,255,0.2)] cursor-pointer"
+                title="Export Official Executive Studio Report to PDF"
+              >
+                <FileText className="size-3.5 text-cyan-400" />
+                <span>Export PDF Report</span>
               </button>
 
               <Link
