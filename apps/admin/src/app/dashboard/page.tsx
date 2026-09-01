@@ -360,6 +360,25 @@ export default function DashboardPage() {
 
               <div className="space-y-2 font-mono">
                 <Link
+                  href="/telemetry"
+                  className="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-emerald-950/30 to-[#03091D] border border-emerald-500/30 hover:border-emerald-400/60 hover:bg-emerald-500/10 transition-all group shadow-sm"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-emerald-500/20 text-emerald-400 group-hover:scale-110 transition-transform">
+                      <Radio className="size-4 animate-pulse" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-1.5">
+                        <h4 className="text-xs font-bold text-white">Live Sign-Ins & Telemetry</h4>
+                        <span className="px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 text-[9px] font-mono">SYNC</span>
+                      </div>
+                      <p className="text-[10px] text-slate-400">Real-time user logins, devices & IPs</p>
+                    </div>
+                  </div>
+                  <ChevronRight className="size-4 text-slate-500 group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all" />
+                </Link>
+
+                <Link
                   href="/identity"
                   className="flex items-center justify-between p-3 rounded-xl bg-[#03091D] border border-cyan-500/20 hover:border-cyan-400/50 hover:bg-cyan-500/10 transition-all group"
                 >

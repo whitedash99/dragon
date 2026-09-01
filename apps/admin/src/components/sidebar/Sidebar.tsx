@@ -80,6 +80,7 @@ const NAV_GROUPS: NavGroup[] = [
   {
     title: "PLAYERS & TEAM",
     items: [
+      { label: "Sign-Ins & Telemetry", href: "/telemetry", icon: Radio, badge: "SYNC", badgeColor: "bg-emerald-500/15 text-emerald-300 border-emerald-500/40" },
       { label: "Team & Players", href: "/users", icon: Users },
       { label: "Dragon ID Center", href: "/identity", icon: KeyRound, badge: "LIVE", badgeColor: "bg-cyan-500/15 text-cyan-300 border-cyan-500/40" },
       { label: "Recruitment Keys", href: "/team-key-portal", icon: Key },
