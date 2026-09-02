@@ -34,6 +34,8 @@ const INITIAL_MEDIA: MediaAsset[] = [
   { id: "6", name: "Studio_Cyber_Banner_Wide.jpg", type: "IMAGE", dimensions: "2560 x 1440", size: "1.9 MB", url: "/assets/banner.jpg", updatedAt: "2026-08-28" },
 ];
 
+import { generateStudioMediaPdf } from "@/lib/pdf-report-generator";
+
 export default function StudioMediaPage() {
   const [media, setMedia] = useState<MediaAsset[]>(INITIAL_MEDIA);
   const [search, setSearch] = useState("");
@@ -51,6 +53,10 @@ export default function StudioMediaPage() {
     const matchesType = selectedType === "ALL" || m.type === selectedType;
     return matchesSearch && matchesType;
   });
+
+  const handleExportPdf = () => {
+    generateStudioMediaPdf(media);
+  };
 
   return (
     <div className="space-y-6">
@@ -71,10 +77,20 @@ export default function StudioMediaPage() {
           </p>
         </div>
 
-        <button className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white transition-all shadow-lg shadow-blue-600/20 w-fit">
-          <Upload className="w-3.5 h-3.5" />
-          <span>Upload Studio Asset</span>
-        </button>
+        <div className="flex items-center gap-2.5">
+          <button
+            onClick={handleExportPdf}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs font-semibold text-slate-200 transition-colors"
+          >
+            <Download className="w-3.5 h-3.5 text-blue-400" />
+            <span>Export Media PDF</span>
+          </button>
+
+          <button className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white transition-all shadow-lg shadow-blue-600/20 w-fit">
+            <Upload className="w-3.5 h-3.5" />
+            <span>Upload Studio Asset</span>
+          </button>
+        </div>
       </div>
 
       {/* Filter & Search Bar */}

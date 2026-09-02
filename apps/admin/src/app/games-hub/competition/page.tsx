@@ -11,7 +11,9 @@ import {
   Award,
   Clock,
   Filter,
+  Download,
 } from "lucide-react";
+import { generateGamesLeaderboardPdf } from "@/lib/pdf-report-generator";
 
 interface HighScoreEntry {
   rank: number;
@@ -36,6 +38,10 @@ const INITIAL_SCORES: HighScoreEntry[] = [
 export default function GamesCompetitionPage() {
   const [scores] = useState<HighScoreEntry[]>(INITIAL_SCORES);
 
+  const handleExportPdf = () => {
+    generateGamesLeaderboardPdf(scores);
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -55,9 +61,19 @@ export default function GamesCompetitionPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs font-mono text-emerald-400">
-          <Shield className="w-3.5 h-3.5" />
-          <span>Anti-Cheat Guard: ACTIVE</span>
+        <div className="flex items-center gap-2.5">
+          <button
+            onClick={handleExportPdf}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs font-semibold text-slate-200 transition-colors"
+          >
+            <Download className="w-3.5 h-3.5 text-indigo-400" />
+            <span>Export Leaderboard PDF</span>
+          </button>
+
+          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs font-mono text-emerald-400">
+            <Shield className="w-3.5 h-3.5" />
+            <span>Anti-Cheat: ACTIVE</span>
+          </div>
         </div>
       </div>
 

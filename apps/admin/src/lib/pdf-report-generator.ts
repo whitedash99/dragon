@@ -653,3 +653,134 @@ export async function generateGodLevelTelemetryReport(telemetryData?: {
     filename: `Dragon_Gaming_Studios_Full_Telemetry_Report_${Date.now()}.pdf`,
   });
 }
+
+/**
+ * Specialized PDF Generator for Studio Pages & Content Architecture
+ */
+export function generateStudioContentPdf(pages: any[]): void {
+  openOfficialPdfReport({
+    header: {
+      title: "STUDIO CMS & CONTENT ARCHITECTURE AUDIT",
+      subtitle: "Full audit of public website routes, published CMS pages, categories, and layout blocks.",
+      classification: "OFFICIAL STUDIO RECORD",
+      category: "STUDIO CMS AUDIT",
+    },
+    metrics: [
+      { label: "TOTAL PAGES", value: pages.length, subtext: "Public Website Routes", color: "cyan" },
+      { label: "PUBLISHED", value: pages.filter((p) => p.status === "PUBLISHED").length, subtext: "Active in Production", color: "emerald" },
+      { label: "TOTAL SECTIONS", value: pages.reduce((s, p) => s + (p.sectionsCount || 0), 0), subtext: "Layout Blocks", color: "purple" },
+      { label: "CATEGORIES", value: new Set(pages.map((p) => p.category)).size, subtext: "Content Groups", color: "gold" },
+    ],
+    table: {
+      title: "PUBLIC PAGES ROSTER & METADATA",
+      columns: [
+        { header: "Page Title", key: "title", width: "25%" },
+        { header: "Route / Slug", key: "slug", width: "25%" },
+        { header: "Category", key: "category", width: "15%" },
+        { header: "Status", key: "status", width: "15%" },
+        { header: "Sections", render: (p) => `${p.sectionsCount} Blocks`, width: "10%" },
+        { header: "Updated", key: "updatedAt", width: "10%" },
+      ],
+      rows: pages,
+    },
+    filename: `Dragon_Studio_Pages_Audit_${Date.now()}.pdf`,
+  });
+}
+
+/**
+ * Specialized PDF Generator for Studio Media & Brand Assets
+ */
+export function generateStudioMediaPdf(media: any[]): void {
+  openOfficialPdfReport({
+    header: {
+      title: "STUDIO BRAND ASSETS & MEDIA STORAGE AUDIT",
+      subtitle: "Official inventory of 4K artworks, vector emblems, wallpapers, and press documents.",
+      classification: "OFFICIAL STUDIO RECORD",
+      category: "STUDIO ASSETS",
+    },
+    metrics: [
+      { label: "TOTAL ASSETS", value: media.length, subtext: "Stored Media Files", color: "cyan" },
+      { label: "4K ARTWORKS", value: media.filter((m) => m.type === "IMAGE").length, subtext: "High-Res Imagery", color: "gold" },
+      { label: "VECTOR SVGs", value: media.filter((m) => m.type === "VECTOR").length, subtext: "Brand Emblems", color: "emerald" },
+      { label: "PRESS DOCS", value: media.filter((m) => m.type === "DOCUMENT").length, subtext: "Media Kits", color: "purple" },
+    ],
+    table: {
+      title: "BRAND ASSET INVENTORY",
+      columns: [
+        { header: "Asset Filename", key: "name", width: "35%" },
+        { header: "Media Type", key: "type", width: "15%" },
+        { header: "Dimensions", key: "dimensions", width: "20%" },
+        { header: "File Size", key: "size", width: "15%" },
+        { header: "Last Updated", key: "updatedAt", width: "15%" },
+      ],
+      rows: media,
+    },
+    filename: `Dragon_Studio_Media_Audit_${Date.now()}.pdf`,
+  });
+}
+
+/**
+ * Specialized PDF Generator for Game Catalog & Engine Builds
+ */
+export function generateGamesCatalogPdf(games: any[]): void {
+  openOfficialPdfReport({
+    header: {
+      title: "GAME PLATFORM CATALOG & ENGINE AUDIT",
+      subtitle: "Full audit of published game franchises, WebGL/WebGPU engine parameters, and platform targets.",
+      classification: "TOP SECRET // EXECUTIVE ONLY",
+      category: "GAME CATALOG",
+    },
+    metrics: [
+      { label: "ACTIVE FRANCHISES", value: games.length, subtext: "Production Titles", color: "cyan" },
+      { label: "PUBLISHED", value: games.filter((g) => g.status === "PUBLISHED").length, subtext: "Live on Web", color: "emerald" },
+      { label: "PLATFORMS", value: "PC, Android, Web", subtext: "Cross-Platform Support", color: "gold" },
+      { label: "ENGINE", value: "Dragon Core 3D", subtext: "WebGL / WebGPU", color: "purple" },
+    ],
+    table: {
+      title: "GAME PLATFORM TITLES",
+      columns: [
+        { header: "Game Title", key: "title", width: "25%" },
+        { header: "Subtitle", key: "subtitle", width: "25%" },
+        { header: "Genre", key: "genre", width: "20%" },
+        { header: "Status", key: "status", width: "15%" },
+        { header: "Platforms", key: "platforms", width: "15%" },
+      ],
+      rows: games,
+    },
+    filename: `Dragon_Web_Games_Catalog_Audit_${Date.now()}.pdf`,
+  });
+}
+
+/**
+ * Specialized PDF Generator for Leaderboards & Anti-Cheat
+ */
+export function generateGamesLeaderboardPdf(scores: any[]): void {
+  openOfficialPdfReport({
+    header: {
+      title: "GAME PLATFORM LEADERBOARD & ANTI-CHEAT AUDIT",
+      subtitle: "Official championship rankings, lap times, player verification signatures, and anti-cheat event logs.",
+      classification: "TOP SECRET // EXECUTIVE ONLY",
+      category: "LEADERBOARDS & INTEGRITY",
+    },
+    metrics: [
+      { label: "RANKED DRIVERS", value: scores.length, subtext: "Verified Players", color: "cyan" },
+      { label: "WORLD RECORD", value: scores[0] ? `${scores[0].score.toLocaleString()} PTS` : "-", subtext: scores[0]?.playerName || "Driver", color: "gold" },
+      { label: "FASTEST LAP", value: scores[0]?.lapTime || "-", subtext: "Stage 5 Void", color: "purple" },
+      { label: "ANTI-CHEAT", value: "100% SECURE", subtext: "Zero Tampering", color: "emerald" },
+    ],
+    table: {
+      title: "GLOBAL CHAMPIONSHIP RANKINGS",
+      columns: [
+        { header: "Rank", render: (s) => `#${s.rank}`, width: "10%" },
+        { header: "Player Name", key: "playerName", width: "20%" },
+        { header: "GamerTag", render: (s) => `@${s.gamerTag}`, width: "15%" },
+        { header: "Dragon ID", key: "dragonId", width: "18%" },
+        { header: "High Score", render: (s) => `${s.score.toLocaleString()} PTS`, width: "15%" },
+        { header: "Lap Time", key: "lapTime", width: "12%" },
+        { header: "Stage", key: "stage", width: "10%" },
+      ],
+      rows: scores,
+    },
+    filename: `Dragon_Leaderboard_Championship_Report_${Date.now()}.pdf`,
+  });
+}
