@@ -196,9 +196,9 @@ export default function DashboardPage() {
         category: "EXECUTIVE STUDIO AUDIT",
       },
       metrics: [
-        { label: "ACTIVE FRANCHISES", value: Math.max(1, stats.totalGames || games.length), subtext: "Uncharted Drive: Beyond", color: "cyan" },
-        { label: "VERIFIED DOWNLOADS", value: stats.totalDownloads || 48, subtext: "PC (.exe) + Android (.apk)", color: "gold" },
-        { label: "TOTAL PLAYERS", value: currentPlayers || 78, subtext: `${stats.activeStaff || 2} Staff / ${Math.max(0, (currentPlayers || 78) - (stats.activeStaff || 2))} Players`, color: "purple" },
+        { label: "ACTIVE FRANCHISES", value: stats.totalGames || games.length, subtext: "Uncharted Drive: Beyond", color: "cyan" },
+        { label: "VERIFIED DOWNLOADS", value: stats.totalDownloads || 0, subtext: "PC (.exe) + Android (.apk)", color: "gold" },
+        { label: "TOTAL PLAYERS", value: currentPlayers, subtext: `${stats.activeStaff} Staff / ${Math.max(0, currentPlayers - stats.activeStaff)} Players`, color: "purple" },
         { label: "SECURITY POSTURE", value: `${stats.securityScore || 100}%`, subtext: "Military Guard Active", color: "emerald" },
       ],
       breakdownSections: [
