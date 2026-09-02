@@ -1777,6 +1777,68 @@ exports.Prisma.GameSessionScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.PlayerScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  dragonIdSubject: 'dragonIdSubject',
+  dragonHandle: 'dragonHandle',
+  displayName: 'displayName',
+  email: 'email',
+  avatarUrl: 'avatarUrl',
+  bannerUrl: 'bannerUrl',
+  level: 'level',
+  xp: 'xp',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  lastLoginAt: 'lastLoginAt'
+};
+
+exports.Prisma.PlayerPreferenceScalarFieldEnum = {
+  id: 'id',
+  playerId: 'playerId',
+  theme: 'theme',
+  motionPreference: 'motionPreference',
+  soundEnabled: 'soundEnabled',
+  musicVolume: 'musicVolume',
+  sfxVolume: 'sfxVolume',
+  streamerMode: 'streamerMode',
+  privacyLevel: 'privacyLevel',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AchievementScalarFieldEnum = {
+  id: 'id',
+  gameSlug: 'gameSlug',
+  key: 'key',
+  name: 'name',
+  description: 'description',
+  icon: 'icon',
+  xpReward: 'xpReward',
+  secret: 'secret',
+  rarity: 'rarity',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.PlayerAchievementScalarFieldEnum = {
+  id: 'id',
+  playerId: 'playerId',
+  achievementId: 'achievementId',
+  unlockedAt: 'unlockedAt'
+};
+
+exports.Prisma.FavoriteScalarFieldEnum = {
+  id: 'id',
+  playerId: 'playerId',
+  gameSlug: 'gameSlug',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.Playing_with_neonScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  value: 'value'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -1953,7 +2015,13 @@ exports.Prisma.ModelName = {
   CommunityMute: 'CommunityMute',
   CommunityBookmark: 'CommunityBookmark',
   Score: 'Score',
-  GameSession: 'GameSession'
+  GameSession: 'GameSession',
+  Player: 'Player',
+  PlayerPreference: 'PlayerPreference',
+  Achievement: 'Achievement',
+  PlayerAchievement: 'PlayerAchievement',
+  Favorite: 'Favorite',
+  playing_with_neon: 'playing_with_neon'
 };
 
 /**

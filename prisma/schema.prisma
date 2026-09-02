@@ -64,6 +64,7 @@ model User {
   verificationCodes      EmailVerificationCode[]
   scores                 Score[]
   gameSessions           GameSession[]
+  player                 Player?
 
   @@index([email])
   @@index([role])
@@ -2112,5 +2113,101 @@ model GameSession {
   @@index([sessionToken])
   @@index([status])
 }
+
+// ═══ WEB GAMES DOMAIN EXTENSIONS (UNIFIED IDENTITY) ═══
+
+model Player {
+  id               String               @id @default(cuid())
+  userId           String?              @unique
+  dragonIdSubject  String               @unique // Immutable Dragon ID Subject
+  dragonHandle     String               @unique // e.g. "Tanish_sharma"
+  displayName      String               // e.g. "TANISH SHARMA"
+  email            String?              // e.g. "player@dragongamingstudios.com"
+  avatarUrl        String?
+  bannerUrl        String?
+  level            Int                  @default(1)
+  xp               Int                  @default(0)
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+  lastLoginAt      DateTime             @default(now())
+
+  user             User?                @relation(fields: [userId], references: [id], onDelete: SetNull)
+  preferences      PlayerPreference?
+  achievements     PlayerAchievement[]
+  favorites        Favorite[]
+
+  @@index([dragonIdSubject])
+  @@index([dragonHandle])
+  @@index([email])
+  @@index([xp])
+}
+
+model PlayerPreference {
+  id               String   @id @default(cuid())
+  playerId         String   @unique
+  theme            String   @default("cyber-dark")
+  motionPreference String   @default("STANDARD")
+  soundEnabled     Boolean  @default(true)
+  musicVolume      Int      @default(80)
+  sfxVolume        Int      @default(100)
+  streamerMode     Boolean  @default(false)
+  privacyLevel     String   @default("PUBLIC")
+  updatedAt        DateTime @updatedAt
+
+  player           Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+}
+
+model Achievement {
+  id          String              @id @default(cuid())
+  gameSlug    String
+  key         String              @unique
+  name        String
+  description String
+  icon        String
+  xpReward    Int                 @default(100)
+  secret      Boolean             @default(false)
+  rarity      String              @default("COMMON")
+  createdAt   DateTime            @default(now())
+
+  unlocks     PlayerAchievement[]
+
+  @@index([gameSlug])
+  @@index([rarity])
+}
+
+model PlayerAchievement {
+  id            String      @id @default(cuid())
+  playerId      String
+  achievementId String
+  unlockedAt    DateTime    @default(now())
+
+  player        Player      @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+
+  @@unique([playerId, achievementId])
+  @@index([playerId])
+  @@index([achievementId])
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  playerId  String
+  gameSlug  String
+  createdAt DateTime @default(now())
+
+  player    Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@unique([playerId, gameSlug])
+  @@index([playerId])
+  @@index([gameSlug])
+}
+
+model playing_with_neon {
+  id    Int     @id @default(autoincrement())
+  name  String?
+  value Float?
+}
+
+
 
 
