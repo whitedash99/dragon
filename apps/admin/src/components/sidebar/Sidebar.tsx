@@ -69,6 +69,7 @@ export function Sidebar() {
     {
       title: "OPERATIONS",
       items: [
+        { label: "Studio Releases", href: "/studio/releases", icon: Cloud },
         { label: "Communications", href: "/studio/communication", icon: Radio },
         { label: "Studio Analytics", href: "/studio/analytics", icon: BarChart3 },
       ],
@@ -95,23 +96,26 @@ export function Sidebar() {
       items: [
         { label: "Game Catalog", href: "/games-hub/catalog", icon: Gamepad2, badge: "FLAGSHIP", badgeColor: "bg-indigo-500/15 text-indigo-400 border border-indigo-500/30" },
         { label: "Level Progression", href: "/games-hub/levels", icon: Layers },
-        { label: "Media & Assets", href: "/games-hub/media", icon: ImageIcon },
+        { label: "Media & Keyart", href: "/games-hub/media", icon: ImageIcon },
       ],
     },
     {
-      title: "PLAYERS & COMMUNITY",
+      title: "PLAYERS & COMPETITION",
       items: [
         { label: "Player Directory", href: "/games-hub/players", icon: Users },
+        { label: "Gameplay Sessions", href: "/games-hub/sessions", icon: Activity },
         { label: "Leaderboards", href: "/games-hub/competition", icon: Trophy },
         { label: "Achievements", href: "/games-hub/achievements", icon: Award },
       ],
     },
     {
-      title: "OPERATIONS & ENGINE",
+      title: "OPERATIONS & SECURITY",
       items: [
         { label: "Game Releases", href: "/games-hub/releases", icon: Cloud },
+        { label: "Anti-Cheat Guard", href: "/games-hub/anti-cheat", icon: Shield },
         { label: "Player Analytics", href: "/games-hub/analytics", icon: BarChart3 },
         { label: "Engine & Health", href: "/games-hub/system", icon: Activity },
+        { label: "Platform Settings", href: "/games-hub/settings", icon: Settings },
       ],
     },
   ];
