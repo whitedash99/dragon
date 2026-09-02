@@ -3,6 +3,9 @@ import { getToken } from "next-auth/jwt";
 import { canAccessAdmin } from "@dragon/auth";
 
 const PROTECTED_ROUTES = [
+  "/workspaces",
+  "/studio",
+  "/games-hub",
   "/dashboard",
   "/users",
   "/settings",
@@ -31,6 +34,7 @@ const PROTECTED_ROUTES = [
   "/identity",
   "/domains",
   "/access",
+  "/telemetry",
 ];
 
 export async function middleware(req: NextRequest) {
@@ -68,9 +72,9 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(unauthorizedUrl);
   }
 
-  // 3. Redirect authenticated users attempting to access /login to /dashboard
+  // 3. Redirect authenticated users attempting to access /login to /workspaces
   if (pathname === "/login" && isAuthenticated) {
-    return NextResponse.redirect(new URL("/dashboard", req.url));
+    return NextResponse.redirect(new URL("/workspaces", req.url));
   }
 
   const response = NextResponse.next();
@@ -90,6 +94,9 @@ export async function middleware(req: NextRequest) {
 
 export const config = {
   matcher: [
+    "/workspaces/:path*",
+    "/studio/:path*",
+    "/games-hub/:path*",
     "/dashboard/:path*",
     "/users/:path*",
     "/settings/:path*",
@@ -118,6 +125,7 @@ export const config = {
     "/identity/:path*",
     "/domains/:path*",
     "/access/:path*",
+    "/telemetry/:path*",
     "/login",
     "/signup",
   ],

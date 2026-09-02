@@ -1,33 +1,39 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { Search, ShieldCheck, Bell, User, LogOut, CheckCircle2, ChevronRight, Sparkles, Laptop, Loader2, Activity } from "lucide-react";
-import { GlobalCommandPalette } from "../command/GlobalCommandPalette";
-import Link from "next/link";
+import React, { useState, useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { useWorkspace } from "@/providers/workspace-context";
+import { WorkspaceSwitcher } from "./WorkspaceSwitcher";
+import { CommandPalette } from "../command/CommandPalette";
+import {
+  ChevronRight,
+  Bell,
+  User,
+  LogOut,
+  Shield,
+  Activity,
+  Settings,
+  ExternalLink,
+  CheckCircle2,
+} from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
+import Link from "next/link";
 
 export function Navbar() {
-  const [commandOpen, setCommandOpen] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [loggingOut, setLoggingOut] = useState(false);
-  const [currentUser, setCurrentUser] = useState<{ email?: string; name?: string; role?: string } | null>(null);
   const pathname = usePathname();
   const router = useRouter();
-  const { data: nextAuthSession } = useSession();
+  const { workspace, activeWorkspace, switchWorkspace } = useWorkspace();
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState<{ email?: string; name?: string; role?: string } | null>(null);
+  const profileRef = useRef<HTMLDivElement>(null);
+  const notifRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === "k") {
-        e.preventDefault();
-        setCommandOpen((prev) => !prev);
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  // If on /workspaces, /login or /signup, do not render standard workspace navbar
+  if (pathname === "/workspaces" || pathname === "/login" || pathname === "/signup") {
+    return null;
+  }
 
-  // Fetch current authenticated staff session info
   useEffect(() => {
     fetch("/api/auth")
       .then((res) => res.json())
@@ -39,212 +45,175 @@ export function Navbar() {
       .catch(() => {});
   }, []);
 
-  const handleSignOut = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setLoggingOut(true);
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
+        setProfileOpen(false);
+      }
+      if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
+        setNotificationsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
+  const handleSignOut = async () => {
     try {
-      // 1. Invalidate custom admin database session & cookie
       await fetch("/api/auth", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "logout" }),
       });
-    } catch (err) {
-      console.warn("Logout API warning:", err);
-    }
+    } catch {}
 
     try {
-      // 2. Invalidate NextAuth session if active
       await signOut({ redirect: false });
-    } catch (err) {
-      console.warn("NextAuth signOut warning:", err);
-    }
+    } catch {}
 
-    // 3. Clear cookie on client side and force reload to login
     document.cookie = "dragon_admin_session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
     window.location.href = "/login";
   };
 
-  const getBreadcrumbs = () => {
-    if (pathname === "/dashboard") return { section: "Command", page: "Command Center" };
-    if (pathname === "/health") return { section: "Command", page: "Live System Health" };
-    if (pathname === "/notifications") return { section: "Command", page: "Operational Notifications" };
-    if (pathname === "/games") return { section: "Studio", page: "Games Catalog & Engine" };
-    if (pathname === "/cms/blocks") return { section: "Studio", page: "Layout & Content Blocks" };
-    if (pathname === "/cms") return { section: "Studio", page: "Visual Studio CMS" };
-    if (pathname === "/media") return { section: "Studio", page: "Media & Asset Library" };
-    if (pathname === "/ai") return { section: "Studio", page: "Gemini AI Studio" };
-    if (pathname === "/communication") return { section: "Studio", page: "Communication & News" };
-    if (pathname === "/users") return { section: "Players", page: "Team & Player Workforce" };
-    if (pathname === "/identity") return { section: "Players", page: "Dragon ID Center" };
-    if (pathname === "/team-key-portal") return { section: "Players", page: "Recruitment Keys" };
-    if (pathname === "/crm") return { section: "Players", page: "Support & CRM Desk" };
-    if (pathname === "/devices") return { section: "Players", page: "Active Devices & Sessions" };
-    if (pathname === "/analytics") return { section: "Operations", page: "Studio BI & Analytics" };
-    if (pathname === "/deployments") return { section: "Operations", page: "Vercel Deployments" };
-    if (pathname === "/qa") return { section: "Operations", page: "QA & Test Center" };
-    if (pathname === "/api-platform") return { section: "Operations", page: "Edge API Platform" };
-    if (pathname === "/automation") return { section: "Operations", page: "Automation Workflows" };
-    if (pathname === "/performance") return { section: "Operations", page: "Performance & Latency" };
-    if (pathname === "/security") return { section: "Security", page: "Security Posture" };
-    if (pathname === "/access") return { section: "Security", page: "RBAC & Permissions" };
-    if (pathname === "/audit") return { section: "Security", page: "Audit Center" };
-    if (pathname === "/data-control") return { section: "Security", page: "Owner Data Control" };
-    if (pathname === "/secrets") return { section: "Security", page: "Secrets Vault" };
-    if (pathname === "/terminal") return { section: "System", page: "Command Terminal" };
-    if (pathname === "/developer") return { section: "System", page: "Developer Platform" };
-    if (pathname === "/settings") return { section: "System", page: "System Settings" };
-    return { section: "Dragon Control", page: "Workspace" };
+  const getPageTitle = (): string => {
+    if (pathname === "/studio") return "Overview";
+    if (pathname === "/studio/content") return "Pages & SEO";
+    if (pathname === "/studio/media") return "Media Library";
+    if (pathname === "/studio/projects") return "Studio Projects";
+    if (pathname === "/studio/communication") return "Communications";
+    if (pathname === "/studio/analytics") return "Studio Analytics";
+    if (pathname === "/studio/system") return "System & Health";
+    if (pathname === "/studio/settings") return "Studio Settings";
+
+    if (pathname === "/games-hub") return "Platform Overview";
+    if (pathname === "/games-hub/catalog") return "Game Catalog";
+    if (pathname === "/games-hub/levels") return "Level Progression";
+    if (pathname === "/games-hub/players") return "Player Directory";
+    if (pathname === "/games-hub/competition") return "Leaderboards";
+    if (pathname === "/games-hub/achievements") return "Achievements";
+    if (pathname === "/games-hub/media") return "Game Media";
+    if (pathname === "/games-hub/releases") return "Game Releases";
+    if (pathname === "/games-hub/analytics") return "Player Analytics";
+    if (pathname === "/games-hub/system") return "Engine & Health";
+
+    if (pathname.includes("/games/")) return "Game Management";
+    return "Workspace";
   };
 
-  const breadcrumbs = getBreadcrumbs();
-  const displayName = currentUser?.name || nextAuthSession?.user?.name || "Executive Owner";
-  const displayEmail = currentUser?.email || nextAuthSession?.user?.email || "Owner Account";
-  const displayRole = (currentUser?.role || (nextAuthSession?.user as unknown as { role?: string })?.role || "OWNER").toUpperCase();
-  const initials = displayName
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .substring(0, 2)
-    .toUpperCase() || "DS";
-
   return (
-    <>
-      <header className="h-16 bg-[#030714]/90 backdrop-blur-2xl border-b border-cyan-500/20 px-4 sm:px-6 flex items-center justify-between z-20 sticky top-0 font-sans shadow-[0_4px_30px_rgba(0,0,0,0.6)] select-none">
-        {/* Global Command Search Trigger & Breadcrumbs */}
-        <div className="flex items-center gap-4 sm:gap-6">
-          <div className="hidden md:flex items-center gap-1.5 text-xs text-slate-400 font-mono">
-            <span className="text-slate-500">{breadcrumbs.section}</span>
-            <ChevronRight className="size-3 text-cyan-400/60" />
-            <span className="font-bold text-white flex items-center gap-1.5">
-              <span>{breadcrumbs.page}</span>
-              <span className="size-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#10B981] animate-pulse" />
-            </span>
-          </div>
+    <header className="sticky top-0 z-30 h-14 bg-[#0B0F19]/90 backdrop-blur-md border-b border-white/[0.08] flex items-center justify-between px-4 lg:px-6 transition-all">
+      {/* Left: Breadcrumbs & Workspace Switcher */}
+      <div className="flex items-center gap-3">
+        <WorkspaceSwitcher />
 
-          <button
-            onClick={() => setCommandOpen(true)}
-            className="flex items-center gap-2.5 w-60 sm:w-72 rounded-xl bg-[#02050E] hover:bg-[#06132E] px-3.5 py-1.5 text-xs text-slate-400 hover:text-white border border-cyan-500/25 hover:border-cyan-400/60 transition-all text-left group shadow-[0_0_12px_rgba(0,0,0,0.4)] cursor-pointer font-mono"
-          >
-            <Search className="size-3.5 text-cyan-400 group-hover:scale-110 transition-transform" />
-            <span className="flex-1 truncate">Quick search commands...</span>
-            <kbd className="px-1.5 py-0.5 rounded-md bg-[#040C20] text-[10px] font-mono text-cyan-300 font-bold border border-cyan-500/30 shadow-[0_0_6px_rgba(0,229,255,0.2)]">
-              ⌘K
-            </kbd>
-          </button>
+        <div className="hidden sm:flex items-center gap-2 text-xs text-slate-400 font-mono">
+          <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+          <span className="text-slate-200 font-medium">{getPageTitle()}</span>
+        </div>
+      </div>
+
+      {/* Center & Right Controls */}
+      <div className="flex items-center gap-3">
+        {/* Global Search / Command Palette */}
+        <CommandPalette />
+
+        {/* Live DB Indicator */}
+        <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[11px] font-mono text-emerald-400">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span>PostgreSQL Live</span>
         </div>
 
-        {/* Right Status & Account Controls */}
-        <div className="flex items-center gap-2.5 sm:gap-3">
-          {/* Live System Health Pill */}
-          <Link
-            href="/health"
-            className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-[11px] font-mono font-bold text-emerald-300 hover:bg-emerald-500/20 transition-all cursor-pointer shadow-[0_0_10px_rgba(16,185,129,0.15)]"
-          >
-            <Activity className="size-3 text-emerald-400 animate-pulse" />
-            <span>NODE HEALTHY</span>
-          </Link>
-
-          {/* Quick Notifications */}
-          <Link
-            href="/notifications"
-            className="relative p-2 rounded-xl bg-[#02050E] hover:bg-[#06132E] text-slate-400 hover:text-white border border-cyan-500/25 transition-all shadow-[0_0_10px_rgba(0,0,0,0.4)] cursor-pointer"
+        {/* Notifications Popover */}
+        <div className="relative" ref={notifRef}>
+          <button
+            onClick={() => setNotificationsOpen((prev) => !prev)}
+            className="p-2 rounded-lg border border-white/10 bg-white/[0.03] hover:bg-white/[0.08] text-slate-400 hover:text-white transition-colors relative"
             title="Notifications"
           >
-            <Bell className="size-4 text-cyan-400" />
-            <span className="absolute top-1.5 right-1.5 size-1.5 rounded-full bg-cyan-400 shadow-[0_0_6px_#00E5FF] animate-pulse" />
-          </Link>
+            <Bell className="w-4 h-4" />
+            <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-indigo-500" />
+          </button>
 
-          {/* Account Menu */}
-          <div className="relative">
-            <button
-              onClick={() => setMenuOpen((prev) => !prev)}
-              className="flex items-center gap-2 rounded-xl bg-[#02050E] hover:bg-[#06132E] hover:border-cyan-400/50 px-2.5 py-1.5 border border-cyan-500/30 text-xs font-mono font-bold text-white transition-all shadow-[0_0_15px_rgba(0,0,0,0.5)] cursor-pointer select-none"
-            >
-              <div className="size-6.5 rounded-lg bg-gradient-to-br from-[#00E5FF] to-[#7C3CFF] flex items-center justify-center font-mono font-black text-[10px] text-[#020617] shadow-[0_0_8px_rgba(0,229,255,0.4)]">
-                {initials}
+          {notificationsOpen && (
+            <div className="absolute right-0 mt-2 w-80 rounded-xl bg-[#0F172A] border border-white/10 shadow-2xl p-3 z-50 animate-in fade-in zoom-in-95 duration-100">
+              <div className="flex items-center justify-between pb-2 border-b border-white/5 mb-2">
+                <span className="text-xs font-semibold text-white">Notifications</span>
+                <span className="text-[10px] text-slate-400 font-mono">Studio Sync</span>
               </div>
-              <span className="hidden sm:inline font-bold text-slate-200">{displayName}</span>
-              <ShieldCheck className="size-3.5 text-cyan-400" />
-            </button>
-
-            {menuOpen && (
-              <div
-                className="absolute right-0 mt-2 w-72 rounded-2xl bg-[#03091D]/98 backdrop-blur-2xl border border-cyan-500/35 shadow-[0_10px_40px_rgba(0,0,0,0.9)] p-2 z-50 text-xs font-mono animate-in fade-in zoom-in-95 duration-100"
-              >
-                <div className="px-3 py-2.5 border-b border-white/10 mb-1 bg-gradient-to-b from-cyan-950/30 to-transparent rounded-t-xl">
-                  <div className="font-black text-white flex items-center justify-between">
-                    <span className="truncate">{displayName}</span>
-                    <Sparkles className="size-3.5 text-cyan-400 shrink-0" />
-                  </div>
-                  <div className="text-[10.5px] text-slate-400 truncate mt-0.5">{displayEmail}</div>
-                  <div className="mt-1.5 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-cyan-500/15 border border-cyan-400/30 text-[9.5px] text-cyan-300 font-bold">
-                    <ShieldCheck className="size-3 text-cyan-400" />
-                    <span>Role: {displayRole}</span>
+              <div className="space-y-2">
+                <div className="p-2 rounded-lg bg-white/[0.02] border border-white/5 text-xs">
+                  <div className="font-medium text-slate-200">Zero-Trust Core Active</div>
+                  <div className="text-[11px] text-slate-400 mt-0.5">
+                    Unified audit logging synchronized with Neon PostgreSQL.
                   </div>
                 </div>
+              </div>
+            </div>
+          )}
+        </div>
 
+        {/* Admin Profile Dropdown */}
+        <div className="relative" ref={profileRef}>
+          <button
+            onClick={() => setProfileOpen((prev) => !prev)}
+            className="flex items-center gap-2 p-1.5 rounded-lg border border-white/10 bg-white/[0.03] hover:bg-white/[0.08] transition-colors text-left"
+          >
+            <div className="w-7 h-7 rounded-md bg-indigo-600/30 border border-indigo-500/40 flex items-center justify-center text-xs font-bold text-indigo-300">
+              {currentUser?.name?.[0]?.toUpperCase() || "A"}
+            </div>
+            <div className="hidden lg:flex flex-col pr-1">
+              <span className="text-xs font-medium text-slate-200 leading-tight">
+                {currentUser?.name || "Administrator"}
+              </span>
+              <span className="text-[10px] text-slate-400 font-mono leading-none">
+                {currentUser?.role || "SUPER_ADMIN"}
+              </span>
+            </div>
+          </button>
+
+          {profileOpen && (
+            <div className="absolute right-0 mt-2 w-56 rounded-xl bg-[#0F172A] border border-white/10 shadow-2xl p-1.5 z-50 animate-in fade-in zoom-in-95 duration-100">
+              <div className="px-3 py-2 border-b border-white/5 mb-1">
+                <div className="text-xs font-semibold text-white">
+                  {currentUser?.name || "Administrator"}
+                </div>
+                <div className="text-[11px] text-slate-400 truncate">
+                  {currentUser?.email || "admin@dragongaming.studio"}
+                </div>
+              </div>
+
+              <div className="space-y-0.5">
                 <Link
-                  href="/security"
-                  onClick={() => setMenuOpen(false)}
-                  className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-300 hover:text-white hover:bg-cyan-500/15 transition-all cursor-pointer"
+                  href="/workspaces"
+                  onClick={() => setProfileOpen(false)}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-slate-300 hover:text-white hover:bg-white/[0.04] transition-colors"
                 >
-                  <User className="size-4 text-cyan-400" />
-                  <div>
-                    <div className="font-bold text-white">Security & Credentials</div>
-                    <div className="text-[10px] text-slate-400">Access keys, Dragon Key & MFA</div>
-                  </div>
+                  <Shield className="w-3.5 h-3.5 text-slate-400" />
+                  <span>Workspace Selector</span>
                 </Link>
-
                 <Link
-                  href="/audit"
-                  onClick={() => setMenuOpen(false)}
-                  className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-300 hover:text-white hover:bg-cyan-500/15 transition-all cursor-pointer"
+                  href="/studio/settings"
+                  onClick={() => setProfileOpen(false)}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-slate-300 hover:text-white hover:bg-white/[0.04] transition-colors"
                 >
-                  <CheckCircle2 className="size-4 text-emerald-400" />
-                  <div>
-                    <div className="font-bold text-white">Audit Center</div>
-                    <div className="text-[10px] text-slate-400">Real-time security log stream</div>
-                  </div>
+                  <Settings className="w-3.5 h-3.5 text-slate-400" />
+                  <span>Settings & RBAC</span>
                 </Link>
+              </div>
 
-                <Link
-                  href="/devices"
-                  onClick={() => setMenuOpen(false)}
-                  className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-300 hover:text-white hover:bg-cyan-500/15 transition-all cursor-pointer"
-                >
-                  <Laptop className="size-4 text-purple-400" />
-                  <div>
-                    <div className="font-bold text-white">Active Sessions</div>
-                    <div className="text-[10px] text-slate-400">Inspect device authorizations</div>
-                  </div>
-                </Link>
-
-                <div className="border-t border-white/10 my-1" />
-
+              <div className="mt-1 pt-1 border-t border-white/5">
                 <button
-                  type="button"
                   onClick={handleSignOut}
-                  disabled={loggingOut}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-rose-400 hover:text-rose-200 hover:bg-rose-500/15 transition-all font-bold cursor-pointer disabled:opacity-50 text-left"
+                  className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-rose-400 hover:bg-rose-500/10 transition-colors text-left"
                 >
-                  {loggingOut ? (
-                    <Loader2 className="size-4 animate-spin text-rose-400" />
-                  ) : (
-                    <LogOut className="size-4 text-rose-400" />
-                  )}
-                  <span>{loggingOut ? "Signing Out..." : "Sign Out"}</span>
+                  <LogOut className="w-3.5 h-3.5 text-rose-400" />
+                  <span>Sign Out</span>
                 </button>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
-      </header>
-
-      {/* Command Palette Modal */}
-      <GlobalCommandPalette isOpen={commandOpen} onClose={() => setCommandOpen(false)} />
-    </>
+      </div>
+    </header>
   );
 }

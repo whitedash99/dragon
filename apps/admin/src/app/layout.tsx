@@ -3,11 +3,11 @@ import "./globals.css";
 import { SessionProvider } from "@/providers/session-provider";
 import { ToastProvider } from "@/providers/toast-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
-import { CyberAtmosphere } from "@/components/cinematic/CyberAtmosphere";
+import { WorkspaceProvider } from "@/providers/workspace-context";
 
 export const metadata: Metadata = {
-  title: "Dragon Control | Studio Executive Command Center",
-  description: "Official internal administration operating system for Dragon Gaming Studios.",
+  title: "Dragon Command | Universal Enterprise Command Center",
+  description: "Official internal administration operating system for Dragon Gaming Studio & Dragon Web Games.",
   icons: {
     icon: [
       { url: "/icon.svg", type: "image/svg+xml" },
@@ -24,15 +24,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark" data-theme="dark" suppressHydrationWarning>
-      <body className="bg-[#02040A] text-slate-100 min-h-screen font-sans antialiased relative overflow-x-hidden selection:bg-cyan-500/30 selection:text-cyan-200">
-        {/* 3D Radiant Mesh & Particle Atmosphere */}
-        <CyberAtmosphere />
-
+      <body className="bg-[#0B0F19] text-slate-100 min-h-screen font-sans antialiased relative overflow-x-hidden selection:bg-indigo-500/30 selection:text-indigo-200">
         <ThemeProvider>
           <SessionProvider>
-            <ToastProvider>
-              <div className="relative z-10">{children}</div>
-            </ToastProvider>
+            <WorkspaceProvider>
+              <ToastProvider>
+                <div className="relative z-10 min-h-screen flex flex-col">{children}</div>
+              </ToastProvider>
+            </WorkspaceProvider>
           </SessionProvider>
         </ThemeProvider>
       </body>
