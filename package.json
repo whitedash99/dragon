@@ -13,8 +13,12 @@
     "prisma:generate": "pnpm --filter @dragon/shared-db generate",
     "prisma:push": "pnpm --filter @dragon/shared-db db:push",
     "prisma:validate": "pnpm --filter @dragon/shared-db validate",
+    "prisma:migrate:status": "pnpm --filter @dragon/shared-db exec prisma migrate status",
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
     "verify": "pnpm run prisma:generate && pnpm run typecheck && pnpm run lint && pnpm run test && pnpm run build"
+  },
+  "prisma": {
+    "schema": "packages/shared-db/schema.prisma"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1116.0",
