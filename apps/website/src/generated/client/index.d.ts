@@ -758,6 +758,36 @@ export type Score = $Result.DefaultSelection<Prisma.$ScorePayload>
  * 
  */
 export type GameSession = $Result.DefaultSelection<Prisma.$GameSessionPayload>
+/**
+ * Model Player
+ * 
+ */
+export type Player = $Result.DefaultSelection<Prisma.$PlayerPayload>
+/**
+ * Model PlayerPreference
+ * 
+ */
+export type PlayerPreference = $Result.DefaultSelection<Prisma.$PlayerPreferencePayload>
+/**
+ * Model Achievement
+ * 
+ */
+export type Achievement = $Result.DefaultSelection<Prisma.$AchievementPayload>
+/**
+ * Model PlayerAchievement
+ * 
+ */
+export type PlayerAchievement = $Result.DefaultSelection<Prisma.$PlayerAchievementPayload>
+/**
+ * Model Favorite
+ * 
+ */
+export type Favorite = $Result.DefaultSelection<Prisma.$FavoritePayload>
+/**
+ * Model playing_with_neon
+ * 
+ */
+export type playing_with_neon = $Result.DefaultSelection<Prisma.$playing_with_neonPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -2366,6 +2396,66 @@ export class PrismaClient<
     * ```
     */
   get gameSession(): Prisma.GameSessionDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.player`: Exposes CRUD operations for the **Player** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Players
+    * const players = await prisma.player.findMany()
+    * ```
+    */
+  get player(): Prisma.PlayerDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.playerPreference`: Exposes CRUD operations for the **PlayerPreference** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PlayerPreferences
+    * const playerPreferences = await prisma.playerPreference.findMany()
+    * ```
+    */
+  get playerPreference(): Prisma.PlayerPreferenceDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.achievement`: Exposes CRUD operations for the **Achievement** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Achievements
+    * const achievements = await prisma.achievement.findMany()
+    * ```
+    */
+  get achievement(): Prisma.AchievementDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.playerAchievement`: Exposes CRUD operations for the **PlayerAchievement** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PlayerAchievements
+    * const playerAchievements = await prisma.playerAchievement.findMany()
+    * ```
+    */
+  get playerAchievement(): Prisma.PlayerAchievementDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.favorite`: Exposes CRUD operations for the **Favorite** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Favorites
+    * const favorites = await prisma.favorite.findMany()
+    * ```
+    */
+  get favorite(): Prisma.FavoriteDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.playing_with_neon`: Exposes CRUD operations for the **playing_with_neon** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Playing_with_neons
+    * const playing_with_neons = await prisma.playing_with_neon.findMany()
+    * ```
+    */
+  get playing_with_neon(): Prisma.playing_with_neonDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -2955,7 +3045,13 @@ export namespace Prisma {
     CommunityMute: 'CommunityMute',
     CommunityBookmark: 'CommunityBookmark',
     Score: 'Score',
-    GameSession: 'GameSession'
+    GameSession: 'GameSession',
+    Player: 'Player',
+    PlayerPreference: 'PlayerPreference',
+    Achievement: 'Achievement',
+    PlayerAchievement: 'PlayerAchievement',
+    Favorite: 'Favorite',
+    playing_with_neon: 'playing_with_neon'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -2974,7 +3070,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "role" | "permission" | "session" | "auditLog" | "page" | "pageSection" | "contentBlock" | "contentRevision" | "sEOData" | "gameContent" | "gameRelease" | "gameDownloadLog" | "gameMedia" | "gameFeature" | "gamePlatform" | "patchNote" | "dLC" | "newsArticle" | "navigationMenu" | "mediaAsset" | "mediaFolder" | "mediaCollection" | "mediaTag" | "mediaUsage" | "uploadHistory" | "customer" | "ticket" | "ticketMessage" | "ticketAttachment" | "internalNote" | "ticketActivity" | "aIAnalysis" | "department" | "teamMember" | "emailLog" | "aIConversation" | "aIMessage" | "aIPrompt" | "aIUsage" | "aISetting" | "aIKnowledge" | "aIActivity" | "analyticsEvent" | "visitor" | "analyticsSession" | "analyticsReport" | "metric" | "dashboardWidget" | "securityEvent" | "aPIKey" | "securityAlert" | "backupRecord" | "notification" | "notificationTemplate" | "notificationPreference" | "notificationRule" | "deliveryLog" | "systemSetting" | "integration" | "emailConfiguration" | "storageConfiguration" | "aIConfiguration" | "featureFlag" | "testResult" | "errorLog" | "performanceMetric" | "deployment" | "buildHistory" | "systemLog" | "healthCheck" | "cacheRecord" | "optimizationReport" | "systemResource" | "productionEnvironment" | "cloudDeployment" | "systemHealthCheck" | "databaseBackupRecord" | "workflow" | "workflowTrigger" | "workflowCondition" | "workflowAction" | "workflowExecution" | "automationLog" | "scheduledJob" | "knowledgeArticle" | "knowledgeCategory" | "aIHelpConversation" | "aIHelpMessage" | "aIFeedback" | "aISearchLog" | "aPIApplication" | "aPIEndpoint" | "aPILog" | "webhook" | "webhookEvent" | "aPIUsageRecord" | "campaign" | "audienceSegment" | "emailCampaign" | "announcement" | "promotion" | "marketingTemplate" | "campaignAnalyticsRecord" | "contactTicket" | "account" | "verificationToken" | "emailVerificationCode" | "contactVerificationToken" | "career" | "pressRelease" | "fAQItem" | "communityEvent" | "newsletterSubscriber" | "customerProfile" | "customerPreference" | "customerNotification" | "customerSession" | "game" | "article" | "supportCategory" | "ticketAssignment" | "ticketReply" | "adminNotification" | "userProfile" | "userDevice" | "dualApproval" | "dualApprovalConfirmed" | "systemSecurityState" | "secretVault" | "secretRotationLog" | "teamInvitation" | "teamApplication" | "passkeyCredential" | "recoveryMethod" | "trustedDevice" | "communityRoom" | "chatMessage" | "chatReaction" | "forumCategory" | "forumThread" | "forumPost" | "communityReport" | "communityModerationAction" | "communityBan" | "communityMute" | "communityBookmark" | "score" | "gameSession"
+      modelProps: "user" | "role" | "permission" | "session" | "auditLog" | "page" | "pageSection" | "contentBlock" | "contentRevision" | "sEOData" | "gameContent" | "gameRelease" | "gameDownloadLog" | "gameMedia" | "gameFeature" | "gamePlatform" | "patchNote" | "dLC" | "newsArticle" | "navigationMenu" | "mediaAsset" | "mediaFolder" | "mediaCollection" | "mediaTag" | "mediaUsage" | "uploadHistory" | "customer" | "ticket" | "ticketMessage" | "ticketAttachment" | "internalNote" | "ticketActivity" | "aIAnalysis" | "department" | "teamMember" | "emailLog" | "aIConversation" | "aIMessage" | "aIPrompt" | "aIUsage" | "aISetting" | "aIKnowledge" | "aIActivity" | "analyticsEvent" | "visitor" | "analyticsSession" | "analyticsReport" | "metric" | "dashboardWidget" | "securityEvent" | "aPIKey" | "securityAlert" | "backupRecord" | "notification" | "notificationTemplate" | "notificationPreference" | "notificationRule" | "deliveryLog" | "systemSetting" | "integration" | "emailConfiguration" | "storageConfiguration" | "aIConfiguration" | "featureFlag" | "testResult" | "errorLog" | "performanceMetric" | "deployment" | "buildHistory" | "systemLog" | "healthCheck" | "cacheRecord" | "optimizationReport" | "systemResource" | "productionEnvironment" | "cloudDeployment" | "systemHealthCheck" | "databaseBackupRecord" | "workflow" | "workflowTrigger" | "workflowCondition" | "workflowAction" | "workflowExecution" | "automationLog" | "scheduledJob" | "knowledgeArticle" | "knowledgeCategory" | "aIHelpConversation" | "aIHelpMessage" | "aIFeedback" | "aISearchLog" | "aPIApplication" | "aPIEndpoint" | "aPILog" | "webhook" | "webhookEvent" | "aPIUsageRecord" | "campaign" | "audienceSegment" | "emailCampaign" | "announcement" | "promotion" | "marketingTemplate" | "campaignAnalyticsRecord" | "contactTicket" | "account" | "verificationToken" | "emailVerificationCode" | "contactVerificationToken" | "career" | "pressRelease" | "fAQItem" | "communityEvent" | "newsletterSubscriber" | "customerProfile" | "customerPreference" | "customerNotification" | "customerSession" | "game" | "article" | "supportCategory" | "ticketAssignment" | "ticketReply" | "adminNotification" | "userProfile" | "userDevice" | "dualApproval" | "dualApprovalConfirmed" | "systemSecurityState" | "secretVault" | "secretRotationLog" | "teamInvitation" | "teamApplication" | "passkeyCredential" | "recoveryMethod" | "trustedDevice" | "communityRoom" | "chatMessage" | "chatReaction" | "forumCategory" | "forumThread" | "forumPost" | "communityReport" | "communityModerationAction" | "communityBan" | "communityMute" | "communityBookmark" | "score" | "gameSession" | "player" | "playerPreference" | "achievement" | "playerAchievement" | "favorite" | "playing_with_neon"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -14004,6 +14100,450 @@ export namespace Prisma {
           }
         }
       }
+      Player: {
+        payload: Prisma.$PlayerPayload<ExtArgs>
+        fields: Prisma.PlayerFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PlayerFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayerPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PlayerFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayerPayload>
+          }
+          findFirst: {
+            args: Prisma.PlayerFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayerPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PlayerFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayerPayload>
+          }
+          findMany: {
+            args: Prisma.PlayerFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayerPayload>[]
+          }
+          create: {
+            args: Prisma.PlayerCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayerPayload>
+          }
+          createMany: {
+            args: Prisma.PlayerCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PlayerCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayerPayload>[]
+          }
+          delete: {
+            args: Prisma.PlayerDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayerPayload>
+          }
+          update: {
+            args: Prisma.PlayerUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayerPayload>
+          }
+          deleteMany: {
+            args: Prisma.PlayerDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PlayerUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PlayerUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayerPayload>[]
+          }
+          upsert: {
+            args: Prisma.PlayerUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayerPayload>
+          }
+          aggregate: {
+            args: Prisma.PlayerAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePlayer>
+          }
+          groupBy: {
+            args: Prisma.PlayerGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PlayerGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PlayerCountArgs<ExtArgs>
+            result: $Utils.Optional<PlayerCountAggregateOutputType> | number
+          }
+        }
+      }
+      PlayerPreference: {
+        payload: Prisma.$PlayerPreferencePayload<ExtArgs>
+        fields: Prisma.PlayerPreferenceFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PlayerPreferenceFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayerPreferencePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PlayerPreferenceFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayerPreferencePayload>
+          }
+          findFirst: {
+            args: Prisma.PlayerPreferenceFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayerPreferencePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PlayerPreferenceFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayerPreferencePayload>
+          }
+          findMany: {
+            args: Prisma.PlayerPreferenceFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayerPreferencePayload>[]
+          }
+          create: {
+            args: Prisma.PlayerPreferenceCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayerPreferencePayload>
+          }
+          createMany: {
+            args: Prisma.PlayerPreferenceCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PlayerPreferenceCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayerPreferencePayload>[]
+          }
+          delete: {
+            args: Prisma.PlayerPreferenceDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayerPreferencePayload>
+          }
+          update: {
+            args: Prisma.PlayerPreferenceUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayerPreferencePayload>
+          }
+          deleteMany: {
+            args: Prisma.PlayerPreferenceDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PlayerPreferenceUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PlayerPreferenceUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayerPreferencePayload>[]
+          }
+          upsert: {
+            args: Prisma.PlayerPreferenceUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayerPreferencePayload>
+          }
+          aggregate: {
+            args: Prisma.PlayerPreferenceAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePlayerPreference>
+          }
+          groupBy: {
+            args: Prisma.PlayerPreferenceGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PlayerPreferenceGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PlayerPreferenceCountArgs<ExtArgs>
+            result: $Utils.Optional<PlayerPreferenceCountAggregateOutputType> | number
+          }
+        }
+      }
+      Achievement: {
+        payload: Prisma.$AchievementPayload<ExtArgs>
+        fields: Prisma.AchievementFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AchievementFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AchievementPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AchievementFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AchievementPayload>
+          }
+          findFirst: {
+            args: Prisma.AchievementFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AchievementPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AchievementFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AchievementPayload>
+          }
+          findMany: {
+            args: Prisma.AchievementFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AchievementPayload>[]
+          }
+          create: {
+            args: Prisma.AchievementCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AchievementPayload>
+          }
+          createMany: {
+            args: Prisma.AchievementCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AchievementCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AchievementPayload>[]
+          }
+          delete: {
+            args: Prisma.AchievementDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AchievementPayload>
+          }
+          update: {
+            args: Prisma.AchievementUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AchievementPayload>
+          }
+          deleteMany: {
+            args: Prisma.AchievementDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AchievementUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.AchievementUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AchievementPayload>[]
+          }
+          upsert: {
+            args: Prisma.AchievementUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AchievementPayload>
+          }
+          aggregate: {
+            args: Prisma.AchievementAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAchievement>
+          }
+          groupBy: {
+            args: Prisma.AchievementGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AchievementGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AchievementCountArgs<ExtArgs>
+            result: $Utils.Optional<AchievementCountAggregateOutputType> | number
+          }
+        }
+      }
+      PlayerAchievement: {
+        payload: Prisma.$PlayerAchievementPayload<ExtArgs>
+        fields: Prisma.PlayerAchievementFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PlayerAchievementFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayerAchievementPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PlayerAchievementFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayerAchievementPayload>
+          }
+          findFirst: {
+            args: Prisma.PlayerAchievementFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayerAchievementPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PlayerAchievementFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayerAchievementPayload>
+          }
+          findMany: {
+            args: Prisma.PlayerAchievementFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayerAchievementPayload>[]
+          }
+          create: {
+            args: Prisma.PlayerAchievementCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayerAchievementPayload>
+          }
+          createMany: {
+            args: Prisma.PlayerAchievementCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PlayerAchievementCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayerAchievementPayload>[]
+          }
+          delete: {
+            args: Prisma.PlayerAchievementDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayerAchievementPayload>
+          }
+          update: {
+            args: Prisma.PlayerAchievementUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayerAchievementPayload>
+          }
+          deleteMany: {
+            args: Prisma.PlayerAchievementDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PlayerAchievementUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PlayerAchievementUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayerAchievementPayload>[]
+          }
+          upsert: {
+            args: Prisma.PlayerAchievementUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayerAchievementPayload>
+          }
+          aggregate: {
+            args: Prisma.PlayerAchievementAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePlayerAchievement>
+          }
+          groupBy: {
+            args: Prisma.PlayerAchievementGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PlayerAchievementGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PlayerAchievementCountArgs<ExtArgs>
+            result: $Utils.Optional<PlayerAchievementCountAggregateOutputType> | number
+          }
+        }
+      }
+      Favorite: {
+        payload: Prisma.$FavoritePayload<ExtArgs>
+        fields: Prisma.FavoriteFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.FavoriteFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FavoritePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.FavoriteFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FavoritePayload>
+          }
+          findFirst: {
+            args: Prisma.FavoriteFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FavoritePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.FavoriteFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FavoritePayload>
+          }
+          findMany: {
+            args: Prisma.FavoriteFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FavoritePayload>[]
+          }
+          create: {
+            args: Prisma.FavoriteCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FavoritePayload>
+          }
+          createMany: {
+            args: Prisma.FavoriteCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.FavoriteCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FavoritePayload>[]
+          }
+          delete: {
+            args: Prisma.FavoriteDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FavoritePayload>
+          }
+          update: {
+            args: Prisma.FavoriteUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FavoritePayload>
+          }
+          deleteMany: {
+            args: Prisma.FavoriteDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.FavoriteUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.FavoriteUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FavoritePayload>[]
+          }
+          upsert: {
+            args: Prisma.FavoriteUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FavoritePayload>
+          }
+          aggregate: {
+            args: Prisma.FavoriteAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateFavorite>
+          }
+          groupBy: {
+            args: Prisma.FavoriteGroupByArgs<ExtArgs>
+            result: $Utils.Optional<FavoriteGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.FavoriteCountArgs<ExtArgs>
+            result: $Utils.Optional<FavoriteCountAggregateOutputType> | number
+          }
+        }
+      }
+      playing_with_neon: {
+        payload: Prisma.$playing_with_neonPayload<ExtArgs>
+        fields: Prisma.playing_with_neonFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.playing_with_neonFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$playing_with_neonPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.playing_with_neonFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$playing_with_neonPayload>
+          }
+          findFirst: {
+            args: Prisma.playing_with_neonFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$playing_with_neonPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.playing_with_neonFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$playing_with_neonPayload>
+          }
+          findMany: {
+            args: Prisma.playing_with_neonFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$playing_with_neonPayload>[]
+          }
+          create: {
+            args: Prisma.playing_with_neonCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$playing_with_neonPayload>
+          }
+          createMany: {
+            args: Prisma.playing_with_neonCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.playing_with_neonCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$playing_with_neonPayload>[]
+          }
+          delete: {
+            args: Prisma.playing_with_neonDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$playing_with_neonPayload>
+          }
+          update: {
+            args: Prisma.playing_with_neonUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$playing_with_neonPayload>
+          }
+          deleteMany: {
+            args: Prisma.playing_with_neonDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.playing_with_neonUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.playing_with_neonUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$playing_with_neonPayload>[]
+          }
+          upsert: {
+            args: Prisma.playing_with_neonUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$playing_with_neonPayload>
+          }
+          aggregate: {
+            args: Prisma.Playing_with_neonAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePlaying_with_neon>
+          }
+          groupBy: {
+            args: Prisma.playing_with_neonGroupByArgs<ExtArgs>
+            result: $Utils.Optional<Playing_with_neonGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.playing_with_neonCountArgs<ExtArgs>
+            result: $Utils.Optional<Playing_with_neonCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -14249,6 +14789,12 @@ export namespace Prisma {
     communityBookmark?: CommunityBookmarkOmit
     score?: ScoreOmit
     gameSession?: GameSessionOmit
+    player?: PlayerOmit
+    playerPreference?: PlayerPreferenceOmit
+    achievement?: AchievementOmit
+    playerAchievement?: PlayerAchievementOmit
+    favorite?: FavoriteOmit
+    playing_with_neon?: playing_with_neonOmit
   }
 
   /* Types for Logging */
@@ -15438,6 +15984,77 @@ export namespace Prisma {
 
 
   /**
+   * Count Type PlayerCountOutputType
+   */
+
+  export type PlayerCountOutputType = {
+    achievements: number
+    favorites: number
+  }
+
+  export type PlayerCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    achievements?: boolean | PlayerCountOutputTypeCountAchievementsArgs
+    favorites?: boolean | PlayerCountOutputTypeCountFavoritesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * PlayerCountOutputType without action
+   */
+  export type PlayerCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlayerCountOutputType
+     */
+    select?: PlayerCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * PlayerCountOutputType without action
+   */
+  export type PlayerCountOutputTypeCountAchievementsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PlayerAchievementWhereInput
+  }
+
+  /**
+   * PlayerCountOutputType without action
+   */
+  export type PlayerCountOutputTypeCountFavoritesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FavoriteWhereInput
+  }
+
+
+  /**
+   * Count Type AchievementCountOutputType
+   */
+
+  export type AchievementCountOutputType = {
+    unlocks: number
+  }
+
+  export type AchievementCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    unlocks?: boolean | AchievementCountOutputTypeCountUnlocksArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * AchievementCountOutputType without action
+   */
+  export type AchievementCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AchievementCountOutputType
+     */
+    select?: AchievementCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * AchievementCountOutputType without action
+   */
+  export type AchievementCountOutputTypeCountUnlocksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PlayerAchievementWhereInput
+  }
+
+
+  /**
    * Models
    */
 
@@ -15857,6 +16474,7 @@ export namespace Prisma {
     verificationCodes?: boolean | User$verificationCodesArgs<ExtArgs>
     scores?: boolean | User$scoresArgs<ExtArgs>
     gameSessions?: boolean | User$gameSessionsArgs<ExtArgs>
+    player?: boolean | User$playerArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -15980,6 +16598,7 @@ export namespace Prisma {
     verificationCodes?: boolean | User$verificationCodesArgs<ExtArgs>
     scores?: boolean | User$scoresArgs<ExtArgs>
     gameSessions?: boolean | User$gameSessionsArgs<ExtArgs>
+    player?: boolean | User$playerArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -16010,6 +16629,7 @@ export namespace Prisma {
       verificationCodes: Prisma.$EmailVerificationCodePayload<ExtArgs>[]
       scores: Prisma.$ScorePayload<ExtArgs>[]
       gameSessions: Prisma.$GameSessionPayload<ExtArgs>[]
+      player: Prisma.$PlayerPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -16457,6 +17077,7 @@ export namespace Prisma {
     verificationCodes<T extends User$verificationCodesArgs<ExtArgs> = {}>(args?: Subset<T, User$verificationCodesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EmailVerificationCodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     scores<T extends User$scoresArgs<ExtArgs> = {}>(args?: Subset<T, User$scoresArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ScorePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     gameSessions<T extends User$gameSessionsArgs<ExtArgs> = {}>(args?: Subset<T, User$gameSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GameSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    player<T extends User$playerArgs<ExtArgs> = {}>(args?: Subset<T, User$playerArgs<ExtArgs>>): Prisma__PlayerClient<$Result.GetResult<Prisma.$PlayerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -17418,6 +18039,25 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: GameSessionScalarFieldEnum | GameSessionScalarFieldEnum[]
+  }
+
+  /**
+   * User.player
+   */
+  export type User$playerArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Player
+     */
+    select?: PlayerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Player
+     */
+    omit?: PlayerOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayerInclude<ExtArgs> | null
+    where?: PlayerWhereInput
   }
 
   /**
@@ -177781,6 +178421,6741 @@ export namespace Prisma {
 
 
   /**
+   * Model Player
+   */
+
+  export type AggregatePlayer = {
+    _count: PlayerCountAggregateOutputType | null
+    _avg: PlayerAvgAggregateOutputType | null
+    _sum: PlayerSumAggregateOutputType | null
+    _min: PlayerMinAggregateOutputType | null
+    _max: PlayerMaxAggregateOutputType | null
+  }
+
+  export type PlayerAvgAggregateOutputType = {
+    level: number | null
+    xp: number | null
+  }
+
+  export type PlayerSumAggregateOutputType = {
+    level: number | null
+    xp: number | null
+  }
+
+  export type PlayerMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    dragonIdSubject: string | null
+    dragonHandle: string | null
+    displayName: string | null
+    email: string | null
+    avatarUrl: string | null
+    bannerUrl: string | null
+    level: number | null
+    xp: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    lastLoginAt: Date | null
+  }
+
+  export type PlayerMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    dragonIdSubject: string | null
+    dragonHandle: string | null
+    displayName: string | null
+    email: string | null
+    avatarUrl: string | null
+    bannerUrl: string | null
+    level: number | null
+    xp: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    lastLoginAt: Date | null
+  }
+
+  export type PlayerCountAggregateOutputType = {
+    id: number
+    userId: number
+    dragonIdSubject: number
+    dragonHandle: number
+    displayName: number
+    email: number
+    avatarUrl: number
+    bannerUrl: number
+    level: number
+    xp: number
+    createdAt: number
+    updatedAt: number
+    lastLoginAt: number
+    _all: number
+  }
+
+
+  export type PlayerAvgAggregateInputType = {
+    level?: true
+    xp?: true
+  }
+
+  export type PlayerSumAggregateInputType = {
+    level?: true
+    xp?: true
+  }
+
+  export type PlayerMinAggregateInputType = {
+    id?: true
+    userId?: true
+    dragonIdSubject?: true
+    dragonHandle?: true
+    displayName?: true
+    email?: true
+    avatarUrl?: true
+    bannerUrl?: true
+    level?: true
+    xp?: true
+    createdAt?: true
+    updatedAt?: true
+    lastLoginAt?: true
+  }
+
+  export type PlayerMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    dragonIdSubject?: true
+    dragonHandle?: true
+    displayName?: true
+    email?: true
+    avatarUrl?: true
+    bannerUrl?: true
+    level?: true
+    xp?: true
+    createdAt?: true
+    updatedAt?: true
+    lastLoginAt?: true
+  }
+
+  export type PlayerCountAggregateInputType = {
+    id?: true
+    userId?: true
+    dragonIdSubject?: true
+    dragonHandle?: true
+    displayName?: true
+    email?: true
+    avatarUrl?: true
+    bannerUrl?: true
+    level?: true
+    xp?: true
+    createdAt?: true
+    updatedAt?: true
+    lastLoginAt?: true
+    _all?: true
+  }
+
+  export type PlayerAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Player to aggregate.
+     */
+    where?: PlayerWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Players to fetch.
+     */
+    orderBy?: PlayerOrderByWithRelationInput | PlayerOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PlayerWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Players from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Players.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Players
+    **/
+    _count?: true | PlayerCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: PlayerAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: PlayerSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PlayerMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PlayerMaxAggregateInputType
+  }
+
+  export type GetPlayerAggregateType<T extends PlayerAggregateArgs> = {
+        [P in keyof T & keyof AggregatePlayer]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePlayer[P]>
+      : GetScalarType<T[P], AggregatePlayer[P]>
+  }
+
+
+
+
+  export type PlayerGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PlayerWhereInput
+    orderBy?: PlayerOrderByWithAggregationInput | PlayerOrderByWithAggregationInput[]
+    by: PlayerScalarFieldEnum[] | PlayerScalarFieldEnum
+    having?: PlayerScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PlayerCountAggregateInputType | true
+    _avg?: PlayerAvgAggregateInputType
+    _sum?: PlayerSumAggregateInputType
+    _min?: PlayerMinAggregateInputType
+    _max?: PlayerMaxAggregateInputType
+  }
+
+  export type PlayerGroupByOutputType = {
+    id: string
+    userId: string | null
+    dragonIdSubject: string
+    dragonHandle: string
+    displayName: string
+    email: string | null
+    avatarUrl: string | null
+    bannerUrl: string | null
+    level: number
+    xp: number
+    createdAt: Date
+    updatedAt: Date
+    lastLoginAt: Date
+    _count: PlayerCountAggregateOutputType | null
+    _avg: PlayerAvgAggregateOutputType | null
+    _sum: PlayerSumAggregateOutputType | null
+    _min: PlayerMinAggregateOutputType | null
+    _max: PlayerMaxAggregateOutputType | null
+  }
+
+  type GetPlayerGroupByPayload<T extends PlayerGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PlayerGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PlayerGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PlayerGroupByOutputType[P]>
+            : GetScalarType<T[P], PlayerGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PlayerSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    dragonIdSubject?: boolean
+    dragonHandle?: boolean
+    displayName?: boolean
+    email?: boolean
+    avatarUrl?: boolean
+    bannerUrl?: boolean
+    level?: boolean
+    xp?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    lastLoginAt?: boolean
+    user?: boolean | Player$userArgs<ExtArgs>
+    preferences?: boolean | Player$preferencesArgs<ExtArgs>
+    achievements?: boolean | Player$achievementsArgs<ExtArgs>
+    favorites?: boolean | Player$favoritesArgs<ExtArgs>
+    _count?: boolean | PlayerCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["player"]>
+
+  export type PlayerSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    dragonIdSubject?: boolean
+    dragonHandle?: boolean
+    displayName?: boolean
+    email?: boolean
+    avatarUrl?: boolean
+    bannerUrl?: boolean
+    level?: boolean
+    xp?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    lastLoginAt?: boolean
+    user?: boolean | Player$userArgs<ExtArgs>
+  }, ExtArgs["result"]["player"]>
+
+  export type PlayerSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    dragonIdSubject?: boolean
+    dragonHandle?: boolean
+    displayName?: boolean
+    email?: boolean
+    avatarUrl?: boolean
+    bannerUrl?: boolean
+    level?: boolean
+    xp?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    lastLoginAt?: boolean
+    user?: boolean | Player$userArgs<ExtArgs>
+  }, ExtArgs["result"]["player"]>
+
+  export type PlayerSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    dragonIdSubject?: boolean
+    dragonHandle?: boolean
+    displayName?: boolean
+    email?: boolean
+    avatarUrl?: boolean
+    bannerUrl?: boolean
+    level?: boolean
+    xp?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    lastLoginAt?: boolean
+  }
+
+  export type PlayerOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "dragonIdSubject" | "dragonHandle" | "displayName" | "email" | "avatarUrl" | "bannerUrl" | "level" | "xp" | "createdAt" | "updatedAt" | "lastLoginAt", ExtArgs["result"]["player"]>
+  export type PlayerInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | Player$userArgs<ExtArgs>
+    preferences?: boolean | Player$preferencesArgs<ExtArgs>
+    achievements?: boolean | Player$achievementsArgs<ExtArgs>
+    favorites?: boolean | Player$favoritesArgs<ExtArgs>
+    _count?: boolean | PlayerCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type PlayerIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | Player$userArgs<ExtArgs>
+  }
+  export type PlayerIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | Player$userArgs<ExtArgs>
+  }
+
+  export type $PlayerPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Player"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs> | null
+      preferences: Prisma.$PlayerPreferencePayload<ExtArgs> | null
+      achievements: Prisma.$PlayerAchievementPayload<ExtArgs>[]
+      favorites: Prisma.$FavoritePayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string | null
+      dragonIdSubject: string
+      dragonHandle: string
+      displayName: string
+      email: string | null
+      avatarUrl: string | null
+      bannerUrl: string | null
+      level: number
+      xp: number
+      createdAt: Date
+      updatedAt: Date
+      lastLoginAt: Date
+    }, ExtArgs["result"]["player"]>
+    composites: {}
+  }
+
+  type PlayerGetPayload<S extends boolean | null | undefined | PlayerDefaultArgs> = $Result.GetResult<Prisma.$PlayerPayload, S>
+
+  type PlayerCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PlayerFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PlayerCountAggregateInputType | true
+    }
+
+  export interface PlayerDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Player'], meta: { name: 'Player' } }
+    /**
+     * Find zero or one Player that matches the filter.
+     * @param {PlayerFindUniqueArgs} args - Arguments to find a Player
+     * @example
+     * // Get one Player
+     * const player = await prisma.player.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PlayerFindUniqueArgs>(args: SelectSubset<T, PlayerFindUniqueArgs<ExtArgs>>): Prisma__PlayerClient<$Result.GetResult<Prisma.$PlayerPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Player that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PlayerFindUniqueOrThrowArgs} args - Arguments to find a Player
+     * @example
+     * // Get one Player
+     * const player = await prisma.player.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PlayerFindUniqueOrThrowArgs>(args: SelectSubset<T, PlayerFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PlayerClient<$Result.GetResult<Prisma.$PlayerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Player that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlayerFindFirstArgs} args - Arguments to find a Player
+     * @example
+     * // Get one Player
+     * const player = await prisma.player.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PlayerFindFirstArgs>(args?: SelectSubset<T, PlayerFindFirstArgs<ExtArgs>>): Prisma__PlayerClient<$Result.GetResult<Prisma.$PlayerPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Player that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlayerFindFirstOrThrowArgs} args - Arguments to find a Player
+     * @example
+     * // Get one Player
+     * const player = await prisma.player.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PlayerFindFirstOrThrowArgs>(args?: SelectSubset<T, PlayerFindFirstOrThrowArgs<ExtArgs>>): Prisma__PlayerClient<$Result.GetResult<Prisma.$PlayerPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Players that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlayerFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Players
+     * const players = await prisma.player.findMany()
+     * 
+     * // Get first 10 Players
+     * const players = await prisma.player.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const playerWithIdOnly = await prisma.player.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PlayerFindManyArgs>(args?: SelectSubset<T, PlayerFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlayerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Player.
+     * @param {PlayerCreateArgs} args - Arguments to create a Player.
+     * @example
+     * // Create one Player
+     * const Player = await prisma.player.create({
+     *   data: {
+     *     // ... data to create a Player
+     *   }
+     * })
+     * 
+     */
+    create<T extends PlayerCreateArgs>(args: SelectSubset<T, PlayerCreateArgs<ExtArgs>>): Prisma__PlayerClient<$Result.GetResult<Prisma.$PlayerPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Players.
+     * @param {PlayerCreateManyArgs} args - Arguments to create many Players.
+     * @example
+     * // Create many Players
+     * const player = await prisma.player.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PlayerCreateManyArgs>(args?: SelectSubset<T, PlayerCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Players and returns the data saved in the database.
+     * @param {PlayerCreateManyAndReturnArgs} args - Arguments to create many Players.
+     * @example
+     * // Create many Players
+     * const player = await prisma.player.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Players and only return the `id`
+     * const playerWithIdOnly = await prisma.player.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PlayerCreateManyAndReturnArgs>(args?: SelectSubset<T, PlayerCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlayerPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Player.
+     * @param {PlayerDeleteArgs} args - Arguments to delete one Player.
+     * @example
+     * // Delete one Player
+     * const Player = await prisma.player.delete({
+     *   where: {
+     *     // ... filter to delete one Player
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PlayerDeleteArgs>(args: SelectSubset<T, PlayerDeleteArgs<ExtArgs>>): Prisma__PlayerClient<$Result.GetResult<Prisma.$PlayerPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Player.
+     * @param {PlayerUpdateArgs} args - Arguments to update one Player.
+     * @example
+     * // Update one Player
+     * const player = await prisma.player.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PlayerUpdateArgs>(args: SelectSubset<T, PlayerUpdateArgs<ExtArgs>>): Prisma__PlayerClient<$Result.GetResult<Prisma.$PlayerPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Players.
+     * @param {PlayerDeleteManyArgs} args - Arguments to filter Players to delete.
+     * @example
+     * // Delete a few Players
+     * const { count } = await prisma.player.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PlayerDeleteManyArgs>(args?: SelectSubset<T, PlayerDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Players.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlayerUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Players
+     * const player = await prisma.player.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PlayerUpdateManyArgs>(args: SelectSubset<T, PlayerUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Players and returns the data updated in the database.
+     * @param {PlayerUpdateManyAndReturnArgs} args - Arguments to update many Players.
+     * @example
+     * // Update many Players
+     * const player = await prisma.player.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Players and only return the `id`
+     * const playerWithIdOnly = await prisma.player.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PlayerUpdateManyAndReturnArgs>(args: SelectSubset<T, PlayerUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlayerPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Player.
+     * @param {PlayerUpsertArgs} args - Arguments to update or create a Player.
+     * @example
+     * // Update or create a Player
+     * const player = await prisma.player.upsert({
+     *   create: {
+     *     // ... data to create a Player
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Player we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PlayerUpsertArgs>(args: SelectSubset<T, PlayerUpsertArgs<ExtArgs>>): Prisma__PlayerClient<$Result.GetResult<Prisma.$PlayerPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Players.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlayerCountArgs} args - Arguments to filter Players to count.
+     * @example
+     * // Count the number of Players
+     * const count = await prisma.player.count({
+     *   where: {
+     *     // ... the filter for the Players we want to count
+     *   }
+     * })
+    **/
+    count<T extends PlayerCountArgs>(
+      args?: Subset<T, PlayerCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PlayerCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Player.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlayerAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PlayerAggregateArgs>(args: Subset<T, PlayerAggregateArgs>): Prisma.PrismaPromise<GetPlayerAggregateType<T>>
+
+    /**
+     * Group by Player.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlayerGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PlayerGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PlayerGroupByArgs['orderBy'] }
+        : { orderBy?: PlayerGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PlayerGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPlayerGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Player model
+   */
+  readonly fields: PlayerFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Player.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PlayerClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends Player$userArgs<ExtArgs> = {}>(args?: Subset<T, Player$userArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    preferences<T extends Player$preferencesArgs<ExtArgs> = {}>(args?: Subset<T, Player$preferencesArgs<ExtArgs>>): Prisma__PlayerPreferenceClient<$Result.GetResult<Prisma.$PlayerPreferencePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    achievements<T extends Player$achievementsArgs<ExtArgs> = {}>(args?: Subset<T, Player$achievementsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlayerAchievementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    favorites<T extends Player$favoritesArgs<ExtArgs> = {}>(args?: Subset<T, Player$favoritesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FavoritePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Player model
+   */
+  interface PlayerFieldRefs {
+    readonly id: FieldRef<"Player", 'String'>
+    readonly userId: FieldRef<"Player", 'String'>
+    readonly dragonIdSubject: FieldRef<"Player", 'String'>
+    readonly dragonHandle: FieldRef<"Player", 'String'>
+    readonly displayName: FieldRef<"Player", 'String'>
+    readonly email: FieldRef<"Player", 'String'>
+    readonly avatarUrl: FieldRef<"Player", 'String'>
+    readonly bannerUrl: FieldRef<"Player", 'String'>
+    readonly level: FieldRef<"Player", 'Int'>
+    readonly xp: FieldRef<"Player", 'Int'>
+    readonly createdAt: FieldRef<"Player", 'DateTime'>
+    readonly updatedAt: FieldRef<"Player", 'DateTime'>
+    readonly lastLoginAt: FieldRef<"Player", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Player findUnique
+   */
+  export type PlayerFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Player
+     */
+    select?: PlayerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Player
+     */
+    omit?: PlayerOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayerInclude<ExtArgs> | null
+    /**
+     * Filter, which Player to fetch.
+     */
+    where: PlayerWhereUniqueInput
+  }
+
+  /**
+   * Player findUniqueOrThrow
+   */
+  export type PlayerFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Player
+     */
+    select?: PlayerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Player
+     */
+    omit?: PlayerOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayerInclude<ExtArgs> | null
+    /**
+     * Filter, which Player to fetch.
+     */
+    where: PlayerWhereUniqueInput
+  }
+
+  /**
+   * Player findFirst
+   */
+  export type PlayerFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Player
+     */
+    select?: PlayerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Player
+     */
+    omit?: PlayerOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayerInclude<ExtArgs> | null
+    /**
+     * Filter, which Player to fetch.
+     */
+    where?: PlayerWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Players to fetch.
+     */
+    orderBy?: PlayerOrderByWithRelationInput | PlayerOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Players.
+     */
+    cursor?: PlayerWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Players from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Players.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Players.
+     */
+    distinct?: PlayerScalarFieldEnum | PlayerScalarFieldEnum[]
+  }
+
+  /**
+   * Player findFirstOrThrow
+   */
+  export type PlayerFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Player
+     */
+    select?: PlayerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Player
+     */
+    omit?: PlayerOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayerInclude<ExtArgs> | null
+    /**
+     * Filter, which Player to fetch.
+     */
+    where?: PlayerWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Players to fetch.
+     */
+    orderBy?: PlayerOrderByWithRelationInput | PlayerOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Players.
+     */
+    cursor?: PlayerWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Players from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Players.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Players.
+     */
+    distinct?: PlayerScalarFieldEnum | PlayerScalarFieldEnum[]
+  }
+
+  /**
+   * Player findMany
+   */
+  export type PlayerFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Player
+     */
+    select?: PlayerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Player
+     */
+    omit?: PlayerOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayerInclude<ExtArgs> | null
+    /**
+     * Filter, which Players to fetch.
+     */
+    where?: PlayerWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Players to fetch.
+     */
+    orderBy?: PlayerOrderByWithRelationInput | PlayerOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Players.
+     */
+    cursor?: PlayerWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Players from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Players.
+     */
+    skip?: number
+    distinct?: PlayerScalarFieldEnum | PlayerScalarFieldEnum[]
+  }
+
+  /**
+   * Player create
+   */
+  export type PlayerCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Player
+     */
+    select?: PlayerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Player
+     */
+    omit?: PlayerOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayerInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Player.
+     */
+    data: XOR<PlayerCreateInput, PlayerUncheckedCreateInput>
+  }
+
+  /**
+   * Player createMany
+   */
+  export type PlayerCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Players.
+     */
+    data: PlayerCreateManyInput | PlayerCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Player createManyAndReturn
+   */
+  export type PlayerCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Player
+     */
+    select?: PlayerSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Player
+     */
+    omit?: PlayerOmit<ExtArgs> | null
+    /**
+     * The data used to create many Players.
+     */
+    data: PlayerCreateManyInput | PlayerCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayerIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Player update
+   */
+  export type PlayerUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Player
+     */
+    select?: PlayerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Player
+     */
+    omit?: PlayerOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayerInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Player.
+     */
+    data: XOR<PlayerUpdateInput, PlayerUncheckedUpdateInput>
+    /**
+     * Choose, which Player to update.
+     */
+    where: PlayerWhereUniqueInput
+  }
+
+  /**
+   * Player updateMany
+   */
+  export type PlayerUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Players.
+     */
+    data: XOR<PlayerUpdateManyMutationInput, PlayerUncheckedUpdateManyInput>
+    /**
+     * Filter which Players to update
+     */
+    where?: PlayerWhereInput
+    /**
+     * Limit how many Players to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Player updateManyAndReturn
+   */
+  export type PlayerUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Player
+     */
+    select?: PlayerSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Player
+     */
+    omit?: PlayerOmit<ExtArgs> | null
+    /**
+     * The data used to update Players.
+     */
+    data: XOR<PlayerUpdateManyMutationInput, PlayerUncheckedUpdateManyInput>
+    /**
+     * Filter which Players to update
+     */
+    where?: PlayerWhereInput
+    /**
+     * Limit how many Players to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayerIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Player upsert
+   */
+  export type PlayerUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Player
+     */
+    select?: PlayerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Player
+     */
+    omit?: PlayerOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayerInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Player to update in case it exists.
+     */
+    where: PlayerWhereUniqueInput
+    /**
+     * In case the Player found by the `where` argument doesn't exist, create a new Player with this data.
+     */
+    create: XOR<PlayerCreateInput, PlayerUncheckedCreateInput>
+    /**
+     * In case the Player was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PlayerUpdateInput, PlayerUncheckedUpdateInput>
+  }
+
+  /**
+   * Player delete
+   */
+  export type PlayerDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Player
+     */
+    select?: PlayerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Player
+     */
+    omit?: PlayerOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayerInclude<ExtArgs> | null
+    /**
+     * Filter which Player to delete.
+     */
+    where: PlayerWhereUniqueInput
+  }
+
+  /**
+   * Player deleteMany
+   */
+  export type PlayerDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Players to delete
+     */
+    where?: PlayerWhereInput
+    /**
+     * Limit how many Players to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Player.user
+   */
+  export type Player$userArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
+   * Player.preferences
+   */
+  export type Player$preferencesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlayerPreference
+     */
+    select?: PlayerPreferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlayerPreference
+     */
+    omit?: PlayerPreferenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayerPreferenceInclude<ExtArgs> | null
+    where?: PlayerPreferenceWhereInput
+  }
+
+  /**
+   * Player.achievements
+   */
+  export type Player$achievementsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlayerAchievement
+     */
+    select?: PlayerAchievementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlayerAchievement
+     */
+    omit?: PlayerAchievementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayerAchievementInclude<ExtArgs> | null
+    where?: PlayerAchievementWhereInput
+    orderBy?: PlayerAchievementOrderByWithRelationInput | PlayerAchievementOrderByWithRelationInput[]
+    cursor?: PlayerAchievementWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PlayerAchievementScalarFieldEnum | PlayerAchievementScalarFieldEnum[]
+  }
+
+  /**
+   * Player.favorites
+   */
+  export type Player$favoritesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Favorite
+     */
+    select?: FavoriteSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Favorite
+     */
+    omit?: FavoriteOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FavoriteInclude<ExtArgs> | null
+    where?: FavoriteWhereInput
+    orderBy?: FavoriteOrderByWithRelationInput | FavoriteOrderByWithRelationInput[]
+    cursor?: FavoriteWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: FavoriteScalarFieldEnum | FavoriteScalarFieldEnum[]
+  }
+
+  /**
+   * Player without action
+   */
+  export type PlayerDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Player
+     */
+    select?: PlayerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Player
+     */
+    omit?: PlayerOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayerInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model PlayerPreference
+   */
+
+  export type AggregatePlayerPreference = {
+    _count: PlayerPreferenceCountAggregateOutputType | null
+    _avg: PlayerPreferenceAvgAggregateOutputType | null
+    _sum: PlayerPreferenceSumAggregateOutputType | null
+    _min: PlayerPreferenceMinAggregateOutputType | null
+    _max: PlayerPreferenceMaxAggregateOutputType | null
+  }
+
+  export type PlayerPreferenceAvgAggregateOutputType = {
+    musicVolume: number | null
+    sfxVolume: number | null
+  }
+
+  export type PlayerPreferenceSumAggregateOutputType = {
+    musicVolume: number | null
+    sfxVolume: number | null
+  }
+
+  export type PlayerPreferenceMinAggregateOutputType = {
+    id: string | null
+    playerId: string | null
+    theme: string | null
+    motionPreference: string | null
+    soundEnabled: boolean | null
+    musicVolume: number | null
+    sfxVolume: number | null
+    streamerMode: boolean | null
+    privacyLevel: string | null
+    updatedAt: Date | null
+  }
+
+  export type PlayerPreferenceMaxAggregateOutputType = {
+    id: string | null
+    playerId: string | null
+    theme: string | null
+    motionPreference: string | null
+    soundEnabled: boolean | null
+    musicVolume: number | null
+    sfxVolume: number | null
+    streamerMode: boolean | null
+    privacyLevel: string | null
+    updatedAt: Date | null
+  }
+
+  export type PlayerPreferenceCountAggregateOutputType = {
+    id: number
+    playerId: number
+    theme: number
+    motionPreference: number
+    soundEnabled: number
+    musicVolume: number
+    sfxVolume: number
+    streamerMode: number
+    privacyLevel: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type PlayerPreferenceAvgAggregateInputType = {
+    musicVolume?: true
+    sfxVolume?: true
+  }
+
+  export type PlayerPreferenceSumAggregateInputType = {
+    musicVolume?: true
+    sfxVolume?: true
+  }
+
+  export type PlayerPreferenceMinAggregateInputType = {
+    id?: true
+    playerId?: true
+    theme?: true
+    motionPreference?: true
+    soundEnabled?: true
+    musicVolume?: true
+    sfxVolume?: true
+    streamerMode?: true
+    privacyLevel?: true
+    updatedAt?: true
+  }
+
+  export type PlayerPreferenceMaxAggregateInputType = {
+    id?: true
+    playerId?: true
+    theme?: true
+    motionPreference?: true
+    soundEnabled?: true
+    musicVolume?: true
+    sfxVolume?: true
+    streamerMode?: true
+    privacyLevel?: true
+    updatedAt?: true
+  }
+
+  export type PlayerPreferenceCountAggregateInputType = {
+    id?: true
+    playerId?: true
+    theme?: true
+    motionPreference?: true
+    soundEnabled?: true
+    musicVolume?: true
+    sfxVolume?: true
+    streamerMode?: true
+    privacyLevel?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type PlayerPreferenceAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PlayerPreference to aggregate.
+     */
+    where?: PlayerPreferenceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlayerPreferences to fetch.
+     */
+    orderBy?: PlayerPreferenceOrderByWithRelationInput | PlayerPreferenceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PlayerPreferenceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlayerPreferences from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlayerPreferences.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PlayerPreferences
+    **/
+    _count?: true | PlayerPreferenceCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: PlayerPreferenceAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: PlayerPreferenceSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PlayerPreferenceMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PlayerPreferenceMaxAggregateInputType
+  }
+
+  export type GetPlayerPreferenceAggregateType<T extends PlayerPreferenceAggregateArgs> = {
+        [P in keyof T & keyof AggregatePlayerPreference]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePlayerPreference[P]>
+      : GetScalarType<T[P], AggregatePlayerPreference[P]>
+  }
+
+
+
+
+  export type PlayerPreferenceGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PlayerPreferenceWhereInput
+    orderBy?: PlayerPreferenceOrderByWithAggregationInput | PlayerPreferenceOrderByWithAggregationInput[]
+    by: PlayerPreferenceScalarFieldEnum[] | PlayerPreferenceScalarFieldEnum
+    having?: PlayerPreferenceScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PlayerPreferenceCountAggregateInputType | true
+    _avg?: PlayerPreferenceAvgAggregateInputType
+    _sum?: PlayerPreferenceSumAggregateInputType
+    _min?: PlayerPreferenceMinAggregateInputType
+    _max?: PlayerPreferenceMaxAggregateInputType
+  }
+
+  export type PlayerPreferenceGroupByOutputType = {
+    id: string
+    playerId: string
+    theme: string
+    motionPreference: string
+    soundEnabled: boolean
+    musicVolume: number
+    sfxVolume: number
+    streamerMode: boolean
+    privacyLevel: string
+    updatedAt: Date
+    _count: PlayerPreferenceCountAggregateOutputType | null
+    _avg: PlayerPreferenceAvgAggregateOutputType | null
+    _sum: PlayerPreferenceSumAggregateOutputType | null
+    _min: PlayerPreferenceMinAggregateOutputType | null
+    _max: PlayerPreferenceMaxAggregateOutputType | null
+  }
+
+  type GetPlayerPreferenceGroupByPayload<T extends PlayerPreferenceGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PlayerPreferenceGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PlayerPreferenceGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PlayerPreferenceGroupByOutputType[P]>
+            : GetScalarType<T[P], PlayerPreferenceGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PlayerPreferenceSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    playerId?: boolean
+    theme?: boolean
+    motionPreference?: boolean
+    soundEnabled?: boolean
+    musicVolume?: boolean
+    sfxVolume?: boolean
+    streamerMode?: boolean
+    privacyLevel?: boolean
+    updatedAt?: boolean
+    player?: boolean | PlayerDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["playerPreference"]>
+
+  export type PlayerPreferenceSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    playerId?: boolean
+    theme?: boolean
+    motionPreference?: boolean
+    soundEnabled?: boolean
+    musicVolume?: boolean
+    sfxVolume?: boolean
+    streamerMode?: boolean
+    privacyLevel?: boolean
+    updatedAt?: boolean
+    player?: boolean | PlayerDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["playerPreference"]>
+
+  export type PlayerPreferenceSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    playerId?: boolean
+    theme?: boolean
+    motionPreference?: boolean
+    soundEnabled?: boolean
+    musicVolume?: boolean
+    sfxVolume?: boolean
+    streamerMode?: boolean
+    privacyLevel?: boolean
+    updatedAt?: boolean
+    player?: boolean | PlayerDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["playerPreference"]>
+
+  export type PlayerPreferenceSelectScalar = {
+    id?: boolean
+    playerId?: boolean
+    theme?: boolean
+    motionPreference?: boolean
+    soundEnabled?: boolean
+    musicVolume?: boolean
+    sfxVolume?: boolean
+    streamerMode?: boolean
+    privacyLevel?: boolean
+    updatedAt?: boolean
+  }
+
+  export type PlayerPreferenceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "playerId" | "theme" | "motionPreference" | "soundEnabled" | "musicVolume" | "sfxVolume" | "streamerMode" | "privacyLevel" | "updatedAt", ExtArgs["result"]["playerPreference"]>
+  export type PlayerPreferenceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    player?: boolean | PlayerDefaultArgs<ExtArgs>
+  }
+  export type PlayerPreferenceIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    player?: boolean | PlayerDefaultArgs<ExtArgs>
+  }
+  export type PlayerPreferenceIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    player?: boolean | PlayerDefaultArgs<ExtArgs>
+  }
+
+  export type $PlayerPreferencePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PlayerPreference"
+    objects: {
+      player: Prisma.$PlayerPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      playerId: string
+      theme: string
+      motionPreference: string
+      soundEnabled: boolean
+      musicVolume: number
+      sfxVolume: number
+      streamerMode: boolean
+      privacyLevel: string
+      updatedAt: Date
+    }, ExtArgs["result"]["playerPreference"]>
+    composites: {}
+  }
+
+  type PlayerPreferenceGetPayload<S extends boolean | null | undefined | PlayerPreferenceDefaultArgs> = $Result.GetResult<Prisma.$PlayerPreferencePayload, S>
+
+  type PlayerPreferenceCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PlayerPreferenceFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PlayerPreferenceCountAggregateInputType | true
+    }
+
+  export interface PlayerPreferenceDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PlayerPreference'], meta: { name: 'PlayerPreference' } }
+    /**
+     * Find zero or one PlayerPreference that matches the filter.
+     * @param {PlayerPreferenceFindUniqueArgs} args - Arguments to find a PlayerPreference
+     * @example
+     * // Get one PlayerPreference
+     * const playerPreference = await prisma.playerPreference.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PlayerPreferenceFindUniqueArgs>(args: SelectSubset<T, PlayerPreferenceFindUniqueArgs<ExtArgs>>): Prisma__PlayerPreferenceClient<$Result.GetResult<Prisma.$PlayerPreferencePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one PlayerPreference that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PlayerPreferenceFindUniqueOrThrowArgs} args - Arguments to find a PlayerPreference
+     * @example
+     * // Get one PlayerPreference
+     * const playerPreference = await prisma.playerPreference.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PlayerPreferenceFindUniqueOrThrowArgs>(args: SelectSubset<T, PlayerPreferenceFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PlayerPreferenceClient<$Result.GetResult<Prisma.$PlayerPreferencePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PlayerPreference that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlayerPreferenceFindFirstArgs} args - Arguments to find a PlayerPreference
+     * @example
+     * // Get one PlayerPreference
+     * const playerPreference = await prisma.playerPreference.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PlayerPreferenceFindFirstArgs>(args?: SelectSubset<T, PlayerPreferenceFindFirstArgs<ExtArgs>>): Prisma__PlayerPreferenceClient<$Result.GetResult<Prisma.$PlayerPreferencePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PlayerPreference that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlayerPreferenceFindFirstOrThrowArgs} args - Arguments to find a PlayerPreference
+     * @example
+     * // Get one PlayerPreference
+     * const playerPreference = await prisma.playerPreference.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PlayerPreferenceFindFirstOrThrowArgs>(args?: SelectSubset<T, PlayerPreferenceFindFirstOrThrowArgs<ExtArgs>>): Prisma__PlayerPreferenceClient<$Result.GetResult<Prisma.$PlayerPreferencePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more PlayerPreferences that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlayerPreferenceFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PlayerPreferences
+     * const playerPreferences = await prisma.playerPreference.findMany()
+     * 
+     * // Get first 10 PlayerPreferences
+     * const playerPreferences = await prisma.playerPreference.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const playerPreferenceWithIdOnly = await prisma.playerPreference.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PlayerPreferenceFindManyArgs>(args?: SelectSubset<T, PlayerPreferenceFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlayerPreferencePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a PlayerPreference.
+     * @param {PlayerPreferenceCreateArgs} args - Arguments to create a PlayerPreference.
+     * @example
+     * // Create one PlayerPreference
+     * const PlayerPreference = await prisma.playerPreference.create({
+     *   data: {
+     *     // ... data to create a PlayerPreference
+     *   }
+     * })
+     * 
+     */
+    create<T extends PlayerPreferenceCreateArgs>(args: SelectSubset<T, PlayerPreferenceCreateArgs<ExtArgs>>): Prisma__PlayerPreferenceClient<$Result.GetResult<Prisma.$PlayerPreferencePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many PlayerPreferences.
+     * @param {PlayerPreferenceCreateManyArgs} args - Arguments to create many PlayerPreferences.
+     * @example
+     * // Create many PlayerPreferences
+     * const playerPreference = await prisma.playerPreference.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PlayerPreferenceCreateManyArgs>(args?: SelectSubset<T, PlayerPreferenceCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PlayerPreferences and returns the data saved in the database.
+     * @param {PlayerPreferenceCreateManyAndReturnArgs} args - Arguments to create many PlayerPreferences.
+     * @example
+     * // Create many PlayerPreferences
+     * const playerPreference = await prisma.playerPreference.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PlayerPreferences and only return the `id`
+     * const playerPreferenceWithIdOnly = await prisma.playerPreference.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PlayerPreferenceCreateManyAndReturnArgs>(args?: SelectSubset<T, PlayerPreferenceCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlayerPreferencePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a PlayerPreference.
+     * @param {PlayerPreferenceDeleteArgs} args - Arguments to delete one PlayerPreference.
+     * @example
+     * // Delete one PlayerPreference
+     * const PlayerPreference = await prisma.playerPreference.delete({
+     *   where: {
+     *     // ... filter to delete one PlayerPreference
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PlayerPreferenceDeleteArgs>(args: SelectSubset<T, PlayerPreferenceDeleteArgs<ExtArgs>>): Prisma__PlayerPreferenceClient<$Result.GetResult<Prisma.$PlayerPreferencePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one PlayerPreference.
+     * @param {PlayerPreferenceUpdateArgs} args - Arguments to update one PlayerPreference.
+     * @example
+     * // Update one PlayerPreference
+     * const playerPreference = await prisma.playerPreference.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PlayerPreferenceUpdateArgs>(args: SelectSubset<T, PlayerPreferenceUpdateArgs<ExtArgs>>): Prisma__PlayerPreferenceClient<$Result.GetResult<Prisma.$PlayerPreferencePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more PlayerPreferences.
+     * @param {PlayerPreferenceDeleteManyArgs} args - Arguments to filter PlayerPreferences to delete.
+     * @example
+     * // Delete a few PlayerPreferences
+     * const { count } = await prisma.playerPreference.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PlayerPreferenceDeleteManyArgs>(args?: SelectSubset<T, PlayerPreferenceDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PlayerPreferences.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlayerPreferenceUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PlayerPreferences
+     * const playerPreference = await prisma.playerPreference.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PlayerPreferenceUpdateManyArgs>(args: SelectSubset<T, PlayerPreferenceUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PlayerPreferences and returns the data updated in the database.
+     * @param {PlayerPreferenceUpdateManyAndReturnArgs} args - Arguments to update many PlayerPreferences.
+     * @example
+     * // Update many PlayerPreferences
+     * const playerPreference = await prisma.playerPreference.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more PlayerPreferences and only return the `id`
+     * const playerPreferenceWithIdOnly = await prisma.playerPreference.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PlayerPreferenceUpdateManyAndReturnArgs>(args: SelectSubset<T, PlayerPreferenceUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlayerPreferencePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one PlayerPreference.
+     * @param {PlayerPreferenceUpsertArgs} args - Arguments to update or create a PlayerPreference.
+     * @example
+     * // Update or create a PlayerPreference
+     * const playerPreference = await prisma.playerPreference.upsert({
+     *   create: {
+     *     // ... data to create a PlayerPreference
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PlayerPreference we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PlayerPreferenceUpsertArgs>(args: SelectSubset<T, PlayerPreferenceUpsertArgs<ExtArgs>>): Prisma__PlayerPreferenceClient<$Result.GetResult<Prisma.$PlayerPreferencePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of PlayerPreferences.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlayerPreferenceCountArgs} args - Arguments to filter PlayerPreferences to count.
+     * @example
+     * // Count the number of PlayerPreferences
+     * const count = await prisma.playerPreference.count({
+     *   where: {
+     *     // ... the filter for the PlayerPreferences we want to count
+     *   }
+     * })
+    **/
+    count<T extends PlayerPreferenceCountArgs>(
+      args?: Subset<T, PlayerPreferenceCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PlayerPreferenceCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PlayerPreference.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlayerPreferenceAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PlayerPreferenceAggregateArgs>(args: Subset<T, PlayerPreferenceAggregateArgs>): Prisma.PrismaPromise<GetPlayerPreferenceAggregateType<T>>
+
+    /**
+     * Group by PlayerPreference.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlayerPreferenceGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PlayerPreferenceGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PlayerPreferenceGroupByArgs['orderBy'] }
+        : { orderBy?: PlayerPreferenceGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PlayerPreferenceGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPlayerPreferenceGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PlayerPreference model
+   */
+  readonly fields: PlayerPreferenceFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PlayerPreference.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PlayerPreferenceClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    player<T extends PlayerDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PlayerDefaultArgs<ExtArgs>>): Prisma__PlayerClient<$Result.GetResult<Prisma.$PlayerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PlayerPreference model
+   */
+  interface PlayerPreferenceFieldRefs {
+    readonly id: FieldRef<"PlayerPreference", 'String'>
+    readonly playerId: FieldRef<"PlayerPreference", 'String'>
+    readonly theme: FieldRef<"PlayerPreference", 'String'>
+    readonly motionPreference: FieldRef<"PlayerPreference", 'String'>
+    readonly soundEnabled: FieldRef<"PlayerPreference", 'Boolean'>
+    readonly musicVolume: FieldRef<"PlayerPreference", 'Int'>
+    readonly sfxVolume: FieldRef<"PlayerPreference", 'Int'>
+    readonly streamerMode: FieldRef<"PlayerPreference", 'Boolean'>
+    readonly privacyLevel: FieldRef<"PlayerPreference", 'String'>
+    readonly updatedAt: FieldRef<"PlayerPreference", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PlayerPreference findUnique
+   */
+  export type PlayerPreferenceFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlayerPreference
+     */
+    select?: PlayerPreferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlayerPreference
+     */
+    omit?: PlayerPreferenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayerPreferenceInclude<ExtArgs> | null
+    /**
+     * Filter, which PlayerPreference to fetch.
+     */
+    where: PlayerPreferenceWhereUniqueInput
+  }
+
+  /**
+   * PlayerPreference findUniqueOrThrow
+   */
+  export type PlayerPreferenceFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlayerPreference
+     */
+    select?: PlayerPreferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlayerPreference
+     */
+    omit?: PlayerPreferenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayerPreferenceInclude<ExtArgs> | null
+    /**
+     * Filter, which PlayerPreference to fetch.
+     */
+    where: PlayerPreferenceWhereUniqueInput
+  }
+
+  /**
+   * PlayerPreference findFirst
+   */
+  export type PlayerPreferenceFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlayerPreference
+     */
+    select?: PlayerPreferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlayerPreference
+     */
+    omit?: PlayerPreferenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayerPreferenceInclude<ExtArgs> | null
+    /**
+     * Filter, which PlayerPreference to fetch.
+     */
+    where?: PlayerPreferenceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlayerPreferences to fetch.
+     */
+    orderBy?: PlayerPreferenceOrderByWithRelationInput | PlayerPreferenceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PlayerPreferences.
+     */
+    cursor?: PlayerPreferenceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlayerPreferences from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlayerPreferences.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PlayerPreferences.
+     */
+    distinct?: PlayerPreferenceScalarFieldEnum | PlayerPreferenceScalarFieldEnum[]
+  }
+
+  /**
+   * PlayerPreference findFirstOrThrow
+   */
+  export type PlayerPreferenceFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlayerPreference
+     */
+    select?: PlayerPreferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlayerPreference
+     */
+    omit?: PlayerPreferenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayerPreferenceInclude<ExtArgs> | null
+    /**
+     * Filter, which PlayerPreference to fetch.
+     */
+    where?: PlayerPreferenceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlayerPreferences to fetch.
+     */
+    orderBy?: PlayerPreferenceOrderByWithRelationInput | PlayerPreferenceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PlayerPreferences.
+     */
+    cursor?: PlayerPreferenceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlayerPreferences from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlayerPreferences.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PlayerPreferences.
+     */
+    distinct?: PlayerPreferenceScalarFieldEnum | PlayerPreferenceScalarFieldEnum[]
+  }
+
+  /**
+   * PlayerPreference findMany
+   */
+  export type PlayerPreferenceFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlayerPreference
+     */
+    select?: PlayerPreferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlayerPreference
+     */
+    omit?: PlayerPreferenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayerPreferenceInclude<ExtArgs> | null
+    /**
+     * Filter, which PlayerPreferences to fetch.
+     */
+    where?: PlayerPreferenceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlayerPreferences to fetch.
+     */
+    orderBy?: PlayerPreferenceOrderByWithRelationInput | PlayerPreferenceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PlayerPreferences.
+     */
+    cursor?: PlayerPreferenceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlayerPreferences from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlayerPreferences.
+     */
+    skip?: number
+    distinct?: PlayerPreferenceScalarFieldEnum | PlayerPreferenceScalarFieldEnum[]
+  }
+
+  /**
+   * PlayerPreference create
+   */
+  export type PlayerPreferenceCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlayerPreference
+     */
+    select?: PlayerPreferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlayerPreference
+     */
+    omit?: PlayerPreferenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayerPreferenceInclude<ExtArgs> | null
+    /**
+     * The data needed to create a PlayerPreference.
+     */
+    data: XOR<PlayerPreferenceCreateInput, PlayerPreferenceUncheckedCreateInput>
+  }
+
+  /**
+   * PlayerPreference createMany
+   */
+  export type PlayerPreferenceCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PlayerPreferences.
+     */
+    data: PlayerPreferenceCreateManyInput | PlayerPreferenceCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PlayerPreference createManyAndReturn
+   */
+  export type PlayerPreferenceCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlayerPreference
+     */
+    select?: PlayerPreferenceSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlayerPreference
+     */
+    omit?: PlayerPreferenceOmit<ExtArgs> | null
+    /**
+     * The data used to create many PlayerPreferences.
+     */
+    data: PlayerPreferenceCreateManyInput | PlayerPreferenceCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayerPreferenceIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PlayerPreference update
+   */
+  export type PlayerPreferenceUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlayerPreference
+     */
+    select?: PlayerPreferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlayerPreference
+     */
+    omit?: PlayerPreferenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayerPreferenceInclude<ExtArgs> | null
+    /**
+     * The data needed to update a PlayerPreference.
+     */
+    data: XOR<PlayerPreferenceUpdateInput, PlayerPreferenceUncheckedUpdateInput>
+    /**
+     * Choose, which PlayerPreference to update.
+     */
+    where: PlayerPreferenceWhereUniqueInput
+  }
+
+  /**
+   * PlayerPreference updateMany
+   */
+  export type PlayerPreferenceUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PlayerPreferences.
+     */
+    data: XOR<PlayerPreferenceUpdateManyMutationInput, PlayerPreferenceUncheckedUpdateManyInput>
+    /**
+     * Filter which PlayerPreferences to update
+     */
+    where?: PlayerPreferenceWhereInput
+    /**
+     * Limit how many PlayerPreferences to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PlayerPreference updateManyAndReturn
+   */
+  export type PlayerPreferenceUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlayerPreference
+     */
+    select?: PlayerPreferenceSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlayerPreference
+     */
+    omit?: PlayerPreferenceOmit<ExtArgs> | null
+    /**
+     * The data used to update PlayerPreferences.
+     */
+    data: XOR<PlayerPreferenceUpdateManyMutationInput, PlayerPreferenceUncheckedUpdateManyInput>
+    /**
+     * Filter which PlayerPreferences to update
+     */
+    where?: PlayerPreferenceWhereInput
+    /**
+     * Limit how many PlayerPreferences to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayerPreferenceIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PlayerPreference upsert
+   */
+  export type PlayerPreferenceUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlayerPreference
+     */
+    select?: PlayerPreferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlayerPreference
+     */
+    omit?: PlayerPreferenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayerPreferenceInclude<ExtArgs> | null
+    /**
+     * The filter to search for the PlayerPreference to update in case it exists.
+     */
+    where: PlayerPreferenceWhereUniqueInput
+    /**
+     * In case the PlayerPreference found by the `where` argument doesn't exist, create a new PlayerPreference with this data.
+     */
+    create: XOR<PlayerPreferenceCreateInput, PlayerPreferenceUncheckedCreateInput>
+    /**
+     * In case the PlayerPreference was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PlayerPreferenceUpdateInput, PlayerPreferenceUncheckedUpdateInput>
+  }
+
+  /**
+   * PlayerPreference delete
+   */
+  export type PlayerPreferenceDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlayerPreference
+     */
+    select?: PlayerPreferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlayerPreference
+     */
+    omit?: PlayerPreferenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayerPreferenceInclude<ExtArgs> | null
+    /**
+     * Filter which PlayerPreference to delete.
+     */
+    where: PlayerPreferenceWhereUniqueInput
+  }
+
+  /**
+   * PlayerPreference deleteMany
+   */
+  export type PlayerPreferenceDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PlayerPreferences to delete
+     */
+    where?: PlayerPreferenceWhereInput
+    /**
+     * Limit how many PlayerPreferences to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * PlayerPreference without action
+   */
+  export type PlayerPreferenceDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlayerPreference
+     */
+    select?: PlayerPreferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlayerPreference
+     */
+    omit?: PlayerPreferenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayerPreferenceInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Achievement
+   */
+
+  export type AggregateAchievement = {
+    _count: AchievementCountAggregateOutputType | null
+    _avg: AchievementAvgAggregateOutputType | null
+    _sum: AchievementSumAggregateOutputType | null
+    _min: AchievementMinAggregateOutputType | null
+    _max: AchievementMaxAggregateOutputType | null
+  }
+
+  export type AchievementAvgAggregateOutputType = {
+    xpReward: number | null
+  }
+
+  export type AchievementSumAggregateOutputType = {
+    xpReward: number | null
+  }
+
+  export type AchievementMinAggregateOutputType = {
+    id: string | null
+    gameSlug: string | null
+    key: string | null
+    name: string | null
+    description: string | null
+    icon: string | null
+    xpReward: number | null
+    secret: boolean | null
+    rarity: string | null
+    createdAt: Date | null
+  }
+
+  export type AchievementMaxAggregateOutputType = {
+    id: string | null
+    gameSlug: string | null
+    key: string | null
+    name: string | null
+    description: string | null
+    icon: string | null
+    xpReward: number | null
+    secret: boolean | null
+    rarity: string | null
+    createdAt: Date | null
+  }
+
+  export type AchievementCountAggregateOutputType = {
+    id: number
+    gameSlug: number
+    key: number
+    name: number
+    description: number
+    icon: number
+    xpReward: number
+    secret: number
+    rarity: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type AchievementAvgAggregateInputType = {
+    xpReward?: true
+  }
+
+  export type AchievementSumAggregateInputType = {
+    xpReward?: true
+  }
+
+  export type AchievementMinAggregateInputType = {
+    id?: true
+    gameSlug?: true
+    key?: true
+    name?: true
+    description?: true
+    icon?: true
+    xpReward?: true
+    secret?: true
+    rarity?: true
+    createdAt?: true
+  }
+
+  export type AchievementMaxAggregateInputType = {
+    id?: true
+    gameSlug?: true
+    key?: true
+    name?: true
+    description?: true
+    icon?: true
+    xpReward?: true
+    secret?: true
+    rarity?: true
+    createdAt?: true
+  }
+
+  export type AchievementCountAggregateInputType = {
+    id?: true
+    gameSlug?: true
+    key?: true
+    name?: true
+    description?: true
+    icon?: true
+    xpReward?: true
+    secret?: true
+    rarity?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type AchievementAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Achievement to aggregate.
+     */
+    where?: AchievementWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Achievements to fetch.
+     */
+    orderBy?: AchievementOrderByWithRelationInput | AchievementOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AchievementWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Achievements from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Achievements.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Achievements
+    **/
+    _count?: true | AchievementCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: AchievementAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: AchievementSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AchievementMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AchievementMaxAggregateInputType
+  }
+
+  export type GetAchievementAggregateType<T extends AchievementAggregateArgs> = {
+        [P in keyof T & keyof AggregateAchievement]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAchievement[P]>
+      : GetScalarType<T[P], AggregateAchievement[P]>
+  }
+
+
+
+
+  export type AchievementGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AchievementWhereInput
+    orderBy?: AchievementOrderByWithAggregationInput | AchievementOrderByWithAggregationInput[]
+    by: AchievementScalarFieldEnum[] | AchievementScalarFieldEnum
+    having?: AchievementScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AchievementCountAggregateInputType | true
+    _avg?: AchievementAvgAggregateInputType
+    _sum?: AchievementSumAggregateInputType
+    _min?: AchievementMinAggregateInputType
+    _max?: AchievementMaxAggregateInputType
+  }
+
+  export type AchievementGroupByOutputType = {
+    id: string
+    gameSlug: string
+    key: string
+    name: string
+    description: string
+    icon: string
+    xpReward: number
+    secret: boolean
+    rarity: string
+    createdAt: Date
+    _count: AchievementCountAggregateOutputType | null
+    _avg: AchievementAvgAggregateOutputType | null
+    _sum: AchievementSumAggregateOutputType | null
+    _min: AchievementMinAggregateOutputType | null
+    _max: AchievementMaxAggregateOutputType | null
+  }
+
+  type GetAchievementGroupByPayload<T extends AchievementGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AchievementGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AchievementGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AchievementGroupByOutputType[P]>
+            : GetScalarType<T[P], AchievementGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AchievementSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    gameSlug?: boolean
+    key?: boolean
+    name?: boolean
+    description?: boolean
+    icon?: boolean
+    xpReward?: boolean
+    secret?: boolean
+    rarity?: boolean
+    createdAt?: boolean
+    unlocks?: boolean | Achievement$unlocksArgs<ExtArgs>
+    _count?: boolean | AchievementCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["achievement"]>
+
+  export type AchievementSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    gameSlug?: boolean
+    key?: boolean
+    name?: boolean
+    description?: boolean
+    icon?: boolean
+    xpReward?: boolean
+    secret?: boolean
+    rarity?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["achievement"]>
+
+  export type AchievementSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    gameSlug?: boolean
+    key?: boolean
+    name?: boolean
+    description?: boolean
+    icon?: boolean
+    xpReward?: boolean
+    secret?: boolean
+    rarity?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["achievement"]>
+
+  export type AchievementSelectScalar = {
+    id?: boolean
+    gameSlug?: boolean
+    key?: boolean
+    name?: boolean
+    description?: boolean
+    icon?: boolean
+    xpReward?: boolean
+    secret?: boolean
+    rarity?: boolean
+    createdAt?: boolean
+  }
+
+  export type AchievementOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "gameSlug" | "key" | "name" | "description" | "icon" | "xpReward" | "secret" | "rarity" | "createdAt", ExtArgs["result"]["achievement"]>
+  export type AchievementInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    unlocks?: boolean | Achievement$unlocksArgs<ExtArgs>
+    _count?: boolean | AchievementCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type AchievementIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type AchievementIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $AchievementPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Achievement"
+    objects: {
+      unlocks: Prisma.$PlayerAchievementPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      gameSlug: string
+      key: string
+      name: string
+      description: string
+      icon: string
+      xpReward: number
+      secret: boolean
+      rarity: string
+      createdAt: Date
+    }, ExtArgs["result"]["achievement"]>
+    composites: {}
+  }
+
+  type AchievementGetPayload<S extends boolean | null | undefined | AchievementDefaultArgs> = $Result.GetResult<Prisma.$AchievementPayload, S>
+
+  type AchievementCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<AchievementFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: AchievementCountAggregateInputType | true
+    }
+
+  export interface AchievementDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Achievement'], meta: { name: 'Achievement' } }
+    /**
+     * Find zero or one Achievement that matches the filter.
+     * @param {AchievementFindUniqueArgs} args - Arguments to find a Achievement
+     * @example
+     * // Get one Achievement
+     * const achievement = await prisma.achievement.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AchievementFindUniqueArgs>(args: SelectSubset<T, AchievementFindUniqueArgs<ExtArgs>>): Prisma__AchievementClient<$Result.GetResult<Prisma.$AchievementPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Achievement that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {AchievementFindUniqueOrThrowArgs} args - Arguments to find a Achievement
+     * @example
+     * // Get one Achievement
+     * const achievement = await prisma.achievement.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AchievementFindUniqueOrThrowArgs>(args: SelectSubset<T, AchievementFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AchievementClient<$Result.GetResult<Prisma.$AchievementPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Achievement that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AchievementFindFirstArgs} args - Arguments to find a Achievement
+     * @example
+     * // Get one Achievement
+     * const achievement = await prisma.achievement.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AchievementFindFirstArgs>(args?: SelectSubset<T, AchievementFindFirstArgs<ExtArgs>>): Prisma__AchievementClient<$Result.GetResult<Prisma.$AchievementPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Achievement that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AchievementFindFirstOrThrowArgs} args - Arguments to find a Achievement
+     * @example
+     * // Get one Achievement
+     * const achievement = await prisma.achievement.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AchievementFindFirstOrThrowArgs>(args?: SelectSubset<T, AchievementFindFirstOrThrowArgs<ExtArgs>>): Prisma__AchievementClient<$Result.GetResult<Prisma.$AchievementPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Achievements that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AchievementFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Achievements
+     * const achievements = await prisma.achievement.findMany()
+     * 
+     * // Get first 10 Achievements
+     * const achievements = await prisma.achievement.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const achievementWithIdOnly = await prisma.achievement.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AchievementFindManyArgs>(args?: SelectSubset<T, AchievementFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AchievementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Achievement.
+     * @param {AchievementCreateArgs} args - Arguments to create a Achievement.
+     * @example
+     * // Create one Achievement
+     * const Achievement = await prisma.achievement.create({
+     *   data: {
+     *     // ... data to create a Achievement
+     *   }
+     * })
+     * 
+     */
+    create<T extends AchievementCreateArgs>(args: SelectSubset<T, AchievementCreateArgs<ExtArgs>>): Prisma__AchievementClient<$Result.GetResult<Prisma.$AchievementPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Achievements.
+     * @param {AchievementCreateManyArgs} args - Arguments to create many Achievements.
+     * @example
+     * // Create many Achievements
+     * const achievement = await prisma.achievement.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AchievementCreateManyArgs>(args?: SelectSubset<T, AchievementCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Achievements and returns the data saved in the database.
+     * @param {AchievementCreateManyAndReturnArgs} args - Arguments to create many Achievements.
+     * @example
+     * // Create many Achievements
+     * const achievement = await prisma.achievement.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Achievements and only return the `id`
+     * const achievementWithIdOnly = await prisma.achievement.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AchievementCreateManyAndReturnArgs>(args?: SelectSubset<T, AchievementCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AchievementPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Achievement.
+     * @param {AchievementDeleteArgs} args - Arguments to delete one Achievement.
+     * @example
+     * // Delete one Achievement
+     * const Achievement = await prisma.achievement.delete({
+     *   where: {
+     *     // ... filter to delete one Achievement
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AchievementDeleteArgs>(args: SelectSubset<T, AchievementDeleteArgs<ExtArgs>>): Prisma__AchievementClient<$Result.GetResult<Prisma.$AchievementPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Achievement.
+     * @param {AchievementUpdateArgs} args - Arguments to update one Achievement.
+     * @example
+     * // Update one Achievement
+     * const achievement = await prisma.achievement.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AchievementUpdateArgs>(args: SelectSubset<T, AchievementUpdateArgs<ExtArgs>>): Prisma__AchievementClient<$Result.GetResult<Prisma.$AchievementPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Achievements.
+     * @param {AchievementDeleteManyArgs} args - Arguments to filter Achievements to delete.
+     * @example
+     * // Delete a few Achievements
+     * const { count } = await prisma.achievement.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AchievementDeleteManyArgs>(args?: SelectSubset<T, AchievementDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Achievements.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AchievementUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Achievements
+     * const achievement = await prisma.achievement.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AchievementUpdateManyArgs>(args: SelectSubset<T, AchievementUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Achievements and returns the data updated in the database.
+     * @param {AchievementUpdateManyAndReturnArgs} args - Arguments to update many Achievements.
+     * @example
+     * // Update many Achievements
+     * const achievement = await prisma.achievement.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Achievements and only return the `id`
+     * const achievementWithIdOnly = await prisma.achievement.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends AchievementUpdateManyAndReturnArgs>(args: SelectSubset<T, AchievementUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AchievementPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Achievement.
+     * @param {AchievementUpsertArgs} args - Arguments to update or create a Achievement.
+     * @example
+     * // Update or create a Achievement
+     * const achievement = await prisma.achievement.upsert({
+     *   create: {
+     *     // ... data to create a Achievement
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Achievement we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AchievementUpsertArgs>(args: SelectSubset<T, AchievementUpsertArgs<ExtArgs>>): Prisma__AchievementClient<$Result.GetResult<Prisma.$AchievementPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Achievements.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AchievementCountArgs} args - Arguments to filter Achievements to count.
+     * @example
+     * // Count the number of Achievements
+     * const count = await prisma.achievement.count({
+     *   where: {
+     *     // ... the filter for the Achievements we want to count
+     *   }
+     * })
+    **/
+    count<T extends AchievementCountArgs>(
+      args?: Subset<T, AchievementCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AchievementCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Achievement.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AchievementAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AchievementAggregateArgs>(args: Subset<T, AchievementAggregateArgs>): Prisma.PrismaPromise<GetAchievementAggregateType<T>>
+
+    /**
+     * Group by Achievement.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AchievementGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AchievementGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AchievementGroupByArgs['orderBy'] }
+        : { orderBy?: AchievementGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AchievementGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAchievementGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Achievement model
+   */
+  readonly fields: AchievementFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Achievement.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AchievementClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    unlocks<T extends Achievement$unlocksArgs<ExtArgs> = {}>(args?: Subset<T, Achievement$unlocksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlayerAchievementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Achievement model
+   */
+  interface AchievementFieldRefs {
+    readonly id: FieldRef<"Achievement", 'String'>
+    readonly gameSlug: FieldRef<"Achievement", 'String'>
+    readonly key: FieldRef<"Achievement", 'String'>
+    readonly name: FieldRef<"Achievement", 'String'>
+    readonly description: FieldRef<"Achievement", 'String'>
+    readonly icon: FieldRef<"Achievement", 'String'>
+    readonly xpReward: FieldRef<"Achievement", 'Int'>
+    readonly secret: FieldRef<"Achievement", 'Boolean'>
+    readonly rarity: FieldRef<"Achievement", 'String'>
+    readonly createdAt: FieldRef<"Achievement", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Achievement findUnique
+   */
+  export type AchievementFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Achievement
+     */
+    select?: AchievementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Achievement
+     */
+    omit?: AchievementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AchievementInclude<ExtArgs> | null
+    /**
+     * Filter, which Achievement to fetch.
+     */
+    where: AchievementWhereUniqueInput
+  }
+
+  /**
+   * Achievement findUniqueOrThrow
+   */
+  export type AchievementFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Achievement
+     */
+    select?: AchievementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Achievement
+     */
+    omit?: AchievementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AchievementInclude<ExtArgs> | null
+    /**
+     * Filter, which Achievement to fetch.
+     */
+    where: AchievementWhereUniqueInput
+  }
+
+  /**
+   * Achievement findFirst
+   */
+  export type AchievementFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Achievement
+     */
+    select?: AchievementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Achievement
+     */
+    omit?: AchievementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AchievementInclude<ExtArgs> | null
+    /**
+     * Filter, which Achievement to fetch.
+     */
+    where?: AchievementWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Achievements to fetch.
+     */
+    orderBy?: AchievementOrderByWithRelationInput | AchievementOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Achievements.
+     */
+    cursor?: AchievementWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Achievements from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Achievements.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Achievements.
+     */
+    distinct?: AchievementScalarFieldEnum | AchievementScalarFieldEnum[]
+  }
+
+  /**
+   * Achievement findFirstOrThrow
+   */
+  export type AchievementFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Achievement
+     */
+    select?: AchievementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Achievement
+     */
+    omit?: AchievementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AchievementInclude<ExtArgs> | null
+    /**
+     * Filter, which Achievement to fetch.
+     */
+    where?: AchievementWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Achievements to fetch.
+     */
+    orderBy?: AchievementOrderByWithRelationInput | AchievementOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Achievements.
+     */
+    cursor?: AchievementWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Achievements from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Achievements.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Achievements.
+     */
+    distinct?: AchievementScalarFieldEnum | AchievementScalarFieldEnum[]
+  }
+
+  /**
+   * Achievement findMany
+   */
+  export type AchievementFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Achievement
+     */
+    select?: AchievementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Achievement
+     */
+    omit?: AchievementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AchievementInclude<ExtArgs> | null
+    /**
+     * Filter, which Achievements to fetch.
+     */
+    where?: AchievementWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Achievements to fetch.
+     */
+    orderBy?: AchievementOrderByWithRelationInput | AchievementOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Achievements.
+     */
+    cursor?: AchievementWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Achievements from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Achievements.
+     */
+    skip?: number
+    distinct?: AchievementScalarFieldEnum | AchievementScalarFieldEnum[]
+  }
+
+  /**
+   * Achievement create
+   */
+  export type AchievementCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Achievement
+     */
+    select?: AchievementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Achievement
+     */
+    omit?: AchievementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AchievementInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Achievement.
+     */
+    data: XOR<AchievementCreateInput, AchievementUncheckedCreateInput>
+  }
+
+  /**
+   * Achievement createMany
+   */
+  export type AchievementCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Achievements.
+     */
+    data: AchievementCreateManyInput | AchievementCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Achievement createManyAndReturn
+   */
+  export type AchievementCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Achievement
+     */
+    select?: AchievementSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Achievement
+     */
+    omit?: AchievementOmit<ExtArgs> | null
+    /**
+     * The data used to create many Achievements.
+     */
+    data: AchievementCreateManyInput | AchievementCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Achievement update
+   */
+  export type AchievementUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Achievement
+     */
+    select?: AchievementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Achievement
+     */
+    omit?: AchievementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AchievementInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Achievement.
+     */
+    data: XOR<AchievementUpdateInput, AchievementUncheckedUpdateInput>
+    /**
+     * Choose, which Achievement to update.
+     */
+    where: AchievementWhereUniqueInput
+  }
+
+  /**
+   * Achievement updateMany
+   */
+  export type AchievementUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Achievements.
+     */
+    data: XOR<AchievementUpdateManyMutationInput, AchievementUncheckedUpdateManyInput>
+    /**
+     * Filter which Achievements to update
+     */
+    where?: AchievementWhereInput
+    /**
+     * Limit how many Achievements to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Achievement updateManyAndReturn
+   */
+  export type AchievementUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Achievement
+     */
+    select?: AchievementSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Achievement
+     */
+    omit?: AchievementOmit<ExtArgs> | null
+    /**
+     * The data used to update Achievements.
+     */
+    data: XOR<AchievementUpdateManyMutationInput, AchievementUncheckedUpdateManyInput>
+    /**
+     * Filter which Achievements to update
+     */
+    where?: AchievementWhereInput
+    /**
+     * Limit how many Achievements to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Achievement upsert
+   */
+  export type AchievementUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Achievement
+     */
+    select?: AchievementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Achievement
+     */
+    omit?: AchievementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AchievementInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Achievement to update in case it exists.
+     */
+    where: AchievementWhereUniqueInput
+    /**
+     * In case the Achievement found by the `where` argument doesn't exist, create a new Achievement with this data.
+     */
+    create: XOR<AchievementCreateInput, AchievementUncheckedCreateInput>
+    /**
+     * In case the Achievement was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AchievementUpdateInput, AchievementUncheckedUpdateInput>
+  }
+
+  /**
+   * Achievement delete
+   */
+  export type AchievementDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Achievement
+     */
+    select?: AchievementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Achievement
+     */
+    omit?: AchievementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AchievementInclude<ExtArgs> | null
+    /**
+     * Filter which Achievement to delete.
+     */
+    where: AchievementWhereUniqueInput
+  }
+
+  /**
+   * Achievement deleteMany
+   */
+  export type AchievementDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Achievements to delete
+     */
+    where?: AchievementWhereInput
+    /**
+     * Limit how many Achievements to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Achievement.unlocks
+   */
+  export type Achievement$unlocksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlayerAchievement
+     */
+    select?: PlayerAchievementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlayerAchievement
+     */
+    omit?: PlayerAchievementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayerAchievementInclude<ExtArgs> | null
+    where?: PlayerAchievementWhereInput
+    orderBy?: PlayerAchievementOrderByWithRelationInput | PlayerAchievementOrderByWithRelationInput[]
+    cursor?: PlayerAchievementWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PlayerAchievementScalarFieldEnum | PlayerAchievementScalarFieldEnum[]
+  }
+
+  /**
+   * Achievement without action
+   */
+  export type AchievementDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Achievement
+     */
+    select?: AchievementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Achievement
+     */
+    omit?: AchievementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AchievementInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model PlayerAchievement
+   */
+
+  export type AggregatePlayerAchievement = {
+    _count: PlayerAchievementCountAggregateOutputType | null
+    _min: PlayerAchievementMinAggregateOutputType | null
+    _max: PlayerAchievementMaxAggregateOutputType | null
+  }
+
+  export type PlayerAchievementMinAggregateOutputType = {
+    id: string | null
+    playerId: string | null
+    achievementId: string | null
+    unlockedAt: Date | null
+  }
+
+  export type PlayerAchievementMaxAggregateOutputType = {
+    id: string | null
+    playerId: string | null
+    achievementId: string | null
+    unlockedAt: Date | null
+  }
+
+  export type PlayerAchievementCountAggregateOutputType = {
+    id: number
+    playerId: number
+    achievementId: number
+    unlockedAt: number
+    _all: number
+  }
+
+
+  export type PlayerAchievementMinAggregateInputType = {
+    id?: true
+    playerId?: true
+    achievementId?: true
+    unlockedAt?: true
+  }
+
+  export type PlayerAchievementMaxAggregateInputType = {
+    id?: true
+    playerId?: true
+    achievementId?: true
+    unlockedAt?: true
+  }
+
+  export type PlayerAchievementCountAggregateInputType = {
+    id?: true
+    playerId?: true
+    achievementId?: true
+    unlockedAt?: true
+    _all?: true
+  }
+
+  export type PlayerAchievementAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PlayerAchievement to aggregate.
+     */
+    where?: PlayerAchievementWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlayerAchievements to fetch.
+     */
+    orderBy?: PlayerAchievementOrderByWithRelationInput | PlayerAchievementOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PlayerAchievementWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlayerAchievements from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlayerAchievements.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PlayerAchievements
+    **/
+    _count?: true | PlayerAchievementCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PlayerAchievementMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PlayerAchievementMaxAggregateInputType
+  }
+
+  export type GetPlayerAchievementAggregateType<T extends PlayerAchievementAggregateArgs> = {
+        [P in keyof T & keyof AggregatePlayerAchievement]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePlayerAchievement[P]>
+      : GetScalarType<T[P], AggregatePlayerAchievement[P]>
+  }
+
+
+
+
+  export type PlayerAchievementGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PlayerAchievementWhereInput
+    orderBy?: PlayerAchievementOrderByWithAggregationInput | PlayerAchievementOrderByWithAggregationInput[]
+    by: PlayerAchievementScalarFieldEnum[] | PlayerAchievementScalarFieldEnum
+    having?: PlayerAchievementScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PlayerAchievementCountAggregateInputType | true
+    _min?: PlayerAchievementMinAggregateInputType
+    _max?: PlayerAchievementMaxAggregateInputType
+  }
+
+  export type PlayerAchievementGroupByOutputType = {
+    id: string
+    playerId: string
+    achievementId: string
+    unlockedAt: Date
+    _count: PlayerAchievementCountAggregateOutputType | null
+    _min: PlayerAchievementMinAggregateOutputType | null
+    _max: PlayerAchievementMaxAggregateOutputType | null
+  }
+
+  type GetPlayerAchievementGroupByPayload<T extends PlayerAchievementGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PlayerAchievementGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PlayerAchievementGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PlayerAchievementGroupByOutputType[P]>
+            : GetScalarType<T[P], PlayerAchievementGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PlayerAchievementSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    playerId?: boolean
+    achievementId?: boolean
+    unlockedAt?: boolean
+    player?: boolean | PlayerDefaultArgs<ExtArgs>
+    achievement?: boolean | AchievementDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["playerAchievement"]>
+
+  export type PlayerAchievementSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    playerId?: boolean
+    achievementId?: boolean
+    unlockedAt?: boolean
+    player?: boolean | PlayerDefaultArgs<ExtArgs>
+    achievement?: boolean | AchievementDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["playerAchievement"]>
+
+  export type PlayerAchievementSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    playerId?: boolean
+    achievementId?: boolean
+    unlockedAt?: boolean
+    player?: boolean | PlayerDefaultArgs<ExtArgs>
+    achievement?: boolean | AchievementDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["playerAchievement"]>
+
+  export type PlayerAchievementSelectScalar = {
+    id?: boolean
+    playerId?: boolean
+    achievementId?: boolean
+    unlockedAt?: boolean
+  }
+
+  export type PlayerAchievementOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "playerId" | "achievementId" | "unlockedAt", ExtArgs["result"]["playerAchievement"]>
+  export type PlayerAchievementInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    player?: boolean | PlayerDefaultArgs<ExtArgs>
+    achievement?: boolean | AchievementDefaultArgs<ExtArgs>
+  }
+  export type PlayerAchievementIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    player?: boolean | PlayerDefaultArgs<ExtArgs>
+    achievement?: boolean | AchievementDefaultArgs<ExtArgs>
+  }
+  export type PlayerAchievementIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    player?: boolean | PlayerDefaultArgs<ExtArgs>
+    achievement?: boolean | AchievementDefaultArgs<ExtArgs>
+  }
+
+  export type $PlayerAchievementPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PlayerAchievement"
+    objects: {
+      player: Prisma.$PlayerPayload<ExtArgs>
+      achievement: Prisma.$AchievementPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      playerId: string
+      achievementId: string
+      unlockedAt: Date
+    }, ExtArgs["result"]["playerAchievement"]>
+    composites: {}
+  }
+
+  type PlayerAchievementGetPayload<S extends boolean | null | undefined | PlayerAchievementDefaultArgs> = $Result.GetResult<Prisma.$PlayerAchievementPayload, S>
+
+  type PlayerAchievementCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PlayerAchievementFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PlayerAchievementCountAggregateInputType | true
+    }
+
+  export interface PlayerAchievementDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PlayerAchievement'], meta: { name: 'PlayerAchievement' } }
+    /**
+     * Find zero or one PlayerAchievement that matches the filter.
+     * @param {PlayerAchievementFindUniqueArgs} args - Arguments to find a PlayerAchievement
+     * @example
+     * // Get one PlayerAchievement
+     * const playerAchievement = await prisma.playerAchievement.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PlayerAchievementFindUniqueArgs>(args: SelectSubset<T, PlayerAchievementFindUniqueArgs<ExtArgs>>): Prisma__PlayerAchievementClient<$Result.GetResult<Prisma.$PlayerAchievementPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one PlayerAchievement that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PlayerAchievementFindUniqueOrThrowArgs} args - Arguments to find a PlayerAchievement
+     * @example
+     * // Get one PlayerAchievement
+     * const playerAchievement = await prisma.playerAchievement.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PlayerAchievementFindUniqueOrThrowArgs>(args: SelectSubset<T, PlayerAchievementFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PlayerAchievementClient<$Result.GetResult<Prisma.$PlayerAchievementPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PlayerAchievement that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlayerAchievementFindFirstArgs} args - Arguments to find a PlayerAchievement
+     * @example
+     * // Get one PlayerAchievement
+     * const playerAchievement = await prisma.playerAchievement.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PlayerAchievementFindFirstArgs>(args?: SelectSubset<T, PlayerAchievementFindFirstArgs<ExtArgs>>): Prisma__PlayerAchievementClient<$Result.GetResult<Prisma.$PlayerAchievementPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PlayerAchievement that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlayerAchievementFindFirstOrThrowArgs} args - Arguments to find a PlayerAchievement
+     * @example
+     * // Get one PlayerAchievement
+     * const playerAchievement = await prisma.playerAchievement.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PlayerAchievementFindFirstOrThrowArgs>(args?: SelectSubset<T, PlayerAchievementFindFirstOrThrowArgs<ExtArgs>>): Prisma__PlayerAchievementClient<$Result.GetResult<Prisma.$PlayerAchievementPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more PlayerAchievements that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlayerAchievementFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PlayerAchievements
+     * const playerAchievements = await prisma.playerAchievement.findMany()
+     * 
+     * // Get first 10 PlayerAchievements
+     * const playerAchievements = await prisma.playerAchievement.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const playerAchievementWithIdOnly = await prisma.playerAchievement.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PlayerAchievementFindManyArgs>(args?: SelectSubset<T, PlayerAchievementFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlayerAchievementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a PlayerAchievement.
+     * @param {PlayerAchievementCreateArgs} args - Arguments to create a PlayerAchievement.
+     * @example
+     * // Create one PlayerAchievement
+     * const PlayerAchievement = await prisma.playerAchievement.create({
+     *   data: {
+     *     // ... data to create a PlayerAchievement
+     *   }
+     * })
+     * 
+     */
+    create<T extends PlayerAchievementCreateArgs>(args: SelectSubset<T, PlayerAchievementCreateArgs<ExtArgs>>): Prisma__PlayerAchievementClient<$Result.GetResult<Prisma.$PlayerAchievementPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many PlayerAchievements.
+     * @param {PlayerAchievementCreateManyArgs} args - Arguments to create many PlayerAchievements.
+     * @example
+     * // Create many PlayerAchievements
+     * const playerAchievement = await prisma.playerAchievement.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PlayerAchievementCreateManyArgs>(args?: SelectSubset<T, PlayerAchievementCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PlayerAchievements and returns the data saved in the database.
+     * @param {PlayerAchievementCreateManyAndReturnArgs} args - Arguments to create many PlayerAchievements.
+     * @example
+     * // Create many PlayerAchievements
+     * const playerAchievement = await prisma.playerAchievement.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PlayerAchievements and only return the `id`
+     * const playerAchievementWithIdOnly = await prisma.playerAchievement.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PlayerAchievementCreateManyAndReturnArgs>(args?: SelectSubset<T, PlayerAchievementCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlayerAchievementPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a PlayerAchievement.
+     * @param {PlayerAchievementDeleteArgs} args - Arguments to delete one PlayerAchievement.
+     * @example
+     * // Delete one PlayerAchievement
+     * const PlayerAchievement = await prisma.playerAchievement.delete({
+     *   where: {
+     *     // ... filter to delete one PlayerAchievement
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PlayerAchievementDeleteArgs>(args: SelectSubset<T, PlayerAchievementDeleteArgs<ExtArgs>>): Prisma__PlayerAchievementClient<$Result.GetResult<Prisma.$PlayerAchievementPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one PlayerAchievement.
+     * @param {PlayerAchievementUpdateArgs} args - Arguments to update one PlayerAchievement.
+     * @example
+     * // Update one PlayerAchievement
+     * const playerAchievement = await prisma.playerAchievement.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PlayerAchievementUpdateArgs>(args: SelectSubset<T, PlayerAchievementUpdateArgs<ExtArgs>>): Prisma__PlayerAchievementClient<$Result.GetResult<Prisma.$PlayerAchievementPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more PlayerAchievements.
+     * @param {PlayerAchievementDeleteManyArgs} args - Arguments to filter PlayerAchievements to delete.
+     * @example
+     * // Delete a few PlayerAchievements
+     * const { count } = await prisma.playerAchievement.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PlayerAchievementDeleteManyArgs>(args?: SelectSubset<T, PlayerAchievementDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PlayerAchievements.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlayerAchievementUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PlayerAchievements
+     * const playerAchievement = await prisma.playerAchievement.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PlayerAchievementUpdateManyArgs>(args: SelectSubset<T, PlayerAchievementUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PlayerAchievements and returns the data updated in the database.
+     * @param {PlayerAchievementUpdateManyAndReturnArgs} args - Arguments to update many PlayerAchievements.
+     * @example
+     * // Update many PlayerAchievements
+     * const playerAchievement = await prisma.playerAchievement.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more PlayerAchievements and only return the `id`
+     * const playerAchievementWithIdOnly = await prisma.playerAchievement.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PlayerAchievementUpdateManyAndReturnArgs>(args: SelectSubset<T, PlayerAchievementUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlayerAchievementPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one PlayerAchievement.
+     * @param {PlayerAchievementUpsertArgs} args - Arguments to update or create a PlayerAchievement.
+     * @example
+     * // Update or create a PlayerAchievement
+     * const playerAchievement = await prisma.playerAchievement.upsert({
+     *   create: {
+     *     // ... data to create a PlayerAchievement
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PlayerAchievement we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PlayerAchievementUpsertArgs>(args: SelectSubset<T, PlayerAchievementUpsertArgs<ExtArgs>>): Prisma__PlayerAchievementClient<$Result.GetResult<Prisma.$PlayerAchievementPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of PlayerAchievements.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlayerAchievementCountArgs} args - Arguments to filter PlayerAchievements to count.
+     * @example
+     * // Count the number of PlayerAchievements
+     * const count = await prisma.playerAchievement.count({
+     *   where: {
+     *     // ... the filter for the PlayerAchievements we want to count
+     *   }
+     * })
+    **/
+    count<T extends PlayerAchievementCountArgs>(
+      args?: Subset<T, PlayerAchievementCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PlayerAchievementCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PlayerAchievement.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlayerAchievementAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PlayerAchievementAggregateArgs>(args: Subset<T, PlayerAchievementAggregateArgs>): Prisma.PrismaPromise<GetPlayerAchievementAggregateType<T>>
+
+    /**
+     * Group by PlayerAchievement.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlayerAchievementGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PlayerAchievementGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PlayerAchievementGroupByArgs['orderBy'] }
+        : { orderBy?: PlayerAchievementGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PlayerAchievementGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPlayerAchievementGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PlayerAchievement model
+   */
+  readonly fields: PlayerAchievementFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PlayerAchievement.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PlayerAchievementClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    player<T extends PlayerDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PlayerDefaultArgs<ExtArgs>>): Prisma__PlayerClient<$Result.GetResult<Prisma.$PlayerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    achievement<T extends AchievementDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AchievementDefaultArgs<ExtArgs>>): Prisma__AchievementClient<$Result.GetResult<Prisma.$AchievementPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PlayerAchievement model
+   */
+  interface PlayerAchievementFieldRefs {
+    readonly id: FieldRef<"PlayerAchievement", 'String'>
+    readonly playerId: FieldRef<"PlayerAchievement", 'String'>
+    readonly achievementId: FieldRef<"PlayerAchievement", 'String'>
+    readonly unlockedAt: FieldRef<"PlayerAchievement", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PlayerAchievement findUnique
+   */
+  export type PlayerAchievementFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlayerAchievement
+     */
+    select?: PlayerAchievementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlayerAchievement
+     */
+    omit?: PlayerAchievementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayerAchievementInclude<ExtArgs> | null
+    /**
+     * Filter, which PlayerAchievement to fetch.
+     */
+    where: PlayerAchievementWhereUniqueInput
+  }
+
+  /**
+   * PlayerAchievement findUniqueOrThrow
+   */
+  export type PlayerAchievementFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlayerAchievement
+     */
+    select?: PlayerAchievementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlayerAchievement
+     */
+    omit?: PlayerAchievementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayerAchievementInclude<ExtArgs> | null
+    /**
+     * Filter, which PlayerAchievement to fetch.
+     */
+    where: PlayerAchievementWhereUniqueInput
+  }
+
+  /**
+   * PlayerAchievement findFirst
+   */
+  export type PlayerAchievementFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlayerAchievement
+     */
+    select?: PlayerAchievementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlayerAchievement
+     */
+    omit?: PlayerAchievementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayerAchievementInclude<ExtArgs> | null
+    /**
+     * Filter, which PlayerAchievement to fetch.
+     */
+    where?: PlayerAchievementWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlayerAchievements to fetch.
+     */
+    orderBy?: PlayerAchievementOrderByWithRelationInput | PlayerAchievementOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PlayerAchievements.
+     */
+    cursor?: PlayerAchievementWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlayerAchievements from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlayerAchievements.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PlayerAchievements.
+     */
+    distinct?: PlayerAchievementScalarFieldEnum | PlayerAchievementScalarFieldEnum[]
+  }
+
+  /**
+   * PlayerAchievement findFirstOrThrow
+   */
+  export type PlayerAchievementFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlayerAchievement
+     */
+    select?: PlayerAchievementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlayerAchievement
+     */
+    omit?: PlayerAchievementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayerAchievementInclude<ExtArgs> | null
+    /**
+     * Filter, which PlayerAchievement to fetch.
+     */
+    where?: PlayerAchievementWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlayerAchievements to fetch.
+     */
+    orderBy?: PlayerAchievementOrderByWithRelationInput | PlayerAchievementOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PlayerAchievements.
+     */
+    cursor?: PlayerAchievementWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlayerAchievements from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlayerAchievements.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PlayerAchievements.
+     */
+    distinct?: PlayerAchievementScalarFieldEnum | PlayerAchievementScalarFieldEnum[]
+  }
+
+  /**
+   * PlayerAchievement findMany
+   */
+  export type PlayerAchievementFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlayerAchievement
+     */
+    select?: PlayerAchievementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlayerAchievement
+     */
+    omit?: PlayerAchievementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayerAchievementInclude<ExtArgs> | null
+    /**
+     * Filter, which PlayerAchievements to fetch.
+     */
+    where?: PlayerAchievementWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlayerAchievements to fetch.
+     */
+    orderBy?: PlayerAchievementOrderByWithRelationInput | PlayerAchievementOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PlayerAchievements.
+     */
+    cursor?: PlayerAchievementWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlayerAchievements from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlayerAchievements.
+     */
+    skip?: number
+    distinct?: PlayerAchievementScalarFieldEnum | PlayerAchievementScalarFieldEnum[]
+  }
+
+  /**
+   * PlayerAchievement create
+   */
+  export type PlayerAchievementCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlayerAchievement
+     */
+    select?: PlayerAchievementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlayerAchievement
+     */
+    omit?: PlayerAchievementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayerAchievementInclude<ExtArgs> | null
+    /**
+     * The data needed to create a PlayerAchievement.
+     */
+    data: XOR<PlayerAchievementCreateInput, PlayerAchievementUncheckedCreateInput>
+  }
+
+  /**
+   * PlayerAchievement createMany
+   */
+  export type PlayerAchievementCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PlayerAchievements.
+     */
+    data: PlayerAchievementCreateManyInput | PlayerAchievementCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PlayerAchievement createManyAndReturn
+   */
+  export type PlayerAchievementCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlayerAchievement
+     */
+    select?: PlayerAchievementSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlayerAchievement
+     */
+    omit?: PlayerAchievementOmit<ExtArgs> | null
+    /**
+     * The data used to create many PlayerAchievements.
+     */
+    data: PlayerAchievementCreateManyInput | PlayerAchievementCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayerAchievementIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PlayerAchievement update
+   */
+  export type PlayerAchievementUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlayerAchievement
+     */
+    select?: PlayerAchievementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlayerAchievement
+     */
+    omit?: PlayerAchievementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayerAchievementInclude<ExtArgs> | null
+    /**
+     * The data needed to update a PlayerAchievement.
+     */
+    data: XOR<PlayerAchievementUpdateInput, PlayerAchievementUncheckedUpdateInput>
+    /**
+     * Choose, which PlayerAchievement to update.
+     */
+    where: PlayerAchievementWhereUniqueInput
+  }
+
+  /**
+   * PlayerAchievement updateMany
+   */
+  export type PlayerAchievementUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PlayerAchievements.
+     */
+    data: XOR<PlayerAchievementUpdateManyMutationInput, PlayerAchievementUncheckedUpdateManyInput>
+    /**
+     * Filter which PlayerAchievements to update
+     */
+    where?: PlayerAchievementWhereInput
+    /**
+     * Limit how many PlayerAchievements to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PlayerAchievement updateManyAndReturn
+   */
+  export type PlayerAchievementUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlayerAchievement
+     */
+    select?: PlayerAchievementSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlayerAchievement
+     */
+    omit?: PlayerAchievementOmit<ExtArgs> | null
+    /**
+     * The data used to update PlayerAchievements.
+     */
+    data: XOR<PlayerAchievementUpdateManyMutationInput, PlayerAchievementUncheckedUpdateManyInput>
+    /**
+     * Filter which PlayerAchievements to update
+     */
+    where?: PlayerAchievementWhereInput
+    /**
+     * Limit how many PlayerAchievements to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayerAchievementIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PlayerAchievement upsert
+   */
+  export type PlayerAchievementUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlayerAchievement
+     */
+    select?: PlayerAchievementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlayerAchievement
+     */
+    omit?: PlayerAchievementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayerAchievementInclude<ExtArgs> | null
+    /**
+     * The filter to search for the PlayerAchievement to update in case it exists.
+     */
+    where: PlayerAchievementWhereUniqueInput
+    /**
+     * In case the PlayerAchievement found by the `where` argument doesn't exist, create a new PlayerAchievement with this data.
+     */
+    create: XOR<PlayerAchievementCreateInput, PlayerAchievementUncheckedCreateInput>
+    /**
+     * In case the PlayerAchievement was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PlayerAchievementUpdateInput, PlayerAchievementUncheckedUpdateInput>
+  }
+
+  /**
+   * PlayerAchievement delete
+   */
+  export type PlayerAchievementDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlayerAchievement
+     */
+    select?: PlayerAchievementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlayerAchievement
+     */
+    omit?: PlayerAchievementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayerAchievementInclude<ExtArgs> | null
+    /**
+     * Filter which PlayerAchievement to delete.
+     */
+    where: PlayerAchievementWhereUniqueInput
+  }
+
+  /**
+   * PlayerAchievement deleteMany
+   */
+  export type PlayerAchievementDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PlayerAchievements to delete
+     */
+    where?: PlayerAchievementWhereInput
+    /**
+     * Limit how many PlayerAchievements to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * PlayerAchievement without action
+   */
+  export type PlayerAchievementDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlayerAchievement
+     */
+    select?: PlayerAchievementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlayerAchievement
+     */
+    omit?: PlayerAchievementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayerAchievementInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Favorite
+   */
+
+  export type AggregateFavorite = {
+    _count: FavoriteCountAggregateOutputType | null
+    _min: FavoriteMinAggregateOutputType | null
+    _max: FavoriteMaxAggregateOutputType | null
+  }
+
+  export type FavoriteMinAggregateOutputType = {
+    id: string | null
+    playerId: string | null
+    gameSlug: string | null
+    createdAt: Date | null
+  }
+
+  export type FavoriteMaxAggregateOutputType = {
+    id: string | null
+    playerId: string | null
+    gameSlug: string | null
+    createdAt: Date | null
+  }
+
+  export type FavoriteCountAggregateOutputType = {
+    id: number
+    playerId: number
+    gameSlug: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type FavoriteMinAggregateInputType = {
+    id?: true
+    playerId?: true
+    gameSlug?: true
+    createdAt?: true
+  }
+
+  export type FavoriteMaxAggregateInputType = {
+    id?: true
+    playerId?: true
+    gameSlug?: true
+    createdAt?: true
+  }
+
+  export type FavoriteCountAggregateInputType = {
+    id?: true
+    playerId?: true
+    gameSlug?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type FavoriteAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Favorite to aggregate.
+     */
+    where?: FavoriteWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Favorites to fetch.
+     */
+    orderBy?: FavoriteOrderByWithRelationInput | FavoriteOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: FavoriteWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Favorites from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Favorites.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Favorites
+    **/
+    _count?: true | FavoriteCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: FavoriteMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: FavoriteMaxAggregateInputType
+  }
+
+  export type GetFavoriteAggregateType<T extends FavoriteAggregateArgs> = {
+        [P in keyof T & keyof AggregateFavorite]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateFavorite[P]>
+      : GetScalarType<T[P], AggregateFavorite[P]>
+  }
+
+
+
+
+  export type FavoriteGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FavoriteWhereInput
+    orderBy?: FavoriteOrderByWithAggregationInput | FavoriteOrderByWithAggregationInput[]
+    by: FavoriteScalarFieldEnum[] | FavoriteScalarFieldEnum
+    having?: FavoriteScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: FavoriteCountAggregateInputType | true
+    _min?: FavoriteMinAggregateInputType
+    _max?: FavoriteMaxAggregateInputType
+  }
+
+  export type FavoriteGroupByOutputType = {
+    id: string
+    playerId: string
+    gameSlug: string
+    createdAt: Date
+    _count: FavoriteCountAggregateOutputType | null
+    _min: FavoriteMinAggregateOutputType | null
+    _max: FavoriteMaxAggregateOutputType | null
+  }
+
+  type GetFavoriteGroupByPayload<T extends FavoriteGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<FavoriteGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof FavoriteGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], FavoriteGroupByOutputType[P]>
+            : GetScalarType<T[P], FavoriteGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type FavoriteSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    playerId?: boolean
+    gameSlug?: boolean
+    createdAt?: boolean
+    player?: boolean | PlayerDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["favorite"]>
+
+  export type FavoriteSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    playerId?: boolean
+    gameSlug?: boolean
+    createdAt?: boolean
+    player?: boolean | PlayerDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["favorite"]>
+
+  export type FavoriteSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    playerId?: boolean
+    gameSlug?: boolean
+    createdAt?: boolean
+    player?: boolean | PlayerDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["favorite"]>
+
+  export type FavoriteSelectScalar = {
+    id?: boolean
+    playerId?: boolean
+    gameSlug?: boolean
+    createdAt?: boolean
+  }
+
+  export type FavoriteOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "playerId" | "gameSlug" | "createdAt", ExtArgs["result"]["favorite"]>
+  export type FavoriteInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    player?: boolean | PlayerDefaultArgs<ExtArgs>
+  }
+  export type FavoriteIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    player?: boolean | PlayerDefaultArgs<ExtArgs>
+  }
+  export type FavoriteIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    player?: boolean | PlayerDefaultArgs<ExtArgs>
+  }
+
+  export type $FavoritePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Favorite"
+    objects: {
+      player: Prisma.$PlayerPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      playerId: string
+      gameSlug: string
+      createdAt: Date
+    }, ExtArgs["result"]["favorite"]>
+    composites: {}
+  }
+
+  type FavoriteGetPayload<S extends boolean | null | undefined | FavoriteDefaultArgs> = $Result.GetResult<Prisma.$FavoritePayload, S>
+
+  type FavoriteCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<FavoriteFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: FavoriteCountAggregateInputType | true
+    }
+
+  export interface FavoriteDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Favorite'], meta: { name: 'Favorite' } }
+    /**
+     * Find zero or one Favorite that matches the filter.
+     * @param {FavoriteFindUniqueArgs} args - Arguments to find a Favorite
+     * @example
+     * // Get one Favorite
+     * const favorite = await prisma.favorite.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends FavoriteFindUniqueArgs>(args: SelectSubset<T, FavoriteFindUniqueArgs<ExtArgs>>): Prisma__FavoriteClient<$Result.GetResult<Prisma.$FavoritePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Favorite that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {FavoriteFindUniqueOrThrowArgs} args - Arguments to find a Favorite
+     * @example
+     * // Get one Favorite
+     * const favorite = await prisma.favorite.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends FavoriteFindUniqueOrThrowArgs>(args: SelectSubset<T, FavoriteFindUniqueOrThrowArgs<ExtArgs>>): Prisma__FavoriteClient<$Result.GetResult<Prisma.$FavoritePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Favorite that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FavoriteFindFirstArgs} args - Arguments to find a Favorite
+     * @example
+     * // Get one Favorite
+     * const favorite = await prisma.favorite.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends FavoriteFindFirstArgs>(args?: SelectSubset<T, FavoriteFindFirstArgs<ExtArgs>>): Prisma__FavoriteClient<$Result.GetResult<Prisma.$FavoritePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Favorite that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FavoriteFindFirstOrThrowArgs} args - Arguments to find a Favorite
+     * @example
+     * // Get one Favorite
+     * const favorite = await prisma.favorite.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends FavoriteFindFirstOrThrowArgs>(args?: SelectSubset<T, FavoriteFindFirstOrThrowArgs<ExtArgs>>): Prisma__FavoriteClient<$Result.GetResult<Prisma.$FavoritePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Favorites that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FavoriteFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Favorites
+     * const favorites = await prisma.favorite.findMany()
+     * 
+     * // Get first 10 Favorites
+     * const favorites = await prisma.favorite.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const favoriteWithIdOnly = await prisma.favorite.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends FavoriteFindManyArgs>(args?: SelectSubset<T, FavoriteFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FavoritePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Favorite.
+     * @param {FavoriteCreateArgs} args - Arguments to create a Favorite.
+     * @example
+     * // Create one Favorite
+     * const Favorite = await prisma.favorite.create({
+     *   data: {
+     *     // ... data to create a Favorite
+     *   }
+     * })
+     * 
+     */
+    create<T extends FavoriteCreateArgs>(args: SelectSubset<T, FavoriteCreateArgs<ExtArgs>>): Prisma__FavoriteClient<$Result.GetResult<Prisma.$FavoritePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Favorites.
+     * @param {FavoriteCreateManyArgs} args - Arguments to create many Favorites.
+     * @example
+     * // Create many Favorites
+     * const favorite = await prisma.favorite.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends FavoriteCreateManyArgs>(args?: SelectSubset<T, FavoriteCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Favorites and returns the data saved in the database.
+     * @param {FavoriteCreateManyAndReturnArgs} args - Arguments to create many Favorites.
+     * @example
+     * // Create many Favorites
+     * const favorite = await prisma.favorite.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Favorites and only return the `id`
+     * const favoriteWithIdOnly = await prisma.favorite.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends FavoriteCreateManyAndReturnArgs>(args?: SelectSubset<T, FavoriteCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FavoritePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Favorite.
+     * @param {FavoriteDeleteArgs} args - Arguments to delete one Favorite.
+     * @example
+     * // Delete one Favorite
+     * const Favorite = await prisma.favorite.delete({
+     *   where: {
+     *     // ... filter to delete one Favorite
+     *   }
+     * })
+     * 
+     */
+    delete<T extends FavoriteDeleteArgs>(args: SelectSubset<T, FavoriteDeleteArgs<ExtArgs>>): Prisma__FavoriteClient<$Result.GetResult<Prisma.$FavoritePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Favorite.
+     * @param {FavoriteUpdateArgs} args - Arguments to update one Favorite.
+     * @example
+     * // Update one Favorite
+     * const favorite = await prisma.favorite.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends FavoriteUpdateArgs>(args: SelectSubset<T, FavoriteUpdateArgs<ExtArgs>>): Prisma__FavoriteClient<$Result.GetResult<Prisma.$FavoritePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Favorites.
+     * @param {FavoriteDeleteManyArgs} args - Arguments to filter Favorites to delete.
+     * @example
+     * // Delete a few Favorites
+     * const { count } = await prisma.favorite.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends FavoriteDeleteManyArgs>(args?: SelectSubset<T, FavoriteDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Favorites.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FavoriteUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Favorites
+     * const favorite = await prisma.favorite.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends FavoriteUpdateManyArgs>(args: SelectSubset<T, FavoriteUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Favorites and returns the data updated in the database.
+     * @param {FavoriteUpdateManyAndReturnArgs} args - Arguments to update many Favorites.
+     * @example
+     * // Update many Favorites
+     * const favorite = await prisma.favorite.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Favorites and only return the `id`
+     * const favoriteWithIdOnly = await prisma.favorite.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends FavoriteUpdateManyAndReturnArgs>(args: SelectSubset<T, FavoriteUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FavoritePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Favorite.
+     * @param {FavoriteUpsertArgs} args - Arguments to update or create a Favorite.
+     * @example
+     * // Update or create a Favorite
+     * const favorite = await prisma.favorite.upsert({
+     *   create: {
+     *     // ... data to create a Favorite
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Favorite we want to update
+     *   }
+     * })
+     */
+    upsert<T extends FavoriteUpsertArgs>(args: SelectSubset<T, FavoriteUpsertArgs<ExtArgs>>): Prisma__FavoriteClient<$Result.GetResult<Prisma.$FavoritePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Favorites.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FavoriteCountArgs} args - Arguments to filter Favorites to count.
+     * @example
+     * // Count the number of Favorites
+     * const count = await prisma.favorite.count({
+     *   where: {
+     *     // ... the filter for the Favorites we want to count
+     *   }
+     * })
+    **/
+    count<T extends FavoriteCountArgs>(
+      args?: Subset<T, FavoriteCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], FavoriteCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Favorite.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FavoriteAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends FavoriteAggregateArgs>(args: Subset<T, FavoriteAggregateArgs>): Prisma.PrismaPromise<GetFavoriteAggregateType<T>>
+
+    /**
+     * Group by Favorite.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FavoriteGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends FavoriteGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: FavoriteGroupByArgs['orderBy'] }
+        : { orderBy?: FavoriteGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, FavoriteGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetFavoriteGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Favorite model
+   */
+  readonly fields: FavoriteFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Favorite.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__FavoriteClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    player<T extends PlayerDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PlayerDefaultArgs<ExtArgs>>): Prisma__PlayerClient<$Result.GetResult<Prisma.$PlayerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Favorite model
+   */
+  interface FavoriteFieldRefs {
+    readonly id: FieldRef<"Favorite", 'String'>
+    readonly playerId: FieldRef<"Favorite", 'String'>
+    readonly gameSlug: FieldRef<"Favorite", 'String'>
+    readonly createdAt: FieldRef<"Favorite", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Favorite findUnique
+   */
+  export type FavoriteFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Favorite
+     */
+    select?: FavoriteSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Favorite
+     */
+    omit?: FavoriteOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FavoriteInclude<ExtArgs> | null
+    /**
+     * Filter, which Favorite to fetch.
+     */
+    where: FavoriteWhereUniqueInput
+  }
+
+  /**
+   * Favorite findUniqueOrThrow
+   */
+  export type FavoriteFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Favorite
+     */
+    select?: FavoriteSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Favorite
+     */
+    omit?: FavoriteOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FavoriteInclude<ExtArgs> | null
+    /**
+     * Filter, which Favorite to fetch.
+     */
+    where: FavoriteWhereUniqueInput
+  }
+
+  /**
+   * Favorite findFirst
+   */
+  export type FavoriteFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Favorite
+     */
+    select?: FavoriteSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Favorite
+     */
+    omit?: FavoriteOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FavoriteInclude<ExtArgs> | null
+    /**
+     * Filter, which Favorite to fetch.
+     */
+    where?: FavoriteWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Favorites to fetch.
+     */
+    orderBy?: FavoriteOrderByWithRelationInput | FavoriteOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Favorites.
+     */
+    cursor?: FavoriteWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Favorites from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Favorites.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Favorites.
+     */
+    distinct?: FavoriteScalarFieldEnum | FavoriteScalarFieldEnum[]
+  }
+
+  /**
+   * Favorite findFirstOrThrow
+   */
+  export type FavoriteFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Favorite
+     */
+    select?: FavoriteSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Favorite
+     */
+    omit?: FavoriteOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FavoriteInclude<ExtArgs> | null
+    /**
+     * Filter, which Favorite to fetch.
+     */
+    where?: FavoriteWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Favorites to fetch.
+     */
+    orderBy?: FavoriteOrderByWithRelationInput | FavoriteOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Favorites.
+     */
+    cursor?: FavoriteWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Favorites from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Favorites.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Favorites.
+     */
+    distinct?: FavoriteScalarFieldEnum | FavoriteScalarFieldEnum[]
+  }
+
+  /**
+   * Favorite findMany
+   */
+  export type FavoriteFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Favorite
+     */
+    select?: FavoriteSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Favorite
+     */
+    omit?: FavoriteOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FavoriteInclude<ExtArgs> | null
+    /**
+     * Filter, which Favorites to fetch.
+     */
+    where?: FavoriteWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Favorites to fetch.
+     */
+    orderBy?: FavoriteOrderByWithRelationInput | FavoriteOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Favorites.
+     */
+    cursor?: FavoriteWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Favorites from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Favorites.
+     */
+    skip?: number
+    distinct?: FavoriteScalarFieldEnum | FavoriteScalarFieldEnum[]
+  }
+
+  /**
+   * Favorite create
+   */
+  export type FavoriteCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Favorite
+     */
+    select?: FavoriteSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Favorite
+     */
+    omit?: FavoriteOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FavoriteInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Favorite.
+     */
+    data: XOR<FavoriteCreateInput, FavoriteUncheckedCreateInput>
+  }
+
+  /**
+   * Favorite createMany
+   */
+  export type FavoriteCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Favorites.
+     */
+    data: FavoriteCreateManyInput | FavoriteCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Favorite createManyAndReturn
+   */
+  export type FavoriteCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Favorite
+     */
+    select?: FavoriteSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Favorite
+     */
+    omit?: FavoriteOmit<ExtArgs> | null
+    /**
+     * The data used to create many Favorites.
+     */
+    data: FavoriteCreateManyInput | FavoriteCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FavoriteIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Favorite update
+   */
+  export type FavoriteUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Favorite
+     */
+    select?: FavoriteSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Favorite
+     */
+    omit?: FavoriteOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FavoriteInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Favorite.
+     */
+    data: XOR<FavoriteUpdateInput, FavoriteUncheckedUpdateInput>
+    /**
+     * Choose, which Favorite to update.
+     */
+    where: FavoriteWhereUniqueInput
+  }
+
+  /**
+   * Favorite updateMany
+   */
+  export type FavoriteUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Favorites.
+     */
+    data: XOR<FavoriteUpdateManyMutationInput, FavoriteUncheckedUpdateManyInput>
+    /**
+     * Filter which Favorites to update
+     */
+    where?: FavoriteWhereInput
+    /**
+     * Limit how many Favorites to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Favorite updateManyAndReturn
+   */
+  export type FavoriteUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Favorite
+     */
+    select?: FavoriteSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Favorite
+     */
+    omit?: FavoriteOmit<ExtArgs> | null
+    /**
+     * The data used to update Favorites.
+     */
+    data: XOR<FavoriteUpdateManyMutationInput, FavoriteUncheckedUpdateManyInput>
+    /**
+     * Filter which Favorites to update
+     */
+    where?: FavoriteWhereInput
+    /**
+     * Limit how many Favorites to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FavoriteIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Favorite upsert
+   */
+  export type FavoriteUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Favorite
+     */
+    select?: FavoriteSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Favorite
+     */
+    omit?: FavoriteOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FavoriteInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Favorite to update in case it exists.
+     */
+    where: FavoriteWhereUniqueInput
+    /**
+     * In case the Favorite found by the `where` argument doesn't exist, create a new Favorite with this data.
+     */
+    create: XOR<FavoriteCreateInput, FavoriteUncheckedCreateInput>
+    /**
+     * In case the Favorite was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<FavoriteUpdateInput, FavoriteUncheckedUpdateInput>
+  }
+
+  /**
+   * Favorite delete
+   */
+  export type FavoriteDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Favorite
+     */
+    select?: FavoriteSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Favorite
+     */
+    omit?: FavoriteOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FavoriteInclude<ExtArgs> | null
+    /**
+     * Filter which Favorite to delete.
+     */
+    where: FavoriteWhereUniqueInput
+  }
+
+  /**
+   * Favorite deleteMany
+   */
+  export type FavoriteDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Favorites to delete
+     */
+    where?: FavoriteWhereInput
+    /**
+     * Limit how many Favorites to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Favorite without action
+   */
+  export type FavoriteDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Favorite
+     */
+    select?: FavoriteSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Favorite
+     */
+    omit?: FavoriteOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FavoriteInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model playing_with_neon
+   */
+
+  export type AggregatePlaying_with_neon = {
+    _count: Playing_with_neonCountAggregateOutputType | null
+    _avg: Playing_with_neonAvgAggregateOutputType | null
+    _sum: Playing_with_neonSumAggregateOutputType | null
+    _min: Playing_with_neonMinAggregateOutputType | null
+    _max: Playing_with_neonMaxAggregateOutputType | null
+  }
+
+  export type Playing_with_neonAvgAggregateOutputType = {
+    id: number | null
+    value: number | null
+  }
+
+  export type Playing_with_neonSumAggregateOutputType = {
+    id: number | null
+    value: number | null
+  }
+
+  export type Playing_with_neonMinAggregateOutputType = {
+    id: number | null
+    name: string | null
+    value: number | null
+  }
+
+  export type Playing_with_neonMaxAggregateOutputType = {
+    id: number | null
+    name: string | null
+    value: number | null
+  }
+
+  export type Playing_with_neonCountAggregateOutputType = {
+    id: number
+    name: number
+    value: number
+    _all: number
+  }
+
+
+  export type Playing_with_neonAvgAggregateInputType = {
+    id?: true
+    value?: true
+  }
+
+  export type Playing_with_neonSumAggregateInputType = {
+    id?: true
+    value?: true
+  }
+
+  export type Playing_with_neonMinAggregateInputType = {
+    id?: true
+    name?: true
+    value?: true
+  }
+
+  export type Playing_with_neonMaxAggregateInputType = {
+    id?: true
+    name?: true
+    value?: true
+  }
+
+  export type Playing_with_neonCountAggregateInputType = {
+    id?: true
+    name?: true
+    value?: true
+    _all?: true
+  }
+
+  export type Playing_with_neonAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which playing_with_neon to aggregate.
+     */
+    where?: playing_with_neonWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of playing_with_neons to fetch.
+     */
+    orderBy?: playing_with_neonOrderByWithRelationInput | playing_with_neonOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: playing_with_neonWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` playing_with_neons from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` playing_with_neons.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned playing_with_neons
+    **/
+    _count?: true | Playing_with_neonCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: Playing_with_neonAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: Playing_with_neonSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: Playing_with_neonMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: Playing_with_neonMaxAggregateInputType
+  }
+
+  export type GetPlaying_with_neonAggregateType<T extends Playing_with_neonAggregateArgs> = {
+        [P in keyof T & keyof AggregatePlaying_with_neon]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePlaying_with_neon[P]>
+      : GetScalarType<T[P], AggregatePlaying_with_neon[P]>
+  }
+
+
+
+
+  export type playing_with_neonGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: playing_with_neonWhereInput
+    orderBy?: playing_with_neonOrderByWithAggregationInput | playing_with_neonOrderByWithAggregationInput[]
+    by: Playing_with_neonScalarFieldEnum[] | Playing_with_neonScalarFieldEnum
+    having?: playing_with_neonScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: Playing_with_neonCountAggregateInputType | true
+    _avg?: Playing_with_neonAvgAggregateInputType
+    _sum?: Playing_with_neonSumAggregateInputType
+    _min?: Playing_with_neonMinAggregateInputType
+    _max?: Playing_with_neonMaxAggregateInputType
+  }
+
+  export type Playing_with_neonGroupByOutputType = {
+    id: number
+    name: string | null
+    value: number | null
+    _count: Playing_with_neonCountAggregateOutputType | null
+    _avg: Playing_with_neonAvgAggregateOutputType | null
+    _sum: Playing_with_neonSumAggregateOutputType | null
+    _min: Playing_with_neonMinAggregateOutputType | null
+    _max: Playing_with_neonMaxAggregateOutputType | null
+  }
+
+  type GetPlaying_with_neonGroupByPayload<T extends playing_with_neonGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<Playing_with_neonGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof Playing_with_neonGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], Playing_with_neonGroupByOutputType[P]>
+            : GetScalarType<T[P], Playing_with_neonGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type playing_with_neonSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    value?: boolean
+  }, ExtArgs["result"]["playing_with_neon"]>
+
+  export type playing_with_neonSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    value?: boolean
+  }, ExtArgs["result"]["playing_with_neon"]>
+
+  export type playing_with_neonSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    value?: boolean
+  }, ExtArgs["result"]["playing_with_neon"]>
+
+  export type playing_with_neonSelectScalar = {
+    id?: boolean
+    name?: boolean
+    value?: boolean
+  }
+
+  export type playing_with_neonOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "value", ExtArgs["result"]["playing_with_neon"]>
+
+  export type $playing_with_neonPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "playing_with_neon"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      name: string | null
+      value: number | null
+    }, ExtArgs["result"]["playing_with_neon"]>
+    composites: {}
+  }
+
+  type playing_with_neonGetPayload<S extends boolean | null | undefined | playing_with_neonDefaultArgs> = $Result.GetResult<Prisma.$playing_with_neonPayload, S>
+
+  type playing_with_neonCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<playing_with_neonFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: Playing_with_neonCountAggregateInputType | true
+    }
+
+  export interface playing_with_neonDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['playing_with_neon'], meta: { name: 'playing_with_neon' } }
+    /**
+     * Find zero or one Playing_with_neon that matches the filter.
+     * @param {playing_with_neonFindUniqueArgs} args - Arguments to find a Playing_with_neon
+     * @example
+     * // Get one Playing_with_neon
+     * const playing_with_neon = await prisma.playing_with_neon.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends playing_with_neonFindUniqueArgs>(args: SelectSubset<T, playing_with_neonFindUniqueArgs<ExtArgs>>): Prisma__playing_with_neonClient<$Result.GetResult<Prisma.$playing_with_neonPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Playing_with_neon that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {playing_with_neonFindUniqueOrThrowArgs} args - Arguments to find a Playing_with_neon
+     * @example
+     * // Get one Playing_with_neon
+     * const playing_with_neon = await prisma.playing_with_neon.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends playing_with_neonFindUniqueOrThrowArgs>(args: SelectSubset<T, playing_with_neonFindUniqueOrThrowArgs<ExtArgs>>): Prisma__playing_with_neonClient<$Result.GetResult<Prisma.$playing_with_neonPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Playing_with_neon that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {playing_with_neonFindFirstArgs} args - Arguments to find a Playing_with_neon
+     * @example
+     * // Get one Playing_with_neon
+     * const playing_with_neon = await prisma.playing_with_neon.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends playing_with_neonFindFirstArgs>(args?: SelectSubset<T, playing_with_neonFindFirstArgs<ExtArgs>>): Prisma__playing_with_neonClient<$Result.GetResult<Prisma.$playing_with_neonPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Playing_with_neon that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {playing_with_neonFindFirstOrThrowArgs} args - Arguments to find a Playing_with_neon
+     * @example
+     * // Get one Playing_with_neon
+     * const playing_with_neon = await prisma.playing_with_neon.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends playing_with_neonFindFirstOrThrowArgs>(args?: SelectSubset<T, playing_with_neonFindFirstOrThrowArgs<ExtArgs>>): Prisma__playing_with_neonClient<$Result.GetResult<Prisma.$playing_with_neonPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Playing_with_neons that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {playing_with_neonFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Playing_with_neons
+     * const playing_with_neons = await prisma.playing_with_neon.findMany()
+     * 
+     * // Get first 10 Playing_with_neons
+     * const playing_with_neons = await prisma.playing_with_neon.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const playing_with_neonWithIdOnly = await prisma.playing_with_neon.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends playing_with_neonFindManyArgs>(args?: SelectSubset<T, playing_with_neonFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$playing_with_neonPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Playing_with_neon.
+     * @param {playing_with_neonCreateArgs} args - Arguments to create a Playing_with_neon.
+     * @example
+     * // Create one Playing_with_neon
+     * const Playing_with_neon = await prisma.playing_with_neon.create({
+     *   data: {
+     *     // ... data to create a Playing_with_neon
+     *   }
+     * })
+     * 
+     */
+    create<T extends playing_with_neonCreateArgs>(args: SelectSubset<T, playing_with_neonCreateArgs<ExtArgs>>): Prisma__playing_with_neonClient<$Result.GetResult<Prisma.$playing_with_neonPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Playing_with_neons.
+     * @param {playing_with_neonCreateManyArgs} args - Arguments to create many Playing_with_neons.
+     * @example
+     * // Create many Playing_with_neons
+     * const playing_with_neon = await prisma.playing_with_neon.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends playing_with_neonCreateManyArgs>(args?: SelectSubset<T, playing_with_neonCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Playing_with_neons and returns the data saved in the database.
+     * @param {playing_with_neonCreateManyAndReturnArgs} args - Arguments to create many Playing_with_neons.
+     * @example
+     * // Create many Playing_with_neons
+     * const playing_with_neon = await prisma.playing_with_neon.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Playing_with_neons and only return the `id`
+     * const playing_with_neonWithIdOnly = await prisma.playing_with_neon.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends playing_with_neonCreateManyAndReturnArgs>(args?: SelectSubset<T, playing_with_neonCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$playing_with_neonPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Playing_with_neon.
+     * @param {playing_with_neonDeleteArgs} args - Arguments to delete one Playing_with_neon.
+     * @example
+     * // Delete one Playing_with_neon
+     * const Playing_with_neon = await prisma.playing_with_neon.delete({
+     *   where: {
+     *     // ... filter to delete one Playing_with_neon
+     *   }
+     * })
+     * 
+     */
+    delete<T extends playing_with_neonDeleteArgs>(args: SelectSubset<T, playing_with_neonDeleteArgs<ExtArgs>>): Prisma__playing_with_neonClient<$Result.GetResult<Prisma.$playing_with_neonPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Playing_with_neon.
+     * @param {playing_with_neonUpdateArgs} args - Arguments to update one Playing_with_neon.
+     * @example
+     * // Update one Playing_with_neon
+     * const playing_with_neon = await prisma.playing_with_neon.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends playing_with_neonUpdateArgs>(args: SelectSubset<T, playing_with_neonUpdateArgs<ExtArgs>>): Prisma__playing_with_neonClient<$Result.GetResult<Prisma.$playing_with_neonPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Playing_with_neons.
+     * @param {playing_with_neonDeleteManyArgs} args - Arguments to filter Playing_with_neons to delete.
+     * @example
+     * // Delete a few Playing_with_neons
+     * const { count } = await prisma.playing_with_neon.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends playing_with_neonDeleteManyArgs>(args?: SelectSubset<T, playing_with_neonDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Playing_with_neons.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {playing_with_neonUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Playing_with_neons
+     * const playing_with_neon = await prisma.playing_with_neon.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends playing_with_neonUpdateManyArgs>(args: SelectSubset<T, playing_with_neonUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Playing_with_neons and returns the data updated in the database.
+     * @param {playing_with_neonUpdateManyAndReturnArgs} args - Arguments to update many Playing_with_neons.
+     * @example
+     * // Update many Playing_with_neons
+     * const playing_with_neon = await prisma.playing_with_neon.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Playing_with_neons and only return the `id`
+     * const playing_with_neonWithIdOnly = await prisma.playing_with_neon.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends playing_with_neonUpdateManyAndReturnArgs>(args: SelectSubset<T, playing_with_neonUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$playing_with_neonPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Playing_with_neon.
+     * @param {playing_with_neonUpsertArgs} args - Arguments to update or create a Playing_with_neon.
+     * @example
+     * // Update or create a Playing_with_neon
+     * const playing_with_neon = await prisma.playing_with_neon.upsert({
+     *   create: {
+     *     // ... data to create a Playing_with_neon
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Playing_with_neon we want to update
+     *   }
+     * })
+     */
+    upsert<T extends playing_with_neonUpsertArgs>(args: SelectSubset<T, playing_with_neonUpsertArgs<ExtArgs>>): Prisma__playing_with_neonClient<$Result.GetResult<Prisma.$playing_with_neonPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Playing_with_neons.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {playing_with_neonCountArgs} args - Arguments to filter Playing_with_neons to count.
+     * @example
+     * // Count the number of Playing_with_neons
+     * const count = await prisma.playing_with_neon.count({
+     *   where: {
+     *     // ... the filter for the Playing_with_neons we want to count
+     *   }
+     * })
+    **/
+    count<T extends playing_with_neonCountArgs>(
+      args?: Subset<T, playing_with_neonCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], Playing_with_neonCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Playing_with_neon.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Playing_with_neonAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends Playing_with_neonAggregateArgs>(args: Subset<T, Playing_with_neonAggregateArgs>): Prisma.PrismaPromise<GetPlaying_with_neonAggregateType<T>>
+
+    /**
+     * Group by Playing_with_neon.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {playing_with_neonGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends playing_with_neonGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: playing_with_neonGroupByArgs['orderBy'] }
+        : { orderBy?: playing_with_neonGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, playing_with_neonGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPlaying_with_neonGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the playing_with_neon model
+   */
+  readonly fields: playing_with_neonFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for playing_with_neon.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__playing_with_neonClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the playing_with_neon model
+   */
+  interface playing_with_neonFieldRefs {
+    readonly id: FieldRef<"playing_with_neon", 'Int'>
+    readonly name: FieldRef<"playing_with_neon", 'String'>
+    readonly value: FieldRef<"playing_with_neon", 'Float'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * playing_with_neon findUnique
+   */
+  export type playing_with_neonFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the playing_with_neon
+     */
+    select?: playing_with_neonSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the playing_with_neon
+     */
+    omit?: playing_with_neonOmit<ExtArgs> | null
+    /**
+     * Filter, which playing_with_neon to fetch.
+     */
+    where: playing_with_neonWhereUniqueInput
+  }
+
+  /**
+   * playing_with_neon findUniqueOrThrow
+   */
+  export type playing_with_neonFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the playing_with_neon
+     */
+    select?: playing_with_neonSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the playing_with_neon
+     */
+    omit?: playing_with_neonOmit<ExtArgs> | null
+    /**
+     * Filter, which playing_with_neon to fetch.
+     */
+    where: playing_with_neonWhereUniqueInput
+  }
+
+  /**
+   * playing_with_neon findFirst
+   */
+  export type playing_with_neonFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the playing_with_neon
+     */
+    select?: playing_with_neonSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the playing_with_neon
+     */
+    omit?: playing_with_neonOmit<ExtArgs> | null
+    /**
+     * Filter, which playing_with_neon to fetch.
+     */
+    where?: playing_with_neonWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of playing_with_neons to fetch.
+     */
+    orderBy?: playing_with_neonOrderByWithRelationInput | playing_with_neonOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for playing_with_neons.
+     */
+    cursor?: playing_with_neonWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` playing_with_neons from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` playing_with_neons.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of playing_with_neons.
+     */
+    distinct?: Playing_with_neonScalarFieldEnum | Playing_with_neonScalarFieldEnum[]
+  }
+
+  /**
+   * playing_with_neon findFirstOrThrow
+   */
+  export type playing_with_neonFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the playing_with_neon
+     */
+    select?: playing_with_neonSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the playing_with_neon
+     */
+    omit?: playing_with_neonOmit<ExtArgs> | null
+    /**
+     * Filter, which playing_with_neon to fetch.
+     */
+    where?: playing_with_neonWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of playing_with_neons to fetch.
+     */
+    orderBy?: playing_with_neonOrderByWithRelationInput | playing_with_neonOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for playing_with_neons.
+     */
+    cursor?: playing_with_neonWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` playing_with_neons from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` playing_with_neons.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of playing_with_neons.
+     */
+    distinct?: Playing_with_neonScalarFieldEnum | Playing_with_neonScalarFieldEnum[]
+  }
+
+  /**
+   * playing_with_neon findMany
+   */
+  export type playing_with_neonFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the playing_with_neon
+     */
+    select?: playing_with_neonSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the playing_with_neon
+     */
+    omit?: playing_with_neonOmit<ExtArgs> | null
+    /**
+     * Filter, which playing_with_neons to fetch.
+     */
+    where?: playing_with_neonWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of playing_with_neons to fetch.
+     */
+    orderBy?: playing_with_neonOrderByWithRelationInput | playing_with_neonOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing playing_with_neons.
+     */
+    cursor?: playing_with_neonWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` playing_with_neons from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` playing_with_neons.
+     */
+    skip?: number
+    distinct?: Playing_with_neonScalarFieldEnum | Playing_with_neonScalarFieldEnum[]
+  }
+
+  /**
+   * playing_with_neon create
+   */
+  export type playing_with_neonCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the playing_with_neon
+     */
+    select?: playing_with_neonSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the playing_with_neon
+     */
+    omit?: playing_with_neonOmit<ExtArgs> | null
+    /**
+     * The data needed to create a playing_with_neon.
+     */
+    data?: XOR<playing_with_neonCreateInput, playing_with_neonUncheckedCreateInput>
+  }
+
+  /**
+   * playing_with_neon createMany
+   */
+  export type playing_with_neonCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many playing_with_neons.
+     */
+    data: playing_with_neonCreateManyInput | playing_with_neonCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * playing_with_neon createManyAndReturn
+   */
+  export type playing_with_neonCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the playing_with_neon
+     */
+    select?: playing_with_neonSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the playing_with_neon
+     */
+    omit?: playing_with_neonOmit<ExtArgs> | null
+    /**
+     * The data used to create many playing_with_neons.
+     */
+    data: playing_with_neonCreateManyInput | playing_with_neonCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * playing_with_neon update
+   */
+  export type playing_with_neonUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the playing_with_neon
+     */
+    select?: playing_with_neonSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the playing_with_neon
+     */
+    omit?: playing_with_neonOmit<ExtArgs> | null
+    /**
+     * The data needed to update a playing_with_neon.
+     */
+    data: XOR<playing_with_neonUpdateInput, playing_with_neonUncheckedUpdateInput>
+    /**
+     * Choose, which playing_with_neon to update.
+     */
+    where: playing_with_neonWhereUniqueInput
+  }
+
+  /**
+   * playing_with_neon updateMany
+   */
+  export type playing_with_neonUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update playing_with_neons.
+     */
+    data: XOR<playing_with_neonUpdateManyMutationInput, playing_with_neonUncheckedUpdateManyInput>
+    /**
+     * Filter which playing_with_neons to update
+     */
+    where?: playing_with_neonWhereInput
+    /**
+     * Limit how many playing_with_neons to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * playing_with_neon updateManyAndReturn
+   */
+  export type playing_with_neonUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the playing_with_neon
+     */
+    select?: playing_with_neonSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the playing_with_neon
+     */
+    omit?: playing_with_neonOmit<ExtArgs> | null
+    /**
+     * The data used to update playing_with_neons.
+     */
+    data: XOR<playing_with_neonUpdateManyMutationInput, playing_with_neonUncheckedUpdateManyInput>
+    /**
+     * Filter which playing_with_neons to update
+     */
+    where?: playing_with_neonWhereInput
+    /**
+     * Limit how many playing_with_neons to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * playing_with_neon upsert
+   */
+  export type playing_with_neonUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the playing_with_neon
+     */
+    select?: playing_with_neonSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the playing_with_neon
+     */
+    omit?: playing_with_neonOmit<ExtArgs> | null
+    /**
+     * The filter to search for the playing_with_neon to update in case it exists.
+     */
+    where: playing_with_neonWhereUniqueInput
+    /**
+     * In case the playing_with_neon found by the `where` argument doesn't exist, create a new playing_with_neon with this data.
+     */
+    create: XOR<playing_with_neonCreateInput, playing_with_neonUncheckedCreateInput>
+    /**
+     * In case the playing_with_neon was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<playing_with_neonUpdateInput, playing_with_neonUncheckedUpdateInput>
+  }
+
+  /**
+   * playing_with_neon delete
+   */
+  export type playing_with_neonDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the playing_with_neon
+     */
+    select?: playing_with_neonSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the playing_with_neon
+     */
+    omit?: playing_with_neonOmit<ExtArgs> | null
+    /**
+     * Filter which playing_with_neon to delete.
+     */
+    where: playing_with_neonWhereUniqueInput
+  }
+
+  /**
+   * playing_with_neon deleteMany
+   */
+  export type playing_with_neonDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which playing_with_neons to delete
+     */
+    where?: playing_with_neonWhereInput
+    /**
+     * Limit how many playing_with_neons to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * playing_with_neon without action
+   */
+  export type playing_with_neonDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the playing_with_neon
+     */
+    select?: playing_with_neonSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the playing_with_neon
+     */
+    omit?: playing_with_neonOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -179897,6 +187272,86 @@ export namespace Prisma {
   export type GameSessionScalarFieldEnum = (typeof GameSessionScalarFieldEnum)[keyof typeof GameSessionScalarFieldEnum]
 
 
+  export const PlayerScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    dragonIdSubject: 'dragonIdSubject',
+    dragonHandle: 'dragonHandle',
+    displayName: 'displayName',
+    email: 'email',
+    avatarUrl: 'avatarUrl',
+    bannerUrl: 'bannerUrl',
+    level: 'level',
+    xp: 'xp',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    lastLoginAt: 'lastLoginAt'
+  };
+
+  export type PlayerScalarFieldEnum = (typeof PlayerScalarFieldEnum)[keyof typeof PlayerScalarFieldEnum]
+
+
+  export const PlayerPreferenceScalarFieldEnum: {
+    id: 'id',
+    playerId: 'playerId',
+    theme: 'theme',
+    motionPreference: 'motionPreference',
+    soundEnabled: 'soundEnabled',
+    musicVolume: 'musicVolume',
+    sfxVolume: 'sfxVolume',
+    streamerMode: 'streamerMode',
+    privacyLevel: 'privacyLevel',
+    updatedAt: 'updatedAt'
+  };
+
+  export type PlayerPreferenceScalarFieldEnum = (typeof PlayerPreferenceScalarFieldEnum)[keyof typeof PlayerPreferenceScalarFieldEnum]
+
+
+  export const AchievementScalarFieldEnum: {
+    id: 'id',
+    gameSlug: 'gameSlug',
+    key: 'key',
+    name: 'name',
+    description: 'description',
+    icon: 'icon',
+    xpReward: 'xpReward',
+    secret: 'secret',
+    rarity: 'rarity',
+    createdAt: 'createdAt'
+  };
+
+  export type AchievementScalarFieldEnum = (typeof AchievementScalarFieldEnum)[keyof typeof AchievementScalarFieldEnum]
+
+
+  export const PlayerAchievementScalarFieldEnum: {
+    id: 'id',
+    playerId: 'playerId',
+    achievementId: 'achievementId',
+    unlockedAt: 'unlockedAt'
+  };
+
+  export type PlayerAchievementScalarFieldEnum = (typeof PlayerAchievementScalarFieldEnum)[keyof typeof PlayerAchievementScalarFieldEnum]
+
+
+  export const FavoriteScalarFieldEnum: {
+    id: 'id',
+    playerId: 'playerId',
+    gameSlug: 'gameSlug',
+    createdAt: 'createdAt'
+  };
+
+  export type FavoriteScalarFieldEnum = (typeof FavoriteScalarFieldEnum)[keyof typeof FavoriteScalarFieldEnum]
+
+
+  export const Playing_with_neonScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    value: 'value'
+  };
+
+  export type Playing_with_neonScalarFieldEnum = (typeof Playing_with_neonScalarFieldEnum)[keyof typeof Playing_with_neonScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -180092,6 +187547,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeListRelationFilter
     scores?: ScoreListRelationFilter
     gameSessions?: GameSessionListRelationFilter
+    player?: XOR<PlayerNullableScalarRelationFilter, PlayerWhereInput> | null
   }
 
   export type UserOrderByWithRelationInput = {
@@ -180146,6 +187602,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeOrderByRelationAggregateInput
     scores?: ScoreOrderByRelationAggregateInput
     gameSessions?: GameSessionOrderByRelationAggregateInput
+    player?: PlayerOrderByWithRelationInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -180203,6 +187660,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeListRelationFilter
     scores?: ScoreListRelationFilter
     gameSessions?: GameSessionListRelationFilter
+    player?: XOR<PlayerNullableScalarRelationFilter, PlayerWhereInput> | null
   }, "id" | "email" | "employeeId" | "dragonId">
 
   export type UserOrderByWithAggregationInput = {
@@ -190611,6 +198069,425 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"GameSession"> | Date | string
   }
 
+  export type PlayerWhereInput = {
+    AND?: PlayerWhereInput | PlayerWhereInput[]
+    OR?: PlayerWhereInput[]
+    NOT?: PlayerWhereInput | PlayerWhereInput[]
+    id?: StringFilter<"Player"> | string
+    userId?: StringNullableFilter<"Player"> | string | null
+    dragonIdSubject?: StringFilter<"Player"> | string
+    dragonHandle?: StringFilter<"Player"> | string
+    displayName?: StringFilter<"Player"> | string
+    email?: StringNullableFilter<"Player"> | string | null
+    avatarUrl?: StringNullableFilter<"Player"> | string | null
+    bannerUrl?: StringNullableFilter<"Player"> | string | null
+    level?: IntFilter<"Player"> | number
+    xp?: IntFilter<"Player"> | number
+    createdAt?: DateTimeFilter<"Player"> | Date | string
+    updatedAt?: DateTimeFilter<"Player"> | Date | string
+    lastLoginAt?: DateTimeFilter<"Player"> | Date | string
+    user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    preferences?: XOR<PlayerPreferenceNullableScalarRelationFilter, PlayerPreferenceWhereInput> | null
+    achievements?: PlayerAchievementListRelationFilter
+    favorites?: FavoriteListRelationFilter
+  }
+
+  export type PlayerOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrderInput | SortOrder
+    dragonIdSubject?: SortOrder
+    dragonHandle?: SortOrder
+    displayName?: SortOrder
+    email?: SortOrderInput | SortOrder
+    avatarUrl?: SortOrderInput | SortOrder
+    bannerUrl?: SortOrderInput | SortOrder
+    level?: SortOrder
+    xp?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    lastLoginAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+    preferences?: PlayerPreferenceOrderByWithRelationInput
+    achievements?: PlayerAchievementOrderByRelationAggregateInput
+    favorites?: FavoriteOrderByRelationAggregateInput
+  }
+
+  export type PlayerWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    userId?: string
+    dragonIdSubject?: string
+    dragonHandle?: string
+    AND?: PlayerWhereInput | PlayerWhereInput[]
+    OR?: PlayerWhereInput[]
+    NOT?: PlayerWhereInput | PlayerWhereInput[]
+    displayName?: StringFilter<"Player"> | string
+    email?: StringNullableFilter<"Player"> | string | null
+    avatarUrl?: StringNullableFilter<"Player"> | string | null
+    bannerUrl?: StringNullableFilter<"Player"> | string | null
+    level?: IntFilter<"Player"> | number
+    xp?: IntFilter<"Player"> | number
+    createdAt?: DateTimeFilter<"Player"> | Date | string
+    updatedAt?: DateTimeFilter<"Player"> | Date | string
+    lastLoginAt?: DateTimeFilter<"Player"> | Date | string
+    user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    preferences?: XOR<PlayerPreferenceNullableScalarRelationFilter, PlayerPreferenceWhereInput> | null
+    achievements?: PlayerAchievementListRelationFilter
+    favorites?: FavoriteListRelationFilter
+  }, "id" | "userId" | "dragonIdSubject" | "dragonHandle">
+
+  export type PlayerOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrderInput | SortOrder
+    dragonIdSubject?: SortOrder
+    dragonHandle?: SortOrder
+    displayName?: SortOrder
+    email?: SortOrderInput | SortOrder
+    avatarUrl?: SortOrderInput | SortOrder
+    bannerUrl?: SortOrderInput | SortOrder
+    level?: SortOrder
+    xp?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    lastLoginAt?: SortOrder
+    _count?: PlayerCountOrderByAggregateInput
+    _avg?: PlayerAvgOrderByAggregateInput
+    _max?: PlayerMaxOrderByAggregateInput
+    _min?: PlayerMinOrderByAggregateInput
+    _sum?: PlayerSumOrderByAggregateInput
+  }
+
+  export type PlayerScalarWhereWithAggregatesInput = {
+    AND?: PlayerScalarWhereWithAggregatesInput | PlayerScalarWhereWithAggregatesInput[]
+    OR?: PlayerScalarWhereWithAggregatesInput[]
+    NOT?: PlayerScalarWhereWithAggregatesInput | PlayerScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Player"> | string
+    userId?: StringNullableWithAggregatesFilter<"Player"> | string | null
+    dragonIdSubject?: StringWithAggregatesFilter<"Player"> | string
+    dragonHandle?: StringWithAggregatesFilter<"Player"> | string
+    displayName?: StringWithAggregatesFilter<"Player"> | string
+    email?: StringNullableWithAggregatesFilter<"Player"> | string | null
+    avatarUrl?: StringNullableWithAggregatesFilter<"Player"> | string | null
+    bannerUrl?: StringNullableWithAggregatesFilter<"Player"> | string | null
+    level?: IntWithAggregatesFilter<"Player"> | number
+    xp?: IntWithAggregatesFilter<"Player"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"Player"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Player"> | Date | string
+    lastLoginAt?: DateTimeWithAggregatesFilter<"Player"> | Date | string
+  }
+
+  export type PlayerPreferenceWhereInput = {
+    AND?: PlayerPreferenceWhereInput | PlayerPreferenceWhereInput[]
+    OR?: PlayerPreferenceWhereInput[]
+    NOT?: PlayerPreferenceWhereInput | PlayerPreferenceWhereInput[]
+    id?: StringFilter<"PlayerPreference"> | string
+    playerId?: StringFilter<"PlayerPreference"> | string
+    theme?: StringFilter<"PlayerPreference"> | string
+    motionPreference?: StringFilter<"PlayerPreference"> | string
+    soundEnabled?: BoolFilter<"PlayerPreference"> | boolean
+    musicVolume?: IntFilter<"PlayerPreference"> | number
+    sfxVolume?: IntFilter<"PlayerPreference"> | number
+    streamerMode?: BoolFilter<"PlayerPreference"> | boolean
+    privacyLevel?: StringFilter<"PlayerPreference"> | string
+    updatedAt?: DateTimeFilter<"PlayerPreference"> | Date | string
+    player?: XOR<PlayerScalarRelationFilter, PlayerWhereInput>
+  }
+
+  export type PlayerPreferenceOrderByWithRelationInput = {
+    id?: SortOrder
+    playerId?: SortOrder
+    theme?: SortOrder
+    motionPreference?: SortOrder
+    soundEnabled?: SortOrder
+    musicVolume?: SortOrder
+    sfxVolume?: SortOrder
+    streamerMode?: SortOrder
+    privacyLevel?: SortOrder
+    updatedAt?: SortOrder
+    player?: PlayerOrderByWithRelationInput
+  }
+
+  export type PlayerPreferenceWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    playerId?: string
+    AND?: PlayerPreferenceWhereInput | PlayerPreferenceWhereInput[]
+    OR?: PlayerPreferenceWhereInput[]
+    NOT?: PlayerPreferenceWhereInput | PlayerPreferenceWhereInput[]
+    theme?: StringFilter<"PlayerPreference"> | string
+    motionPreference?: StringFilter<"PlayerPreference"> | string
+    soundEnabled?: BoolFilter<"PlayerPreference"> | boolean
+    musicVolume?: IntFilter<"PlayerPreference"> | number
+    sfxVolume?: IntFilter<"PlayerPreference"> | number
+    streamerMode?: BoolFilter<"PlayerPreference"> | boolean
+    privacyLevel?: StringFilter<"PlayerPreference"> | string
+    updatedAt?: DateTimeFilter<"PlayerPreference"> | Date | string
+    player?: XOR<PlayerScalarRelationFilter, PlayerWhereInput>
+  }, "id" | "playerId">
+
+  export type PlayerPreferenceOrderByWithAggregationInput = {
+    id?: SortOrder
+    playerId?: SortOrder
+    theme?: SortOrder
+    motionPreference?: SortOrder
+    soundEnabled?: SortOrder
+    musicVolume?: SortOrder
+    sfxVolume?: SortOrder
+    streamerMode?: SortOrder
+    privacyLevel?: SortOrder
+    updatedAt?: SortOrder
+    _count?: PlayerPreferenceCountOrderByAggregateInput
+    _avg?: PlayerPreferenceAvgOrderByAggregateInput
+    _max?: PlayerPreferenceMaxOrderByAggregateInput
+    _min?: PlayerPreferenceMinOrderByAggregateInput
+    _sum?: PlayerPreferenceSumOrderByAggregateInput
+  }
+
+  export type PlayerPreferenceScalarWhereWithAggregatesInput = {
+    AND?: PlayerPreferenceScalarWhereWithAggregatesInput | PlayerPreferenceScalarWhereWithAggregatesInput[]
+    OR?: PlayerPreferenceScalarWhereWithAggregatesInput[]
+    NOT?: PlayerPreferenceScalarWhereWithAggregatesInput | PlayerPreferenceScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"PlayerPreference"> | string
+    playerId?: StringWithAggregatesFilter<"PlayerPreference"> | string
+    theme?: StringWithAggregatesFilter<"PlayerPreference"> | string
+    motionPreference?: StringWithAggregatesFilter<"PlayerPreference"> | string
+    soundEnabled?: BoolWithAggregatesFilter<"PlayerPreference"> | boolean
+    musicVolume?: IntWithAggregatesFilter<"PlayerPreference"> | number
+    sfxVolume?: IntWithAggregatesFilter<"PlayerPreference"> | number
+    streamerMode?: BoolWithAggregatesFilter<"PlayerPreference"> | boolean
+    privacyLevel?: StringWithAggregatesFilter<"PlayerPreference"> | string
+    updatedAt?: DateTimeWithAggregatesFilter<"PlayerPreference"> | Date | string
+  }
+
+  export type AchievementWhereInput = {
+    AND?: AchievementWhereInput | AchievementWhereInput[]
+    OR?: AchievementWhereInput[]
+    NOT?: AchievementWhereInput | AchievementWhereInput[]
+    id?: StringFilter<"Achievement"> | string
+    gameSlug?: StringFilter<"Achievement"> | string
+    key?: StringFilter<"Achievement"> | string
+    name?: StringFilter<"Achievement"> | string
+    description?: StringFilter<"Achievement"> | string
+    icon?: StringFilter<"Achievement"> | string
+    xpReward?: IntFilter<"Achievement"> | number
+    secret?: BoolFilter<"Achievement"> | boolean
+    rarity?: StringFilter<"Achievement"> | string
+    createdAt?: DateTimeFilter<"Achievement"> | Date | string
+    unlocks?: PlayerAchievementListRelationFilter
+  }
+
+  export type AchievementOrderByWithRelationInput = {
+    id?: SortOrder
+    gameSlug?: SortOrder
+    key?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    icon?: SortOrder
+    xpReward?: SortOrder
+    secret?: SortOrder
+    rarity?: SortOrder
+    createdAt?: SortOrder
+    unlocks?: PlayerAchievementOrderByRelationAggregateInput
+  }
+
+  export type AchievementWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    key?: string
+    AND?: AchievementWhereInput | AchievementWhereInput[]
+    OR?: AchievementWhereInput[]
+    NOT?: AchievementWhereInput | AchievementWhereInput[]
+    gameSlug?: StringFilter<"Achievement"> | string
+    name?: StringFilter<"Achievement"> | string
+    description?: StringFilter<"Achievement"> | string
+    icon?: StringFilter<"Achievement"> | string
+    xpReward?: IntFilter<"Achievement"> | number
+    secret?: BoolFilter<"Achievement"> | boolean
+    rarity?: StringFilter<"Achievement"> | string
+    createdAt?: DateTimeFilter<"Achievement"> | Date | string
+    unlocks?: PlayerAchievementListRelationFilter
+  }, "id" | "key">
+
+  export type AchievementOrderByWithAggregationInput = {
+    id?: SortOrder
+    gameSlug?: SortOrder
+    key?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    icon?: SortOrder
+    xpReward?: SortOrder
+    secret?: SortOrder
+    rarity?: SortOrder
+    createdAt?: SortOrder
+    _count?: AchievementCountOrderByAggregateInput
+    _avg?: AchievementAvgOrderByAggregateInput
+    _max?: AchievementMaxOrderByAggregateInput
+    _min?: AchievementMinOrderByAggregateInput
+    _sum?: AchievementSumOrderByAggregateInput
+  }
+
+  export type AchievementScalarWhereWithAggregatesInput = {
+    AND?: AchievementScalarWhereWithAggregatesInput | AchievementScalarWhereWithAggregatesInput[]
+    OR?: AchievementScalarWhereWithAggregatesInput[]
+    NOT?: AchievementScalarWhereWithAggregatesInput | AchievementScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Achievement"> | string
+    gameSlug?: StringWithAggregatesFilter<"Achievement"> | string
+    key?: StringWithAggregatesFilter<"Achievement"> | string
+    name?: StringWithAggregatesFilter<"Achievement"> | string
+    description?: StringWithAggregatesFilter<"Achievement"> | string
+    icon?: StringWithAggregatesFilter<"Achievement"> | string
+    xpReward?: IntWithAggregatesFilter<"Achievement"> | number
+    secret?: BoolWithAggregatesFilter<"Achievement"> | boolean
+    rarity?: StringWithAggregatesFilter<"Achievement"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"Achievement"> | Date | string
+  }
+
+  export type PlayerAchievementWhereInput = {
+    AND?: PlayerAchievementWhereInput | PlayerAchievementWhereInput[]
+    OR?: PlayerAchievementWhereInput[]
+    NOT?: PlayerAchievementWhereInput | PlayerAchievementWhereInput[]
+    id?: StringFilter<"PlayerAchievement"> | string
+    playerId?: StringFilter<"PlayerAchievement"> | string
+    achievementId?: StringFilter<"PlayerAchievement"> | string
+    unlockedAt?: DateTimeFilter<"PlayerAchievement"> | Date | string
+    player?: XOR<PlayerScalarRelationFilter, PlayerWhereInput>
+    achievement?: XOR<AchievementScalarRelationFilter, AchievementWhereInput>
+  }
+
+  export type PlayerAchievementOrderByWithRelationInput = {
+    id?: SortOrder
+    playerId?: SortOrder
+    achievementId?: SortOrder
+    unlockedAt?: SortOrder
+    player?: PlayerOrderByWithRelationInput
+    achievement?: AchievementOrderByWithRelationInput
+  }
+
+  export type PlayerAchievementWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    playerId_achievementId?: PlayerAchievementPlayerIdAchievementIdCompoundUniqueInput
+    AND?: PlayerAchievementWhereInput | PlayerAchievementWhereInput[]
+    OR?: PlayerAchievementWhereInput[]
+    NOT?: PlayerAchievementWhereInput | PlayerAchievementWhereInput[]
+    playerId?: StringFilter<"PlayerAchievement"> | string
+    achievementId?: StringFilter<"PlayerAchievement"> | string
+    unlockedAt?: DateTimeFilter<"PlayerAchievement"> | Date | string
+    player?: XOR<PlayerScalarRelationFilter, PlayerWhereInput>
+    achievement?: XOR<AchievementScalarRelationFilter, AchievementWhereInput>
+  }, "id" | "playerId_achievementId">
+
+  export type PlayerAchievementOrderByWithAggregationInput = {
+    id?: SortOrder
+    playerId?: SortOrder
+    achievementId?: SortOrder
+    unlockedAt?: SortOrder
+    _count?: PlayerAchievementCountOrderByAggregateInput
+    _max?: PlayerAchievementMaxOrderByAggregateInput
+    _min?: PlayerAchievementMinOrderByAggregateInput
+  }
+
+  export type PlayerAchievementScalarWhereWithAggregatesInput = {
+    AND?: PlayerAchievementScalarWhereWithAggregatesInput | PlayerAchievementScalarWhereWithAggregatesInput[]
+    OR?: PlayerAchievementScalarWhereWithAggregatesInput[]
+    NOT?: PlayerAchievementScalarWhereWithAggregatesInput | PlayerAchievementScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"PlayerAchievement"> | string
+    playerId?: StringWithAggregatesFilter<"PlayerAchievement"> | string
+    achievementId?: StringWithAggregatesFilter<"PlayerAchievement"> | string
+    unlockedAt?: DateTimeWithAggregatesFilter<"PlayerAchievement"> | Date | string
+  }
+
+  export type FavoriteWhereInput = {
+    AND?: FavoriteWhereInput | FavoriteWhereInput[]
+    OR?: FavoriteWhereInput[]
+    NOT?: FavoriteWhereInput | FavoriteWhereInput[]
+    id?: StringFilter<"Favorite"> | string
+    playerId?: StringFilter<"Favorite"> | string
+    gameSlug?: StringFilter<"Favorite"> | string
+    createdAt?: DateTimeFilter<"Favorite"> | Date | string
+    player?: XOR<PlayerScalarRelationFilter, PlayerWhereInput>
+  }
+
+  export type FavoriteOrderByWithRelationInput = {
+    id?: SortOrder
+    playerId?: SortOrder
+    gameSlug?: SortOrder
+    createdAt?: SortOrder
+    player?: PlayerOrderByWithRelationInput
+  }
+
+  export type FavoriteWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    playerId_gameSlug?: FavoritePlayerIdGameSlugCompoundUniqueInput
+    AND?: FavoriteWhereInput | FavoriteWhereInput[]
+    OR?: FavoriteWhereInput[]
+    NOT?: FavoriteWhereInput | FavoriteWhereInput[]
+    playerId?: StringFilter<"Favorite"> | string
+    gameSlug?: StringFilter<"Favorite"> | string
+    createdAt?: DateTimeFilter<"Favorite"> | Date | string
+    player?: XOR<PlayerScalarRelationFilter, PlayerWhereInput>
+  }, "id" | "playerId_gameSlug">
+
+  export type FavoriteOrderByWithAggregationInput = {
+    id?: SortOrder
+    playerId?: SortOrder
+    gameSlug?: SortOrder
+    createdAt?: SortOrder
+    _count?: FavoriteCountOrderByAggregateInput
+    _max?: FavoriteMaxOrderByAggregateInput
+    _min?: FavoriteMinOrderByAggregateInput
+  }
+
+  export type FavoriteScalarWhereWithAggregatesInput = {
+    AND?: FavoriteScalarWhereWithAggregatesInput | FavoriteScalarWhereWithAggregatesInput[]
+    OR?: FavoriteScalarWhereWithAggregatesInput[]
+    NOT?: FavoriteScalarWhereWithAggregatesInput | FavoriteScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Favorite"> | string
+    playerId?: StringWithAggregatesFilter<"Favorite"> | string
+    gameSlug?: StringWithAggregatesFilter<"Favorite"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"Favorite"> | Date | string
+  }
+
+  export type playing_with_neonWhereInput = {
+    AND?: playing_with_neonWhereInput | playing_with_neonWhereInput[]
+    OR?: playing_with_neonWhereInput[]
+    NOT?: playing_with_neonWhereInput | playing_with_neonWhereInput[]
+    id?: IntFilter<"playing_with_neon"> | number
+    name?: StringNullableFilter<"playing_with_neon"> | string | null
+    value?: FloatNullableFilter<"playing_with_neon"> | number | null
+  }
+
+  export type playing_with_neonOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrderInput | SortOrder
+    value?: SortOrderInput | SortOrder
+  }
+
+  export type playing_with_neonWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: playing_with_neonWhereInput | playing_with_neonWhereInput[]
+    OR?: playing_with_neonWhereInput[]
+    NOT?: playing_with_neonWhereInput | playing_with_neonWhereInput[]
+    name?: StringNullableFilter<"playing_with_neon"> | string | null
+    value?: FloatNullableFilter<"playing_with_neon"> | number | null
+  }, "id">
+
+  export type playing_with_neonOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrderInput | SortOrder
+    value?: SortOrderInput | SortOrder
+    _count?: playing_with_neonCountOrderByAggregateInput
+    _avg?: playing_with_neonAvgOrderByAggregateInput
+    _max?: playing_with_neonMaxOrderByAggregateInput
+    _min?: playing_with_neonMinOrderByAggregateInput
+    _sum?: playing_with_neonSumOrderByAggregateInput
+  }
+
+  export type playing_with_neonScalarWhereWithAggregatesInput = {
+    AND?: playing_with_neonScalarWhereWithAggregatesInput | playing_with_neonScalarWhereWithAggregatesInput[]
+    OR?: playing_with_neonScalarWhereWithAggregatesInput[]
+    NOT?: playing_with_neonScalarWhereWithAggregatesInput | playing_with_neonScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"playing_with_neon"> | number
+    name?: StringNullableWithAggregatesFilter<"playing_with_neon"> | string | null
+    value?: FloatNullableWithAggregatesFilter<"playing_with_neon"> | number | null
+  }
+
   export type UserCreateInput = {
     id?: string
     name?: string | null
@@ -190663,6 +198540,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
     scores?: ScoreCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionCreateNestedManyWithoutUserInput
+    player?: PlayerCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -190717,6 +198595,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
     scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
+    player?: PlayerUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -190771,6 +198650,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
     scores?: ScoreUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
+    player?: PlayerUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -190825,6 +198705,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
+    player?: PlayerUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -202410,6 +210291,448 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type PlayerCreateInput = {
+    id?: string
+    dragonIdSubject: string
+    dragonHandle: string
+    displayName: string
+    email?: string | null
+    avatarUrl?: string | null
+    bannerUrl?: string | null
+    level?: number
+    xp?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lastLoginAt?: Date | string
+    user?: UserCreateNestedOneWithoutPlayerInput
+    preferences?: PlayerPreferenceCreateNestedOneWithoutPlayerInput
+    achievements?: PlayerAchievementCreateNestedManyWithoutPlayerInput
+    favorites?: FavoriteCreateNestedManyWithoutPlayerInput
+  }
+
+  export type PlayerUncheckedCreateInput = {
+    id?: string
+    userId?: string | null
+    dragonIdSubject: string
+    dragonHandle: string
+    displayName: string
+    email?: string | null
+    avatarUrl?: string | null
+    bannerUrl?: string | null
+    level?: number
+    xp?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lastLoginAt?: Date | string
+    preferences?: PlayerPreferenceUncheckedCreateNestedOneWithoutPlayerInput
+    achievements?: PlayerAchievementUncheckedCreateNestedManyWithoutPlayerInput
+    favorites?: FavoriteUncheckedCreateNestedManyWithoutPlayerInput
+  }
+
+  export type PlayerUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dragonIdSubject?: StringFieldUpdateOperationsInput | string
+    dragonHandle?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bannerUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: IntFieldUpdateOperationsInput | number
+    xp?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastLoginAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneWithoutPlayerNestedInput
+    preferences?: PlayerPreferenceUpdateOneWithoutPlayerNestedInput
+    achievements?: PlayerAchievementUpdateManyWithoutPlayerNestedInput
+    favorites?: FavoriteUpdateManyWithoutPlayerNestedInput
+  }
+
+  export type PlayerUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    dragonIdSubject?: StringFieldUpdateOperationsInput | string
+    dragonHandle?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bannerUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: IntFieldUpdateOperationsInput | number
+    xp?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastLoginAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    preferences?: PlayerPreferenceUncheckedUpdateOneWithoutPlayerNestedInput
+    achievements?: PlayerAchievementUncheckedUpdateManyWithoutPlayerNestedInput
+    favorites?: FavoriteUncheckedUpdateManyWithoutPlayerNestedInput
+  }
+
+  export type PlayerCreateManyInput = {
+    id?: string
+    userId?: string | null
+    dragonIdSubject: string
+    dragonHandle: string
+    displayName: string
+    email?: string | null
+    avatarUrl?: string | null
+    bannerUrl?: string | null
+    level?: number
+    xp?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lastLoginAt?: Date | string
+  }
+
+  export type PlayerUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dragonIdSubject?: StringFieldUpdateOperationsInput | string
+    dragonHandle?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bannerUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: IntFieldUpdateOperationsInput | number
+    xp?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastLoginAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlayerUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    dragonIdSubject?: StringFieldUpdateOperationsInput | string
+    dragonHandle?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bannerUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: IntFieldUpdateOperationsInput | number
+    xp?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastLoginAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlayerPreferenceCreateInput = {
+    id?: string
+    theme?: string
+    motionPreference?: string
+    soundEnabled?: boolean
+    musicVolume?: number
+    sfxVolume?: number
+    streamerMode?: boolean
+    privacyLevel?: string
+    updatedAt?: Date | string
+    player: PlayerCreateNestedOneWithoutPreferencesInput
+  }
+
+  export type PlayerPreferenceUncheckedCreateInput = {
+    id?: string
+    playerId: string
+    theme?: string
+    motionPreference?: string
+    soundEnabled?: boolean
+    musicVolume?: number
+    sfxVolume?: number
+    streamerMode?: boolean
+    privacyLevel?: string
+    updatedAt?: Date | string
+  }
+
+  export type PlayerPreferenceUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    theme?: StringFieldUpdateOperationsInput | string
+    motionPreference?: StringFieldUpdateOperationsInput | string
+    soundEnabled?: BoolFieldUpdateOperationsInput | boolean
+    musicVolume?: IntFieldUpdateOperationsInput | number
+    sfxVolume?: IntFieldUpdateOperationsInput | number
+    streamerMode?: BoolFieldUpdateOperationsInput | boolean
+    privacyLevel?: StringFieldUpdateOperationsInput | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    player?: PlayerUpdateOneRequiredWithoutPreferencesNestedInput
+  }
+
+  export type PlayerPreferenceUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    playerId?: StringFieldUpdateOperationsInput | string
+    theme?: StringFieldUpdateOperationsInput | string
+    motionPreference?: StringFieldUpdateOperationsInput | string
+    soundEnabled?: BoolFieldUpdateOperationsInput | boolean
+    musicVolume?: IntFieldUpdateOperationsInput | number
+    sfxVolume?: IntFieldUpdateOperationsInput | number
+    streamerMode?: BoolFieldUpdateOperationsInput | boolean
+    privacyLevel?: StringFieldUpdateOperationsInput | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlayerPreferenceCreateManyInput = {
+    id?: string
+    playerId: string
+    theme?: string
+    motionPreference?: string
+    soundEnabled?: boolean
+    musicVolume?: number
+    sfxVolume?: number
+    streamerMode?: boolean
+    privacyLevel?: string
+    updatedAt?: Date | string
+  }
+
+  export type PlayerPreferenceUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    theme?: StringFieldUpdateOperationsInput | string
+    motionPreference?: StringFieldUpdateOperationsInput | string
+    soundEnabled?: BoolFieldUpdateOperationsInput | boolean
+    musicVolume?: IntFieldUpdateOperationsInput | number
+    sfxVolume?: IntFieldUpdateOperationsInput | number
+    streamerMode?: BoolFieldUpdateOperationsInput | boolean
+    privacyLevel?: StringFieldUpdateOperationsInput | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlayerPreferenceUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    playerId?: StringFieldUpdateOperationsInput | string
+    theme?: StringFieldUpdateOperationsInput | string
+    motionPreference?: StringFieldUpdateOperationsInput | string
+    soundEnabled?: BoolFieldUpdateOperationsInput | boolean
+    musicVolume?: IntFieldUpdateOperationsInput | number
+    sfxVolume?: IntFieldUpdateOperationsInput | number
+    streamerMode?: BoolFieldUpdateOperationsInput | boolean
+    privacyLevel?: StringFieldUpdateOperationsInput | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AchievementCreateInput = {
+    id?: string
+    gameSlug: string
+    key: string
+    name: string
+    description: string
+    icon: string
+    xpReward?: number
+    secret?: boolean
+    rarity?: string
+    createdAt?: Date | string
+    unlocks?: PlayerAchievementCreateNestedManyWithoutAchievementInput
+  }
+
+  export type AchievementUncheckedCreateInput = {
+    id?: string
+    gameSlug: string
+    key: string
+    name: string
+    description: string
+    icon: string
+    xpReward?: number
+    secret?: boolean
+    rarity?: string
+    createdAt?: Date | string
+    unlocks?: PlayerAchievementUncheckedCreateNestedManyWithoutAchievementInput
+  }
+
+  export type AchievementUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    gameSlug?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    icon?: StringFieldUpdateOperationsInput | string
+    xpReward?: IntFieldUpdateOperationsInput | number
+    secret?: BoolFieldUpdateOperationsInput | boolean
+    rarity?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    unlocks?: PlayerAchievementUpdateManyWithoutAchievementNestedInput
+  }
+
+  export type AchievementUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    gameSlug?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    icon?: StringFieldUpdateOperationsInput | string
+    xpReward?: IntFieldUpdateOperationsInput | number
+    secret?: BoolFieldUpdateOperationsInput | boolean
+    rarity?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    unlocks?: PlayerAchievementUncheckedUpdateManyWithoutAchievementNestedInput
+  }
+
+  export type AchievementCreateManyInput = {
+    id?: string
+    gameSlug: string
+    key: string
+    name: string
+    description: string
+    icon: string
+    xpReward?: number
+    secret?: boolean
+    rarity?: string
+    createdAt?: Date | string
+  }
+
+  export type AchievementUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    gameSlug?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    icon?: StringFieldUpdateOperationsInput | string
+    xpReward?: IntFieldUpdateOperationsInput | number
+    secret?: BoolFieldUpdateOperationsInput | boolean
+    rarity?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AchievementUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    gameSlug?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    icon?: StringFieldUpdateOperationsInput | string
+    xpReward?: IntFieldUpdateOperationsInput | number
+    secret?: BoolFieldUpdateOperationsInput | boolean
+    rarity?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlayerAchievementCreateInput = {
+    id?: string
+    unlockedAt?: Date | string
+    player: PlayerCreateNestedOneWithoutAchievementsInput
+    achievement: AchievementCreateNestedOneWithoutUnlocksInput
+  }
+
+  export type PlayerAchievementUncheckedCreateInput = {
+    id?: string
+    playerId: string
+    achievementId: string
+    unlockedAt?: Date | string
+  }
+
+  export type PlayerAchievementUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    unlockedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    player?: PlayerUpdateOneRequiredWithoutAchievementsNestedInput
+    achievement?: AchievementUpdateOneRequiredWithoutUnlocksNestedInput
+  }
+
+  export type PlayerAchievementUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    playerId?: StringFieldUpdateOperationsInput | string
+    achievementId?: StringFieldUpdateOperationsInput | string
+    unlockedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlayerAchievementCreateManyInput = {
+    id?: string
+    playerId: string
+    achievementId: string
+    unlockedAt?: Date | string
+  }
+
+  export type PlayerAchievementUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    unlockedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlayerAchievementUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    playerId?: StringFieldUpdateOperationsInput | string
+    achievementId?: StringFieldUpdateOperationsInput | string
+    unlockedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FavoriteCreateInput = {
+    id?: string
+    gameSlug: string
+    createdAt?: Date | string
+    player: PlayerCreateNestedOneWithoutFavoritesInput
+  }
+
+  export type FavoriteUncheckedCreateInput = {
+    id?: string
+    playerId: string
+    gameSlug: string
+    createdAt?: Date | string
+  }
+
+  export type FavoriteUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    gameSlug?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    player?: PlayerUpdateOneRequiredWithoutFavoritesNestedInput
+  }
+
+  export type FavoriteUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    playerId?: StringFieldUpdateOperationsInput | string
+    gameSlug?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FavoriteCreateManyInput = {
+    id?: string
+    playerId: string
+    gameSlug: string
+    createdAt?: Date | string
+  }
+
+  export type FavoriteUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    gameSlug?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FavoriteUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    playerId?: StringFieldUpdateOperationsInput | string
+    gameSlug?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type playing_with_neonCreateInput = {
+    name?: string | null
+    value?: number | null
+  }
+
+  export type playing_with_neonUncheckedCreateInput = {
+    id?: number
+    name?: string | null
+    value?: number | null
+  }
+
+  export type playing_with_neonUpdateInput = {
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    value?: NullableFloatFieldUpdateOperationsInput | number | null
+  }
+
+  export type playing_with_neonUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    value?: NullableFloatFieldUpdateOperationsInput | number | null
+  }
+
+  export type playing_with_neonCreateManyInput = {
+    id?: number
+    name?: string | null
+    value?: number | null
+  }
+
+  export type playing_with_neonUpdateManyMutationInput = {
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    value?: NullableFloatFieldUpdateOperationsInput | number | null
+  }
+
+  export type playing_with_neonUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    value?: NullableFloatFieldUpdateOperationsInput | number | null
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -202594,6 +210917,11 @@ export namespace Prisma {
     every?: GameSessionWhereInput
     some?: GameSessionWhereInput
     none?: GameSessionWhereInput
+  }
+
+  export type PlayerNullableScalarRelationFilter = {
+    is?: PlayerWhereInput | null
+    isNot?: PlayerWhereInput | null
   }
 
   export type SortOrderInput = {
@@ -208778,6 +217106,275 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
+  export type PlayerPreferenceNullableScalarRelationFilter = {
+    is?: PlayerPreferenceWhereInput | null
+    isNot?: PlayerPreferenceWhereInput | null
+  }
+
+  export type PlayerAchievementListRelationFilter = {
+    every?: PlayerAchievementWhereInput
+    some?: PlayerAchievementWhereInput
+    none?: PlayerAchievementWhereInput
+  }
+
+  export type FavoriteListRelationFilter = {
+    every?: FavoriteWhereInput
+    some?: FavoriteWhereInput
+    none?: FavoriteWhereInput
+  }
+
+  export type PlayerAchievementOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type FavoriteOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type PlayerCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    dragonIdSubject?: SortOrder
+    dragonHandle?: SortOrder
+    displayName?: SortOrder
+    email?: SortOrder
+    avatarUrl?: SortOrder
+    bannerUrl?: SortOrder
+    level?: SortOrder
+    xp?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    lastLoginAt?: SortOrder
+  }
+
+  export type PlayerAvgOrderByAggregateInput = {
+    level?: SortOrder
+    xp?: SortOrder
+  }
+
+  export type PlayerMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    dragonIdSubject?: SortOrder
+    dragonHandle?: SortOrder
+    displayName?: SortOrder
+    email?: SortOrder
+    avatarUrl?: SortOrder
+    bannerUrl?: SortOrder
+    level?: SortOrder
+    xp?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    lastLoginAt?: SortOrder
+  }
+
+  export type PlayerMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    dragonIdSubject?: SortOrder
+    dragonHandle?: SortOrder
+    displayName?: SortOrder
+    email?: SortOrder
+    avatarUrl?: SortOrder
+    bannerUrl?: SortOrder
+    level?: SortOrder
+    xp?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    lastLoginAt?: SortOrder
+  }
+
+  export type PlayerSumOrderByAggregateInput = {
+    level?: SortOrder
+    xp?: SortOrder
+  }
+
+  export type PlayerScalarRelationFilter = {
+    is?: PlayerWhereInput
+    isNot?: PlayerWhereInput
+  }
+
+  export type PlayerPreferenceCountOrderByAggregateInput = {
+    id?: SortOrder
+    playerId?: SortOrder
+    theme?: SortOrder
+    motionPreference?: SortOrder
+    soundEnabled?: SortOrder
+    musicVolume?: SortOrder
+    sfxVolume?: SortOrder
+    streamerMode?: SortOrder
+    privacyLevel?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PlayerPreferenceAvgOrderByAggregateInput = {
+    musicVolume?: SortOrder
+    sfxVolume?: SortOrder
+  }
+
+  export type PlayerPreferenceMaxOrderByAggregateInput = {
+    id?: SortOrder
+    playerId?: SortOrder
+    theme?: SortOrder
+    motionPreference?: SortOrder
+    soundEnabled?: SortOrder
+    musicVolume?: SortOrder
+    sfxVolume?: SortOrder
+    streamerMode?: SortOrder
+    privacyLevel?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PlayerPreferenceMinOrderByAggregateInput = {
+    id?: SortOrder
+    playerId?: SortOrder
+    theme?: SortOrder
+    motionPreference?: SortOrder
+    soundEnabled?: SortOrder
+    musicVolume?: SortOrder
+    sfxVolume?: SortOrder
+    streamerMode?: SortOrder
+    privacyLevel?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PlayerPreferenceSumOrderByAggregateInput = {
+    musicVolume?: SortOrder
+    sfxVolume?: SortOrder
+  }
+
+  export type AchievementCountOrderByAggregateInput = {
+    id?: SortOrder
+    gameSlug?: SortOrder
+    key?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    icon?: SortOrder
+    xpReward?: SortOrder
+    secret?: SortOrder
+    rarity?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AchievementAvgOrderByAggregateInput = {
+    xpReward?: SortOrder
+  }
+
+  export type AchievementMaxOrderByAggregateInput = {
+    id?: SortOrder
+    gameSlug?: SortOrder
+    key?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    icon?: SortOrder
+    xpReward?: SortOrder
+    secret?: SortOrder
+    rarity?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AchievementMinOrderByAggregateInput = {
+    id?: SortOrder
+    gameSlug?: SortOrder
+    key?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    icon?: SortOrder
+    xpReward?: SortOrder
+    secret?: SortOrder
+    rarity?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AchievementSumOrderByAggregateInput = {
+    xpReward?: SortOrder
+  }
+
+  export type AchievementScalarRelationFilter = {
+    is?: AchievementWhereInput
+    isNot?: AchievementWhereInput
+  }
+
+  export type PlayerAchievementPlayerIdAchievementIdCompoundUniqueInput = {
+    playerId: string
+    achievementId: string
+  }
+
+  export type PlayerAchievementCountOrderByAggregateInput = {
+    id?: SortOrder
+    playerId?: SortOrder
+    achievementId?: SortOrder
+    unlockedAt?: SortOrder
+  }
+
+  export type PlayerAchievementMaxOrderByAggregateInput = {
+    id?: SortOrder
+    playerId?: SortOrder
+    achievementId?: SortOrder
+    unlockedAt?: SortOrder
+  }
+
+  export type PlayerAchievementMinOrderByAggregateInput = {
+    id?: SortOrder
+    playerId?: SortOrder
+    achievementId?: SortOrder
+    unlockedAt?: SortOrder
+  }
+
+  export type FavoritePlayerIdGameSlugCompoundUniqueInput = {
+    playerId: string
+    gameSlug: string
+  }
+
+  export type FavoriteCountOrderByAggregateInput = {
+    id?: SortOrder
+    playerId?: SortOrder
+    gameSlug?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type FavoriteMaxOrderByAggregateInput = {
+    id?: SortOrder
+    playerId?: SortOrder
+    gameSlug?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type FavoriteMinOrderByAggregateInput = {
+    id?: SortOrder
+    playerId?: SortOrder
+    gameSlug?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type playing_with_neonCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    value?: SortOrder
+  }
+
+  export type playing_with_neonAvgOrderByAggregateInput = {
+    id?: SortOrder
+    value?: SortOrder
+  }
+
+  export type playing_with_neonMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    value?: SortOrder
+  }
+
+  export type playing_with_neonMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    value?: SortOrder
+  }
+
+  export type playing_with_neonSumOrderByAggregateInput = {
+    id?: SortOrder
+    value?: SortOrder
+  }
+
   export type AccountCreateNestedManyWithoutUserInput = {
     create?: XOR<AccountCreateWithoutUserInput, AccountUncheckedCreateWithoutUserInput> | AccountCreateWithoutUserInput[] | AccountUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AccountCreateOrConnectWithoutUserInput | AccountCreateOrConnectWithoutUserInput[]
@@ -208930,6 +217527,12 @@ export namespace Prisma {
     connect?: GameSessionWhereUniqueInput | GameSessionWhereUniqueInput[]
   }
 
+  export type PlayerCreateNestedOneWithoutUserInput = {
+    create?: XOR<PlayerCreateWithoutUserInput, PlayerUncheckedCreateWithoutUserInput>
+    connectOrCreate?: PlayerCreateOrConnectWithoutUserInput
+    connect?: PlayerWhereUniqueInput
+  }
+
   export type AccountUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<AccountCreateWithoutUserInput, AccountUncheckedCreateWithoutUserInput> | AccountCreateWithoutUserInput[] | AccountUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AccountCreateOrConnectWithoutUserInput | AccountCreateOrConnectWithoutUserInput[]
@@ -209080,6 +217683,12 @@ export namespace Prisma {
     connectOrCreate?: GameSessionCreateOrConnectWithoutUserInput | GameSessionCreateOrConnectWithoutUserInput[]
     createMany?: GameSessionCreateManyUserInputEnvelope
     connect?: GameSessionWhereUniqueInput | GameSessionWhereUniqueInput[]
+  }
+
+  export type PlayerUncheckedCreateNestedOneWithoutUserInput = {
+    create?: XOR<PlayerCreateWithoutUserInput, PlayerUncheckedCreateWithoutUserInput>
+    connectOrCreate?: PlayerCreateOrConnectWithoutUserInput
+    connect?: PlayerWhereUniqueInput
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -209410,6 +218019,16 @@ export namespace Prisma {
     deleteMany?: GameSessionScalarWhereInput | GameSessionScalarWhereInput[]
   }
 
+  export type PlayerUpdateOneWithoutUserNestedInput = {
+    create?: XOR<PlayerCreateWithoutUserInput, PlayerUncheckedCreateWithoutUserInput>
+    connectOrCreate?: PlayerCreateOrConnectWithoutUserInput
+    upsert?: PlayerUpsertWithoutUserInput
+    disconnect?: PlayerWhereInput | boolean
+    delete?: PlayerWhereInput | boolean
+    connect?: PlayerWhereUniqueInput
+    update?: XOR<XOR<PlayerUpdateToOneWithWhereWithoutUserInput, PlayerUpdateWithoutUserInput>, PlayerUncheckedUpdateWithoutUserInput>
+  }
+
   export type AccountUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<AccountCreateWithoutUserInput, AccountUncheckedCreateWithoutUserInput> | AccountCreateWithoutUserInput[] | AccountUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AccountCreateOrConnectWithoutUserInput | AccountCreateOrConnectWithoutUserInput[]
@@ -209708,6 +218327,16 @@ export namespace Prisma {
     update?: GameSessionUpdateWithWhereUniqueWithoutUserInput | GameSessionUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: GameSessionUpdateManyWithWhereWithoutUserInput | GameSessionUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: GameSessionScalarWhereInput | GameSessionScalarWhereInput[]
+  }
+
+  export type PlayerUncheckedUpdateOneWithoutUserNestedInput = {
+    create?: XOR<PlayerCreateWithoutUserInput, PlayerUncheckedCreateWithoutUserInput>
+    connectOrCreate?: PlayerCreateOrConnectWithoutUserInput
+    upsert?: PlayerUpsertWithoutUserInput
+    disconnect?: PlayerWhereInput | boolean
+    delete?: PlayerWhereInput | boolean
+    connect?: PlayerWhereUniqueInput
+    update?: XOR<XOR<PlayerUpdateToOneWithWhereWithoutUserInput, PlayerUpdateWithoutUserInput>, PlayerUncheckedUpdateWithoutUserInput>
   }
 
   export type PermissionCreateNestedManyWithoutRoleInput = {
@@ -212700,6 +221329,236 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutGameSessionsInput, UserUpdateWithoutGameSessionsInput>, UserUncheckedUpdateWithoutGameSessionsInput>
   }
 
+  export type UserCreateNestedOneWithoutPlayerInput = {
+    create?: XOR<UserCreateWithoutPlayerInput, UserUncheckedCreateWithoutPlayerInput>
+    connectOrCreate?: UserCreateOrConnectWithoutPlayerInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type PlayerPreferenceCreateNestedOneWithoutPlayerInput = {
+    create?: XOR<PlayerPreferenceCreateWithoutPlayerInput, PlayerPreferenceUncheckedCreateWithoutPlayerInput>
+    connectOrCreate?: PlayerPreferenceCreateOrConnectWithoutPlayerInput
+    connect?: PlayerPreferenceWhereUniqueInput
+  }
+
+  export type PlayerAchievementCreateNestedManyWithoutPlayerInput = {
+    create?: XOR<PlayerAchievementCreateWithoutPlayerInput, PlayerAchievementUncheckedCreateWithoutPlayerInput> | PlayerAchievementCreateWithoutPlayerInput[] | PlayerAchievementUncheckedCreateWithoutPlayerInput[]
+    connectOrCreate?: PlayerAchievementCreateOrConnectWithoutPlayerInput | PlayerAchievementCreateOrConnectWithoutPlayerInput[]
+    createMany?: PlayerAchievementCreateManyPlayerInputEnvelope
+    connect?: PlayerAchievementWhereUniqueInput | PlayerAchievementWhereUniqueInput[]
+  }
+
+  export type FavoriteCreateNestedManyWithoutPlayerInput = {
+    create?: XOR<FavoriteCreateWithoutPlayerInput, FavoriteUncheckedCreateWithoutPlayerInput> | FavoriteCreateWithoutPlayerInput[] | FavoriteUncheckedCreateWithoutPlayerInput[]
+    connectOrCreate?: FavoriteCreateOrConnectWithoutPlayerInput | FavoriteCreateOrConnectWithoutPlayerInput[]
+    createMany?: FavoriteCreateManyPlayerInputEnvelope
+    connect?: FavoriteWhereUniqueInput | FavoriteWhereUniqueInput[]
+  }
+
+  export type PlayerPreferenceUncheckedCreateNestedOneWithoutPlayerInput = {
+    create?: XOR<PlayerPreferenceCreateWithoutPlayerInput, PlayerPreferenceUncheckedCreateWithoutPlayerInput>
+    connectOrCreate?: PlayerPreferenceCreateOrConnectWithoutPlayerInput
+    connect?: PlayerPreferenceWhereUniqueInput
+  }
+
+  export type PlayerAchievementUncheckedCreateNestedManyWithoutPlayerInput = {
+    create?: XOR<PlayerAchievementCreateWithoutPlayerInput, PlayerAchievementUncheckedCreateWithoutPlayerInput> | PlayerAchievementCreateWithoutPlayerInput[] | PlayerAchievementUncheckedCreateWithoutPlayerInput[]
+    connectOrCreate?: PlayerAchievementCreateOrConnectWithoutPlayerInput | PlayerAchievementCreateOrConnectWithoutPlayerInput[]
+    createMany?: PlayerAchievementCreateManyPlayerInputEnvelope
+    connect?: PlayerAchievementWhereUniqueInput | PlayerAchievementWhereUniqueInput[]
+  }
+
+  export type FavoriteUncheckedCreateNestedManyWithoutPlayerInput = {
+    create?: XOR<FavoriteCreateWithoutPlayerInput, FavoriteUncheckedCreateWithoutPlayerInput> | FavoriteCreateWithoutPlayerInput[] | FavoriteUncheckedCreateWithoutPlayerInput[]
+    connectOrCreate?: FavoriteCreateOrConnectWithoutPlayerInput | FavoriteCreateOrConnectWithoutPlayerInput[]
+    createMany?: FavoriteCreateManyPlayerInputEnvelope
+    connect?: FavoriteWhereUniqueInput | FavoriteWhereUniqueInput[]
+  }
+
+  export type UserUpdateOneWithoutPlayerNestedInput = {
+    create?: XOR<UserCreateWithoutPlayerInput, UserUncheckedCreateWithoutPlayerInput>
+    connectOrCreate?: UserCreateOrConnectWithoutPlayerInput
+    upsert?: UserUpsertWithoutPlayerInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPlayerInput, UserUpdateWithoutPlayerInput>, UserUncheckedUpdateWithoutPlayerInput>
+  }
+
+  export type PlayerPreferenceUpdateOneWithoutPlayerNestedInput = {
+    create?: XOR<PlayerPreferenceCreateWithoutPlayerInput, PlayerPreferenceUncheckedCreateWithoutPlayerInput>
+    connectOrCreate?: PlayerPreferenceCreateOrConnectWithoutPlayerInput
+    upsert?: PlayerPreferenceUpsertWithoutPlayerInput
+    disconnect?: PlayerPreferenceWhereInput | boolean
+    delete?: PlayerPreferenceWhereInput | boolean
+    connect?: PlayerPreferenceWhereUniqueInput
+    update?: XOR<XOR<PlayerPreferenceUpdateToOneWithWhereWithoutPlayerInput, PlayerPreferenceUpdateWithoutPlayerInput>, PlayerPreferenceUncheckedUpdateWithoutPlayerInput>
+  }
+
+  export type PlayerAchievementUpdateManyWithoutPlayerNestedInput = {
+    create?: XOR<PlayerAchievementCreateWithoutPlayerInput, PlayerAchievementUncheckedCreateWithoutPlayerInput> | PlayerAchievementCreateWithoutPlayerInput[] | PlayerAchievementUncheckedCreateWithoutPlayerInput[]
+    connectOrCreate?: PlayerAchievementCreateOrConnectWithoutPlayerInput | PlayerAchievementCreateOrConnectWithoutPlayerInput[]
+    upsert?: PlayerAchievementUpsertWithWhereUniqueWithoutPlayerInput | PlayerAchievementUpsertWithWhereUniqueWithoutPlayerInput[]
+    createMany?: PlayerAchievementCreateManyPlayerInputEnvelope
+    set?: PlayerAchievementWhereUniqueInput | PlayerAchievementWhereUniqueInput[]
+    disconnect?: PlayerAchievementWhereUniqueInput | PlayerAchievementWhereUniqueInput[]
+    delete?: PlayerAchievementWhereUniqueInput | PlayerAchievementWhereUniqueInput[]
+    connect?: PlayerAchievementWhereUniqueInput | PlayerAchievementWhereUniqueInput[]
+    update?: PlayerAchievementUpdateWithWhereUniqueWithoutPlayerInput | PlayerAchievementUpdateWithWhereUniqueWithoutPlayerInput[]
+    updateMany?: PlayerAchievementUpdateManyWithWhereWithoutPlayerInput | PlayerAchievementUpdateManyWithWhereWithoutPlayerInput[]
+    deleteMany?: PlayerAchievementScalarWhereInput | PlayerAchievementScalarWhereInput[]
+  }
+
+  export type FavoriteUpdateManyWithoutPlayerNestedInput = {
+    create?: XOR<FavoriteCreateWithoutPlayerInput, FavoriteUncheckedCreateWithoutPlayerInput> | FavoriteCreateWithoutPlayerInput[] | FavoriteUncheckedCreateWithoutPlayerInput[]
+    connectOrCreate?: FavoriteCreateOrConnectWithoutPlayerInput | FavoriteCreateOrConnectWithoutPlayerInput[]
+    upsert?: FavoriteUpsertWithWhereUniqueWithoutPlayerInput | FavoriteUpsertWithWhereUniqueWithoutPlayerInput[]
+    createMany?: FavoriteCreateManyPlayerInputEnvelope
+    set?: FavoriteWhereUniqueInput | FavoriteWhereUniqueInput[]
+    disconnect?: FavoriteWhereUniqueInput | FavoriteWhereUniqueInput[]
+    delete?: FavoriteWhereUniqueInput | FavoriteWhereUniqueInput[]
+    connect?: FavoriteWhereUniqueInput | FavoriteWhereUniqueInput[]
+    update?: FavoriteUpdateWithWhereUniqueWithoutPlayerInput | FavoriteUpdateWithWhereUniqueWithoutPlayerInput[]
+    updateMany?: FavoriteUpdateManyWithWhereWithoutPlayerInput | FavoriteUpdateManyWithWhereWithoutPlayerInput[]
+    deleteMany?: FavoriteScalarWhereInput | FavoriteScalarWhereInput[]
+  }
+
+  export type PlayerPreferenceUncheckedUpdateOneWithoutPlayerNestedInput = {
+    create?: XOR<PlayerPreferenceCreateWithoutPlayerInput, PlayerPreferenceUncheckedCreateWithoutPlayerInput>
+    connectOrCreate?: PlayerPreferenceCreateOrConnectWithoutPlayerInput
+    upsert?: PlayerPreferenceUpsertWithoutPlayerInput
+    disconnect?: PlayerPreferenceWhereInput | boolean
+    delete?: PlayerPreferenceWhereInput | boolean
+    connect?: PlayerPreferenceWhereUniqueInput
+    update?: XOR<XOR<PlayerPreferenceUpdateToOneWithWhereWithoutPlayerInput, PlayerPreferenceUpdateWithoutPlayerInput>, PlayerPreferenceUncheckedUpdateWithoutPlayerInput>
+  }
+
+  export type PlayerAchievementUncheckedUpdateManyWithoutPlayerNestedInput = {
+    create?: XOR<PlayerAchievementCreateWithoutPlayerInput, PlayerAchievementUncheckedCreateWithoutPlayerInput> | PlayerAchievementCreateWithoutPlayerInput[] | PlayerAchievementUncheckedCreateWithoutPlayerInput[]
+    connectOrCreate?: PlayerAchievementCreateOrConnectWithoutPlayerInput | PlayerAchievementCreateOrConnectWithoutPlayerInput[]
+    upsert?: PlayerAchievementUpsertWithWhereUniqueWithoutPlayerInput | PlayerAchievementUpsertWithWhereUniqueWithoutPlayerInput[]
+    createMany?: PlayerAchievementCreateManyPlayerInputEnvelope
+    set?: PlayerAchievementWhereUniqueInput | PlayerAchievementWhereUniqueInput[]
+    disconnect?: PlayerAchievementWhereUniqueInput | PlayerAchievementWhereUniqueInput[]
+    delete?: PlayerAchievementWhereUniqueInput | PlayerAchievementWhereUniqueInput[]
+    connect?: PlayerAchievementWhereUniqueInput | PlayerAchievementWhereUniqueInput[]
+    update?: PlayerAchievementUpdateWithWhereUniqueWithoutPlayerInput | PlayerAchievementUpdateWithWhereUniqueWithoutPlayerInput[]
+    updateMany?: PlayerAchievementUpdateManyWithWhereWithoutPlayerInput | PlayerAchievementUpdateManyWithWhereWithoutPlayerInput[]
+    deleteMany?: PlayerAchievementScalarWhereInput | PlayerAchievementScalarWhereInput[]
+  }
+
+  export type FavoriteUncheckedUpdateManyWithoutPlayerNestedInput = {
+    create?: XOR<FavoriteCreateWithoutPlayerInput, FavoriteUncheckedCreateWithoutPlayerInput> | FavoriteCreateWithoutPlayerInput[] | FavoriteUncheckedCreateWithoutPlayerInput[]
+    connectOrCreate?: FavoriteCreateOrConnectWithoutPlayerInput | FavoriteCreateOrConnectWithoutPlayerInput[]
+    upsert?: FavoriteUpsertWithWhereUniqueWithoutPlayerInput | FavoriteUpsertWithWhereUniqueWithoutPlayerInput[]
+    createMany?: FavoriteCreateManyPlayerInputEnvelope
+    set?: FavoriteWhereUniqueInput | FavoriteWhereUniqueInput[]
+    disconnect?: FavoriteWhereUniqueInput | FavoriteWhereUniqueInput[]
+    delete?: FavoriteWhereUniqueInput | FavoriteWhereUniqueInput[]
+    connect?: FavoriteWhereUniqueInput | FavoriteWhereUniqueInput[]
+    update?: FavoriteUpdateWithWhereUniqueWithoutPlayerInput | FavoriteUpdateWithWhereUniqueWithoutPlayerInput[]
+    updateMany?: FavoriteUpdateManyWithWhereWithoutPlayerInput | FavoriteUpdateManyWithWhereWithoutPlayerInput[]
+    deleteMany?: FavoriteScalarWhereInput | FavoriteScalarWhereInput[]
+  }
+
+  export type PlayerCreateNestedOneWithoutPreferencesInput = {
+    create?: XOR<PlayerCreateWithoutPreferencesInput, PlayerUncheckedCreateWithoutPreferencesInput>
+    connectOrCreate?: PlayerCreateOrConnectWithoutPreferencesInput
+    connect?: PlayerWhereUniqueInput
+  }
+
+  export type PlayerUpdateOneRequiredWithoutPreferencesNestedInput = {
+    create?: XOR<PlayerCreateWithoutPreferencesInput, PlayerUncheckedCreateWithoutPreferencesInput>
+    connectOrCreate?: PlayerCreateOrConnectWithoutPreferencesInput
+    upsert?: PlayerUpsertWithoutPreferencesInput
+    connect?: PlayerWhereUniqueInput
+    update?: XOR<XOR<PlayerUpdateToOneWithWhereWithoutPreferencesInput, PlayerUpdateWithoutPreferencesInput>, PlayerUncheckedUpdateWithoutPreferencesInput>
+  }
+
+  export type PlayerAchievementCreateNestedManyWithoutAchievementInput = {
+    create?: XOR<PlayerAchievementCreateWithoutAchievementInput, PlayerAchievementUncheckedCreateWithoutAchievementInput> | PlayerAchievementCreateWithoutAchievementInput[] | PlayerAchievementUncheckedCreateWithoutAchievementInput[]
+    connectOrCreate?: PlayerAchievementCreateOrConnectWithoutAchievementInput | PlayerAchievementCreateOrConnectWithoutAchievementInput[]
+    createMany?: PlayerAchievementCreateManyAchievementInputEnvelope
+    connect?: PlayerAchievementWhereUniqueInput | PlayerAchievementWhereUniqueInput[]
+  }
+
+  export type PlayerAchievementUncheckedCreateNestedManyWithoutAchievementInput = {
+    create?: XOR<PlayerAchievementCreateWithoutAchievementInput, PlayerAchievementUncheckedCreateWithoutAchievementInput> | PlayerAchievementCreateWithoutAchievementInput[] | PlayerAchievementUncheckedCreateWithoutAchievementInput[]
+    connectOrCreate?: PlayerAchievementCreateOrConnectWithoutAchievementInput | PlayerAchievementCreateOrConnectWithoutAchievementInput[]
+    createMany?: PlayerAchievementCreateManyAchievementInputEnvelope
+    connect?: PlayerAchievementWhereUniqueInput | PlayerAchievementWhereUniqueInput[]
+  }
+
+  export type PlayerAchievementUpdateManyWithoutAchievementNestedInput = {
+    create?: XOR<PlayerAchievementCreateWithoutAchievementInput, PlayerAchievementUncheckedCreateWithoutAchievementInput> | PlayerAchievementCreateWithoutAchievementInput[] | PlayerAchievementUncheckedCreateWithoutAchievementInput[]
+    connectOrCreate?: PlayerAchievementCreateOrConnectWithoutAchievementInput | PlayerAchievementCreateOrConnectWithoutAchievementInput[]
+    upsert?: PlayerAchievementUpsertWithWhereUniqueWithoutAchievementInput | PlayerAchievementUpsertWithWhereUniqueWithoutAchievementInput[]
+    createMany?: PlayerAchievementCreateManyAchievementInputEnvelope
+    set?: PlayerAchievementWhereUniqueInput | PlayerAchievementWhereUniqueInput[]
+    disconnect?: PlayerAchievementWhereUniqueInput | PlayerAchievementWhereUniqueInput[]
+    delete?: PlayerAchievementWhereUniqueInput | PlayerAchievementWhereUniqueInput[]
+    connect?: PlayerAchievementWhereUniqueInput | PlayerAchievementWhereUniqueInput[]
+    update?: PlayerAchievementUpdateWithWhereUniqueWithoutAchievementInput | PlayerAchievementUpdateWithWhereUniqueWithoutAchievementInput[]
+    updateMany?: PlayerAchievementUpdateManyWithWhereWithoutAchievementInput | PlayerAchievementUpdateManyWithWhereWithoutAchievementInput[]
+    deleteMany?: PlayerAchievementScalarWhereInput | PlayerAchievementScalarWhereInput[]
+  }
+
+  export type PlayerAchievementUncheckedUpdateManyWithoutAchievementNestedInput = {
+    create?: XOR<PlayerAchievementCreateWithoutAchievementInput, PlayerAchievementUncheckedCreateWithoutAchievementInput> | PlayerAchievementCreateWithoutAchievementInput[] | PlayerAchievementUncheckedCreateWithoutAchievementInput[]
+    connectOrCreate?: PlayerAchievementCreateOrConnectWithoutAchievementInput | PlayerAchievementCreateOrConnectWithoutAchievementInput[]
+    upsert?: PlayerAchievementUpsertWithWhereUniqueWithoutAchievementInput | PlayerAchievementUpsertWithWhereUniqueWithoutAchievementInput[]
+    createMany?: PlayerAchievementCreateManyAchievementInputEnvelope
+    set?: PlayerAchievementWhereUniqueInput | PlayerAchievementWhereUniqueInput[]
+    disconnect?: PlayerAchievementWhereUniqueInput | PlayerAchievementWhereUniqueInput[]
+    delete?: PlayerAchievementWhereUniqueInput | PlayerAchievementWhereUniqueInput[]
+    connect?: PlayerAchievementWhereUniqueInput | PlayerAchievementWhereUniqueInput[]
+    update?: PlayerAchievementUpdateWithWhereUniqueWithoutAchievementInput | PlayerAchievementUpdateWithWhereUniqueWithoutAchievementInput[]
+    updateMany?: PlayerAchievementUpdateManyWithWhereWithoutAchievementInput | PlayerAchievementUpdateManyWithWhereWithoutAchievementInput[]
+    deleteMany?: PlayerAchievementScalarWhereInput | PlayerAchievementScalarWhereInput[]
+  }
+
+  export type PlayerCreateNestedOneWithoutAchievementsInput = {
+    create?: XOR<PlayerCreateWithoutAchievementsInput, PlayerUncheckedCreateWithoutAchievementsInput>
+    connectOrCreate?: PlayerCreateOrConnectWithoutAchievementsInput
+    connect?: PlayerWhereUniqueInput
+  }
+
+  export type AchievementCreateNestedOneWithoutUnlocksInput = {
+    create?: XOR<AchievementCreateWithoutUnlocksInput, AchievementUncheckedCreateWithoutUnlocksInput>
+    connectOrCreate?: AchievementCreateOrConnectWithoutUnlocksInput
+    connect?: AchievementWhereUniqueInput
+  }
+
+  export type PlayerUpdateOneRequiredWithoutAchievementsNestedInput = {
+    create?: XOR<PlayerCreateWithoutAchievementsInput, PlayerUncheckedCreateWithoutAchievementsInput>
+    connectOrCreate?: PlayerCreateOrConnectWithoutAchievementsInput
+    upsert?: PlayerUpsertWithoutAchievementsInput
+    connect?: PlayerWhereUniqueInput
+    update?: XOR<XOR<PlayerUpdateToOneWithWhereWithoutAchievementsInput, PlayerUpdateWithoutAchievementsInput>, PlayerUncheckedUpdateWithoutAchievementsInput>
+  }
+
+  export type AchievementUpdateOneRequiredWithoutUnlocksNestedInput = {
+    create?: XOR<AchievementCreateWithoutUnlocksInput, AchievementUncheckedCreateWithoutUnlocksInput>
+    connectOrCreate?: AchievementCreateOrConnectWithoutUnlocksInput
+    upsert?: AchievementUpsertWithoutUnlocksInput
+    connect?: AchievementWhereUniqueInput
+    update?: XOR<XOR<AchievementUpdateToOneWithWhereWithoutUnlocksInput, AchievementUpdateWithoutUnlocksInput>, AchievementUncheckedUpdateWithoutUnlocksInput>
+  }
+
+  export type PlayerCreateNestedOneWithoutFavoritesInput = {
+    create?: XOR<PlayerCreateWithoutFavoritesInput, PlayerUncheckedCreateWithoutFavoritesInput>
+    connectOrCreate?: PlayerCreateOrConnectWithoutFavoritesInput
+    connect?: PlayerWhereUniqueInput
+  }
+
+  export type PlayerUpdateOneRequiredWithoutFavoritesNestedInput = {
+    create?: XOR<PlayerCreateWithoutFavoritesInput, PlayerUncheckedCreateWithoutFavoritesInput>
+    connectOrCreate?: PlayerCreateOrConnectWithoutFavoritesInput
+    upsert?: PlayerUpsertWithoutFavoritesInput
+    connect?: PlayerWhereUniqueInput
+    update?: XOR<XOR<PlayerUpdateToOneWithWhereWithoutFavoritesInput, PlayerUpdateWithoutFavoritesInput>, PlayerUncheckedUpdateWithoutFavoritesInput>
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -213715,6 +222574,47 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type PlayerCreateWithoutUserInput = {
+    id?: string
+    dragonIdSubject: string
+    dragonHandle: string
+    displayName: string
+    email?: string | null
+    avatarUrl?: string | null
+    bannerUrl?: string | null
+    level?: number
+    xp?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lastLoginAt?: Date | string
+    preferences?: PlayerPreferenceCreateNestedOneWithoutPlayerInput
+    achievements?: PlayerAchievementCreateNestedManyWithoutPlayerInput
+    favorites?: FavoriteCreateNestedManyWithoutPlayerInput
+  }
+
+  export type PlayerUncheckedCreateWithoutUserInput = {
+    id?: string
+    dragonIdSubject: string
+    dragonHandle: string
+    displayName: string
+    email?: string | null
+    avatarUrl?: string | null
+    bannerUrl?: string | null
+    level?: number
+    xp?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lastLoginAt?: Date | string
+    preferences?: PlayerPreferenceUncheckedCreateNestedOneWithoutPlayerInput
+    achievements?: PlayerAchievementUncheckedCreateNestedManyWithoutPlayerInput
+    favorites?: FavoriteUncheckedCreateNestedManyWithoutPlayerInput
+  }
+
+  export type PlayerCreateOrConnectWithoutUserInput = {
+    where: PlayerWhereUniqueInput
+    create: XOR<PlayerCreateWithoutUserInput, PlayerUncheckedCreateWithoutUserInput>
+  }
+
   export type AccountUpsertWithWhereUniqueWithoutUserInput = {
     where: AccountWhereUniqueInput
     update: XOR<AccountUpdateWithoutUserInput, AccountUncheckedUpdateWithoutUserInput>
@@ -214376,6 +223276,53 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"GameSession"> | Date | string
   }
 
+  export type PlayerUpsertWithoutUserInput = {
+    update: XOR<PlayerUpdateWithoutUserInput, PlayerUncheckedUpdateWithoutUserInput>
+    create: XOR<PlayerCreateWithoutUserInput, PlayerUncheckedCreateWithoutUserInput>
+    where?: PlayerWhereInput
+  }
+
+  export type PlayerUpdateToOneWithWhereWithoutUserInput = {
+    where?: PlayerWhereInput
+    data: XOR<PlayerUpdateWithoutUserInput, PlayerUncheckedUpdateWithoutUserInput>
+  }
+
+  export type PlayerUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dragonIdSubject?: StringFieldUpdateOperationsInput | string
+    dragonHandle?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bannerUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: IntFieldUpdateOperationsInput | number
+    xp?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastLoginAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    preferences?: PlayerPreferenceUpdateOneWithoutPlayerNestedInput
+    achievements?: PlayerAchievementUpdateManyWithoutPlayerNestedInput
+    favorites?: FavoriteUpdateManyWithoutPlayerNestedInput
+  }
+
+  export type PlayerUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dragonIdSubject?: StringFieldUpdateOperationsInput | string
+    dragonHandle?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bannerUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: IntFieldUpdateOperationsInput | number
+    xp?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastLoginAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    preferences?: PlayerPreferenceUncheckedUpdateOneWithoutPlayerNestedInput
+    achievements?: PlayerAchievementUncheckedUpdateManyWithoutPlayerNestedInput
+    favorites?: FavoriteUncheckedUpdateManyWithoutPlayerNestedInput
+  }
+
   export type PermissionCreateWithoutRoleInput = {
     id?: string
     action: string
@@ -214533,6 +223480,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
     scores?: ScoreCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionCreateNestedManyWithoutUserInput
+    player?: PlayerCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -214586,6 +223534,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
     scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
+    player?: PlayerUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -214655,6 +223604,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
     scores?: ScoreUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
+    player?: PlayerUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -214708,6 +223658,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
+    player?: PlayerUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type UserCreateWithoutAuditLogsInput = {
@@ -214761,6 +223712,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
     scores?: ScoreCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionCreateNestedManyWithoutUserInput
+    player?: PlayerCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAuditLogsInput = {
@@ -214814,6 +223766,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
     scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
+    player?: PlayerUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAuditLogsInput = {
@@ -214883,6 +223836,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
     scores?: ScoreUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
+    player?: PlayerUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAuditLogsInput = {
@@ -214936,6 +223890,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
+    player?: PlayerUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type ContentRevisionCreateWithoutPageInput = {
@@ -217727,6 +226682,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
     scores?: ScoreCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionCreateNestedManyWithoutUserInput
+    player?: PlayerCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAssetsInput = {
@@ -217780,6 +226736,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
     scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
+    player?: PlayerUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAssetsInput = {
@@ -217918,6 +226875,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
     scores?: ScoreUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
+    player?: PlayerUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAssetsInput = {
@@ -217971,6 +226929,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
+    player?: PlayerUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type MediaTagUpsertWithWhereUniqueWithoutAssetInput = {
@@ -220874,6 +229833,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
     scores?: ScoreCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionCreateNestedManyWithoutUserInput
+    player?: PlayerCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAccountsInput = {
@@ -220927,6 +229887,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
     scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
+    player?: PlayerUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAccountsInput = {
@@ -220996,6 +229957,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
     scores?: ScoreUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
+    player?: PlayerUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -221049,6 +230011,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
+    player?: PlayerUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type UserCreateWithoutVerificationCodesInput = {
@@ -221102,6 +230065,7 @@ export namespace Prisma {
     bookmarks?: CommunityBookmarkCreateNestedManyWithoutUserInput
     scores?: ScoreCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionCreateNestedManyWithoutUserInput
+    player?: PlayerCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutVerificationCodesInput = {
@@ -221155,6 +230119,7 @@ export namespace Prisma {
     bookmarks?: CommunityBookmarkUncheckedCreateNestedManyWithoutUserInput
     scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
+    player?: PlayerUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutVerificationCodesInput = {
@@ -221224,6 +230189,7 @@ export namespace Prisma {
     bookmarks?: CommunityBookmarkUpdateManyWithoutUserNestedInput
     scores?: ScoreUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
+    player?: PlayerUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutVerificationCodesInput = {
@@ -221277,6 +230243,7 @@ export namespace Prisma {
     bookmarks?: CommunityBookmarkUncheckedUpdateManyWithoutUserNestedInput
     scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
+    player?: PlayerUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type CustomerNotificationCreateWithoutProfileInput = {
@@ -221766,6 +230733,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
     scores?: ScoreCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionCreateNestedManyWithoutUserInput
+    player?: PlayerCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutProfileInput = {
@@ -221819,6 +230787,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
     scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
+    player?: PlayerUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutProfileInput = {
@@ -221888,6 +230857,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
     scores?: ScoreUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
+    player?: PlayerUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProfileInput = {
@@ -221941,6 +230911,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
+    player?: PlayerUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type UserCreateWithoutDevicesInput = {
@@ -221994,6 +230965,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
     scores?: ScoreCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionCreateNestedManyWithoutUserInput
+    player?: PlayerCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutDevicesInput = {
@@ -222047,6 +231019,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
     scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
+    player?: PlayerUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutDevicesInput = {
@@ -222116,6 +231089,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
     scores?: ScoreUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
+    player?: PlayerUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDevicesInput = {
@@ -222169,6 +231143,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
+    player?: PlayerUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type UserCreateWithoutDualApprovalsCreatedInput = {
@@ -222222,6 +231197,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
     scores?: ScoreCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionCreateNestedManyWithoutUserInput
+    player?: PlayerCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutDualApprovalsCreatedInput = {
@@ -222275,6 +231251,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
     scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
+    player?: PlayerUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutDualApprovalsCreatedInput = {
@@ -222366,6 +231343,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
     scores?: ScoreUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
+    player?: PlayerUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDualApprovalsCreatedInput = {
@@ -222419,6 +231397,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
+    player?: PlayerUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type DualApprovalConfirmedUpsertWithWhereUniqueWithoutDualApprovalInput = {
@@ -222515,6 +231494,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
     scores?: ScoreCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionCreateNestedManyWithoutUserInput
+    player?: PlayerCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutDualApprovalsConfirmedInput = {
@@ -222568,6 +231548,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
     scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
+    player?: PlayerUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutDualApprovalsConfirmedInput = {
@@ -222670,6 +231651,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
     scores?: ScoreUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
+    player?: PlayerUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDualApprovalsConfirmedInput = {
@@ -222723,6 +231705,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
+    player?: PlayerUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type SecretRotationLogCreateWithoutSecretVaultInput = {
@@ -223086,6 +232069,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
     scores?: ScoreCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionCreateNestedManyWithoutUserInput
+    player?: PlayerCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutChatMessagesInput = {
@@ -223139,6 +232123,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
     scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
+    player?: PlayerUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutChatMessagesInput = {
@@ -223396,6 +232381,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
     scores?: ScoreUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
+    player?: PlayerUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutChatMessagesInput = {
@@ -223449,6 +232435,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
+    player?: PlayerUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type ChatMessageUpsertWithoutRepliesInput = {
@@ -223630,6 +232617,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
     scores?: ScoreCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionCreateNestedManyWithoutUserInput
+    player?: PlayerCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutChatReactionsInput = {
@@ -223683,6 +232671,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
     scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
+    player?: PlayerUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutChatReactionsInput = {
@@ -223795,6 +232784,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
     scores?: ScoreUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
+    player?: PlayerUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutChatReactionsInput = {
@@ -223848,6 +232838,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
+    player?: PlayerUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type ForumThreadCreateWithoutCategoryInput = {
@@ -223990,6 +232981,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
     scores?: ScoreCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionCreateNestedManyWithoutUserInput
+    player?: PlayerCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutForumThreadsInput = {
@@ -224043,6 +233035,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
     scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
+    player?: PlayerUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutForumThreadsInput = {
@@ -224241,6 +233234,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
     scores?: ScoreUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
+    player?: PlayerUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutForumThreadsInput = {
@@ -224294,6 +233288,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
+    player?: PlayerUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type ForumPostUpsertWithWhereUniqueWithoutThreadInput = {
@@ -224434,6 +233429,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
     scores?: ScoreCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionCreateNestedManyWithoutUserInput
+    player?: PlayerCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutForumPostsInput = {
@@ -224487,6 +233483,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
     scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
+    player?: PlayerUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutForumPostsInput = {
@@ -224643,6 +233640,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
     scores?: ScoreUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
+    player?: PlayerUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutForumPostsInput = {
@@ -224696,6 +233694,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
+    player?: PlayerUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type CommunityReportUpsertWithWhereUniqueWithoutPostInput = {
@@ -224765,6 +233764,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
     scores?: ScoreCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionCreateNestedManyWithoutUserInput
+    player?: PlayerCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutReportsMadeInput = {
@@ -224818,6 +233818,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
     scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
+    player?: PlayerUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutReportsMadeInput = {
@@ -224876,6 +233877,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
     scores?: ScoreCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionCreateNestedManyWithoutUserInput
+    player?: PlayerCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutReportsReceivedInput = {
@@ -224929,6 +233931,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
     scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
+    player?: PlayerUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutReportsReceivedInput = {
@@ -225099,6 +234102,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
     scores?: ScoreUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
+    player?: PlayerUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutReportsMadeInput = {
@@ -225152,6 +234156,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
+    player?: PlayerUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutReportsReceivedInput = {
@@ -225216,6 +234221,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
     scores?: ScoreUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
+    player?: PlayerUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutReportsReceivedInput = {
@@ -225269,6 +234275,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
+    player?: PlayerUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type ChatMessageUpsertWithoutReportsInput = {
@@ -225441,6 +234448,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
     scores?: ScoreCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionCreateNestedManyWithoutUserInput
+    player?: PlayerCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutModeratorActionsInput = {
@@ -225494,6 +234502,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
     scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
+    player?: PlayerUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutModeratorActionsInput = {
@@ -225552,6 +234561,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
     scores?: ScoreCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionCreateNestedManyWithoutUserInput
+    player?: PlayerCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutUserActionsReceivedInput = {
@@ -225605,6 +234615,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
     scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
+    player?: PlayerUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutUserActionsReceivedInput = {
@@ -225674,6 +234685,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
     scores?: ScoreUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
+    player?: PlayerUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutModeratorActionsInput = {
@@ -225727,6 +234739,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
+    player?: PlayerUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutUserActionsReceivedInput = {
@@ -225791,6 +234804,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
     scores?: ScoreUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
+    player?: PlayerUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUserActionsReceivedInput = {
@@ -225844,6 +234858,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
+    player?: PlayerUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type UserCreateWithoutCommunityBanInput = {
@@ -225897,6 +234912,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
     scores?: ScoreCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionCreateNestedManyWithoutUserInput
+    player?: PlayerCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCommunityBanInput = {
@@ -225950,6 +234966,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
     scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
+    player?: PlayerUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCommunityBanInput = {
@@ -226019,6 +235036,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
     scores?: ScoreUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
+    player?: PlayerUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCommunityBanInput = {
@@ -226072,6 +235090,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
+    player?: PlayerUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type UserCreateWithoutCommunityMutesInput = {
@@ -226125,6 +235144,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
     scores?: ScoreCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionCreateNestedManyWithoutUserInput
+    player?: PlayerCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCommunityMutesInput = {
@@ -226178,6 +235198,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
     scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
+    player?: PlayerUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCommunityMutesInput = {
@@ -226247,6 +235268,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
     scores?: ScoreUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
+    player?: PlayerUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCommunityMutesInput = {
@@ -226300,6 +235322,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
+    player?: PlayerUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type UserCreateWithoutBookmarksInput = {
@@ -226353,6 +235376,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
     scores?: ScoreCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionCreateNestedManyWithoutUserInput
+    player?: PlayerCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutBookmarksInput = {
@@ -226406,6 +235430,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
     scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
+    player?: PlayerUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutBookmarksInput = {
@@ -226514,6 +235539,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
     scores?: ScoreUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
+    player?: PlayerUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutBookmarksInput = {
@@ -226567,6 +235593,7 @@ export namespace Prisma {
     verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
+    player?: PlayerUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type ForumThreadUpsertWithoutBookmarksInput = {
@@ -226665,6 +235692,7 @@ export namespace Prisma {
     bookmarks?: CommunityBookmarkCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionCreateNestedManyWithoutUserInput
+    player?: PlayerCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutScoresInput = {
@@ -226718,6 +235746,7 @@ export namespace Prisma {
     bookmarks?: CommunityBookmarkUncheckedCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
     gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
+    player?: PlayerUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutScoresInput = {
@@ -226787,6 +235816,7 @@ export namespace Prisma {
     bookmarks?: CommunityBookmarkUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
+    player?: PlayerUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutScoresInput = {
@@ -226840,6 +235870,7 @@ export namespace Prisma {
     bookmarks?: CommunityBookmarkUncheckedUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
+    player?: PlayerUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type UserCreateWithoutGameSessionsInput = {
@@ -226893,6 +235924,7 @@ export namespace Prisma {
     bookmarks?: CommunityBookmarkCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
     scores?: ScoreCreateNestedManyWithoutUserInput
+    player?: PlayerCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutGameSessionsInput = {
@@ -226946,6 +235978,7 @@ export namespace Prisma {
     bookmarks?: CommunityBookmarkUncheckedCreateNestedManyWithoutUserInput
     verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
     scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
+    player?: PlayerUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutGameSessionsInput = {
@@ -227015,6 +236048,7 @@ export namespace Prisma {
     bookmarks?: CommunityBookmarkUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
     scores?: ScoreUpdateManyWithoutUserNestedInput
+    player?: PlayerUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutGameSessionsInput = {
@@ -227068,6 +236102,769 @@ export namespace Prisma {
     bookmarks?: CommunityBookmarkUncheckedUpdateManyWithoutUserNestedInput
     verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
+    player?: PlayerUncheckedUpdateOneWithoutUserNestedInput
+  }
+
+  export type UserCreateWithoutPlayerInput = {
+    id?: string
+    name?: string | null
+    email: string
+    password?: string | null
+    role?: string
+    department?: string | null
+    status?: string
+    avatar?: string | null
+    employeeId?: string | null
+    dragonId?: string | null
+    securityScore?: number
+    dragonKeyPrefix?: string | null
+    dragonKeyHash?: string | null
+    mfaEnabled?: boolean
+    mfaSecret?: string | null
+    mfaRecoveryCodes?: string | null
+    mfaVerified?: boolean
+    isProtected?: boolean
+    permissions?: string | null
+    provider?: string | null
+    providerAccountId?: string | null
+    lastLogin?: Date | string | null
+    loginCount?: number
+    isActive?: boolean
+    isDeleted?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    emailVerified?: Date | string | null
+    image?: string | null
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    assets?: MediaAssetCreateNestedManyWithoutUploaderInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    profile?: UserProfileCreateNestedOneWithoutUserInput
+    devices?: UserDeviceCreateNestedManyWithoutUserInput
+    dualApprovalsCreated?: DualApprovalCreateNestedManyWithoutRequestedByInput
+    dualApprovalsConfirmed?: DualApprovalConfirmedCreateNestedManyWithoutConfirmedByInput
+    chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
+    chatReactions?: ChatReactionCreateNestedManyWithoutUserInput
+    forumThreads?: ForumThreadCreateNestedManyWithoutAuthorInput
+    forumPosts?: ForumPostCreateNestedManyWithoutAuthorInput
+    reportsMade?: CommunityReportCreateNestedManyWithoutReporterInput
+    reportsReceived?: CommunityReportCreateNestedManyWithoutReportedUserInput
+    moderatorActions?: CommunityModerationActionCreateNestedManyWithoutModeratorInput
+    userActionsReceived?: CommunityModerationActionCreateNestedManyWithoutTargetUserInput
+    communityBan?: CommunityBanCreateNestedOneWithoutUserInput
+    communityMutes?: CommunityMuteCreateNestedManyWithoutUserInput
+    bookmarks?: CommunityBookmarkCreateNestedManyWithoutUserInput
+    verificationCodes?: EmailVerificationCodeCreateNestedManyWithoutUserInput
+    scores?: ScoreCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutPlayerInput = {
+    id?: string
+    name?: string | null
+    email: string
+    password?: string | null
+    role?: string
+    department?: string | null
+    status?: string
+    avatar?: string | null
+    employeeId?: string | null
+    dragonId?: string | null
+    securityScore?: number
+    dragonKeyPrefix?: string | null
+    dragonKeyHash?: string | null
+    mfaEnabled?: boolean
+    mfaSecret?: string | null
+    mfaRecoveryCodes?: string | null
+    mfaVerified?: boolean
+    isProtected?: boolean
+    permissions?: string | null
+    provider?: string | null
+    providerAccountId?: string | null
+    lastLogin?: Date | string | null
+    loginCount?: number
+    isActive?: boolean
+    isDeleted?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    emailVerified?: Date | string | null
+    image?: string | null
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    assets?: MediaAssetUncheckedCreateNestedManyWithoutUploaderInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    profile?: UserProfileUncheckedCreateNestedOneWithoutUserInput
+    devices?: UserDeviceUncheckedCreateNestedManyWithoutUserInput
+    dualApprovalsCreated?: DualApprovalUncheckedCreateNestedManyWithoutRequestedByInput
+    dualApprovalsConfirmed?: DualApprovalConfirmedUncheckedCreateNestedManyWithoutConfirmedByInput
+    chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
+    chatReactions?: ChatReactionUncheckedCreateNestedManyWithoutUserInput
+    forumThreads?: ForumThreadUncheckedCreateNestedManyWithoutAuthorInput
+    forumPosts?: ForumPostUncheckedCreateNestedManyWithoutAuthorInput
+    reportsMade?: CommunityReportUncheckedCreateNestedManyWithoutReporterInput
+    reportsReceived?: CommunityReportUncheckedCreateNestedManyWithoutReportedUserInput
+    moderatorActions?: CommunityModerationActionUncheckedCreateNestedManyWithoutModeratorInput
+    userActionsReceived?: CommunityModerationActionUncheckedCreateNestedManyWithoutTargetUserInput
+    communityBan?: CommunityBanUncheckedCreateNestedOneWithoutUserInput
+    communityMutes?: CommunityMuteUncheckedCreateNestedManyWithoutUserInput
+    bookmarks?: CommunityBookmarkUncheckedCreateNestedManyWithoutUserInput
+    verificationCodes?: EmailVerificationCodeUncheckedCreateNestedManyWithoutUserInput
+    scores?: ScoreUncheckedCreateNestedManyWithoutUserInput
+    gameSessions?: GameSessionUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutPlayerInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutPlayerInput, UserUncheckedCreateWithoutPlayerInput>
+  }
+
+  export type PlayerPreferenceCreateWithoutPlayerInput = {
+    id?: string
+    theme?: string
+    motionPreference?: string
+    soundEnabled?: boolean
+    musicVolume?: number
+    sfxVolume?: number
+    streamerMode?: boolean
+    privacyLevel?: string
+    updatedAt?: Date | string
+  }
+
+  export type PlayerPreferenceUncheckedCreateWithoutPlayerInput = {
+    id?: string
+    theme?: string
+    motionPreference?: string
+    soundEnabled?: boolean
+    musicVolume?: number
+    sfxVolume?: number
+    streamerMode?: boolean
+    privacyLevel?: string
+    updatedAt?: Date | string
+  }
+
+  export type PlayerPreferenceCreateOrConnectWithoutPlayerInput = {
+    where: PlayerPreferenceWhereUniqueInput
+    create: XOR<PlayerPreferenceCreateWithoutPlayerInput, PlayerPreferenceUncheckedCreateWithoutPlayerInput>
+  }
+
+  export type PlayerAchievementCreateWithoutPlayerInput = {
+    id?: string
+    unlockedAt?: Date | string
+    achievement: AchievementCreateNestedOneWithoutUnlocksInput
+  }
+
+  export type PlayerAchievementUncheckedCreateWithoutPlayerInput = {
+    id?: string
+    achievementId: string
+    unlockedAt?: Date | string
+  }
+
+  export type PlayerAchievementCreateOrConnectWithoutPlayerInput = {
+    where: PlayerAchievementWhereUniqueInput
+    create: XOR<PlayerAchievementCreateWithoutPlayerInput, PlayerAchievementUncheckedCreateWithoutPlayerInput>
+  }
+
+  export type PlayerAchievementCreateManyPlayerInputEnvelope = {
+    data: PlayerAchievementCreateManyPlayerInput | PlayerAchievementCreateManyPlayerInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type FavoriteCreateWithoutPlayerInput = {
+    id?: string
+    gameSlug: string
+    createdAt?: Date | string
+  }
+
+  export type FavoriteUncheckedCreateWithoutPlayerInput = {
+    id?: string
+    gameSlug: string
+    createdAt?: Date | string
+  }
+
+  export type FavoriteCreateOrConnectWithoutPlayerInput = {
+    where: FavoriteWhereUniqueInput
+    create: XOR<FavoriteCreateWithoutPlayerInput, FavoriteUncheckedCreateWithoutPlayerInput>
+  }
+
+  export type FavoriteCreateManyPlayerInputEnvelope = {
+    data: FavoriteCreateManyPlayerInput | FavoriteCreateManyPlayerInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UserUpsertWithoutPlayerInput = {
+    update: XOR<UserUpdateWithoutPlayerInput, UserUncheckedUpdateWithoutPlayerInput>
+    create: XOR<UserCreateWithoutPlayerInput, UserUncheckedCreateWithoutPlayerInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutPlayerInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutPlayerInput, UserUncheckedUpdateWithoutPlayerInput>
+  }
+
+  export type UserUpdateWithoutPlayerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    employeeId?: NullableStringFieldUpdateOperationsInput | string | null
+    dragonId?: NullableStringFieldUpdateOperationsInput | string | null
+    securityScore?: IntFieldUpdateOperationsInput | number
+    dragonKeyPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    dragonKeyHash?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabled?: BoolFieldUpdateOperationsInput | boolean
+    mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaRecoveryCodes?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaVerified?: BoolFieldUpdateOperationsInput | boolean
+    isProtected?: BoolFieldUpdateOperationsInput | boolean
+    permissions?: NullableStringFieldUpdateOperationsInput | string | null
+    provider?: NullableStringFieldUpdateOperationsInput | string | null
+    providerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    lastLogin?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    loginCount?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    assets?: MediaAssetUpdateManyWithoutUploaderNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    profile?: UserProfileUpdateOneWithoutUserNestedInput
+    devices?: UserDeviceUpdateManyWithoutUserNestedInput
+    dualApprovalsCreated?: DualApprovalUpdateManyWithoutRequestedByNestedInput
+    dualApprovalsConfirmed?: DualApprovalConfirmedUpdateManyWithoutConfirmedByNestedInput
+    chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
+    chatReactions?: ChatReactionUpdateManyWithoutUserNestedInput
+    forumThreads?: ForumThreadUpdateManyWithoutAuthorNestedInput
+    forumPosts?: ForumPostUpdateManyWithoutAuthorNestedInput
+    reportsMade?: CommunityReportUpdateManyWithoutReporterNestedInput
+    reportsReceived?: CommunityReportUpdateManyWithoutReportedUserNestedInput
+    moderatorActions?: CommunityModerationActionUpdateManyWithoutModeratorNestedInput
+    userActionsReceived?: CommunityModerationActionUpdateManyWithoutTargetUserNestedInput
+    communityBan?: CommunityBanUpdateOneWithoutUserNestedInput
+    communityMutes?: CommunityMuteUpdateManyWithoutUserNestedInput
+    bookmarks?: CommunityBookmarkUpdateManyWithoutUserNestedInput
+    verificationCodes?: EmailVerificationCodeUpdateManyWithoutUserNestedInput
+    scores?: ScoreUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutPlayerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    employeeId?: NullableStringFieldUpdateOperationsInput | string | null
+    dragonId?: NullableStringFieldUpdateOperationsInput | string | null
+    securityScore?: IntFieldUpdateOperationsInput | number
+    dragonKeyPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    dragonKeyHash?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabled?: BoolFieldUpdateOperationsInput | boolean
+    mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaRecoveryCodes?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaVerified?: BoolFieldUpdateOperationsInput | boolean
+    isProtected?: BoolFieldUpdateOperationsInput | boolean
+    permissions?: NullableStringFieldUpdateOperationsInput | string | null
+    provider?: NullableStringFieldUpdateOperationsInput | string | null
+    providerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    lastLogin?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    loginCount?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    assets?: MediaAssetUncheckedUpdateManyWithoutUploaderNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    profile?: UserProfileUncheckedUpdateOneWithoutUserNestedInput
+    devices?: UserDeviceUncheckedUpdateManyWithoutUserNestedInput
+    dualApprovalsCreated?: DualApprovalUncheckedUpdateManyWithoutRequestedByNestedInput
+    dualApprovalsConfirmed?: DualApprovalConfirmedUncheckedUpdateManyWithoutConfirmedByNestedInput
+    chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
+    chatReactions?: ChatReactionUncheckedUpdateManyWithoutUserNestedInput
+    forumThreads?: ForumThreadUncheckedUpdateManyWithoutAuthorNestedInput
+    forumPosts?: ForumPostUncheckedUpdateManyWithoutAuthorNestedInput
+    reportsMade?: CommunityReportUncheckedUpdateManyWithoutReporterNestedInput
+    reportsReceived?: CommunityReportUncheckedUpdateManyWithoutReportedUserNestedInput
+    moderatorActions?: CommunityModerationActionUncheckedUpdateManyWithoutModeratorNestedInput
+    userActionsReceived?: CommunityModerationActionUncheckedUpdateManyWithoutTargetUserNestedInput
+    communityBan?: CommunityBanUncheckedUpdateOneWithoutUserNestedInput
+    communityMutes?: CommunityMuteUncheckedUpdateManyWithoutUserNestedInput
+    bookmarks?: CommunityBookmarkUncheckedUpdateManyWithoutUserNestedInput
+    verificationCodes?: EmailVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
+    scores?: ScoreUncheckedUpdateManyWithoutUserNestedInput
+    gameSessions?: GameSessionUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type PlayerPreferenceUpsertWithoutPlayerInput = {
+    update: XOR<PlayerPreferenceUpdateWithoutPlayerInput, PlayerPreferenceUncheckedUpdateWithoutPlayerInput>
+    create: XOR<PlayerPreferenceCreateWithoutPlayerInput, PlayerPreferenceUncheckedCreateWithoutPlayerInput>
+    where?: PlayerPreferenceWhereInput
+  }
+
+  export type PlayerPreferenceUpdateToOneWithWhereWithoutPlayerInput = {
+    where?: PlayerPreferenceWhereInput
+    data: XOR<PlayerPreferenceUpdateWithoutPlayerInput, PlayerPreferenceUncheckedUpdateWithoutPlayerInput>
+  }
+
+  export type PlayerPreferenceUpdateWithoutPlayerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    theme?: StringFieldUpdateOperationsInput | string
+    motionPreference?: StringFieldUpdateOperationsInput | string
+    soundEnabled?: BoolFieldUpdateOperationsInput | boolean
+    musicVolume?: IntFieldUpdateOperationsInput | number
+    sfxVolume?: IntFieldUpdateOperationsInput | number
+    streamerMode?: BoolFieldUpdateOperationsInput | boolean
+    privacyLevel?: StringFieldUpdateOperationsInput | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlayerPreferenceUncheckedUpdateWithoutPlayerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    theme?: StringFieldUpdateOperationsInput | string
+    motionPreference?: StringFieldUpdateOperationsInput | string
+    soundEnabled?: BoolFieldUpdateOperationsInput | boolean
+    musicVolume?: IntFieldUpdateOperationsInput | number
+    sfxVolume?: IntFieldUpdateOperationsInput | number
+    streamerMode?: BoolFieldUpdateOperationsInput | boolean
+    privacyLevel?: StringFieldUpdateOperationsInput | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlayerAchievementUpsertWithWhereUniqueWithoutPlayerInput = {
+    where: PlayerAchievementWhereUniqueInput
+    update: XOR<PlayerAchievementUpdateWithoutPlayerInput, PlayerAchievementUncheckedUpdateWithoutPlayerInput>
+    create: XOR<PlayerAchievementCreateWithoutPlayerInput, PlayerAchievementUncheckedCreateWithoutPlayerInput>
+  }
+
+  export type PlayerAchievementUpdateWithWhereUniqueWithoutPlayerInput = {
+    where: PlayerAchievementWhereUniqueInput
+    data: XOR<PlayerAchievementUpdateWithoutPlayerInput, PlayerAchievementUncheckedUpdateWithoutPlayerInput>
+  }
+
+  export type PlayerAchievementUpdateManyWithWhereWithoutPlayerInput = {
+    where: PlayerAchievementScalarWhereInput
+    data: XOR<PlayerAchievementUpdateManyMutationInput, PlayerAchievementUncheckedUpdateManyWithoutPlayerInput>
+  }
+
+  export type PlayerAchievementScalarWhereInput = {
+    AND?: PlayerAchievementScalarWhereInput | PlayerAchievementScalarWhereInput[]
+    OR?: PlayerAchievementScalarWhereInput[]
+    NOT?: PlayerAchievementScalarWhereInput | PlayerAchievementScalarWhereInput[]
+    id?: StringFilter<"PlayerAchievement"> | string
+    playerId?: StringFilter<"PlayerAchievement"> | string
+    achievementId?: StringFilter<"PlayerAchievement"> | string
+    unlockedAt?: DateTimeFilter<"PlayerAchievement"> | Date | string
+  }
+
+  export type FavoriteUpsertWithWhereUniqueWithoutPlayerInput = {
+    where: FavoriteWhereUniqueInput
+    update: XOR<FavoriteUpdateWithoutPlayerInput, FavoriteUncheckedUpdateWithoutPlayerInput>
+    create: XOR<FavoriteCreateWithoutPlayerInput, FavoriteUncheckedCreateWithoutPlayerInput>
+  }
+
+  export type FavoriteUpdateWithWhereUniqueWithoutPlayerInput = {
+    where: FavoriteWhereUniqueInput
+    data: XOR<FavoriteUpdateWithoutPlayerInput, FavoriteUncheckedUpdateWithoutPlayerInput>
+  }
+
+  export type FavoriteUpdateManyWithWhereWithoutPlayerInput = {
+    where: FavoriteScalarWhereInput
+    data: XOR<FavoriteUpdateManyMutationInput, FavoriteUncheckedUpdateManyWithoutPlayerInput>
+  }
+
+  export type FavoriteScalarWhereInput = {
+    AND?: FavoriteScalarWhereInput | FavoriteScalarWhereInput[]
+    OR?: FavoriteScalarWhereInput[]
+    NOT?: FavoriteScalarWhereInput | FavoriteScalarWhereInput[]
+    id?: StringFilter<"Favorite"> | string
+    playerId?: StringFilter<"Favorite"> | string
+    gameSlug?: StringFilter<"Favorite"> | string
+    createdAt?: DateTimeFilter<"Favorite"> | Date | string
+  }
+
+  export type PlayerCreateWithoutPreferencesInput = {
+    id?: string
+    dragonIdSubject: string
+    dragonHandle: string
+    displayName: string
+    email?: string | null
+    avatarUrl?: string | null
+    bannerUrl?: string | null
+    level?: number
+    xp?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lastLoginAt?: Date | string
+    user?: UserCreateNestedOneWithoutPlayerInput
+    achievements?: PlayerAchievementCreateNestedManyWithoutPlayerInput
+    favorites?: FavoriteCreateNestedManyWithoutPlayerInput
+  }
+
+  export type PlayerUncheckedCreateWithoutPreferencesInput = {
+    id?: string
+    userId?: string | null
+    dragonIdSubject: string
+    dragonHandle: string
+    displayName: string
+    email?: string | null
+    avatarUrl?: string | null
+    bannerUrl?: string | null
+    level?: number
+    xp?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lastLoginAt?: Date | string
+    achievements?: PlayerAchievementUncheckedCreateNestedManyWithoutPlayerInput
+    favorites?: FavoriteUncheckedCreateNestedManyWithoutPlayerInput
+  }
+
+  export type PlayerCreateOrConnectWithoutPreferencesInput = {
+    where: PlayerWhereUniqueInput
+    create: XOR<PlayerCreateWithoutPreferencesInput, PlayerUncheckedCreateWithoutPreferencesInput>
+  }
+
+  export type PlayerUpsertWithoutPreferencesInput = {
+    update: XOR<PlayerUpdateWithoutPreferencesInput, PlayerUncheckedUpdateWithoutPreferencesInput>
+    create: XOR<PlayerCreateWithoutPreferencesInput, PlayerUncheckedCreateWithoutPreferencesInput>
+    where?: PlayerWhereInput
+  }
+
+  export type PlayerUpdateToOneWithWhereWithoutPreferencesInput = {
+    where?: PlayerWhereInput
+    data: XOR<PlayerUpdateWithoutPreferencesInput, PlayerUncheckedUpdateWithoutPreferencesInput>
+  }
+
+  export type PlayerUpdateWithoutPreferencesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dragonIdSubject?: StringFieldUpdateOperationsInput | string
+    dragonHandle?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bannerUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: IntFieldUpdateOperationsInput | number
+    xp?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastLoginAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneWithoutPlayerNestedInput
+    achievements?: PlayerAchievementUpdateManyWithoutPlayerNestedInput
+    favorites?: FavoriteUpdateManyWithoutPlayerNestedInput
+  }
+
+  export type PlayerUncheckedUpdateWithoutPreferencesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    dragonIdSubject?: StringFieldUpdateOperationsInput | string
+    dragonHandle?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bannerUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: IntFieldUpdateOperationsInput | number
+    xp?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastLoginAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    achievements?: PlayerAchievementUncheckedUpdateManyWithoutPlayerNestedInput
+    favorites?: FavoriteUncheckedUpdateManyWithoutPlayerNestedInput
+  }
+
+  export type PlayerAchievementCreateWithoutAchievementInput = {
+    id?: string
+    unlockedAt?: Date | string
+    player: PlayerCreateNestedOneWithoutAchievementsInput
+  }
+
+  export type PlayerAchievementUncheckedCreateWithoutAchievementInput = {
+    id?: string
+    playerId: string
+    unlockedAt?: Date | string
+  }
+
+  export type PlayerAchievementCreateOrConnectWithoutAchievementInput = {
+    where: PlayerAchievementWhereUniqueInput
+    create: XOR<PlayerAchievementCreateWithoutAchievementInput, PlayerAchievementUncheckedCreateWithoutAchievementInput>
+  }
+
+  export type PlayerAchievementCreateManyAchievementInputEnvelope = {
+    data: PlayerAchievementCreateManyAchievementInput | PlayerAchievementCreateManyAchievementInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type PlayerAchievementUpsertWithWhereUniqueWithoutAchievementInput = {
+    where: PlayerAchievementWhereUniqueInput
+    update: XOR<PlayerAchievementUpdateWithoutAchievementInput, PlayerAchievementUncheckedUpdateWithoutAchievementInput>
+    create: XOR<PlayerAchievementCreateWithoutAchievementInput, PlayerAchievementUncheckedCreateWithoutAchievementInput>
+  }
+
+  export type PlayerAchievementUpdateWithWhereUniqueWithoutAchievementInput = {
+    where: PlayerAchievementWhereUniqueInput
+    data: XOR<PlayerAchievementUpdateWithoutAchievementInput, PlayerAchievementUncheckedUpdateWithoutAchievementInput>
+  }
+
+  export type PlayerAchievementUpdateManyWithWhereWithoutAchievementInput = {
+    where: PlayerAchievementScalarWhereInput
+    data: XOR<PlayerAchievementUpdateManyMutationInput, PlayerAchievementUncheckedUpdateManyWithoutAchievementInput>
+  }
+
+  export type PlayerCreateWithoutAchievementsInput = {
+    id?: string
+    dragonIdSubject: string
+    dragonHandle: string
+    displayName: string
+    email?: string | null
+    avatarUrl?: string | null
+    bannerUrl?: string | null
+    level?: number
+    xp?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lastLoginAt?: Date | string
+    user?: UserCreateNestedOneWithoutPlayerInput
+    preferences?: PlayerPreferenceCreateNestedOneWithoutPlayerInput
+    favorites?: FavoriteCreateNestedManyWithoutPlayerInput
+  }
+
+  export type PlayerUncheckedCreateWithoutAchievementsInput = {
+    id?: string
+    userId?: string | null
+    dragonIdSubject: string
+    dragonHandle: string
+    displayName: string
+    email?: string | null
+    avatarUrl?: string | null
+    bannerUrl?: string | null
+    level?: number
+    xp?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lastLoginAt?: Date | string
+    preferences?: PlayerPreferenceUncheckedCreateNestedOneWithoutPlayerInput
+    favorites?: FavoriteUncheckedCreateNestedManyWithoutPlayerInput
+  }
+
+  export type PlayerCreateOrConnectWithoutAchievementsInput = {
+    where: PlayerWhereUniqueInput
+    create: XOR<PlayerCreateWithoutAchievementsInput, PlayerUncheckedCreateWithoutAchievementsInput>
+  }
+
+  export type AchievementCreateWithoutUnlocksInput = {
+    id?: string
+    gameSlug: string
+    key: string
+    name: string
+    description: string
+    icon: string
+    xpReward?: number
+    secret?: boolean
+    rarity?: string
+    createdAt?: Date | string
+  }
+
+  export type AchievementUncheckedCreateWithoutUnlocksInput = {
+    id?: string
+    gameSlug: string
+    key: string
+    name: string
+    description: string
+    icon: string
+    xpReward?: number
+    secret?: boolean
+    rarity?: string
+    createdAt?: Date | string
+  }
+
+  export type AchievementCreateOrConnectWithoutUnlocksInput = {
+    where: AchievementWhereUniqueInput
+    create: XOR<AchievementCreateWithoutUnlocksInput, AchievementUncheckedCreateWithoutUnlocksInput>
+  }
+
+  export type PlayerUpsertWithoutAchievementsInput = {
+    update: XOR<PlayerUpdateWithoutAchievementsInput, PlayerUncheckedUpdateWithoutAchievementsInput>
+    create: XOR<PlayerCreateWithoutAchievementsInput, PlayerUncheckedCreateWithoutAchievementsInput>
+    where?: PlayerWhereInput
+  }
+
+  export type PlayerUpdateToOneWithWhereWithoutAchievementsInput = {
+    where?: PlayerWhereInput
+    data: XOR<PlayerUpdateWithoutAchievementsInput, PlayerUncheckedUpdateWithoutAchievementsInput>
+  }
+
+  export type PlayerUpdateWithoutAchievementsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dragonIdSubject?: StringFieldUpdateOperationsInput | string
+    dragonHandle?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bannerUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: IntFieldUpdateOperationsInput | number
+    xp?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastLoginAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneWithoutPlayerNestedInput
+    preferences?: PlayerPreferenceUpdateOneWithoutPlayerNestedInput
+    favorites?: FavoriteUpdateManyWithoutPlayerNestedInput
+  }
+
+  export type PlayerUncheckedUpdateWithoutAchievementsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    dragonIdSubject?: StringFieldUpdateOperationsInput | string
+    dragonHandle?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bannerUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: IntFieldUpdateOperationsInput | number
+    xp?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastLoginAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    preferences?: PlayerPreferenceUncheckedUpdateOneWithoutPlayerNestedInput
+    favorites?: FavoriteUncheckedUpdateManyWithoutPlayerNestedInput
+  }
+
+  export type AchievementUpsertWithoutUnlocksInput = {
+    update: XOR<AchievementUpdateWithoutUnlocksInput, AchievementUncheckedUpdateWithoutUnlocksInput>
+    create: XOR<AchievementCreateWithoutUnlocksInput, AchievementUncheckedCreateWithoutUnlocksInput>
+    where?: AchievementWhereInput
+  }
+
+  export type AchievementUpdateToOneWithWhereWithoutUnlocksInput = {
+    where?: AchievementWhereInput
+    data: XOR<AchievementUpdateWithoutUnlocksInput, AchievementUncheckedUpdateWithoutUnlocksInput>
+  }
+
+  export type AchievementUpdateWithoutUnlocksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    gameSlug?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    icon?: StringFieldUpdateOperationsInput | string
+    xpReward?: IntFieldUpdateOperationsInput | number
+    secret?: BoolFieldUpdateOperationsInput | boolean
+    rarity?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AchievementUncheckedUpdateWithoutUnlocksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    gameSlug?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    icon?: StringFieldUpdateOperationsInput | string
+    xpReward?: IntFieldUpdateOperationsInput | number
+    secret?: BoolFieldUpdateOperationsInput | boolean
+    rarity?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlayerCreateWithoutFavoritesInput = {
+    id?: string
+    dragonIdSubject: string
+    dragonHandle: string
+    displayName: string
+    email?: string | null
+    avatarUrl?: string | null
+    bannerUrl?: string | null
+    level?: number
+    xp?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lastLoginAt?: Date | string
+    user?: UserCreateNestedOneWithoutPlayerInput
+    preferences?: PlayerPreferenceCreateNestedOneWithoutPlayerInput
+    achievements?: PlayerAchievementCreateNestedManyWithoutPlayerInput
+  }
+
+  export type PlayerUncheckedCreateWithoutFavoritesInput = {
+    id?: string
+    userId?: string | null
+    dragonIdSubject: string
+    dragonHandle: string
+    displayName: string
+    email?: string | null
+    avatarUrl?: string | null
+    bannerUrl?: string | null
+    level?: number
+    xp?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lastLoginAt?: Date | string
+    preferences?: PlayerPreferenceUncheckedCreateNestedOneWithoutPlayerInput
+    achievements?: PlayerAchievementUncheckedCreateNestedManyWithoutPlayerInput
+  }
+
+  export type PlayerCreateOrConnectWithoutFavoritesInput = {
+    where: PlayerWhereUniqueInput
+    create: XOR<PlayerCreateWithoutFavoritesInput, PlayerUncheckedCreateWithoutFavoritesInput>
+  }
+
+  export type PlayerUpsertWithoutFavoritesInput = {
+    update: XOR<PlayerUpdateWithoutFavoritesInput, PlayerUncheckedUpdateWithoutFavoritesInput>
+    create: XOR<PlayerCreateWithoutFavoritesInput, PlayerUncheckedCreateWithoutFavoritesInput>
+    where?: PlayerWhereInput
+  }
+
+  export type PlayerUpdateToOneWithWhereWithoutFavoritesInput = {
+    where?: PlayerWhereInput
+    data: XOR<PlayerUpdateWithoutFavoritesInput, PlayerUncheckedUpdateWithoutFavoritesInput>
+  }
+
+  export type PlayerUpdateWithoutFavoritesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dragonIdSubject?: StringFieldUpdateOperationsInput | string
+    dragonHandle?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bannerUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: IntFieldUpdateOperationsInput | number
+    xp?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastLoginAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneWithoutPlayerNestedInput
+    preferences?: PlayerPreferenceUpdateOneWithoutPlayerNestedInput
+    achievements?: PlayerAchievementUpdateManyWithoutPlayerNestedInput
+  }
+
+  export type PlayerUncheckedUpdateWithoutFavoritesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    dragonIdSubject?: StringFieldUpdateOperationsInput | string
+    dragonHandle?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    bannerUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: IntFieldUpdateOperationsInput | number
+    xp?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastLoginAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    preferences?: PlayerPreferenceUncheckedUpdateOneWithoutPlayerNestedInput
+    achievements?: PlayerAchievementUncheckedUpdateManyWithoutPlayerNestedInput
   }
 
   export type AccountCreateManyUserInput = {
@@ -229922,6 +239719,78 @@ export namespace Prisma {
     resolutionNote?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlayerAchievementCreateManyPlayerInput = {
+    id?: string
+    achievementId: string
+    unlockedAt?: Date | string
+  }
+
+  export type FavoriteCreateManyPlayerInput = {
+    id?: string
+    gameSlug: string
+    createdAt?: Date | string
+  }
+
+  export type PlayerAchievementUpdateWithoutPlayerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    unlockedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    achievement?: AchievementUpdateOneRequiredWithoutUnlocksNestedInput
+  }
+
+  export type PlayerAchievementUncheckedUpdateWithoutPlayerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    achievementId?: StringFieldUpdateOperationsInput | string
+    unlockedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlayerAchievementUncheckedUpdateManyWithoutPlayerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    achievementId?: StringFieldUpdateOperationsInput | string
+    unlockedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FavoriteUpdateWithoutPlayerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    gameSlug?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FavoriteUncheckedUpdateWithoutPlayerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    gameSlug?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FavoriteUncheckedUpdateManyWithoutPlayerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    gameSlug?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlayerAchievementCreateManyAchievementInput = {
+    id?: string
+    playerId: string
+    unlockedAt?: Date | string
+  }
+
+  export type PlayerAchievementUpdateWithoutAchievementInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    unlockedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    player?: PlayerUpdateOneRequiredWithoutAchievementsNestedInput
+  }
+
+  export type PlayerAchievementUncheckedUpdateWithoutAchievementInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    playerId?: StringFieldUpdateOperationsInput | string
+    unlockedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlayerAchievementUncheckedUpdateManyWithoutAchievementInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    playerId?: StringFieldUpdateOperationsInput | string
+    unlockedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
 

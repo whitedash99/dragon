@@ -29,37 +29,21 @@ export interface AuthenticatedAdminContext {
 
 /**
  * Returns configured initial owner emails.
- * Official Owner Emails with God-Level Supreme Access:
- * - dragongamingstudio1212@gmail.com
- * - whitedash99@gmail.com
+ * Official Owner Email with God-Level Supreme Access:
+ * - whitedash99@gmail.com (ONLY)
  */
 export function getInitialOwnerEmails(): string[] {
-  const defaults = [
-    "whitedash99@gmail.com",
-    "dragongamingstudio1212@gmail.com",
-    "dragonstudiosofficial01@gmail.com",
-    "dragonstudiosofficial02@gmail.com",
-  ];
-
-  const emails: string[] = [...defaults];
-  const owner1 = process.env.INITIAL_OWNER_EMAIL_1?.toLowerCase().trim();
-  const owner2 = process.env.INITIAL_OWNER_EMAIL_2?.toLowerCase().trim();
-  const notifyOwner = process.env.OWNER_NOTIFICATION_EMAIL?.toLowerCase().trim();
-
-  if (owner1 && !emails.includes(owner1)) emails.push(owner1);
-  if (owner2 && !emails.includes(owner2)) emails.push(owner2);
-  if (notifyOwner && !emails.includes(notifyOwner)) emails.push(notifyOwner);
-
-  return emails;
+  return ["whitedash99@gmail.com"];
 }
 
 /**
- * Validates whether an email matches configured initial owners.
+ * Validates whether an email matches the sole authorized owner.
+ * Strictly enforces that ONLY whitedash99@gmail.com is allowed.
  */
 export function isConfiguredOwnerEmail(email: string): boolean {
   if (!email) return false;
   const clean = email.toLowerCase().trim();
-  return getInitialOwnerEmails().includes(clean);
+  return clean === "whitedash99@gmail.com";
 }
 
 /**
@@ -111,6 +95,18 @@ export async function requireAuthenticatedUser(): Promise<
       authorized: false,
       response: NextResponse.json(
         { success: false, error: "403 Forbidden: Customer accounts cannot access the administrative control system." },
+        { status: 403 }
+      ),
+      context: null,
+    };
+  }
+
+  // Strict Security Isolation: For now, ONLY whitedash99@gmail.com is authorized to access the system
+  if (user.email.toLowerCase().trim() !== "whitedash99@gmail.com") {
+    return {
+      authorized: false,
+      response: NextResponse.json(
+        { success: false, error: "403 Forbidden: Access restricted. Only whitedash99@gmail.com is authorized." },
         { status: 403 }
       ),
       context: null,

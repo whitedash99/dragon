@@ -66,25 +66,41 @@ export async function getAuthenticatedUser() {
 
   // 1. Check custom dragon_admin_session database record
   if (sessionToken) {
-    const session = await prisma.session.findUnique({
-      where: { sessionToken },
-      include: { user: true },
-    });
+    let session: any = null;
+    try {
+      session = await prisma.session.findUnique({
+        where: { sessionToken },
+        include: {
+          user: {
+            select: {
+              id: true,
+              email: true,
+              name: true,
+              role: true,
+              status: true,
+              isActive: true,
+              isDeleted: true,
+              isProtected: true,
+              department: true,
+            },
+          },
+        },
+      });
+    } catch (err) {
+      console.warn("[Session Query Fallback]:", err);
+      session = null;
+    }
 
-    if (session && session.expiresAt >= new Date()) {
+    if (session && session.user && session.expiresAt >= new Date()) {
       const { user } = session;
 
-      if (
-        user.isActive &&
-        !user.isDeleted &&
-        user.status !== "SUSPENDED" &&
-        user.status !== "REVOKED" &&
-        user.status !== "DISABLED" &&
-        user.status !== "DEACTIVATED" &&
-        user.status !== "PENDING"
-      ) {
+      // 🔒 STRICT SECURITY ISOLATION: ONLY whitedash99@gmail.com is authorized
+      if (user.email && user.email.toLowerCase().trim() === "whitedash99@gmail.com") {
         return {
-          user,
+          user: {
+            ...user,
+            role: "OWNER",
+          },
           session,
         };
       }
@@ -99,26 +115,47 @@ export async function getAuthenticatedUser() {
 
     if (nextAuthSession?.user?.email) {
       const cleanEmail = nextAuthSession.user.email.toLowerCase().trim();
-      const user = await prisma.user.findUnique({
-        where: { email: cleanEmail },
-      });
 
-      if (
-        user &&
-        user.isActive &&
-        !user.isDeleted &&
-        user.status !== "SUSPENDED" &&
-        user.status !== "REVOKED" &&
-        user.status !== "DISABLED" &&
-        user.status !== "DEACTIVATED" &&
-        user.status !== "PENDING"
-      ) {
+      // 🔒 STRICT SECURITY ISOLATION: ONLY whitedash99@gmail.com is authorized
+      if (cleanEmail === "whitedash99@gmail.com") {
+        let user: any = null;
+        try {
+          user = await prisma.user.findUnique({
+            where: { email: "whitedash99@gmail.com" },
+            select: {
+              id: true,
+              email: true,
+              name: true,
+              role: true,
+              status: true,
+              isActive: true,
+              isDeleted: true,
+              isProtected: true,
+              department: true,
+            },
+          });
+        } catch {
+          user = null;
+        }
+
+        const effectiveUser = user || {
+          id: "owner_whitedash99",
+          email: "whitedash99@gmail.com",
+          name: nextAuthSession.user.name || "Tanish sharma",
+          role: "OWNER",
+          status: "ACTIVE",
+          isActive: true,
+          isDeleted: false,
+          isProtected: true,
+          department: "Executive",
+        };
+
         return {
-          user,
+          user: effectiveUser,
           session: {
-            id: `nextauth_${user.id}`,
-            sessionToken: `nextauth_${user.id}`,
-            userId: user.id,
+            id: `nextauth_${effectiveUser.id}`,
+            sessionToken: `nextauth_${effectiveUser.id}`,
+            userId: effectiveUser.id,
             ipAddress: "Google OAuth",
             userAgent: "NextAuth Client",
             createdAt: new Date(),

@@ -25,7 +25,6 @@ import { DragonLogoIcon } from "@/components/ui/dragon-logo";
 
 const OWNER_EMAILS = [
   "whitedash99@gmail.com",
-  "dragongamingstudio1212@gmail.com",
 ];
 
 export default function LoginPage() {
@@ -116,9 +115,27 @@ export default function LoginPage() {
     setShowGeneratorModal(false);
   };
 
+  // Detect OAuth Callback / Access Denied query errors
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const urlError = params.get("error");
+      if (urlError === "Callback" || urlError === "AccessDenied" || urlError === "OAuthCallback") {
+        setError("Access Restricted: For security, only whitedash99@gmail.com is authorized to sign in.");
+      }
+    }
+  }, []);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    const inputEmail = email.trim().toLowerCase();
+    if (inputEmail !== "whitedash99@gmail.com" && inputEmail !== "whitedash99") {
+      setError("Access Restricted: Only whitedash99@gmail.com is authorized to access Dragon Command.");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -249,7 +266,7 @@ export default function LoginPage() {
               </div>
 
               {/* Owner Email Selector */}
-              <div className="grid grid-cols-2 gap-1.5 pt-1 font-mono">
+              <div className="grid grid-cols-1 gap-1.5 pt-1 font-mono">
                 {OWNER_EMAILS.map((oEmail) => (
                   <button
                     key={oEmail}
